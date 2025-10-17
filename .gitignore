@@ -1,0 +1,43 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Logs & cache
+*.log
+logs/
+.cache/
+.tmp/
+
+# Build artifacts
+/dist/
+/build/
+*.map
+
+# Node (if used for assets)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Composer (if used)
+/vendor/
+composer.lock
+
+# Sass cache
+.sass-cache/
+
+# Env
+.env
+.env.*
+
+# WordPress uploads (do not commit user media)
+../../uploads/
+
+# Misc
+*.swp
+*.swo
