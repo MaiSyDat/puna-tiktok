@@ -2,7 +2,6 @@
 /**
  * Template Name: Messages
  * Template Post Type: page
- * Mô tả: Giao diện Tin nhắn (UI tĩnh)
  */
 
 get_header();

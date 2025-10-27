@@ -2,7 +2,6 @@
 /**
  * Template Name: Followed
  * Template Post Type: page
- * Mô tả: Giao diện Đã follow (UI tĩnh)
  */
 
 get_header();

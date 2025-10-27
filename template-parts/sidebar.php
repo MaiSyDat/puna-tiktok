@@ -30,9 +30,11 @@
         </a></li>
     </ul>
 
+    <?php if (!is_user_logged_in()) : ?>
     <div class="login-wrap">
-        <button class="login">Đăng nhập</button>
+        <button class="login-btn" onclick="openLoginPopup()">Đăng nhập</button>
     </div>
+    <?php endif; ?>
     
     <div class="sidebar-footer">
         <h3>Công ty</h3>
@@ -43,3 +45,5 @@
         </p>
     </div>
 </aside>
+
+<?php get_template_part('template-parts/login-popup'); ?>

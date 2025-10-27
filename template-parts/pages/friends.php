@@ -2,7 +2,6 @@
 /**
  * Template Name: Friends
  * Template Post Type: page
- * Mô tả: Giao diện Bạn bè/Live (UI tĩnh)
  */
 
 get_header();

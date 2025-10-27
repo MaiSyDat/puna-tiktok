@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cấu hình theme và hằng số
+ * Cấu hình theme
  *
  * @package puna-tiktok
  */
@@ -22,11 +22,18 @@ if (! defined('PUNA_TIKTOK_THEME_URI')) {
     define('PUNA_TIKTOK_THEME_URI', get_template_directory_uri());
 }
 
-/**
- * Khởi tạo hỗ trợ của theme
- */
-function puna_tiktok_setup()
-{
+class Puna_TikTok_Setup {
+    
+    public function __construct() {
+        add_action('after_setup_theme', array($this, 'setup'));
+        add_action('after_switch_theme', array($this, 'create_required_pages'));
+    }
+    
+    /**
+     * Khởi tạo hỗ trợ của theme
+     */
+    public function setup()
+    {
     add_theme_support('post-thumbnails');
     add_theme_support('title-tag');
     add_theme_support('html5', array(
@@ -35,16 +42,14 @@ function puna_tiktok_setup()
         'comment-list',
         'gallery',
         'caption',
-    ));
-}
-add_action('after_setup_theme', 'puna_tiktok_setup');
+        ));
+    }
 
-
-/**
- * Tạo các trang cần thiết khi kích hoạt theme và gán template
- */
-function puna_tiktok_create_required_pages()
-{
+    /**
+     * Tạo các trang cần thiết khi kích hoạt theme và gán template
+     */
+    public function create_required_pages()
+    {
     $pages = array(
         array(
             'title'    => 'Explore',
@@ -94,10 +99,12 @@ function puna_tiktok_create_required_pages()
         }
     }
 
-    // Làm mới permalink để hoạt động ngay
-    if (function_exists('flush_rewrite_rules')) {
-        flush_rewrite_rules(false);
+        // Làm mới permalink để hoạt động ngay
+        if (function_exists('flush_rewrite_rules')) {
+            flush_rewrite_rules(false);
+        }
     }
 }
-add_action('after_switch_theme', 'puna_tiktok_create_required_pages');
+
+new Puna_TikTok_Setup();
 

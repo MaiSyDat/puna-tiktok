@@ -1,14 +1,59 @@
 <?php
 $video_url = puna_tiktok_get_video_url();
-$likes = rand(100, 9999);
-$comments = rand(10, 999);
-$shares = rand(5, 999);
-$views = rand(1000, 99999);
+$post_id = get_the_ID();
+
+// Get real stats
+$likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
+$comments = get_comments_number($post_id);
+$shares = get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0;
+$views = get_post_meta($post_id, '_puna_tiktok_video_views', true) ?: 0;
+
+// Check if current user liked this video
+$is_liked = puna_tiktok_is_liked($post_id);
+$liked_class = $is_liked ? 'liked' : '';
 ?>
 
 <div class="video-row">
     <section class="video-container">
-        <video class="tiktok-video" loop muted playsinline>
+        <!-- Video Controls -->
+        <div class="video-top-controls">
+            <!-- Volume Control -->
+            <div class="volume-control-wrapper">
+                <button class="volume-toggle-btn" title="Âm lượng">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <div class="volume-slider-container">
+                    <input type="range" class="volume-slider" min="0" max="100" value="100" title="Âm lượng">
+                </div>
+            </div>
+            
+            <!-- Options Menu -->
+            <div class="video-options-menu">
+                <button class="video-options-btn" title="Tùy chọn">
+                    <i class="fa-solid fa-ellipsis"></i>
+                </button>
+                <div class="video-options-dropdown">
+                    <div class="options-item">
+                        <i class="fa-solid fa-arrow-up-down"></i>
+                        <span>Cuộn tự động</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="autoscroll-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="options-item">
+                        <i class="fa-solid fa-heart-crack"></i>
+                        <span>Không quan tâm</span>
+                    </div>
+                    <div class="options-item">
+                        <i class="fa-solid fa-flag"></i>
+                        <span>Báo cáo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <video class="tiktok-video" loop playsinline>
             <source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
             Trình duyệt của bạn không hỗ trợ video.
         </video>
@@ -37,24 +82,26 @@ $views = rand(1000, 99999);
             <div class="follow-icon"><i class="fa-solid fa-plus"></i></div>
         </div>
 
-        <div class="action-item" data-action="like">
+        <div class="action-item <?php echo esc_attr($liked_class); ?>" data-action="like" data-post-id="<?php echo esc_attr($post_id); ?>">
             <i class="fa-solid fa-heart"></i>
-            <span class="count"><?php echo '297K'; ?></span>
+            <span class="count"><?php echo puna_tiktok_format_number($likes); ?></span>
         </div>
 
-        <div class="action-item" data-action="comment">
+        <div class="action-item" data-action="comment" data-post-id="<?php echo esc_attr($post_id); ?>">
             <i class="fa-solid fa-comment"></i>
-            <span class="count"><?php echo '1917'; ?></span>
+            <span class="count"><?php echo puna_tiktok_format_number($comments); ?></span>
         </div>
 
         <div class="action-item" data-action="save">
             <i class="fa-solid fa-bookmark"></i>
-            <span class="count"><?php echo '10.9K'; ?></span>
+            <span class="count"><?php echo puna_tiktok_format_number($shares); ?></span>
         </div>
 
         <div class="action-item" data-action="share">
             <i class="fa-solid fa-share"></i>
-            <span class="count"><?php echo '29.1K'; ?></span>
+            <span class="count"><?php echo puna_tiktok_format_number($shares); ?></span>
         </div>
     </aside>
+    
+    <?php get_template_part('template-parts/comments-sidebar', null, array('post_id' => $post_id)); ?>
 </div>

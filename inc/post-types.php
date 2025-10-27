@@ -10,12 +10,18 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-/**
- * Đăng ký loại bài đăng video kiểu TikTok
- */
-function puna_tiktok_register_post_types()
-{
-    register_post_type('puna_tiktok_video', array(
+class Puna_TikTok_Post_Types {
+    
+    public function __construct() {
+        add_action('init', array($this, 'register_post_types'));
+    }
+    
+    /**
+     * Đăng ký loại bài đăng video kiểu TikTok
+     */
+    public function register_post_types()
+    {
+        register_post_type('puna_tiktok_video', array(
         'labels' => array(
             'name'               => __('Videos', 'puna-tiktok'),
             'singular_name'      => __('Video', 'puna-tiktok'),
@@ -42,6 +48,8 @@ function puna_tiktok_register_post_types()
         'menu_icon'          => 'dashicons-video-alt3',
         'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields', 'comments'),
         'show_in_rest'       => true,
-    ));
+        ));
+    }
 }
-add_action('init', 'puna_tiktok_register_post_types');
+
+new Puna_TikTok_Post_Types();
