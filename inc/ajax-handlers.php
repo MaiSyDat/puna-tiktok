@@ -14,8 +14,11 @@ class Puna_TikTok_AJAX_Handlers {
     
     public function __construct() {
         add_action('wp_ajax_puna_tiktok_toggle_like', array($this, 'toggle_like'));
+        add_action('wp_ajax_nopriv_puna_tiktok_toggle_like', array($this, 'toggle_like'));
         add_action('wp_ajax_puna_tiktok_add_comment', array($this, 'add_comment'));
+        add_action('wp_ajax_nopriv_puna_tiktok_add_comment', array($this, 'add_comment'));
         add_action('wp_ajax_puna_tiktok_increment_view', array($this, 'increment_view'));
+        add_action('wp_ajax_nopriv_puna_tiktok_increment_view', array($this, 'increment_view'));
     }
 
     /**
@@ -31,7 +34,7 @@ class Puna_TikTok_AJAX_Handlers {
     $post_id = intval($_POST['post_id']);
     $user_id = get_current_user_id();
     
-    if (!$post_id || get_post_type($post_id) !== 'puna_tiktok_video') {
+    if (!$post_id || ! has_block('puna/hupuna-tiktok', $post_id)) {
         wp_send_json_error(array('message' => 'Video không hợp lệ.'));
     }
     
@@ -86,7 +89,7 @@ class Puna_TikTok_AJAX_Handlers {
     $post_id = intval($_POST['post_id']);
     $comment_text = sanitize_text_field($_POST['comment_text']);
     
-    if (!$post_id || get_post_type($post_id) !== 'puna_tiktok_video') {
+    if (!$post_id || ! has_block('puna/hupuna-tiktok', $post_id)) {
         wp_send_json_error(array('message' => 'Video không hợp lệ.'));
     }
     
@@ -127,7 +130,7 @@ class Puna_TikTok_AJAX_Handlers {
     
     $post_id = intval($_POST['post_id']);
     
-    if (!$post_id || get_post_type($post_id) !== 'puna_tiktok_video') {
+    if (!$post_id || ! has_block('puna/hupuna-tiktok', $post_id)) {
         wp_send_json_error(array('message' => 'Video không hợp lệ.'));
     }
     

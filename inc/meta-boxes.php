@@ -24,14 +24,7 @@ function puna_tiktok_add_meta_boxes()
         'high'
     );
     
-    add_meta_box(
-        'puna_tiktok_video_stats',
-        __('Video Statistics', 'puna-tiktok'),
-        'puna_tiktok_video_stats_callback',
-        'puna_tiktok_video',
-        'side',
-        'default'
-    );
+    // Removed Video Statistics metabox
 }
 add_action('add_meta_boxes', 'puna_tiktok_add_meta_boxes');
 
@@ -158,80 +151,9 @@ function puna_tiktok_get_video_url($post_id = null)
     return 'https://v16-webapp.tiktok.com/video-sample.mp4';
 }
 
-/**
- * Hiển thị nội dung của meta box thống kê video
- */
-function puna_tiktok_video_stats_callback($post)
-{
-    $views = get_post_meta($post->ID, '_puna_tiktok_video_views', true);
-    $likes = get_post_meta($post->ID, '_puna_tiktok_video_likes', true);
-    $comments = get_post_meta($post->ID, '_puna_tiktok_video_comments', true);
-    $shares = get_post_meta($post->ID, '_puna_tiktok_video_shares', true);
-    
-    // Khởi tạo giá trị mặc định nếu chưa có
-    if (!$views) $views = 0;
-    if (!$likes) $likes = 0;
-    if (!$comments) $comments = 0;
-    if (!$shares) $shares = 0;
-    ?>
-    <div class="video-stats">
-        <p><strong><?php _e('Views:', 'puna-tiktok'); ?></strong> <?php echo puna_tiktok_format_number($views); ?></p>
-        <p><strong><?php _e('Likes:', 'puna-tiktok'); ?></strong> <?php echo puna_tiktok_format_number($likes); ?></p>
-        <p><strong><?php _e('Comments:', 'puna-tiktok'); ?></strong> <?php echo puna_tiktok_format_number($comments); ?></p>
-        <p><strong><?php _e('Shares:', 'puna-tiktok'); ?></strong> <?php echo puna_tiktok_format_number($shares); ?></p>
-        
-        <hr style="margin: 15px 0;">
-        
-        <label for="puna_tiktok_video_views"><?php _e('Views:', 'puna-tiktok'); ?></label>
-        <input type="number" id="puna_tiktok_video_views" name="puna_tiktok_video_views" value="<?php echo esc_attr($views); ?>" min="0" />
-        
-        <label for="puna_tiktok_video_likes"><?php _e('Likes:', 'puna-tiktok'); ?></label>
-        <input type="number" id="puna_tiktok_video_likes" name="puna_tiktok_video_likes" value="<?php echo esc_attr($likes); ?>" min="0" />
-        
-        <label for="puna_tiktok_video_comments"><?php _e('Comments:', 'puna-tiktok'); ?></label>
-        <input type="number" id="puna_tiktok_video_comments" name="puna_tiktok_video_comments" value="<?php echo esc_attr($comments); ?>" min="0" />
-        
-        <label for="puna_tiktok_video_shares"><?php _e('Shares:', 'puna-tiktok'); ?></label>
-        <input type="number" id="puna_tiktok_video_shares" name="puna_tiktok_video_shares" value="<?php echo esc_attr($shares); ?>" min="0" />
-    </div>
-    <?php
-}
+// Removed Video Statistics metabox callback and fields
 
-/**
- * Lưu dữ liệu thống kê video
- */
-function puna_tiktok_save_video_stats($post_id)
-{
-    if (!isset($_POST['post_type']) || 'puna_tiktok_video' != $_POST['post_type']) {
-        return;
-    }
-    
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return;
-    }
-    
-    if (!current_user_can('edit_post', $post_id)) {
-        return;
-    }
-    
-    // Lưu thống kê
-    if (isset($_POST['puna_tiktok_video_views'])) {
-        update_post_meta($post_id, '_puna_tiktok_video_views', intval($_POST['puna_tiktok_video_views']));
-    }
-    
-    if (isset($_POST['puna_tiktok_video_likes'])) {
-        update_post_meta($post_id, '_puna_tiktok_video_likes', intval($_POST['puna_tiktok_video_likes']));
-    }
-    
-    if (isset($_POST['puna_tiktok_video_comments'])) {
-        update_post_meta($post_id, '_puna_tiktok_video_comments', intval($_POST['puna_tiktok_video_comments']));
-    }
-    
-    if (isset($_POST['puna_tiktok_video_shares'])) {
-        update_post_meta($post_id, '_puna_tiktok_video_shares', intval($_POST['puna_tiktok_video_shares']));
-    }
-}
-add_action('save_post', 'puna_tiktok_save_video_stats');
+// Removed saving logic for Video Statistics
 
 /**
  * Tăng lượt xem video

@@ -1,6 +1,7 @@
 <?php get_header(); ?>
 
 <div class="tiktok-app">
+
     <?php get_template_part('template-parts/sidebar'); ?>
     
     <div class="main-content">
@@ -17,7 +18,7 @@
         if ( $video_query->have_posts() ) :
             while ( $video_query->have_posts() ) : $video_query->the_post();
                 if ( has_block('puna/hupuna-tiktok', get_the_ID()) ) {
-                    get_template_part('template-parts/content', 'video');
+                    get_template_part('template-parts/video/content');
                 }
             endwhile;
         else :
@@ -37,6 +38,9 @@
 			<button class="video-nav-btn nav-next" aria-label="Next video"><i class="fa-solid fa-chevron-down"></i></button>
 		</div>
     </div>
+
 </div>
 
 <?php get_footer(); ?>
+
+

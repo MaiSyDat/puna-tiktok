@@ -11,13 +11,68 @@ document.addEventListener("DOMContentLoaded", function() {
         threshold: 0.8
     };
 
+    // Global volume state shared across all videos
+    let globalMuted = true;
+    let globalVolume = 1; // 0..1
+
+    function applyVolumeToAllVideos() {
+        const list = document.querySelectorAll('.tiktok-video');
+        list.forEach(v => {
+            v.muted = globalMuted;
+            if (globalMuted) {
+                v.setAttribute('muted', '');
+            } else {
+                v.removeAttribute('muted');
+            }
+            if (!globalMuted && typeof v.volume === 'number') {
+                v.volume = globalVolume;
+            }
+        });
+    }
+
+    function updateGlobalVolumeUI() {
+        const wrappers = document.querySelectorAll('.volume-control-wrapper');
+        wrappers.forEach(w => {
+            w.classList.toggle('muted', globalMuted);
+            const btn = w.querySelector('.volume-toggle-btn');
+            const slider = w.querySelector('.volume-slider');
+            if (btn) {
+                btn.innerHTML = globalMuted
+                    ? '<i class="fa-solid fa-volume-xmark"></i>'
+                    : (Math.round(globalVolume*100) < 50
+                        ? '<i class="fa-solid fa-volume-low"></i>'
+                        : '<i class="fa-solid fa-volume-high"></i>');
+            }
+            if (slider) {
+                const targetVal = globalMuted ? 0 : Math.round(globalVolume * 100);
+                if (String(slider.value) !== String(targetVal)) {
+                    slider.value = targetVal;
+                }
+            }
+        });
+    }
+
     // Theo dõi các video đã xem để tránh tính trùng lặp
     const viewedVideos = new Set();
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                // Ensure inline playback; respect global volume state
+                entry.target.playsInline = true;
+                entry.target.setAttribute('playsinline', '');
+                if (globalMuted) {
+                    entry.target.muted = true;
+                    entry.target.setAttribute('muted', '');
+                } else {
+                    entry.target.muted = false;
+                    entry.target.removeAttribute('muted');
+                    if (typeof entry.target.volume === 'number') {
+                        entry.target.volume = globalVolume;
+                    }
+                }
                 entry.target.play().catch(e => {
+                    // Autoplay blocked; will be retried on first user interaction
                     console.log('Trình duyệt chặn autoplay:', e);
                 });
                 
@@ -36,7 +91,12 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }, options);
 
+    // Prepare videos for policy-compliant autoplay
     videos.forEach(video => {
+        video.muted = true;
+        video.setAttribute('muted', '');
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
         observer.observe(video);
         video.addEventListener('click', function() {
             if (this.paused) {
@@ -54,6 +114,36 @@ document.addEventListener("DOMContentLoaded", function() {
                 video.dataset.postId = postId;
             }
         }
+    });
+
+    // One-time user gesture fallback: play the currently visible video after first interaction
+    let userGestureHandled = false;
+    function playVisibleVideoOnce() {
+        if (userGestureHandled) return;
+        userGestureHandled = true;
+        const list = document.querySelectorAll('.tiktok-video');
+        const current = Array.from(list).find(v => {
+            const rect = v.getBoundingClientRect();
+            return rect.top >= 0 && rect.top < window.innerHeight / 2;
+        });
+        if (current) {
+            current.playsInline = true;
+            current.setAttribute('playsinline', '');
+            if (globalMuted) {
+                current.muted = true;
+                current.setAttribute('muted', '');
+            } else {
+                current.muted = false;
+                current.removeAttribute('muted');
+                if (typeof current.volume === 'number') {
+                    current.volume = globalVolume;
+                }
+            }
+            current.play().catch(() => {});
+        }
+    }
+    ['click', 'touchstart', 'keydown'].forEach(evt => {
+        document.addEventListener(evt, playVisibleVideoOnce, { once: true, passive: true });
     });
 
     let isScrolling = false;
@@ -93,10 +183,11 @@ document.addEventListener("DOMContentLoaded", function() {
     function scrollToSibling(direction) {
         const videos = document.querySelectorAll('.tiktok-video');
         if (!videos.length) return;
-        const currentVideo = Array.from(videos).find(video => {
+        let currentVideo = Array.from(videos).find(video => {
             const rect = video.getBoundingClientRect();
             return rect.top >= 0 && rect.top < window.innerHeight / 2;
         });
+        if (!currentVideo) currentVideo = videos[0];
         const currentIndex = Array.from(videos).indexOf(currentVideo);
         const nextIndex = currentIndex + direction;
         if (nextIndex >= 0 && nextIndex < videos.length) {
@@ -121,13 +212,17 @@ document.addEventListener("DOMContentLoaded", function() {
     function updateNavDisabledState() {
         const list = document.querySelectorAll('.tiktok-video');
         if (!list.length) return;
-        const current = Array.from(list).find(video => {
+        let current = Array.from(list).find(video => {
             const rect = video.getBoundingClientRect();
             return rect.top >= 0 && rect.top < window.innerHeight / 2;
         });
+        // Fallback to first video if none detected in viewport yet
+        if (!current) {
+            current = list[0];
+        }
         const idx = Array.from(list).indexOf(current);
         const atTop = idx <= 0;
-        const atBottom = idx === list.length - 1 || idx < 0;
+        const atBottom = idx >= list.length - 1;
         if (navPrevBtn) navPrevBtn.classList.toggle('is-disabled', atTop);
         if (navNextBtn) navNextBtn.classList.toggle('is-disabled', atBottom);
     }
@@ -445,50 +540,30 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Video Volume Control
+    // Video Volume Control (global)
     document.addEventListener('click', function(e) {
         const volumeToggleBtn = e.target.closest('.volume-toggle-btn');
         if (volumeToggleBtn) {
             e.preventDefault();
             e.stopPropagation();
-            
-            const volumeWrapper = volumeToggleBtn.closest('.volume-control-wrapper');
-            const video = volumeWrapper.closest('.video-container').querySelector('.tiktok-video');
-            
-            if (video.muted) {
-                video.muted = false;
-                volumeWrapper.classList.remove('muted');
-                volumeToggleBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-            } else {
-                video.muted = true;
-                volumeWrapper.classList.add('muted');
-                volumeToggleBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+            globalMuted = !globalMuted;
+            if (!globalMuted && globalVolume === 0) {
+                globalVolume = 1; // default to 100% if unmuting from zero
             }
+            applyVolumeToAllVideos();
+            updateGlobalVolumeUI();
         }
     });
 
-    // Volume Slider
+    // Volume Slider (global)
     document.addEventListener('input', function(e) {
         if (e.target.classList.contains('volume-slider')) {
             const slider = e.target;
-            const value = slider.value;
-            const video = slider.closest('.video-container').querySelector('.tiktok-video');
-            
-            video.volume = value / 100;
-            
-            // Update icon based on volume
-            const volumeToggleBtn = slider.closest('.volume-control-wrapper').querySelector('.volume-toggle-btn');
-            if (value == 0) {
-                video.muted = true;
-                volumeToggleBtn.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
-            } else {
-                video.muted = false;
-                if (value < 50) {
-                    volumeToggleBtn.innerHTML = '<i class="fa-solid fa-volume-low"></i>';
-                } else {
-                    volumeToggleBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
-                }
-            }
+            const value = Math.max(0, Math.min(100, parseInt(slider.value, 10) || 0));
+            globalVolume = value / 100;
+            globalMuted = value === 0;
+            applyVolumeToAllVideos();
+            updateGlobalVolumeUI();
         }
     });
 
@@ -519,11 +594,9 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Initialize video volumes
-    document.querySelectorAll('.tiktok-video').forEach(video => {
-        video.volume = 1;
-        video.muted = false;
-    });
+    // Initialize global volume (muted) across all videos and sync UI
+    applyVolumeToAllVideos();
+    updateGlobalVolumeUI();
 
     // Increment video view count
     function incrementVideoView(postId) {

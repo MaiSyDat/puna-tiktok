@@ -40,11 +40,11 @@ $is_logged_in = is_user_logged_in();
 					<div class="profile-stats">
 						<div class="stat-item">
 							<strong class="stat-number"><?php 
-								$user_videos = new WP_Query(array(
-									'post_type' => 'puna_tiktok_video',
+                                $user_videos = new WP_Query(array(
+                                    'post_type' => 'post',
 									'author' => $user_id,
 									'posts_per_page' => -1,
-									'post_status' => 'publish'
+                                    'post_status' => 'publish'
 								));
 								echo number_format($user_videos->post_count);
 							?></strong>
@@ -78,8 +78,8 @@ $is_logged_in = is_user_logged_in();
 			<div class="profile-videos-section" id="videos-tab">
 				<?php
 				// Query video của người dùng đăng nhập
-				$user_videos_query = new WP_Query(array(
-					'post_type' => 'puna_tiktok_video',
+                $user_videos_query = new WP_Query(array(
+                    'post_type' => 'post',
 					'author' => $user_id,
 					'posts_per_page' => -1,
 					'post_status' => 'publish',
@@ -90,8 +90,9 @@ $is_logged_in = is_user_logged_in();
 				if ($user_videos_query->have_posts()) : ?>
 					<div class="profile-grid">
 						<?php
-						while ($user_videos_query->have_posts()) : $user_videos_query->the_post();
-							$video_url = puna_tiktok_get_video_url();
+                        while ($user_videos_query->have_posts()) : $user_videos_query->the_post();
+                            if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
+                            $video_url = puna_tiktok_get_video_url();
 							$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
 							$likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true);
 							$views = $views ? $views : 0;
@@ -132,7 +133,7 @@ $is_logged_in = is_user_logged_in();
 						</div>
 						<h3>Chưa có video nào</h3>
 						<p>Đăng video đầu tiên của bạn để bắt đầu!</p>
-						<a href="<?php echo admin_url('post-new.php?post_type=puna_tiktok_video'); ?>" class="upload-video-btn">
+                        <a href="<?php echo admin_url('post-new.php'); ?>" class="upload-video-btn">
 							<i class="fa-solid fa-square-plus"></i> Tải video lên
 						</a>
 					</div>
@@ -146,8 +147,8 @@ $is_logged_in = is_user_logged_in();
 				$liked_video_ids = puna_tiktok_get_liked_videos($user_id);
 				
 				if (!empty($liked_video_ids)) {
-					$liked_query = new WP_Query(array(
-						'post_type' => 'puna_tiktok_video',
+                    $liked_query = new WP_Query(array(
+                        'post_type' => 'post',
 						'post__in' => $liked_video_ids,
 						'posts_per_page' => -1,
 						'post_status' => 'publish',
@@ -158,8 +159,9 @@ $is_logged_in = is_user_logged_in();
 					if ($liked_query->have_posts()) : ?>
 						<div class="profile-grid">
 							<?php
-							while ($liked_query->have_posts()) : $liked_query->the_post();
-								$video_url = puna_tiktok_get_video_url();
+                            while ($liked_query->have_posts()) : $liked_query->the_post();
+                                if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
+                                $video_url = puna_tiktok_get_video_url();
 								$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
 								$likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true);
 								$views = $views ? $views : 0;

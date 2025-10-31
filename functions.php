@@ -16,6 +16,7 @@ require_once get_template_directory() . '/inc/assets.php';
 require_once get_template_directory() . '/inc/post-types.php';
 require_once get_template_directory() . '/inc/meta-boxes.php';
 require_once get_template_directory() . '/inc/ajax-handlers.php';
+require_once get_template_directory() . '/inc/blocks.php';
 
 /**
  * Tăng giới hạn upload

@@ -25,8 +25,8 @@ get_header();
 		<div class="explore-grid">
 			<?php
 			// Query để lấy video thịnh hành
-			$trending_query = new WP_Query(array(
-				'post_type' => 'puna_tiktok_video',
+            $trending_query = new WP_Query(array(
+                'post_type' => 'post',
 				'posts_per_page' => 12,
 				'post_status' => 'publish',
 				'orderby' => 'meta_value_num',
@@ -52,8 +52,8 @@ get_header();
 			
 			// Nếu không có video thịnh hành trong 7 ngày, lấy video mới nhất
 			if (!$trending_query->have_posts()) {
-				$trending_query = new WP_Query(array(
-					'post_type' => 'puna_tiktok_video',
+                $trending_query = new WP_Query(array(
+                    'post_type' => 'post',
 					'posts_per_page' => 12,
 					'post_status' => 'publish',
 					'orderby' => 'date',
@@ -62,8 +62,9 @@ get_header();
 			}
 			
 			if ($trending_query->have_posts()) :
-				while ($trending_query->have_posts()) : $trending_query->the_post();
-						$video_url = puna_tiktok_get_video_url();
+                while ($trending_query->have_posts()) : $trending_query->the_post();
+                        if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
+                        $video_url = puna_tiktok_get_video_url();
 						$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
 						$views = $views ? $views : 0;
 						$likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true);
