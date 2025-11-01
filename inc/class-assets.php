@@ -26,10 +26,10 @@ class Puna_TikTok_Assets {
 
         wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css', array(), '7.0.1');
 
-        wp_enqueue_script('puna-tiktok-frontend', PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/main.js', array(), PUNA_TIKTOK_VERSION, true);
+        wp_enqueue_script('puna-tiktok-main', PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/main.js', array(), PUNA_TIKTOK_VERSION, true);
 
         $current_user = wp_get_current_user();
-        wp_localize_script('puna-tiktok-frontend', 'puna_tiktok_ajax', array(
+        wp_localize_script('puna-tiktok-main', 'puna_tiktok_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('puna_tiktok_nonce'),
             'like_nonce' => wp_create_nonce('puna_tiktok_like_nonce'),
@@ -49,7 +49,7 @@ class Puna_TikTok_Assets {
     {
         wp_enqueue_style('puna-tiktok-backend', PUNA_TIKTOK_THEME_URI . '/assets/css/backend/backend.css', array(), PUNA_TIKTOK_VERSION);
         
-        // JS admin (chỉ nạp nếu tồn tại)
+        // JS admin
         $admin_js = PUNA_TIKTOK_THEME_DIR . '/assets/js/backend/admin.js';
         if (file_exists($admin_js)) {
             wp_enqueue_script('puna-tiktok-backend', PUNA_TIKTOK_THEME_URI . '/assets/js/backend/admin.js', array('jquery'), PUNA_TIKTOK_VERSION, true);

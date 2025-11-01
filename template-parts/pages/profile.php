@@ -1,7 +1,6 @@
 <?php
 /**
  * Template Name: Profile
- * Template Post Type: page
  */
 
 get_header();
@@ -18,12 +17,10 @@ $is_logged_in = is_user_logged_in();
 
 	<div class="main-content profile-content">
 		<?php if (!$is_logged_in) : ?>
-			<!-- Thông báo chưa đăng nhập -->
 			<div class="explore-header">
 				<h2>Hồ sơ</h2>
 				<div class="not-logged-in-message">
 					<p>Vui lòng đăng nhập để xem hồ sơ của bạn.</p>
-					<button class="login-btn" onclick="openLoginPopup()">Đăng nhập</button>
 				</div>
 			</div>
 		<?php else : ?>

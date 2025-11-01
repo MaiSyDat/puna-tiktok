@@ -1,7 +1,6 @@
 <?php
 /**
  * Template Name: Explore
- * Template Post Type: page
  */
 
 get_header();

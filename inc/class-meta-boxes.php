@@ -146,14 +146,8 @@ function puna_tiktok_get_video_url($post_id = null)
             return $video_url;
         }
     }
-
-    // Trả về video mẫu nếu chưa có tệp được tải lên
     return 'https://v16-webapp.tiktok.com/video-sample.mp4';
 }
-
-// Removed Video Statistics metabox callback and fields
-
-// Removed saving logic for Video Statistics
 
 /**
  * Tăng lượt xem video
@@ -165,3 +159,4 @@ function puna_tiktok_increment_video_views($post_id)
     update_post_meta($post_id, '_puna_tiktok_video_views', $new_views);
     return $new_views;
 }
+

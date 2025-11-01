@@ -108,7 +108,6 @@ $liked_class = $is_liked ? 'liked' : '';
 		</div>
 	</aside>
 	
-	<?php get_template_part('template-parts/comments-sidebar', null, array('post_id' => $post_id)); ?>
 </div>
 
 

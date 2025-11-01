@@ -24,3 +24,4 @@ class Puna_TikTok_Post_Types {
 }
 
 new Puna_TikTok_Post_Types();
+

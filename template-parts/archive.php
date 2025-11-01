@@ -7,6 +7,10 @@
     <div class="main-content">
         <?php
         // Query bài viết thường; sẽ lọc bài có block video trong vòng lặp
+        // Allow comments_template on non-singular templates
+        global $withcomments;
+        $withcomments = 1;
+
         $video_query = new WP_Query(array(
             'post_type' => 'post',
             'posts_per_page' => -1,
@@ -19,6 +23,7 @@
             while ( $video_query->have_posts() ) : $video_query->the_post();
                 if ( has_block('puna/hupuna-tiktok', get_the_ID()) ) {
                     get_template_part('template-parts/video/content');
+                    comments_template();
                 }
             endwhile;
         else :

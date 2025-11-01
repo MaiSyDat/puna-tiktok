@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Cấu hình theme
- *
  * @package puna-tiktok
  */
 
-// Chặn truy cập trực tiếp
 if (! defined('ABSPATH')) {
     exit;
 }
@@ -43,6 +40,11 @@ class Puna_TikTok_Setup {
         'gallery',
         'caption',
         ));
+    
+    // Register menu location for sidebar
+    register_nav_menus(array(
+        'puna-tiktok-sidebar' => __('TikTok Sidebar Menu', 'puna-tiktok'),
+    ));
     }
 
     /**

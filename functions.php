@@ -11,12 +11,15 @@ if (! defined('ABSPATH')) {
 }
 
 // Nạp các file mô-đun
-require_once get_template_directory() . '/inc/setup.php';
-require_once get_template_directory() . '/inc/assets.php';
-require_once get_template_directory() . '/inc/post-types.php';
-require_once get_template_directory() . '/inc/meta-boxes.php';
-require_once get_template_directory() . '/inc/ajax-handlers.php';
-require_once get_template_directory() . '/inc/blocks.php';
+require_once get_template_directory() . '/inc/class-setup.php';
+require_once get_template_directory() . '/inc/class-assets.php';
+require_once get_template_directory() . '/inc/class-post-types.php';
+require_once get_template_directory() . '/inc/class-meta-boxes.php';
+require_once get_template_directory() . '/inc/class-ajax-handlers.php';
+require_once get_template_directory() . '/inc/class-blocks.php';
+
+// Nạp Customizer (sẽ tự động load các component trong customize/)
+require_once get_template_directory() . '/inc/class-customizer.php';
 
 /**
  * Tăng giới hạn upload

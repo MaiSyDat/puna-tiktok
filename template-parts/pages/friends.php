@@ -1,7 +1,6 @@
 <?php
 /**
  * Template Name: Friends
- * Template Post Type: page
  */
 
 get_header();

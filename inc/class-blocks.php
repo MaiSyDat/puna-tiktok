@@ -40,10 +40,6 @@ class Puna_TikTok_Blocks
 
     public function register_post_meta()
     {
-        // *** LƯU Ý QUAN TRỌNG ***
-        // Đăng ký meta này cho 'post' (hoặc 'page', hoặc CPT của bạn)
-        // chứ không phải 'puna_tiktok_video' (trừ khi đó là tên post type)
-        // Mã JS của bạn lưu meta cho bài đăng hiện tại.
         register_post_meta('post', '_puna_tiktok_video_file_id', array(
             'single'        => true,
             'type'          => 'integer',
@@ -56,7 +52,6 @@ class Puna_TikTok_Blocks
 
     public function register_blocks()
     {
-        // Đảm bảo các hằng số PUNA_TIKTOK_... của bạn đã được định nghĩa
         $script_rel_path = '/assets/js/backend/hupuna-tiktok-block.js';
         $script_path = PUNA_TIKTOK_THEME_DIR . $script_rel_path;
         $script_uri  = PUNA_TIKTOK_THEME_URI . $script_rel_path;
@@ -116,10 +111,6 @@ class Puna_TikTok_Blocks
         if (!$video_id || !wp_get_attachment_url($video_id)) {
             return '';
         }
-
-        // *** PHẦN QUAN TRỌNG NHẤT ***
-        // Chúng ta cần thiết lập dữ liệu bài đăng toàn cục (global $post)
-        // để các hàm như the_title(), the_author() trong file 'content.php' hoạt động
         
         global $post;
         $post = get_post($post_id); // Lấy đối tượng bài đăng
@@ -144,3 +135,4 @@ class Puna_TikTok_Blocks
 }
 
 new Puna_TikTok_Blocks();
+

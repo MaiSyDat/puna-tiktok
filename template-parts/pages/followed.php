@@ -1,7 +1,6 @@
 <?php
 /**
  * Template Name: Followed
- * Template Post Type: page
  */
 
 get_header();

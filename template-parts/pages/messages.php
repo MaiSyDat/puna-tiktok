@@ -1,7 +1,6 @@
 <?php
 /**
  * Template Name: Messages
- * Template Post Type: page
  */
 
 get_header();
