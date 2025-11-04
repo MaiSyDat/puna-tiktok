@@ -1,0 +1,41 @@
+/* ========================================
+   VIDEO NAVIGATION
+   ======================================== */
+
+/* Video navigation buttons */
+.video-nav {
+    position: fixed;
+    right: 40px;
+    top: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.video-nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: var(--puna-muted);
+    color: var(--puna-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.video-nav-btn:hover {
+    background-color: var(--puna-muted);
+}
+
+.video-nav-btn i { 
+    font-size: 18px; 
+}
+
+.video-nav-btn.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+

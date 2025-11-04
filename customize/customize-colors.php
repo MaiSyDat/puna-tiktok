@@ -164,8 +164,8 @@ class Puna_TikTok_Customize_Colors {
      * Output dynamic CSS with CSS variables
      */
     public function output_dynamic_css() {
-        $primary   = get_theme_mod('puna_color_primary', '#25F4EE');
-        $secondary = get_theme_mod('puna_color_secondary', '#FE2C55');
+        $primary   = get_theme_mod('puna_color_primary', '#FE2C55');
+        $secondary = get_theme_mod('puna_color_secondary', '#25F4EE');
         $bg        = get_theme_mod('puna_color_bg', '#ffffff');
         $text      = get_theme_mod('puna_color_text', '#111827');
         $link      = get_theme_mod('puna_color_link', '#0095f6');

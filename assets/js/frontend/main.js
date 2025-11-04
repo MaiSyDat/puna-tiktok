@@ -604,13 +604,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Event listener cho nút mở comments
+    // Cho phép mở comments ngay cả khi chưa đăng nhập (chỉ cần đăng nhập để like/reply/comment)
     document.addEventListener('click', function(e) {
         const actionItem = e.target.closest('.action-item[data-action="comment"]');
         if (actionItem && actionItem.dataset.postId) {
-            // Kiểm tra đăng nhập
-            if (!checkLogin(e, () => {
-                openCommentsSidebar(actionItem.dataset.postId);
-            })) return;
+            e.preventDefault();
+            e.stopPropagation();
+            openCommentsSidebar(actionItem.dataset.postId);
         }
     });
 
@@ -1349,25 +1349,88 @@ document.addEventListener("DOMContentLoaded", function() {
     // PROFILE TABS
     // ============================================
     
-    const tabs = document.querySelectorAll('.profile-tab');
-    const tabContents = document.querySelectorAll('.profile-videos-section');
+    // Profile Tabs Switching - Dùng chung cho profile page và author.php
+    const profileTabs = document.querySelectorAll('.profile-tab');
+    const profileVideosSections = document.querySelectorAll('.profile-videos-section');
+    const profileTabContents = document.querySelectorAll('.profile-tab-content');
     
-    tabs.forEach(tab => {
+    profileTabs.forEach(tab => {
         tab.addEventListener('click', function() {
-            const targetTab = this.dataset.tab;
+            const targetTab = this.getAttribute('data-tab');
             
-            tabs.forEach(t => t.classList.remove('active'));
+            // Update active state
+            profileTabs.forEach(t => t.classList.remove('active'));
             this.classList.add('active');
             
-            tabContents.forEach(content => {
-                content.style.display = 'none';
+            // Show/hide content - Support cả profile-videos-section và profile-tab-content
+            profileVideosSections.forEach(section => {
+                section.style.display = 'none';
+                if (section.id === targetTab + '-tab') {
+                    section.style.display = 'block';
+                }
             });
             
-            const targetContent = document.getElementById(targetTab + '-tab');
-            if (targetContent) {
-                targetContent.style.display = 'block';
-            }
+            profileTabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === targetTab + '-tab') {
+                    content.classList.add('active');
+                }
+            });
         });
+    });
+    
+    // Profile Follow Button
+    const profileFollowBtn = document.querySelector('.profile-follow-btn');
+    if (profileFollowBtn) {
+        profileFollowBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const userId = this.getAttribute('data-user-id');
+            const isFollowing = this.getAttribute('data-is-following') === '1';
+            
+            // Check login first
+            if (!checkLogin(e)) {
+                return;
+            }
+            
+            // Toggle follow state (sẽ implement AJAX sau)
+            this.classList.toggle('following');
+            const newState = !isFollowing;
+            this.setAttribute('data-is-following', newState ? '1' : '0');
+            
+            if (newState) {
+                this.innerHTML = '<span>Đã theo dõi</span>';
+            } else {
+                this.innerHTML = '<span>Theo dõi</span>';
+            }
+            
+            // TODO: Add AJAX call to save follow state
+            // sendAjaxRequest('puna_tiktok_toggle_follow', { user_id: userId, follow: newState });
+        });
+    }
+    
+    // Comment Follow Button (small buttons in comments)
+    document.addEventListener('click', function(e) {
+        const commentFollowBtn = e.target.closest('.comment-follow-btn');
+        if (commentFollowBtn) {
+            e.preventDefault();
+            const userId = commentFollowBtn.getAttribute('data-user-id');
+            
+            // Check login
+            if (!checkLogin(e)) {
+                return;
+            }
+            
+            // Toggle follow state
+            commentFollowBtn.classList.toggle('following');
+            
+            if (commentFollowBtn.classList.contains('following')) {
+                commentFollowBtn.innerHTML = '<i class="fa-solid fa-check"></i> Đã theo dõi';
+            } else {
+                commentFollowBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Theo dõi';
+            }
+            
+            // TODO: Add AJAX call to save follow state
+        }
     });
 
     // ============================================
@@ -1385,7 +1448,13 @@ document.addEventListener("DOMContentLoaded", function() {
     function openSearchPanel() {
         document.body.classList.add('search-panel-active');
         setTimeout(() => {
-            if (realSearchInput) realSearchInput.focus();
+            if (realSearchInput) {
+                realSearchInput.focus();
+                // Luôn load history khi mở panel (không cần check value)
+                loadSearchHistory();
+                // Load popular searches
+                loadPopularSearches();
+            }
         }, 300);
     }
 
@@ -1448,6 +1517,354 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     // ============================================
+    // SEARCH SUGGESTIONS & HISTORY
+    // ============================================
+    
+    const searchSuggestionsContainer = document.getElementById('search-suggestions-container');
+    const searchSuggestionsList = document.getElementById('search-suggestions-list');
+    const searchHistorySection = document.getElementById('search-history-section');
+    const searchHistoryList = document.getElementById('search-history-list');
+    const searchPopularSection = document.getElementById('search-popular-section');
+    const searchLoading = document.getElementById('search-loading');
+    const clearHistoryBtn = document.getElementById('clear-history-btn');
+    
+    let searchDebounceTimer = null;
+    let currentSearchQuery = '';
+    
+    /**
+     * Load search history
+     */
+    function loadSearchHistory() {
+        if (!searchHistoryList || !searchHistorySection) return;
+        
+        // Luôn hiển thị history section
+        searchHistorySection.style.display = 'block';
+        
+        sendAjaxRequest('puna_tiktok_get_search_history', {})
+            .then(data => {
+                if (data.success && data.data.history && data.data.history.length > 0) {
+                    searchHistoryList.innerHTML = '';
+                    data.data.history.forEach(function(item) {
+                        const li = document.createElement('li');
+                        li.className = 'search-history-item';
+                        li.innerHTML = `
+                            <i class="fa-solid fa-clock"></i>
+                            <span>${item.query}</span>
+                        `;
+                        li.addEventListener('click', function() {
+                            if (realSearchInput) {
+                                realSearchInput.value = item.query;
+                                submitSearch(item.query);
+                            }
+                        });
+                        searchHistoryList.appendChild(li);
+                    });
+                    if (clearHistoryBtn) clearHistoryBtn.style.display = 'block';
+                } else {
+                    searchHistoryList.innerHTML = '<li class="search-history-empty">Chưa có lịch sử tìm kiếm</li>';
+                    if (clearHistoryBtn) clearHistoryBtn.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading search history:', error);
+            });
+    }
+    
+    /**
+     * Load search suggestions
+     */
+    function loadSearchSuggestions(query) {
+        if (!query || query.length < 2) {
+            searchSuggestionsList.style.display = 'none';
+            searchHistorySection.style.display = 'block';
+            searchPopularSection.style.display = 'block';
+            return;
+        }
+        
+        if (searchLoading) searchLoading.style.display = 'block';
+        searchSuggestionsList.style.display = 'none';
+        searchHistorySection.style.display = 'none';
+        searchPopularSection.style.display = 'none';
+        
+        sendAjaxRequest('puna_tiktok_search_suggestions', { query: query })
+            .then(data => {
+                if (searchLoading) searchLoading.style.display = 'none';
+                
+                if (data.success && data.data.suggestions && data.data.suggestions.length > 0) {
+                    searchSuggestionsList.innerHTML = '';
+                    data.data.suggestions.forEach(function(suggestion) {
+                        const li = document.createElement('li');
+                        li.className = 'search-suggestion-item';
+                        
+                        let icon = 'fa-magnifying-glass';
+                        if (suggestion.type === 'user') {
+                            icon = 'fa-user';
+                        } else if (suggestion.type === 'video') {
+                            icon = 'fa-video';
+                        } else if (suggestion.type === 'history') {
+                            icon = 'fa-clock';
+                        }
+                        
+                        li.innerHTML = `
+                            <i class="fa-solid ${icon}"></i>
+                            <span>${suggestion.text}</span>
+                        `;
+                        li.addEventListener('click', function() {
+                            realSearchInput.value = suggestion.text;
+                            submitSearch(suggestion.text);
+                        });
+                        searchSuggestionsList.appendChild(li);
+                    });
+                    if (searchSuggestionsList) searchSuggestionsList.style.display = 'block';
+                    // Ẩn history và popular khi có suggestions
+                    if (searchHistorySection) searchHistorySection.style.display = 'none';
+                    if (searchPopularSection) searchPopularSection.style.display = 'none';
+                } else {
+                    if (searchSuggestionsList) searchSuggestionsList.style.display = 'none';
+                    // Hiển thị lại history và popular khi không có suggestions
+                    if (searchHistorySection) searchHistorySection.style.display = 'block';
+                    if (searchPopularSection) searchPopularSection.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                if (searchLoading) searchLoading.style.display = 'none';
+                console.error('Error loading suggestions:', error);
+            });
+    }
+    
+    /**
+     * Save search to history and submit
+     */
+    function submitSearch(query) {
+        if (!query || !query.trim()) return;
+        
+        // Save to history
+        sendAjaxRequest('puna_tiktok_save_search', { query: query.trim() })
+            .then(data => {
+                // Redirect to search page
+                if (searchForm) {
+                    window.location.href = searchForm.action + '?s=' + encodeURIComponent(query.trim());
+                }
+            })
+            .catch(error => {
+                console.error('Error saving search:', error);
+                // Still redirect even if save fails
+                if (searchForm) {
+                    window.location.href = searchForm.action + '?s=' + encodeURIComponent(query.trim());
+                }
+            });
+    }
+    
+    /**
+     * Clear search history
+     */
+    if (clearHistoryBtn) {
+        clearHistoryBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử tìm kiếm?')) {
+                sendAjaxRequest('puna_tiktok_clear_search_history', {})
+                    .then(data => {
+                        if (data.success) {
+                            searchHistoryList.innerHTML = '<li class="search-history-empty">Chưa có lịch sử tìm kiếm</li>';
+                            if (clearHistoryBtn) clearHistoryBtn.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error clearing history:', error);
+                    });
+            }
+        });
+    }
+    
+    // Load history when panel opens and on focus
+    if (realSearchInput) {
+        // Load history on focus (luôn hiển thị)
+        realSearchInput.addEventListener('focus', function() {
+            loadSearchHistory();
+        });
+        
+        // Load suggestions as user types
+        realSearchInput.addEventListener('input', function() {
+            const query = realSearchInput.value.trim();
+            currentSearchQuery = query;
+            
+            // Clear previous timer
+            if (searchDebounceTimer) {
+                clearTimeout(searchDebounceTimer);
+            }
+            
+            // Debounce: wait 300ms after user stops typing
+            searchDebounceTimer = setTimeout(function() {
+                if (query === currentSearchQuery) { // Make sure query hasn't changed
+                    loadSearchSuggestions(query);
+                }
+            }, 300);
+        });
+    }
+    
+    // Submit search form
+    const searchForm = document.getElementById('search-form');
+    if (searchForm && realSearchInput) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchValue = realSearchInput.value.trim();
+            if (searchValue) {
+                submitSearch(searchValue);
+            }
+        });
+        
+        // Submit khi nhấn Enter trong input
+        realSearchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const searchValue = realSearchInput.value.trim();
+                if (searchValue) {
+                    submitSearch(searchValue);
+                }
+            }
+        });
+    }
+    
+    /**
+     * Load related searches for search results page
+     */
+    function loadRelatedSearches(currentQuery) {
+        const relatedList = document.getElementById('related-searches-list');
+        if (!relatedList) return;
+        
+        if (!currentQuery || currentQuery.trim().length < 2) {
+            // Load popular searches as fallback
+            loadPopularSearchesForSidebar(relatedList);
+            return;
+        }
+        
+        sendAjaxRequest('puna_tiktok_get_related_searches', { query: currentQuery.trim() })
+            .then(data => {
+                if (data.success && data.data.related && data.data.related.length > 0) {
+                    relatedList.innerHTML = '';
+                    data.data.related.forEach(function(item) {
+                        const li = document.createElement('li');
+                        const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query);
+                        li.innerHTML = `
+                            <a href="${searchUrl}" class="search-suggestion-link">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <span>${item.query}</span>
+                            </a>
+                        `;
+                        relatedList.appendChild(li);
+                    });
+                } else {
+                    // Fallback to popular searches
+                    loadPopularSearchesForSidebar(relatedList);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading related searches:', error);
+                // Fallback to popular searches
+                loadPopularSearchesForSidebar(relatedList);
+            });
+    }
+    
+    /**
+     * Load popular searches for sidebar (fallback)
+     */
+    function loadPopularSearchesForSidebar(container) {
+        sendAjaxRequest('puna_tiktok_get_popular_searches', {})
+            .then(data => {
+                if (data.success && data.data.popular && data.data.popular.length > 0) {
+                    container.innerHTML = '';
+                    data.data.popular.forEach(function(item) {
+                        const li = document.createElement('li');
+                        const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query);
+                        li.innerHTML = `
+                            <a href="${searchUrl}" class="search-suggestion-link">
+                                <i class="fa-solid fa-fire"></i>
+                                <span>${item.query}</span>
+                            </a>
+                        `;
+                        container.appendChild(li);
+                    });
+                } else {
+                    // Show default
+                    container.innerHTML = `
+                        <li><a href="${window.location.pathname}?s=Sơn+Tùng+M-TP" class="search-suggestion-link"><i class="fa-solid fa-magnifying-glass"></i><span>Sơn Tùng M-TP</span></a></li>
+                        <li><a href="${window.location.pathname}?s=Nhạc+TikTok" class="search-suggestion-link"><i class="fa-solid fa-magnifying-glass"></i><span>Nhạc TikTok</span></a></li>
+                        <li><a href="${window.location.pathname}?s=Video+hài" class="search-suggestion-link"><i class="fa-solid fa-magnifying-glass"></i><span>Video hài</span></a></li>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error loading popular searches:', error);
+            });
+    }
+    
+    /**
+     * Load popular searches for search panel
+     */
+    function loadPopularSearches() {
+        const popularList = document.getElementById('search-popular-list');
+        if (!popularList) return;
+        
+        sendAjaxRequest('puna_tiktok_get_popular_searches', {})
+            .then(data => {
+                if (data.success && data.data.popular && data.data.popular.length > 0) {
+                    popularList.innerHTML = '';
+                    data.data.popular.forEach(function(item) {
+                        const li = document.createElement('li');
+                        li.className = 'search-popular-item';
+                        li.innerHTML = `
+                            <i class="fa-solid fa-fire"></i>
+                            <span>${item.query}</span>
+                        `;
+                        li.style.cursor = 'pointer';
+                        li.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            realSearchInput.value = item.query;
+                            submitSearch(item.query);
+                        });
+                        popularList.appendChild(li);
+                    });
+                } else {
+                    // Show default suggestions if no popular searches
+                    popularList.innerHTML = `
+                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Sơn Tùng M-TP</span></li>
+                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Nhạc TikTok</span></li>
+                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Video hài</span></li>
+                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Dance cover</span></li>
+                    `;
+                    // Attach click handlers to default items
+                    const defaultItems = popularList.querySelectorAll('.search-popular-item');
+                    defaultItems.forEach(function(item) {
+                        item.style.cursor = 'pointer';
+                        item.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            const searchText = item.querySelector('span')?.textContent.trim();
+                            if (searchText && realSearchInput) {
+                                realSearchInput.value = searchText;
+                                submitSearch(searchText);
+                            }
+                        });
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading popular searches:', error);
+                // Show default on error
+                if (popularList) {
+                    popularList.innerHTML = `
+                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Sơn Tùng M-TP</span></li>
+                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Nhạc TikTok</span></li>
+                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Video hài</span></li>
+                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Dance cover</span></li>
+                    `;
+                }
+            });
+    }
+    
+
+    // ============================================
     // CHECK LOGIN FOR MENU ITEMS
     // ============================================
     
@@ -1489,4 +1906,546 @@ document.addEventListener("DOMContentLoaded", function() {
     
     // Kiểm tra đăng nhập cho menu items
     checkLoginForMenuItems();
+    
+    // Load related searches if on search results page
+    const relatedList = document.getElementById('related-searches-list');
+    if (relatedList) {
+        // Get search query from URL or input
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchQuery = urlParams.get('s') || '';
+        if (searchQuery) {
+            loadRelatedSearches(searchQuery);
+        } else {
+            // Load popular searches as fallback
+            loadPopularSearchesForSidebar(relatedList);
+        }
+    }
+    
+    // ============================================
+    // VIDEO WATCH PAGE FUNCTIONALITY
+    // ============================================
+    
+    const videoWatchPage = document.querySelector('.video-watch-page');
+    if (videoWatchPage) {
+        const backBtn = document.getElementById('video-watch-back');
+        const commentTabs = document.querySelectorAll('.comments-tab');
+        const commentTabContents = document.querySelectorAll('.comments-tab-content');
+        const copyLinkBtn = document.querySelector('.copy-link-btn');
+        
+        // Auto-play video (video sẽ dùng chung hàm với trang index)
+        const watchVideo = videoWatchPage.querySelector('.tiktok-video');
+        if (watchVideo) {
+            // Áp dụng volume state từ trang index
+            applyVideoVolumeSettings(watchVideo);
+            // Cập nhật lại sau khi apply toàn bộ
+            applyVolumeToAllVideos();
+            
+            // Auto-play
+            watchVideo.play().catch(e => {
+                console.log('Auto-play prevented:', e);
+            });
+        }
+        
+        // Back button
+        if (backBtn) {
+            backBtn.addEventListener('click', function() {
+                if (document.referrer && document.referrer !== window.location.href) {
+                    window.history.back();
+                } else {
+                    window.location.href = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.home_url) ? puna_tiktok_ajax.home_url : '/';
+                }
+            });
+        }
+        
+        // Comment tabs switching
+        commentTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetTab = this.getAttribute('data-tab');
+                
+                // Update active state
+                commentTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show/hide content
+                commentTabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === targetTab + '-tab-content') {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+        
+        // Copy link functionality
+        if (copyLinkBtn) {
+            copyLinkBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const link = this.getAttribute('data-link') || window.location.href;
+                
+                // Use Clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(link).then(() => {
+                        // Show feedback
+                        const originalHTML = this.innerHTML;
+                        this.innerHTML = '<i class="fa-solid fa-check"></i>';
+                        this.style.background = 'var(--puna-primary)';
+                        setTimeout(() => {
+                            this.innerHTML = originalHTML;
+                            this.style.background = '';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy:', err);
+                    });
+                } else {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = link;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        const originalHTML = this.innerHTML;
+                        this.innerHTML = '<i class="fa-solid fa-check"></i>';
+                        setTimeout(() => {
+                            this.innerHTML = originalHTML;
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Fallback copy failed:', err);
+                    }
+                    document.body.removeChild(textArea);
+                }
+            });
+        }
+        
+        // Share options visibility toggle
+        const shareBtn = document.querySelector('.interaction-item[data-action="share"]');
+        const shareOptions = document.getElementById('video-share-options');
+        
+        if (shareBtn && shareOptions) {
+            shareBtn.addEventListener('click', function() {
+                shareOptions.style.display = shareOptions.style.display === 'none' ? 'flex' : 'none';
+            });
+        }
+    }
+
+    // ============================================
+    // UPLOAD VIDEO FUNCTIONALITY
+    // ============================================
+    
+    // Chỉ chạy trên trang upload
+    if (document.querySelector('.upload-page-wrapper')) {
+        initUploadPage();
+    }
+
+    function initUploadPage() {
+        const dropZone = document.getElementById('uploadDropZone');
+        const fileInput = document.getElementById('videoFileInput');
+        const selectBtn = document.getElementById('selectVideoBtn');
+        const step1 = document.getElementById('uploadStep1');
+        const step2 = document.getElementById('uploadStep2');
+        const videoPreview = document.getElementById('videoPreview');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const descriptionInput = document.getElementById('videoDescription');
+        const charCount = document.getElementById('charCount');
+        const coverImageInput = document.getElementById('coverImageInput');
+        const coverPreviewImg = document.getElementById('coverPreviewImg');
+        const coverPreview = document.getElementById('coverPreview');
+        const editCoverBtn = document.getElementById('editCoverBtn');
+        const locationInput = document.getElementById('videoLocation');
+        const locationSuggestions = document.getElementById('locationSuggestions');
+        const scheduleRadio = document.querySelectorAll('input[name="postSchedule"]');
+        const scheduleDateTime = document.getElementById('scheduleDateTime');
+        const publishBtn = document.getElementById('publishVideoBtn');
+        const backToStep1Btn = document.getElementById('backToStep1Btn');
+        const editVideoBtn = document.getElementById('editVideoBtn');
+        const uploadFileInfo = document.getElementById('uploadFileInfo');
+        const fileName = document.getElementById('fileName');
+        const uploadProgressFill = document.getElementById('uploadProgressFill');
+        const uploadProgressText = document.getElementById('uploadProgressText');
+        const uploadPercentage = document.getElementById('uploadPercentage');
+        const uploadDuration = document.getElementById('uploadDuration');
+        const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+        const uploadLoadingOverlay = document.getElementById('uploadLoadingOverlay');
+        const uploadFileInfoElement = document.getElementById('uploadFileInfo');
+
+        let selectedVideoFile = null;
+        let videoDuration = 0;
+        let xhr = null;
+
+        // Select video button
+        if (selectBtn) {
+            selectBtn.addEventListener('click', () => {
+                fileInput?.click();
+            });
+        }
+
+        // File input change
+        if (fileInput) {
+            fileInput.addEventListener('change', (e) => {
+                handleFileSelect(e.target.files[0]);
+            });
+        }
+
+        // Drag and drop
+        if (dropZone) {
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].type.startsWith('video/')) {
+                    handleFileSelect(files[0]);
+                }
+            });
+        }
+
+        function handleFileSelect(file) {
+            if (!file || !file.type.startsWith('video/')) {
+                alert('Vui lòng chọn file video hợp lệ');
+                return;
+            }
+
+            selectedVideoFile = file;
+            
+            // Hiển thị file info khi chọn file (nhưng không hiển thị progress bar cho đến khi upload)
+            if (fileName) {
+                fileName.textContent = file.name;
+            }
+            
+            // Ẩn progress bar khi chọn file (chỉ hiển thị khi upload)
+            if (uploadFileInfoElement) {
+                uploadFileInfoElement.style.display = 'none';
+            }
+
+            // Tạo video element để lấy duration
+            const video = document.createElement('video');
+            video.preload = 'metadata';
+            video.onloadedmetadata = () => {
+                window.webkitURL = window.webkitURL || window.URL;
+                videoDuration = video.duration;
+                if (uploadDuration) {
+                    uploadDuration.textContent = `Thời lượng: ${formatDuration(videoDuration)}`;
+                }
+            };
+            video.src = URL.createObjectURL(file);
+
+            // Preview video
+            const videoURL = URL.createObjectURL(file);
+            if (videoPreview) {
+                videoPreview.src = videoURL;
+                videoPreview.style.display = 'block';
+            }
+            if (previewPlaceholder) {
+                previewPlaceholder.style.display = 'none';
+            }
+
+            // Auto extract cover (first frame)
+            extractVideoFrame(videoURL, (frameDataUrl) => {
+                if (coverPreviewImg) {
+                    coverPreviewImg.src = frameDataUrl;
+                    coverPreviewImg.style.display = 'block';
+                    const placeholder = coverPreview.querySelector('.cover-placeholder');
+                    if (placeholder) placeholder.style.display = 'none';
+                }
+            });
+
+            // Chuyển sang step 2
+            if (step1) step1.classList.remove('active');
+            if (step2) step2.classList.add('active');
+            
+            // Enable publish button
+            if (publishBtn) {
+                publishBtn.disabled = false;
+            }
+        }
+
+        function extractVideoFrame(videoURL, callback) {
+            const video = document.createElement('video');
+            video.crossOrigin = 'anonymous';
+            video.src = videoURL;
+            video.currentTime = 0.1;
+            
+            video.onloadeddata = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                callback(canvas.toDataURL('image/jpeg'));
+            };
+        }
+
+        function getVideoResolution(file) {
+            // Tạm thời return empty, có thể cải thiện sau
+            return '';
+        }
+
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            if (mins > 0) {
+                return `${mins} phút ${secs} giây`;
+            }
+            return `${secs} giây`;
+        }
+
+        // Character counter
+        if (descriptionInput && charCount) {
+            descriptionInput.addEventListener('input', () => {
+                charCount.textContent = descriptionInput.value.length;
+            });
+        }
+
+        // Cover image
+        if (editCoverBtn) {
+            editCoverBtn.addEventListener('click', () => {
+                coverImageInput?.click();
+            });
+        }
+
+        if (coverImageInput) {
+            coverImageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        if (coverPreviewImg) {
+                            coverPreviewImg.src = event.target.result;
+                            coverPreviewImg.style.display = 'block';
+                            const placeholder = coverPreview.querySelector('.cover-placeholder');
+                            if (placeholder) placeholder.style.display = 'none';
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        // Location suggestions (placeholder)
+        if (locationInput) {
+            locationInput.addEventListener('focus', () => {
+                // TODO: Implement location suggestions
+                locationSuggestions?.classList.add('active');
+            });
+
+            locationInput.addEventListener('blur', () => {
+                setTimeout(() => {
+                    locationSuggestions?.classList.remove('active');
+                }, 200);
+            });
+        }
+
+        // Schedule toggle
+        if (scheduleRadio.length > 0) {
+            scheduleRadio.forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    if (scheduleDateTime) {
+                        scheduleDateTime.style.display = e.target.value === 'schedule' ? 'block' : 'none';
+                    }
+                });
+            });
+        }
+
+
+        // Back to step 1
+        if (backToStep1Btn) {
+            backToStep1Btn.addEventListener('click', () => {
+                if (step2) step2.classList.remove('active');
+                if (step1) step1.classList.add('active');
+            });
+        }
+
+        // Publish video
+        if (publishBtn) {
+            publishBtn.addEventListener('click', () => {
+                if (!selectedVideoFile) {
+                    alert('Vui lòng chọn video');
+                    return;
+                }
+
+                publishVideo();
+            });
+        }
+
+        // Cancel upload
+        if (cancelUploadBtn) {
+            cancelUploadBtn.addEventListener('click', () => {
+                if (xhr) {
+                    xhr.abort();
+                    xhr = null;
+                }
+                resetUploadProgress();
+            });
+        }
+
+        function publishVideo() {
+            if (!selectedVideoFile) return;
+
+            const formData = new FormData();
+            formData.append('action', 'puna_tiktok_upload_video');
+            formData.append('video', selectedVideoFile);
+            formData.append('description', descriptionInput?.value || '');
+            formData.append('location', locationInput?.value || '');
+            formData.append('privacy', document.getElementById('videoPrivacy')?.value || 'public');
+            formData.append('schedule', document.querySelector('input[name="postSchedule"]:checked')?.value || 'now');
+            formData.append('schedule_date', document.getElementById('scheduleDateInput')?.value || '');
+            formData.append('music_copyright_check', document.getElementById('musicCopyrightCheck')?.checked ? '1' : '0');
+            formData.append('content_check_lite', document.getElementById('contentCheckLite')?.checked ? '1' : '0');
+            
+            // Cover image
+            if (coverImageInput?.files[0]) {
+                formData.append('cover_image', coverImageInput.files[0]);
+            }
+
+            formData.append('nonce', puna_tiktok_ajax?.nonce || '');
+
+            // Show upload file info and progress bar
+            if (uploadFileInfoElement) {
+                uploadFileInfoElement.style.display = 'block';
+            }
+            
+            // Set file name
+            if (fileName) {
+                fileName.textContent = selectedVideoFile.name;
+            }
+            
+            // Reset and initialize progress bar
+            if (uploadProgressFill) {
+                uploadProgressFill.style.width = '0%';
+            }
+            if (uploadProgressText) {
+                uploadProgressText.textContent = '0MB / ' + formatFileSize(selectedVideoFile.size);
+            }
+            if (uploadPercentage) {
+                uploadPercentage.textContent = '0%';
+            }
+            
+            // Set initial duration if available
+            if (uploadDuration && videoDuration > 0) {
+                uploadDuration.textContent = `Thời lượng: ${formatDuration(videoDuration)}`;
+            }
+
+            // Show loading overlay
+            if (uploadLoadingOverlay) {
+                uploadLoadingOverlay.style.display = 'flex';
+            }
+
+            // Upload progress
+            xhr = new XMLHttpRequest();
+            
+            xhr.upload.addEventListener('progress', (e) => {
+                if (e.lengthComputable && e.total > 0) {
+                    const percentComplete = (e.loaded / e.total) * 100;
+                    
+                    // Update progress bar
+                    if (uploadProgressFill) {
+                        uploadProgressFill.style.width = percentComplete + '%';
+                    }
+                    
+                    // Update progress text
+                    if (uploadProgressText) {
+                        uploadProgressText.textContent = formatFileSize(e.loaded) + ' / ' + formatFileSize(e.total);
+                    }
+                    
+                    // Update percentage
+                    if (uploadPercentage) {
+                        uploadPercentage.textContent = Math.round(percentComplete) + '%';
+                    }
+                    
+                    // Update duration if not set yet
+                    if (uploadDuration && (!uploadDuration.textContent || uploadDuration.textContent === '')) {
+                        if (videoDuration > 0) {
+                            uploadDuration.textContent = `Thời lượng: ${formatDuration(videoDuration)}`;
+                        }
+                    }
+                }
+            });
+
+            xhr.addEventListener('load', () => {
+                if (xhr.status === 200) {
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Redirect to video or profile
+                            if (response.data && response.data.redirect_url) {
+                                window.location.href = response.data.redirect_url;
+                            } else {
+                                window.location.href = puna_tiktok_ajax?.current_user?.user_id 
+                                    ? `/author/${puna_tiktok_ajax.current_user.user_id}/`
+                                    : '/';
+                            }
+                        } else {
+                            alert(response.data?.message || 'Có lỗi xảy ra khi upload video');
+                            if (uploadLoadingOverlay) {
+                                uploadLoadingOverlay.style.display = 'none';
+                            }
+                            resetUploadProgress();
+                        }
+                    } catch (e) {
+                        console.error('Error parsing response:', e);
+                        alert('Có lỗi xảy ra khi upload video');
+                        if (uploadLoadingOverlay) {
+                            uploadLoadingOverlay.style.display = 'none';
+                        }
+                        resetUploadProgress();
+                    }
+                } else {
+                    alert('Có lỗi xảy ra khi upload video');
+                    if (uploadLoadingOverlay) {
+                        uploadLoadingOverlay.style.display = 'none';
+                    }
+                    resetUploadProgress();
+                }
+            });
+
+            xhr.addEventListener('error', () => {
+                alert('Có lỗi xảy ra khi upload video');
+                if (uploadLoadingOverlay) {
+                    uploadLoadingOverlay.style.display = 'none';
+                }
+                resetUploadProgress();
+            });
+
+            xhr.open('POST', puna_tiktok_ajax?.ajax_url || '/wp-admin/admin-ajax.php');
+            xhr.send(formData);
+
+            // Enable publish button after upload starts
+            if (publishBtn) {
+                publishBtn.disabled = true;
+            }
+        }
+
+        function resetUploadProgress() {
+            if (uploadProgressFill) uploadProgressFill.style.width = '0%';
+            if (uploadProgressText) uploadProgressText.textContent = '0MB / 0MB';
+            if (uploadPercentage) uploadPercentage.textContent = '0%';
+            if (publishBtn) publishBtn.disabled = false;
+            if (uploadFileInfoElement) {
+                uploadFileInfoElement.style.display = 'none';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+    }
 });

@@ -1,18 +1,243 @@
 <?php
-echo '<main id="primary" class="site-main">';
-if ( have_posts() ) :
-    printf('<header class="page-header"><h1 class="page-title">%s</h1></header>', esc_html__('Search results', 'puna-tiktok'));
-    while ( have_posts() ) : the_post();
-        echo '<article id="post-' . get_the_ID() . '" ' . get_post_class('') . '>';
-        the_title('<h2 class="entry-title"><a href="' . esc_url(get_permalink()) . '">','</a></h2>');
-        echo '<div class="entry-summary">';
-        the_excerpt();
-        echo '</div></article>';
-    endwhile;
-    the_posts_navigation();
-else :
-    echo '<p>' . esc_html__('No results found.', 'puna-tiktok') . '</p>';
-endif;
-echo '</main>';
+/**
+ * Search Results Template với 3 tabs
+ * Top, Người dùng, Video
+ */
 
+$search_query = get_search_query();
+$active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'top';
+$valid_tabs = array('top', 'users', 'videos');
+if (!in_array($active_tab, $valid_tabs)) {
+    $active_tab = 'top';
+}
 
+// Cho phép comments_template hoạt động
+global $withcomments;
+$withcomments = 1;
+?>
+
+<div class="tiktok-app">
+    <?php get_template_part('template-parts/sidebar'); ?>
+    
+    <div class="main-content search-results-page">
+        <!-- Search Tabs -->
+        <div class="search-tabs">
+            <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'top'), home_url('/'))); ?>" 
+               class="search-tab <?php echo $active_tab === 'top' ? 'active' : ''; ?>" 
+               data-tab="top">
+                Top
+            </a>
+            <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'users'), home_url('/'))); ?>" 
+               class="search-tab <?php echo $active_tab === 'users' ? 'active' : ''; ?>" 
+               data-tab="users">
+                Người dùng
+            </a>
+            <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'videos'), home_url('/'))); ?>" 
+               class="search-tab <?php echo $active_tab === 'videos' ? 'active' : ''; ?>" 
+               data-tab="videos">
+                Video
+            </a>
+        </div>
+        
+        <!-- Tab Content -->
+        <div class="search-tab-content">
+            <?php if ($active_tab === 'top' || $active_tab === 'videos') : ?>
+                <!-- TOP & VIDEOS TABS: Hiển thị video grid -->
+                <?php
+                // Query tất cả posts với block video trước, sau đó filter theo search
+                $all_video_args = array(
+                    'post_type' => 'post',
+                    'posts_per_page' => -1,
+                    'post_status' => 'publish',
+                    'meta_query' => array(
+                        array(
+                            'key' => '_puna_tiktok_video_file_id',
+                            'compare' => 'EXISTS'
+                        )
+                    )
+                );
+                
+                $all_videos_query = new WP_Query($all_video_args);
+                $all_video_posts = array();
+                
+                if ($all_videos_query->have_posts()) {
+                    while ($all_videos_query->have_posts()) {
+                        $all_videos_query->the_post();
+                        if (has_block('puna/hupuna-tiktok', get_the_ID())) {
+                            $all_video_posts[] = get_the_ID();
+                        }
+                    }
+                    wp_reset_postdata();
+                }
+                
+                // Filter theo search query
+                $search_lower = mb_strtolower($search_query);
+                $matched_posts = array();
+                
+                foreach ($all_video_posts as $post_id) {
+                    $title = mb_strtolower(get_the_title($post_id));
+                    $content = mb_strtolower(get_post_field('post_content', $post_id));
+                    $excerpt = mb_strtolower(get_post_field('post_excerpt', $post_id));
+                    
+                    // Kiểm tra keyword trong title, content, excerpt
+                    if (strpos($title, $search_lower) !== false || 
+                        strpos($content, $search_lower) !== false || 
+                        strpos($excerpt, $search_lower) !== false) {
+                        $matched_posts[] = $post_id;
+                    }
+                }
+                
+                // Sắp xếp: ưu tiên title match, sau đó sắp xếp theo date (mới nhất)
+                if (!empty($matched_posts)) :
+                    $sorted_posts = array();
+                    $other_posts = array();
+                    
+                    foreach ($matched_posts as $post_id) {
+                        $title = mb_strtolower(get_the_title($post_id));
+                        if (strpos($title, $search_lower) !== false) {
+                            $sorted_posts[] = $post_id;
+                        } else {
+                            $other_posts[] = $post_id;
+                        }
+                    }
+                    
+                    // Sắp xếp theo date (mới nhất)
+                    usort($sorted_posts, function($a, $b) {
+                        return get_post_time('U', true, $b) - get_post_time('U', true, $a);
+                    });
+                    usort($other_posts, function($a, $b) {
+                        return get_post_time('U', true, $b) - get_post_time('U', true, $a);
+                    });
+                    
+                    $final_posts = array_merge($sorted_posts, $other_posts);
+                    $final_posts = array_slice($final_posts, 0, 24); // Limit 24 posts
+                    
+                    if (!empty($final_posts)) :
+                    ?>
+                    <div class="search-videos-grid">
+                        <?php foreach ($final_posts as $post_id) : 
+                                $post_obj = get_post($post_id);
+                                setup_postdata($post_obj);
+                                
+                                $video_url = get_post_meta($post_id, '_puna_tiktok_video_file_id', true) 
+                                    ? wp_get_attachment_url(get_post_meta($post_id, '_puna_tiktok_video_file_id', true))
+                                    : '';
+                                if (!$video_url) {
+                                    $video_url = puna_tiktok_get_video_url($post_id);
+                                }
+                                
+                                $likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
+                                $thumbnail = '';
+                                
+                                // Lấy thumbnail từ video
+                                if ($video_url) {
+                                    // Có thể lấy frame đầu của video làm thumbnail
+                                    $thumbnail = $video_url; // Fallback
+                                }
+                                ?>
+                                <a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="search-video-item">
+                                    <div class="search-video-thumbnail">
+                                        <?php if ($thumbnail) : ?>
+                                            <video class="search-video-preview" muted playsinline>
+                                                <source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
+                                            </video>
+                                        <?php endif; ?>
+                                        <div class="search-video-overlay">
+                                            <div class="search-video-likes">
+                                                <i class="fa-solid fa-heart"></i>
+                                                <span><?php echo puna_tiktok_format_number($likes); ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="search-video-info">
+                                        <h3 class="search-video-title"><?php echo esc_html(get_the_title($post_id)); ?></h3>
+                                        <div class="search-video-meta">
+                                            <span class="search-video-author"><?php echo get_the_author_meta('display_name', $post_obj->post_author); ?></span>
+                                            <span class="search-video-time"><?php echo human_time_diff(get_the_time('U', $post_id), current_time('timestamp')) . ' trước'; ?></span>
+                                        </div>
+                                    </div>
+                                </a>
+                            <?php 
+                        endforeach;
+                        wp_reset_postdata();
+                        ?>
+                    </div>
+                    <?php else : ?>
+                        <div class="search-empty">
+                            <p>Không tìm thấy video nào cho "<?php echo esc_html($search_query); ?>"</p>
+                        </div>
+                    <?php endif; ?>
+                <?php else : ?>
+                    <div class="search-empty">
+                        <p>Không tìm thấy video nào cho "<?php echo esc_html($search_query); ?>"</p>
+                    </div>
+                <?php endif; ?>
+                
+            <?php elseif ($active_tab === 'users') : ?>
+                <!-- USERS TAB: Hiển thị danh sách users -->
+                <?php
+                // Tìm users có tên hoặc username chứa keyword
+                $users_query = new WP_User_Query(array(
+                    'search' => '*' . esc_attr($search_query) . '*',
+                    'search_columns' => array('user_login', 'user_nicename', 'display_name'),
+                    'number' => 24,
+                    'orderby' => 'registered',
+                    'order' => 'DESC'
+                ));
+                
+                $users = $users_query->get_results();
+                
+                if (!empty($users)) :
+                ?>
+                    <div class="search-users-list">
+                        <?php foreach ($users as $user) : 
+                            $user_id = $user->ID;
+                            $avatar = get_avatar_url($user_id, array('size' => 60));
+                            $display_name = $user->display_name;
+                            $username = $user->user_nicename;
+                            
+                            // Đếm số video của user
+                            $video_count = get_posts(array(
+                                'post_type' => 'post',
+                                'author' => $user_id,
+                                'posts_per_page' => -1,
+                                'post_status' => 'publish',
+                                'meta_query' => array(
+                                    array(
+                                        'key' => '_puna_tiktok_video_file_id',
+                                        'compare' => 'EXISTS'
+                                    )
+                                ),
+                                'fields' => 'ids'
+                            ));
+                            $video_count = count($video_count);
+                            ?>
+                            <a href="<?php echo esc_url(get_author_posts_url($user_id)); ?>" class="search-user-item">
+                                <div class="search-user-avatar">
+                                    <img src="<?php echo esc_url($avatar); ?>" alt="<?php echo esc_attr($display_name); ?>">
+                                </div>
+                                <div class="search-user-info">
+                                    <h3 class="search-user-name"><?php echo esc_html($display_name); ?></h3>
+                                    <p class="search-user-username">@<?php echo esc_html($username); ?></p>
+                                    <p class="search-user-stats"><?php echo number_format($video_count); ?> video</p>
+                                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else : ?>
+                    <div class="search-empty">
+                        <p>Không tìm thấy người dùng nào cho "<?php echo esc_html($search_query); ?>"</p>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+        
+        <!-- Right Sidebar: Suggested Searches -->
+        <aside class="search-suggestions-sidebar">
+            <h3>Những tìm kiếm khác</h3>
+            <ul class="search-suggestions-list" id="related-searches-list">
+                <li class="related-searches-loading">Đang tải...</li>
+            </ul>
+        </aside>
+    </div>
+</div>

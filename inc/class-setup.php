@@ -23,7 +23,12 @@ class Puna_TikTok_Setup {
     
     public function __construct() {
         add_action('after_setup_theme', array($this, 'setup'));
-        add_action('after_switch_theme', array($this, 'create_required_pages'));
+        add_action('init', array($this, 'add_rewrite_rules'));
+        add_filter('query_vars', array($this, 'register_query_vars'));
+        add_filter('template_include', array($this, 'handle_custom_pages'));
+        add_filter('wp_title', array($this, 'custom_page_title'), 10, 2);
+        add_action('after_switch_theme', array($this, 'flush_rewrite_rules_on_activation'));
+        add_action('admin_init', array($this, 'maybe_flush_rewrite_rules'));
     }
     
     /**
@@ -48,61 +53,177 @@ class Puna_TikTok_Setup {
     }
 
     /**
-     * Tạo các trang cần thiết khi kích hoạt theme và gán template
+     * Thêm rewrite rules cho các custom pages
+     * Sử dụng rewrite rules thay vì tạo pages thực sự
      */
-    public function create_required_pages()
-    {
-    $pages = array(
-        array(
-            'title'    => 'Explore',
-            'slug'     => 'explore',
-            'template' => 'template-parts/pages/explore.php',
-        ),
-        array(
-            'title'    => 'Followed',
-            'slug'     => 'followed',
-            'template' => 'template-parts/pages/followed.php',
-        ),
-        array(
-            'title'    => 'Friends',
-            'slug'     => 'friends',
-            'template' => 'template-parts/pages/friends.php',
-        ),
-        array(
-            'title'    => 'Messages',
-            'slug'     => 'messages',
-            'template' => 'template-parts/pages/messages.php',
-        ),
-        array(
-            'title'    => 'Profile',
-            'slug'     => 'profile',
-            'template' => 'template-parts/pages/profile.php',
-        ),
-    );
-
-    foreach ($pages as $page) {
-        $existing = get_page_by_path($page['slug']);
-        if ($existing instanceof WP_Post) {
-            // Đảm bảo gán đúng template nếu trang đã tồn tại
-            update_post_meta($existing->ID, '_wp_page_template', $page['template']);
-            continue;
-        }
-
-        $page_id = wp_insert_post(array(
-            'post_title'   => $page['title'],
-            'post_name'    => $page['slug'],
-            'post_status'  => 'publish',
-            'post_type'    => 'page',
-            'post_content' => '',
-        ));
-
-        if (! is_wp_error($page_id) && $page_id) {
-            update_post_meta($page_id, '_wp_page_template', $page['template']);
+    public function add_rewrite_rules() {
+        // Rewrite rules cho các custom pages
+        $custom_pages = array(
+            'upload'   => 'page-upload.php',
+            'explore'  => 'template-parts/pages/explore.php',
+            'followed' => 'template-parts/pages/followed.php',
+            'friends'  => 'template-parts/pages/friends.php',
+            'messages' => 'template-parts/pages/messages.php',
+            'profile'  => 'template-parts/pages/profile.php',
+        );
+        
+        foreach ($custom_pages as $slug => $template) {
+            add_rewrite_rule(
+                '^' . $slug . '/?$',
+                'index.php?puna_page=' . $slug,
+                'top'
+            );
         }
     }
 
-        // Làm mới permalink để hoạt động ngay
-        if (function_exists('flush_rewrite_rules')) {
+    /**
+     * Đăng ký query vars cho custom pages
+     */
+    public function register_query_vars($vars) {
+        $vars[] = 'puna_page';
+        return $vars;
+    }
+
+    /**
+     * Xử lý template cho custom pages
+     */
+    public function handle_custom_pages($template) {
+        global $wp_query;
+        
+        $puna_page = get_query_var('puna_page');
+        
+        if (!$puna_page) {
+            return $template;
+        }
+        
+        // Map page slugs to template files
+        $page_templates = array(
+            'upload'   => 'page-upload.php',
+            'explore'  => 'template-parts/pages/explore.php',
+            'followed' => 'template-parts/pages/followed.php',
+            'friends'  => 'template-parts/pages/friends.php',
+            'messages' => 'template-parts/pages/messages.php',
+            'profile'  => 'template-parts/pages/profile.php',
+        );
+        
+        if (isset($page_templates[$puna_page])) {
+            $template_file = $page_templates[$puna_page];
+            $found_template = locate_template($template_file);
+            
+            if ($found_template) {
+                // Map page slugs to titles
+                $page_titles = array(
+                    'upload'   => 'Upload Video',
+                    'explore'  => 'Khám phá',
+                    'followed' => 'Đã follow',
+                    'friends'  => 'Bạn bè',
+                    'messages' => 'Tin nhắn',
+                    'profile'  => 'Hồ sơ',
+                );
+                
+                $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
+                
+                // Set query vars để WordPress hiểu đây là page
+                $wp_query->is_page = true;
+                $wp_query->is_singular = true;
+                $wp_query->is_404 = false;
+                $wp_query->is_home = false;
+                $wp_query->is_front_page = false;
+                
+                // Tạo một WP_Post object giả để WordPress core hoạt động đúng
+                $fake_post = new stdClass();
+                $fake_post->ID = 0;
+                $fake_post->post_author = get_current_user_id();
+                $fake_post->post_date = current_time('mysql');
+                $fake_post->post_date_gmt = current_time('mysql', 1);
+                $fake_post->post_content = '';
+                $fake_post->post_title = $page_title;
+                $fake_post->post_excerpt = '';
+                $fake_post->post_status = 'publish';
+                $fake_post->comment_status = 'closed';
+                $fake_post->ping_status = 'closed';
+                $fake_post->post_password = '';
+                $fake_post->post_name = $puna_page;
+                $fake_post->to_ping = '';
+                $fake_post->pinged = '';
+                $fake_post->post_modified = current_time('mysql');
+                $fake_post->post_modified_gmt = current_time('mysql', 1);
+                $fake_post->post_content_filtered = '';
+                $fake_post->post_parent = 0;
+                $fake_post->guid = home_url('/' . $puna_page . '/');
+                $fake_post->menu_order = 0;
+                $fake_post->post_type = 'page';
+                $fake_post->post_mime_type = '';
+                $fake_post->comment_count = 0;
+                $fake_post->filter = 'raw';
+                
+                // Set queried object và queried object id
+                $wp_query->queried_object = $fake_post;
+                $wp_query->queried_object_id = 0;
+                
+                // Set posts array để các functions như get_the_title() hoạt động
+                $wp_query->posts = array($fake_post);
+                $wp_query->post_count = 1;
+                $wp_query->found_posts = 1;
+                $wp_query->max_num_pages = 1;
+                
+                // Set current post
+                $wp_query->post = $fake_post;
+                $GLOBALS['post'] = $fake_post;
+                
+                return $found_template;
+            }
+        }
+        
+        return $template;
+    }
+
+    /**
+     * Custom page title cho wp_title()
+     */
+    public function custom_page_title($title, $sep = '') {
+        $puna_page = get_query_var('puna_page');
+        
+        if ($puna_page) {
+            $page_titles = array(
+                'upload'   => 'Upload Video',
+                'explore'  => 'Khám phá',
+                'followed' => 'Đã follow',
+                'friends'  => 'Bạn bè',
+                'messages' => 'Tin nhắn',
+                'profile'  => 'Hồ sơ',
+            );
+            
+            $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
+            
+            if ($sep) {
+                return $page_title . ' ' . $sep . ' ' . get_bloginfo('name');
+            }
+            
+            return $page_title;
+        }
+        
+        return $title;
+    }
+
+    /**
+     * Flush rewrite rules khi activate theme
+     */
+    public function flush_rewrite_rules_on_activation() {
+        flush_rewrite_rules();
+    }
+
+    /**
+     * Kiểm tra và flush rewrite rules nếu cần
+     * Chạy khi user vào admin để đảm bảo rules được flush
+     */
+    public function maybe_flush_rewrite_rules() {
+        // Kiểm tra xem rewrite rules đã được flush chưa
+        $rules = get_option('rewrite_rules', array());
+        $upload_rule_exists = isset($rules['^upload/?$']);
+        
+        // Nếu rule chưa tồn tại, flush rewrite rules
+        if (!$upload_rule_exists) {
             flush_rewrite_rules(false);
         }
     }

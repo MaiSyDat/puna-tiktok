@@ -36,9 +36,13 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
     <?php endif; ?>
     
     <!-- Search Trigger Button -->
+    <?php 
+    $current_search_query = get_search_query();
+    $search_display_text = $current_search_query ? esc_html($current_search_query) : 'Tìm kiếm';
+    ?>
     <div class="sidebar-search-trigger" id="search-trigger">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <span class="search-text">Tìm kiếm</span>
+        <span class="search-text"><?php echo $search_display_text; ?></span>
     </div>
     
     <ul class="sidebar-menu">

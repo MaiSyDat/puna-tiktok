@@ -220,39 +220,36 @@ class Puna_TikTok_Customize_Sidebar {
                 'title' => 'Khám phá',
                 'url' => home_url('/explore'),
                 'icon' => 'fa-regular fa-compass',
-                'active' => is_page('explore'),
+                'active' => get_query_var('puna_page') === 'explore',
             ),
             array(
                 'title' => 'Đã follow',
                 'url' => home_url('/followed'),
                 'icon' => 'fa-solid fa-user-plus',
-                'active' => is_page('followed'),
-            ),
-            array(
-                'title' => 'Live',
-                'url' => home_url('/friends'),
-                'icon' => 'fa-solid fa-tv',
-                'active' => is_page('friends'),
+                'active' => get_query_var('puna_page') === 'followed',
             ),
             array(
                 'title' => 'Tải lên',
-                'url' => admin_url('post-new.php'),
+                'url' => self::get_upload_page_url(),
                 'icon' => 'fa-solid fa-square-plus',
-                'active' => false,
-            ),
-            array(
-                'title' => 'Tin nhắn',
-                'url' => home_url('/messages'),
-                'icon' => 'fa-regular fa-message',
-                'active' => is_page('messages'),
+                'active' => get_query_var('puna_page') === 'upload',
             ),
             array(
                 'title' => 'Hồ sơ',
                 'url' => home_url('/profile'),
                 'icon' => 'fa-regular fa-user',
-                'active' => is_page('profile'),
+                'active' => get_query_var('puna_page') === 'profile',
             ),
         );
+    }
+
+    /**
+     * Get upload page URL
+     * Sử dụng rewrite rule, không cần tạo page thực sự
+     */
+    public static function get_upload_page_url() {
+        // Sử dụng rewrite rule, URL sẽ là /upload
+        return home_url('/upload');
     }
 
     /**
@@ -265,11 +262,8 @@ class Puna_TikTok_Customize_Sidebar {
             'khám phá' => 'fa-regular fa-compass',
             'explore' => 'fa-regular fa-compass',
             'follow' => 'fa-solid fa-user-plus',
-            'live' => 'fa-solid fa-tv',
             'tải lên' => 'fa-solid fa-square-plus',
             'upload' => 'fa-solid fa-square-plus',
-            'tin nhắn' => 'fa-regular fa-message',
-            'message' => 'fa-regular fa-message',
             'hồ sơ' => 'fa-regular fa-user',
             'profile' => 'fa-regular fa-user',
         );

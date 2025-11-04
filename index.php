@@ -5,7 +5,22 @@
     <?php if ( is_page() ) : ?>
         <?php get_template_part('template-parts/page'); ?>
     <?php else : ?>
-        <?php get_template_part('template-parts/single'); ?>
+        <?php 
+        // Check if this is a video post
+        if (have_posts()) {
+            the_post();
+            $is_video = has_block('puna/hupuna-tiktok', get_the_ID());
+            rewind_posts();
+            
+            if ($is_video) {
+                get_template_part('template-parts/single-video');
+            } else {
+                get_template_part('template-parts/single');
+            }
+        } else {
+            get_template_part('template-parts/single');
+        }
+        ?>
     <?php endif; ?>
 
 <?php elseif ( is_search() ) : ?>
@@ -16,27 +31,6 @@
 
     <div class="tiktok-app">
         <?php get_template_part('template-parts/sidebar'); ?>
-        
-        <!-- Search Panel -->
-        <aside class="search-panel" id="search-panel">
-            <div class="search-panel-header">
-                <h3>Tìm kiếm</h3>
-                <button id="close-search" class="close-search-btn">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div class="search-panel-input-wrapper">
-                <input type="text" id="real-search-input" placeholder="Tìm kiếm...">
-            </div>
-            <ul class="search-suggestions">
-                <li><i class="fa-solid fa-magnifying-glass"></i><span>Gợi ý 1</span></li>
-                <li><i class="fa-solid fa-magnifying-glass"></i><span>Gợi ý 2</span></li>
-                <li><i class="fa-solid fa-magnifying-glass"></i><span>Gợi ý 3</span></li>
-                <li><i class="fa-solid fa-magnifying-glass"></i><span>Gợi ý 4</span></li>
-                <li><i class="fa-solid fa-magnifying-glass"></i><span>Gợi ý 5</span></li>
-                <li><i class="fa-solid fa-magnifying-glass"></i><span>Gợi ý 6</span></li>
-            </ul>
-        </aside>
         
         <div class="main-content">
             <?php

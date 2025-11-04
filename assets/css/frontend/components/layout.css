@@ -1,0 +1,30 @@
+/* ========================================
+   LAYOUT CONTAINER
+   ======================================== */
+
+/* App Container */
+.tiktok-app {
+    display: flex;
+    min-height: 100vh;
+    align-items: stretch;
+}
+
+/* Main content column */
+.main-content {
+    flex: 1;
+    min-width: 0;
+    height: 100vh;
+    overflow-y: auto;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.main-content::-webkit-scrollbar {
+    display: none;
+}
+
+body.search-panel-active .main-content {
+    cursor: pointer;
+}
