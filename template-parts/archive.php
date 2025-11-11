@@ -6,7 +6,6 @@
     
     <div class="main-content">
         <?php
-        // Query bài viết thường; sẽ lọc bài có block video trong vòng lặp
         // Allow comments_template on non-singular templates
         global $withcomments;
         $withcomments = 1;

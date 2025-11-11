@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Nạp assets frontend và admin
+ * assets
  *
  * @package puna-tiktok
  */
@@ -43,7 +43,7 @@ class Puna_TikTok_Assets {
     }
 
     /**
-     * Nạp CSS/JS cho admin
+     * Load CSS/JS for admin
      */
     public function enqueue_admin_assets()
     {

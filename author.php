@@ -61,7 +61,7 @@ if ($current_user_id && !$is_own_profile) {
     }
 }
 
-// Get user's liked videos (only for own profile)
+// Get user's liked videos
 $liked_videos = array();
 if ($is_own_profile && $current_user_id) {
     $user_liked = get_user_meta($current_user_id, '_puna_tiktok_liked_posts', true);
@@ -83,7 +83,7 @@ if ($is_own_profile && $current_user_id) {
     <?php get_template_part('template-parts/sidebar'); ?>
     
     <div class="main-content profile-content">
-        <!-- Profile Header - Dùng chung class với template-parts/pages/profile.php -->
+        <!-- Profile Header -->
         <div class="profile-header">
             <div class="profile-avatar-wrapper">
                 <img src="<?php echo esc_url($author_avatar); ?>" 
@@ -129,7 +129,7 @@ if ($is_own_profile && $current_user_id) {
             </div>
         </div>
         
-        <!-- Profile Tabs - Dùng chung class -->
+        <!-- Profile Tabs-->
         <div class="profile-tabs">
             <button class="profile-tab active" data-tab="videos">
                 <i class="fa-solid fa-grid-3"></i> Video
@@ -140,12 +140,11 @@ if ($is_own_profile && $current_user_id) {
                 </button>
             <?php endif; ?>
         </div>
-        
-        <!-- Profile Content - Dùng chung class -->
+
         <!-- Videos Tab -->
         <div class="profile-videos-section" id="videos-tab">
             <?php
-            // Query author videos - chỉ lấy video có block
+            // Query author video 
             $videos_query = new WP_Query(array(
                 'post_type' => 'post',
                 'author' => $author_id,
@@ -159,7 +158,6 @@ if ($is_own_profile && $current_user_id) {
             ?>
                 <div class="profile-grid">
                     <?php while ($videos_query->have_posts()) : $videos_query->the_post();
-                        // Chỉ hiển thị video có block
                         if (!has_block('puna/hupuna-tiktok', get_the_ID())) {
                             continue;
                         }
@@ -213,7 +211,7 @@ if ($is_own_profile && $current_user_id) {
             <?php endif; ?>
             </div>
             
-            <!-- Liked Videos Tab (only for own profile) - Dùng chung class -->
+            <!-- Liked Videos Tab (only for own profile) -->
             <?php if ($is_own_profile) : ?>
                 <div class="profile-videos-section" id="liked-tab" style="display: none;">
                     <?php

@@ -34,10 +34,9 @@
         
         <div class="main-content">
             <?php
-            // Cho phép comments_template hoạt động trên non-singular
             global $withcomments;
             $withcomments = 1;
-            // Query bài viết thường; sẽ lọc bài có block video trong vòng lặp
+            // Query
             $video_query = new WP_Query(array(
                 'post_type' => 'post',
                 'posts_per_page' => -1,

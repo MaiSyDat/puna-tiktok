@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Nạp các thành phần của theme
+ * Functions
  *
  * @package puna-tiktok
  */
@@ -10,19 +10,17 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-// Nạp các file mô-đun
+// Load module files
 require_once get_template_directory() . '/inc/class-setup.php';
 require_once get_template_directory() . '/inc/class-assets.php';
-require_once get_template_directory() . '/inc/class-post-types.php';
 require_once get_template_directory() . '/inc/class-meta-boxes.php';
 require_once get_template_directory() . '/inc/class-ajax-handlers.php';
 require_once get_template_directory() . '/inc/class-blocks.php';
 
-// Nạp Customizer (sẽ tự động load các component trong customize/)
 require_once get_template_directory() . '/inc/class-customizer.php';
 
 /**
- * Tăng giới hạn upload
+ * Increase limit upload
  */
 function puna_tiktok_increase_upload_limits() {
     ini_set('upload_max_filesize', '500M');
@@ -34,7 +32,7 @@ function puna_tiktok_increase_upload_limits() {
 add_action('init', 'puna_tiktok_increase_upload_limits');
 
 /**
- * Format số theo định dạng TikTok (1.2K, 1.5M, etc.)
+ * Format number (1.2K, 1.5M, etc.)
  */
 function puna_tiktok_format_number($number) {
     if ($number >= 1000000) {
@@ -83,4 +81,44 @@ function puna_tiktok_get_liked_videos($user_id = null) {
     }
     
     return $liked_posts;
+}
+
+/**
+ * Check if video is saved by user
+ */
+function puna_tiktok_is_saved($post_id, $user_id = null) {
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    
+    if (!is_user_logged_in()) {
+        return false;
+    }
+    
+    $saved_posts = get_user_meta($user_id, '_puna_tiktok_saved_videos', true);
+    if (!is_array($saved_posts)) {
+        return false;
+    }
+    
+    return in_array($post_id, $saved_posts);
+}
+
+/**
+ * Get user's saved videos
+ */
+function puna_tiktok_get_saved_videos($user_id = null) {
+    if (!$user_id) {
+        $user_id = get_current_user_id();
+    }
+    
+    if (!is_user_logged_in()) {
+        return array();
+    }
+    
+    $saved_posts = get_user_meta($user_id, '_puna_tiktok_saved_videos', true);
+    if (!is_array($saved_posts) || empty($saved_posts)) {
+        return array();
+    }
+    
+    return $saved_posts;
 }

@@ -1,7 +1,6 @@
 <?php
 /**
  * Single Video Watch Page Template
- * Layout 2 cột: Video (70%) | Info + Comments (30%)
  */
 
 if (!have_posts()) {
@@ -11,7 +10,6 @@ if (!have_posts()) {
 the_post();
 $post_id = get_the_ID();
 
-// Chỉ hiển thị nếu có block video
 if (!has_block('puna/hupuna-tiktok', $post_id)) {
     get_template_part('template-parts/single');
     return;
@@ -28,11 +26,16 @@ if (!$video_url) {
 $likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
 $comments_count = get_comments_number($post_id);
 $shares = get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0;
+$saves = get_post_meta($post_id, '_puna_tiktok_video_saves', true) ?: 0;
 $views = get_post_meta($post_id, '_puna_tiktok_video_views', true) ?: 0;
 
 // Check if liked
 $is_liked = puna_tiktok_is_liked($post_id);
 $liked_class = $is_liked ? 'liked' : '';
+
+// Check if saved
+$is_saved = puna_tiktok_is_saved($post_id);
+$saved_class = $is_saved ? 'saved' : '';
 
 // Author data
 $author_id = get_the_author_meta('ID');
@@ -40,11 +43,27 @@ $author_name = get_the_author_meta('display_name');
 $author_url = get_author_posts_url($author_id);
 $author_avatar = get_avatar_url($author_id, array('size' => 60));
 
+// Check if current user is the author of this video
+$is_author = is_user_logged_in() && get_current_user_id() == $author_id;
+
 // Content
-$caption = get_the_content();
+$post_content = get_the_content();
+$caption = $post_content;
+if (has_block('puna/hupuna-tiktok', $post_id)) {
+    $blocks = parse_blocks($post_content);
+    $caption = '';
+    foreach ($blocks as $block) {
+        if ($block['blockName'] !== 'puna/hupuna-tiktok' && !empty($block['innerHTML'])) {
+            $caption .= $block['innerHTML'];
+        }
+    }
+    if (empty(trim(strip_tags($caption)))) {
+        $caption = get_the_title();
+    }
+}
 $tags = get_the_tags();
 
-// Music info (if available)
+// Music info
 $music_name = get_post_meta($post_id, '_puna_tiktok_music_name', true);
 $music_artist = get_post_meta($post_id, '_puna_tiktok_music_artist', true);
 
@@ -60,21 +79,11 @@ $withcomments = 1;
     </button>
     
     <div class="video-watch-container">
-        <!-- Left Column: Video Player (70%) -->
+        <!-- Left Column: Video Player -->
         <div class="video-watch-player">
             <div class="video-player-wrapper">
-                <!-- Video Controls Overlay - Dùng chung với trang index -->
+                <!-- Video Controls Overlay -->
                 <div class="video-top-controls">
-                    <!-- Volume Control -->
-                    <div class="volume-control-wrapper">
-                        <button class="volume-toggle-btn" title="Âm lượng">
-                            <i class="fa-solid fa-volume-high"></i>
-                        </button>
-                        <div class="volume-slider-container">
-                            <input type="range" class="volume-slider" min="0" max="100" value="100" title="Âm lượng">
-                        </div>
-                    </div>
-                    
                     <!-- Options Menu -->
                     <div class="video-options-menu">
                         <button class="video-options-btn" title="Tùy chọn">
@@ -89,19 +98,39 @@ $withcomments = 1;
                                     <span class="slider"></span>
                                 </label>
                             </div>
-                            <div class="options-item">
-                                <i class="fa-solid fa-heart-crack"></i>
-                                <span>Không quan tâm</span>
-                            </div>
-                            <div class="options-item">
-                                <i class="fa-solid fa-flag"></i>
-                                <span>Báo cáo</span>
-                            </div>
+                            <?php if ($is_author) : ?>
+                                <div class="options-item delete-video-item" data-post-id="<?php echo esc_attr($post_id); ?>">
+                                    <i class="fa-solid fa-trash"></i>
+                                    <span>Xóa video</span>
+                                </div>
+                            <?php else : ?>
+                                <div class="options-item">
+                                    <i class="fa-solid fa-heart-crack"></i>
+                                    <span>Không quan tâm</span>
+                                </div>
+                                <div class="options-item">
+                                    <i class="fa-solid fa-flag"></i>
+                                    <span>Báo cáo</span>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Video Element - Dùng chung class với trang index -->
+                <!-- Bottom Controls -->
+                <div class="video-player-bottom-actions">
+                    <!-- Volume Control -->
+                    <div class="volume-control-wrapper">
+                        <button class="volume-toggle-btn" title="Âm lượng">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                        <div class="volume-slider-container">
+                            <input type="range" class="volume-slider" min="0" max="100" value="100" title="Âm lượng">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Video Element -->
                 <video class="tiktok-video" 
                        preload="metadata" 
                        playsinline 
@@ -114,7 +143,7 @@ $withcomments = 1;
             </div>
         </div>
         
-        <!-- Right Column: Info & Comments (30%) -->
+        <!-- Right Column: Info & Comments -->
         <div class="video-watch-info">
             <!-- Video Info Section -->
             <div class="video-info-section">
@@ -132,18 +161,32 @@ $withcomments = 1;
                     <button class="follow-btn" title="Theo dõi">
                         <i class="fa-solid fa-plus"></i> Theo dõi
                     </button>
-                    <button class="video-info-more-btn" title="Thêm">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </button>
+                    <div class="video-info-more-menu">
+                        <button class="video-info-more-btn" title="Thêm">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </button>
+                        <div class="video-info-more-dropdown">
+                            <?php if ($is_author) : ?>
+                                <div class="options-item delete-video-item" data-post-id="<?php echo esc_attr($post_id); ?>">
+                                    <i class="fa-solid fa-trash"></i>
+                                    <span>Xóa video</span>
+                                </div>
+                            <?php else : ?>
+                                <div class="options-item">
+                                    <i class="fa-solid fa-flag"></i>
+                                    <span>Báo cáo</span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Video Caption -->
                 <div class="video-info-caption">
                     <?php 
-                    if ($caption) {
+                    // render caption
+                    if (!empty(trim($caption))) {
                         echo wp_kses_post(wpautop($caption));
-                    } else {
-                        echo '<p>' . esc_html(get_the_title()) . '</p>';
                     }
                     ?>
                     
@@ -191,42 +234,16 @@ $withcomments = 1;
                     <i class="fa-solid fa-comment"></i>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($comments_count); ?></span>
                 </div>
-                <div class="interaction-item" data-action="save" data-post-id="<?php echo esc_attr($post_id); ?>">
+                <div class="interaction-item <?php echo esc_attr($saved_class); ?>" data-action="save" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <i class="fa-solid fa-bookmark"></i>
-                    <span class="stat-count"><?php echo puna_tiktok_format_number($shares); ?></span>
+                    <span class="stat-count"><?php echo puna_tiktok_format_number($saves); ?></span>
                 </div>
-                <div class="interaction-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>">
+                <div class="interaction-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(get_the_title()); ?>">
                     <i class="fa-solid fa-share"></i>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($shares); ?></span>
                 </div>
             </div>
             
-            <!-- Share Options -->
-            <div class="video-share-options" id="video-share-options" style="display: none;">
-                <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo urlencode(get_permalink($post_id)); ?>" 
-                   target="_blank" 
-                   class="share-option-btn" 
-                   title="Chia sẻ Facebook">
-                    <i class="fa-brands fa-facebook"></i>
-                </a>
-                <a href="https://twitter.com/intent/tweet?url=<?php echo urlencode(get_permalink($post_id)); ?>&text=<?php echo urlencode(get_the_title()); ?>" 
-                   target="_blank" 
-                   class="share-option-btn" 
-                   title="Chia sẻ X (Twitter)">
-                    <i class="fa-brands fa-x-twitter"></i>
-                </a>
-                <a href="https://wa.me/?text=<?php echo urlencode(get_the_title() . ' ' . get_permalink($post_id)); ?>" 
-                   target="_blank" 
-                   class="share-option-btn" 
-                   title="Chia sẻ WhatsApp">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </a>
-                <button class="share-option-btn copy-link-btn" 
-                        data-link="<?php echo esc_url(get_permalink($post_id)); ?>" 
-                        title="Sao chép liên kết">
-                    <i class="fa-solid fa-link"></i>
-                </button>
-            </div>
             
             <!-- Comments Section with Tabs -->
             <div class="video-comments-section">
@@ -299,10 +316,84 @@ $withcomments = 1;
                         <div class="no-creator-videos">
                             <p>Tác giả chưa có video nào khác</p>
                         </div>
-                    <?php endif; ?>
-                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Share Modal Popup -->
+<div class="share-modal" id="shareModal-<?php echo esc_attr($post_id); ?>">
+    <div class="share-modal-overlay"></div>
+    <div class="share-modal-content">
+        <div class="share-modal-header">
+            <h2 class="share-modal-title">Share to</h2>
+            <button type="button" class="share-modal-close" aria-label="Đóng">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="share-modal-body">
+            <div class="share-options-list">
+                <!-- Facebook -->
+                <button class="share-option" data-share="facebook" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </div>
+                    <span class="share-option-label">Facebook</span>
+                </button>
+                
+                <!-- Zalo -->
+                <button class="share-option" data-share="zalo" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-solid fa-message"></i>
+                    </div>
+                    <span class="share-option-label">Zalo</span>
+                </button>
+                
+                <!-- Copy Link -->
+                <button class="share-option" data-share="copy" data-post-id="<?php echo esc_attr($post_id); ?>" data-url="<?php echo esc_url(get_permalink($post_id)); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-solid fa-link"></i>
+                    </div>
+                    <span class="share-option-label">Copy link</span>
+                </button>
+                
+                <!-- Instagram -->
+                <button class="share-option" data-share="instagram" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-brands fa-instagram"></i>
+                    </div>
+                    <span class="share-option-label">Instagram</span>
+                </button>
+                
+                <!-- Email -->
+                <button class="share-option" data-share="email" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <span class="share-option-label">Email</span>
+                </button>
+                
+                <!-- X (Twitter) -->
+                <button class="share-option" data-share="x" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </div>
+                    <span class="share-option-label">X</span>
+                </button>
+                
+                <!-- Telegram -->
+                <button class="share-option" data-share="telegram" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-brands fa-telegram"></i>
+                    </div>
+                    <span class="share-option-label">Telegram</span>
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<?php 
+get_template_part('template-parts/login-popup'); 
+?>
 

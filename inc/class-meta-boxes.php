@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Meta box và các hàm xử lý lưu trữ
+ * Meta box
  *
  * @package puna-tiktok
  */
@@ -11,7 +11,7 @@ if (! defined('ABSPATH')) {
 }
 
 /**
- * Đăng ký meta box để tải lên video/nhập URL
+ * Register meta box to upload video/enter URL
  */
 function puna_tiktok_add_meta_boxes()
 {

@@ -1,7 +1,6 @@
 <?php
 /**
  * Upload Form Template
- * Form upload video với 2 bước: Select video và Edit details
  */
 
 if (!defined('ABSPATH')) {
@@ -13,9 +12,14 @@ $current_user = wp_get_current_user();
 
 <!-- Upload Studio Header -->
 <div class="upload-studio-header">
-    <div class="studio-logo">
-        <span class="studio-icon">♪</span>
-        <span class="studio-text">TikTok Studio</span>
+    <div class="studio-header-left">
+        <a href="<?php echo home_url('/'); ?>" class="studio-back-btn" title="Về trang chủ">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <div class="studio-logo">
+            <span class="studio-icon">♪</span>
+            <span class="studio-text">TikTok Studio</span>
+        </div>
     </div>
     <div class="studio-user">
         <img src="<?php echo get_avatar_url($current_user->ID, array('size' => 32)); ?>" alt="<?php echo esc_attr($current_user->display_name); ?>" class="user-avatar">
@@ -36,7 +40,7 @@ $current_user = wp_get_current_user();
                 <p class="drop-zone-subtitle">Hoặc kéo thả video vào đây</p>
                 <button type="button" class="select-video-btn" id="selectVideoBtn">Chọn video</button>
             </div>
-            <input type="file" id="videoFileInput" accept="video/*" style="display: none;">
+            <input type="file" id="videoFileInput" accept="video/*">
         </div>
 
         <!-- Upload Guidelines -->
@@ -78,7 +82,7 @@ $current_user = wp_get_current_user();
             <!-- Left Panel: Form -->
             <div class="upload-form-panel">
                 <!-- File Info & Progress -->
-                <div class="upload-file-info" id="uploadFileInfo" style="display: none;">
+                <div class="upload-file-info" id="uploadFileInfo">
                     <div class="file-name" id="fileName"></div>
                     <div class="upload-progress-container">
                         <div class="upload-progress-bar">
@@ -128,7 +132,7 @@ $current_user = wp_get_current_user();
                             </div>
                             <button type="button" class="edit-cover-btn" id="editCoverBtn">Chỉnh sửa ảnh bìa</button>
                         </div>
-                        <input type="file" id="coverImageInput" accept="image/*" style="display: none;">
+                        <input type="file" id="coverImageInput" accept="image/*">
                     </div>
 
                     <!-- Location -->
@@ -163,7 +167,7 @@ $current_user = wp_get_current_user();
                                 <span>Lên lịch</span>
                             </label>
                         </div>
-                        <div class="schedule-datetime" id="scheduleDateTime" style="display: none;">
+                        <div class="schedule-datetime" id="scheduleDateTime">
                             <input type="datetime-local" id="scheduleDateInput" class="form-input">
                         </div>
                     </div>
@@ -236,7 +240,7 @@ $current_user = wp_get_current_user();
 </div>
 
 <!-- Loading Overlay -->
-<div class="upload-loading-overlay" id="uploadLoadingOverlay" style="display: none;">
+<div class="upload-loading-overlay" id="uploadLoadingOverlay">
     <div class="loading-spinner"></div>
     <p class="loading-text">Đang tải video lên...</p>
 </div>

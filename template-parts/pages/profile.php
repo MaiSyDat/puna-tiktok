@@ -5,7 +5,7 @@
 
 get_header();
 
-// Lấy thông tin người dùng hiện tại
+// get info user
 $current_user = wp_get_current_user();
 $user_id = $current_user->ID;
 $is_logged_in = is_user_logged_in();
@@ -69,10 +69,13 @@ $is_logged_in = is_user_logged_in();
 				<button class="profile-tab" data-tab="liked">
 					<i class="fa-solid fa-heart"></i> Đã thích
 				</button>
+				<button class="profile-tab" data-tab="saved">
+					<i class="fa-solid fa-bookmark"></i> Đã lưu
+				</button>
 			</div>
 
 			<!-- Video Grid -->
-			<div class="profile-videos-section" id="videos-tab">
+			<div class="profile-videos-section active" id="videos-tab">
 				<?php
 				// Query video của người dùng đăng nhập
                 $user_videos_query = new WP_Query(array(
@@ -138,7 +141,7 @@ $is_logged_in = is_user_logged_in();
 			</div>
 
 			<!-- Liked Videos Tab -->
-			<div class="profile-videos-section" id="liked-tab" style="display: none;">
+			<div class="profile-videos-section" id="liked-tab">
 				<?php
 				// Get liked videos for current user
 				$liked_video_ids = puna_tiktok_get_liked_videos($user_id);
@@ -208,6 +211,81 @@ $is_logged_in = is_user_logged_in();
 						</div>
 						<h3>Chưa có video yêu thích</h3>
 						<p>Video bạn thích sẽ xuất hiện ở đây.</p>
+					</div>
+				<?php } ?>
+			</div>
+
+			<!-- Saved Videos Tab -->
+			<div class="profile-videos-section" id="saved-tab">
+				<?php
+				// Get saved videos for current user
+				$saved_video_ids = puna_tiktok_get_saved_videos($user_id);
+				
+				if (!empty($saved_video_ids)) {
+                    $saved_query = new WP_Query(array(
+                        'post_type' => 'post',
+						'post__in' => $saved_video_ids,
+						'posts_per_page' => -1,
+						'post_status' => 'publish',
+						'orderby' => 'post__in',
+						'order' => 'DESC'
+					));
+					
+					if ($saved_query->have_posts()) : ?>
+						<div class="profile-grid">
+							<?php
+                            while ($saved_query->have_posts()) : $saved_query->the_post();
+                                if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
+                                $video_url = puna_tiktok_get_video_url();
+								$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
+								$likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true);
+								$views = $views ? $views : 0;
+								$likes = $likes ? $likes : 0;
+							?>
+								<a href="<?php the_permalink(); ?>" class="profile-video-card">
+									<div class="media-wrapper ratio-9x16">
+										<video class="explore-video" muted playsinline>
+											<source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
+										</video>
+										<div class="video-overlay">
+											<div class="play-icon">
+												<i class="fa-solid fa-play"></i>
+											</div>
+										</div>
+										<div class="video-stats-overlay">
+											<div class="stat-badge">
+												<i class="fa-solid fa-play"></i>
+												<span><?php echo puna_tiktok_format_number($views); ?></span>
+											</div>
+											<div class="stat-badge">
+												<i class="fa-solid fa-heart"></i>
+												<span><?php echo puna_tiktok_format_number($likes); ?></span>
+											</div>
+										</div>
+									</div>
+									<div class="video-title"><?php echo esc_html(get_the_title()); ?></div>
+								</a>
+							<?php
+							endwhile;
+							wp_reset_postdata();
+							?>
+						</div>
+					<?php else : ?>
+						<div class="no-videos-message">
+							<div class="no-videos-icon">
+								<i class="fa-solid fa-bookmark"></i>
+							</div>
+							<h3>Chưa có video đã lưu</h3>
+							<p>Video bạn lưu sẽ xuất hiện ở đây.</p>
+						</div>
+					<?php endif;
+				} else { ?>
+					<div class="no-videos-message">
+						<div class="no-videos-icon">
+							<i class="fa-solid fa-bookmark"></i>
+						</div>
+						<h3>Chưa có video đã lưu</h3>
+						<p>Video bạn lưu sẽ xuất hiện ở đây.</p>
 					</div>
 				<?php } ?>
 			</div>

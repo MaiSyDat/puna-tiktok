@@ -8,7 +8,7 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-// Định nghĩa hằng số theme
+// Define theme constants
 if (! defined('PUNA_TIKTOK_VERSION')) {
     define('PUNA_TIKTOK_VERSION', '1.0.0');
 }
@@ -32,7 +32,7 @@ class Puna_TikTok_Setup {
     }
     
     /**
-     * Khởi tạo hỗ trợ của theme
+     * Initialize theme support
      */
     public function setup()
     {
@@ -53,11 +53,9 @@ class Puna_TikTok_Setup {
     }
 
     /**
-     * Thêm rewrite rules cho các custom pages
-     * Sử dụng rewrite rules thay vì tạo pages thực sự
+    * Add rewrite rules for custom pages
      */
     public function add_rewrite_rules() {
-        // Rewrite rules cho các custom pages
         $custom_pages = array(
             'upload'   => 'page-upload.php',
             'explore'  => 'template-parts/pages/explore.php',
@@ -77,7 +75,7 @@ class Puna_TikTok_Setup {
     }
 
     /**
-     * Đăng ký query vars cho custom pages
+     * Register query vars for custom pages
      */
     public function register_query_vars($vars) {
         $vars[] = 'puna_page';
@@ -85,7 +83,7 @@ class Puna_TikTok_Setup {
     }
 
     /**
-     * Xử lý template cho custom pages
+     * Handling templates for custom pages
      */
     public function handle_custom_pages($template) {
         global $wp_query;
@@ -215,7 +213,6 @@ class Puna_TikTok_Setup {
 
     /**
      * Kiểm tra và flush rewrite rules nếu cần
-     * Chạy khi user vào admin để đảm bảo rules được flush
      */
     public function maybe_flush_rewrite_rules() {
         // Kiểm tra xem rewrite rules đã được flush chưa

@@ -622,31 +622,6 @@ body.search-panel-active .search-panel {
     flex: 1;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .sidebar {
-        position: fixed;
-        left: -100%;
-        top: 0;
-        z-index: 9998;
-        transition: left 0.3s ease;
-        width: 80%;
-        max-width: 300px;
-    }
-    
-    .sidebar.collapsed {
-        left: 0;
-    }
-    
-    .sidebar-toggle-btn {
-        display: flex;
-    }
-    
-    .sidebar ul li a {
-        padding: 12px 16px;
-    }
-}
-
 /* Sidebar Login Button */
 .sidebar .login-btn {
     padding: 15px 60px;

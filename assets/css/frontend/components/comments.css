@@ -2,6 +2,36 @@
    COMMENTS SIDEBAR
    ======================================== */
 
+/* Login to comment section */
+.login-to-comment-section {
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid var(--puna-muted);
+}
+
+.login-to-comment-section p {
+    margin: 0;
+    color: var(--puna-text);
+    font-size: 14px;
+}
+
+.login-to-comment-link {
+    color: var(--puna-primary);
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.login-to-comment-link:hover {
+    opacity: 0.8;
+}
+
+/* Comment likes - login required */
+.comment-likes[onclick*="openLoginPopup"] {
+    cursor: pointer;
+}
+
 .comments-overlay {
     position: fixed;
     top: 0;
@@ -529,12 +559,3 @@
     color: rgba(22, 24, 35, 0.34);
     cursor: not-allowed;
 }
-
-/* Responsive for Comments */
-@media (max-width: 768px) {
-    .comments-sidebar {
-        width: 100%;
-        max-width: 100%;
-    }
-}
-

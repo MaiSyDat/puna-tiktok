@@ -23,6 +23,36 @@
     background: #fff;
 }
 
+.studio-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.studio-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--puna-muted);
+    color: var(--puna-text);
+    text-decoration: none;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.studio-back-btn:hover {
+    background: var(--puna-primary);
+    color: #fff;
+    transform: translateX(-2px);
+}
+
+.studio-back-btn i {
+    font-size: 16px;
+}
+
 .studio-logo {
     display: flex;
     align-items: center;
@@ -201,6 +231,12 @@
 }
 
 /* File Info & Progress */
+/* Hidden elements */
+#videoFileInput,
+#coverImageInput {
+    display: none;
+}
+
 .upload-file-info {
     margin-bottom: 24px;
     padding-bottom: 24px;
@@ -439,6 +475,15 @@
 }
 
 .schedule-datetime {
+    display: none;
+}
+
+.schedule-datetime.show {
+    display: block;
+}
+
+/* Original schedule-datetime styles */
+.schedule-datetime {
     margin-top: 12px;
 }
 
@@ -645,11 +690,15 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.7);
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 10000;
+    display: none !important;
+}
+
+.upload-loading-overlay.show {
+    display: flex !important;
 }
 
 .loading-spinner {
@@ -672,34 +721,3 @@
     color: #fff;
     font-size: 16px;
 }
-
-/* Responsive */
-@media (max-width: 1024px) {
-    .upload-form-container {
-        grid-template-columns: 1fr;
-    }
-
-    .upload-preview-panel {
-        position: static;
-    }
-}
-
-@media (max-width: 768px) {
-    .upload-guidelines {
-        grid-template-columns: 1fr;
-    }
-
-    .upload-drop-zone {
-        padding: 60px 24px;
-    }
-
-    .upload-content-wrapper {
-        padding: 16px;
-    }
-
-    .upload-form-panel,
-    .upload-preview-panel {
-        padding: 16px;
-    }
-}
-

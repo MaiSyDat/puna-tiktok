@@ -1,7 +1,6 @@
 <?php
 /**
  * Comments template for Video Watch Page
- * Inline comments, không dùng overlay
  */
 
 if (!defined('ABSPATH')) {
@@ -13,10 +12,9 @@ $comments_count = get_comments_number($post_id);
 ?>
 
 <div class="video-watch-comments">
-    <!-- Comments List - Dùng chung class với comments.php -->
     <div class="comments-list">
         <?php
-        // Query only top-level comments (parent = 0)
+        // Query only top-level comments
         $top_level_args = array(
             'post_id' => $post_id,
             'status' => 'approve',
@@ -129,33 +127,144 @@ $comments_count = get_comments_number($post_id);
                                 </a>
                             <?php endif; ?>
                         </div>
+                    </div>
+                    <div class="comment-right-actions">
+                        <?php if (is_user_logged_in()) : ?>
+                            <div class="comment-actions">
+                                <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
+                                <div class="comment-options-dropdown">
+                                    <?php if ($current_id && intval($comment->user_id) === intval($current_id)) : ?>
+                                        <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                                            <i class="fa-solid fa-trash"></i> Xóa
+                                        </button>
+                                    <?php else : ?>
+                                        <button class="comment-action-report" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                                            <i class="fa-solid fa-flag"></i> Báo cáo
+                                        </button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (is_user_logged_in()) : ?>
+                            <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                                <i class="<?php echo $is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $is_liked ? ' liked' : ''; ?>"></i>
+                                <span><?php echo esc_html($comment_likes); ?></span>
+                            </div>
+                        <?php else : ?>
+                            <div class="comment-likes" onclick="openLoginPopup(); return false;" title="Đăng nhập để thích">
+                                <i class="fa-regular fa-heart"></i>
+                                <span><?php echo esc_html($comment_likes); ?></span>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                
+                <!-- Replies Section -->
+                <?php if (!empty($replies_to_show)) : ?>
+                    <div class="comment-replies" data-parent-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                        <?php foreach ($replies_to_show as $reply) : 
+                            $reply_date = human_time_diff(strtotime($reply->comment_date), current_time('timestamp'));
+                            $reply_likes = get_comment_meta($reply->comment_ID, '_comment_likes', true) ?: 0;
+                            $reply_is_liked = $user_id && in_array($reply->comment_ID, $liked_comments);
+                        ?>
+                            <div class="comment-item comment-reply" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                <?php 
+                                $reply_author_id = $reply->user_id ? $reply->user_id : 0;
+                                $reply_author_url = $reply_author_id ? get_author_posts_url($reply_author_id) : '#';
+                                $is_reply_current_user = get_current_user_id() && $reply_author_id == get_current_user_id();
+                                ?>
+                                <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-avatar-link">
+                                    <img src="<?php echo get_avatar_url($reply->user_id, array('size' => 40)); ?>" 
+                                         alt="<?php echo esc_attr($reply->comment_author); ?>" 
+                                         class="comment-avatar">
+                                </a>
+                                <div class="comment-content">
+                                    <div class="comment-header">
+                                        <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-author-link">
+                                            <strong class="comment-author"><?php echo esc_html($reply->comment_author); ?></strong>
+                                        </a>
+                                        <?php if (!$is_reply_current_user && $reply_author_id) : ?>
+                                            <button class="comment-follow-btn" data-user-id="<?php echo esc_attr($reply_author_id); ?>" title="Theo dõi">
+                                                <i class="fa-solid fa-plus"></i> Theo dõi
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                    <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
+                                    <div class="comment-footer">
+                                        <span class="comment-date"><?php echo esc_html($reply_date); ?> trước</span>
+                                        <?php if (is_user_logged_in()) : ?>
+                                            <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                                Trả lời
+                                            </a>
+                                        <?php else : ?>
+                                            <a href="#" class="reply-link" onclick="openLoginPopup(); return false;" title="Đăng nhập để trả lời">
+                                                Trả lời
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="comment-right-actions">
+                                    <?php if (is_user_logged_in()) : ?>
+                                        <div class="comment-actions">
+                                            <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
+                                            <div class="comment-options-dropdown">
+                                                <?php if ($current_id && intval($reply->user_id) === intval($current_id)) : ?>
+                                                    <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                                        <i class="fa-solid fa-trash"></i> Xóa
+                                                    </button>
+                                                <?php else : ?>
+                                                    <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                                        <i class="fa-solid fa-flag"></i> Báo cáo
+                                                    </button>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+                                    <?php if (is_user_logged_in()) : ?>
+                                        <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                            <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
+                                            <span><?php echo esc_html($reply_likes); ?></span>
+                                        </div>
+                                    <?php else : ?>
+                                        <div class="comment-likes" onclick="openLoginPopup(); return false;" title="Đăng nhập để thích">
+                                            <i class="fa-regular fa-heart"></i>
+                                            <span><?php echo esc_html($reply_likes); ?></span>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
                         
-                        <!-- Replies Section -->
-                        <?php if (!empty($replies_to_show)) : ?>
-                            <div class="comment-replies" data-parent-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                                <?php foreach ($replies_to_show as $reply) : 
+                        <?php if ($remaining_replies > 0) : ?>
+                            <button class="show-more-replies-btn" data-parent-id="<?php echo esc_attr($comment->comment_ID); ?>" data-loaded="3" data-total="<?php echo esc_attr($replies_count); ?>">
+                                Xem thêm phản hồi (<?php echo esc_html($remaining_replies); ?>)
+                            </button>
+                            <div class="more-replies-container" data-parent-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                                <?php 
+                                $remaining_replies_list = array_slice($replies, 3);
+                                foreach ($remaining_replies_list as $reply) : 
                                     $reply_date = human_time_diff(strtotime($reply->comment_date), current_time('timestamp'));
                                     $reply_likes = get_comment_meta($reply->comment_ID, '_comment_likes', true) ?: 0;
                                     $reply_is_liked = $user_id && in_array($reply->comment_ID, $liked_comments);
                                 ?>
                                     <div class="comment-item comment-reply" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                                         <?php 
-                                        $reply_author_id = $reply->user_id ? $reply->user_id : 0;
-                                        $reply_author_url = $reply_author_id ? get_author_posts_url($reply_author_id) : '#';
-                                        $is_reply_current_user = get_current_user_id() && $reply_author_id == get_current_user_id();
+                                        $more_reply_author_id = $reply->user_id ? $reply->user_id : 0;
+                                        $more_reply_author_url = $more_reply_author_id ? get_author_posts_url($more_reply_author_id) : '#'; 
+                                        $is_more_reply_current_user = get_current_user_id() && $more_reply_author_id == get_current_user_id();
                                         ?>
-                                        <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-avatar-link">
+                                        <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-avatar-link">
                                             <img src="<?php echo get_avatar_url($reply->user_id, array('size' => 40)); ?>" 
                                                  alt="<?php echo esc_attr($reply->comment_author); ?>" 
                                                  class="comment-avatar">
                                         </a>
                                         <div class="comment-content">
                                             <div class="comment-header">
-                                                <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-author-link">
+                                                <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-author-link">
                                                     <strong class="comment-author"><?php echo esc_html($reply->comment_author); ?></strong>
                                                 </a>
-                                                <?php if (!$is_reply_current_user && $reply_author_id) : ?>
-                                                    <button class="comment-follow-btn" data-user-id="<?php echo esc_attr($reply_author_id); ?>" title="Theo dõi">
+                                                <?php if (!$is_more_reply_current_user && $more_reply_author_id) : ?>
+                                                    <button class="comment-follow-btn" data-user-id="<?php echo esc_attr($more_reply_author_id); ?>" title="Theo dõi">
                                                         <i class="fa-solid fa-plus"></i> Theo dõi
                                                     </button>
                                                 <?php endif; ?>
@@ -197,7 +306,7 @@ $comments_count = get_comments_number($post_id);
                                                     <span><?php echo esc_html($reply_likes); ?></span>
                                                 </div>
                                             <?php else : ?>
-                                                <div class="comment-likes" onclick="openLoginPopup(); return false;" style="cursor: pointer;" title="Đăng nhập để thích">
+                                                <div class="comment-likes" onclick="openLoginPopup(); return false;" title="Đăng nhập để thích">
                                                     <i class="fa-regular fa-heart"></i>
                                                     <span><?php echo esc_html($reply_likes); ?></span>
                                                 </div>
@@ -205,121 +314,10 @@ $comments_count = get_comments_number($post_id);
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
-                                
-                                <?php if ($remaining_replies > 0) : ?>
-                                    <button class="show-more-replies-btn" data-parent-id="<?php echo esc_attr($comment->comment_ID); ?>" data-loaded="3" data-total="<?php echo esc_attr($replies_count); ?>">
-                                        Xem thêm phản hồi (<?php echo esc_html($remaining_replies); ?>)
-                                    </button>
-                                    <div class="more-replies-container" data-parent-id="<?php echo esc_attr($comment->comment_ID); ?>" style="display: none;">
-                                        <?php 
-                                        $remaining_replies_list = array_slice($replies, 3);
-                                        foreach ($remaining_replies_list as $reply) : 
-                                            $reply_date = human_time_diff(strtotime($reply->comment_date), current_time('timestamp'));
-                                            $reply_likes = get_comment_meta($reply->comment_ID, '_comment_likes', true) ?: 0;
-                                            $reply_is_liked = $user_id && in_array($reply->comment_ID, $liked_comments);
-                                        ?>
-                                            <div class="comment-item comment-reply" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                                <?php 
-                                                $more_reply_author_id = $reply->user_id ? $reply->user_id : 0;
-                                                $more_reply_author_url = $more_reply_author_id ? get_author_posts_url($more_reply_author_id) : '#';
-                                                $is_more_reply_current_user = get_current_user_id() && $more_reply_author_id == get_current_user_id();
-                                                ?>
-                                                <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-avatar-link">
-                                                    <img src="<?php echo get_avatar_url($reply->user_id, array('size' => 40)); ?>" 
-                                                         alt="<?php echo esc_attr($reply->comment_author); ?>" 
-                                                         class="comment-avatar">
-                                                </a>
-                                                <div class="comment-content">
-                                                    <div class="comment-header">
-                                                        <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-author-link">
-                                                            <strong class="comment-author"><?php echo esc_html($reply->comment_author); ?></strong>
-                                                        </a>
-                                                        <?php if (!$is_more_reply_current_user && $more_reply_author_id) : ?>
-                                                            <button class="comment-follow-btn" data-user-id="<?php echo esc_attr($more_reply_author_id); ?>" title="Theo dõi">
-                                                                <i class="fa-solid fa-plus"></i> Theo dõi
-                                                            </button>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                    <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
-                                                    <div class="comment-footer">
-                                                        <span class="comment-date"><?php echo esc_html($reply_date); ?> trước</span>
-                                                        <?php if (is_user_logged_in()) : ?>
-                                                            <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                                                Trả lời
-                                                            </a>
-                                                        <?php else : ?>
-                                                            <a href="#" class="reply-link" onclick="openLoginPopup(); return false;" title="Đăng nhập để trả lời">
-                                                                Trả lời
-                                                            </a>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </div>
-                                                <div class="comment-right-actions">
-                                                    <?php if (is_user_logged_in()) : ?>
-                                                        <div class="comment-actions">
-                                                            <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
-                                                            <div class="comment-options-dropdown">
-                                                                <?php if ($current_id && intval($reply->user_id) === intval($current_id)) : ?>
-                                                                    <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                                                        <i class="fa-solid fa-trash"></i> Xóa
-                                                                    </button>
-                                                                <?php else : ?>
-                                                                    <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                                                        <i class="fa-solid fa-flag"></i> Báo cáo
-                                                                    </button>
-                                                                <?php endif; ?>
-                                                            </div>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                    <?php if (is_user_logged_in()) : ?>
-                                                        <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                                            <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
-                                                            <span><?php echo esc_html($reply_likes); ?></span>
-                                                        </div>
-                                                    <?php else : ?>
-                                                        <div class="comment-likes" onclick="openLoginPopup(); return false;" style="cursor: pointer;" title="Đăng nhập để thích">
-                                                            <i class="fa-regular fa-heart"></i>
-                                                            <span><?php echo esc_html($reply_likes); ?></span>
-                                                        </div>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    </div>
-                                <?php endif; ?>
                             </div>
                         <?php endif; ?>
                     </div>
-                    <div class="comment-right-actions">
-                        <?php if (is_user_logged_in()) : ?>
-                            <div class="comment-actions">
-                                <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
-                                <div class="comment-options-dropdown">
-                                    <?php if ($current_id && intval($comment->user_id) === intval($current_id)) : ?>
-                                        <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                                            <i class="fa-solid fa-trash"></i> Xóa
-                                        </button>
-                                    <?php else : ?>
-                                        <button class="comment-action-report" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                                            <i class="fa-solid fa-flag"></i> Báo cáo
-                                        </button>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (is_user_logged_in()) : ?>
-                            <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                                <i class="<?php echo $is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $is_liked ? ' liked' : ''; ?>"></i>
-                                <span><?php echo esc_html($comment_likes); ?></span>
-                            </div>
-                        <?php else : ?>
-                            <div class="comment-likes" onclick="openLoginPopup(); return false;" style="cursor: pointer;" title="Đăng nhập để thích">
-                                <i class="fa-regular fa-heart"></i>
-                                <span><?php echo esc_html($comment_likes); ?></span>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                <?php endif; ?>
                 <?php
             }
         } else {
@@ -332,7 +330,7 @@ $comments_count = get_comments_number($post_id);
         ?>
     </div>
 
-    <!-- Comment Input - Dùng chung class với comments.php -->
+    <!-- Comment Input -->
     <?php if (is_user_logged_in()) : ?>
         <div class="comment-input-container">
             <input type="text" 
@@ -355,9 +353,9 @@ $comments_count = get_comments_number($post_id);
         </div>
     <?php else : ?>
         <div class="comment-input-container">
-            <div style="text-align: center; padding: 20px; border-top: 1px solid var(--puna-muted);">
-                <p style="margin: 0; color: var(--puna-text); font-size: 14px;">
-                    <a href="#" onclick="openLoginPopup(); return false;" style="color: var(--puna-primary); text-decoration: none; font-weight: 600;">
+            <div class="login-to-comment-section">
+                <p>
+                    <a href="#" class="login-to-comment-link">
                         Đăng nhập
                     </a> để bình luận
                 </p>

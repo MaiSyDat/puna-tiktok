@@ -40,3 +40,9 @@
 
 /* Import Upload Page */
 @import url('components/upload.css');
+
+/* Import Toast Notification */
+@import url('components/toast.css');
+
+/* Import Responsive Styles */
+@import url('components/responsive.css');

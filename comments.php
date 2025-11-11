@@ -27,7 +27,7 @@ $comments_count = get_comments_number($post_id);
         <!-- Comments List -->
         <div class="comments-list">
             <?php
-            // Query only top-level comments (parent = 0)
+            // Query only top-level comments
             $top_level_args = array(
                 'post_id' => $post_id,
                 'status' => 'approve',
@@ -95,7 +95,7 @@ $comments_count = get_comments_number($post_id);
                         $get_all_nested_replies($direct_reply->comment_ID, $post_id, $all_replies, $processed_ids);
                     }
                     
-                    // Sort all replies by date (oldest first)
+                    // Sort all replies by date
                     usort($all_replies, function($a, $b) {
                         return strtotime($a->comment_date) - strtotime($b->comment_date);
                     });

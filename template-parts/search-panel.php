@@ -1,7 +1,6 @@
 <?php
 /**
  * Search Panel Template
- * Hiển thị search panel ở tất cả các trang
  */
 ?>
 
@@ -26,30 +25,30 @@
     <!-- Search Suggestions & History Container -->
     <div class="search-suggestions-container" id="search-suggestions-container">
         <!-- Loading indicator -->
-        <div class="search-loading" id="search-loading" style="display: none;">
+        <div class="search-loading" id="search-loading">
             <p>Đang tải...</p>
         </div>
         
-        <!-- Suggestions (shown when typing) -->
-        <ul class="search-suggestions" id="search-suggestions-list" style="display: none;">
-            <!-- Suggestions sẽ được load bằng AJAX -->
+        <!-- Suggestions -->
+        <ul class="search-suggestions" id="search-suggestions-list">
+            <!-- Suggestions will be loaded using AJAX -->
         </ul>
         
         <!-- Search History (shown when input is empty) -->
         <div class="search-history-section" id="search-history-section">
             <div class="search-history-header">
                 <h4>Lịch sử tìm kiếm</h4>
-                <button class="clear-history-btn" id="clear-history-btn" style="display: none;">
+                <button class="clear-history-btn" id="clear-history-btn">
                     <i class="fa-solid fa-trash"></i> Xóa lịch sử
                 </button>
             </div>
             <ul class="search-history-list" id="search-history-list">
-                <!-- History sẽ được load bằng AJAX -->
+                <!-- History will be loaded using AJAX -->
                 <li class="search-history-loading">Đang tải lịch sử...</li>
             </ul>
         </div>
         
-        <!-- Popular Searches (loaded via AJAX) -->
+        <!-- Popular Searches -->
         <div class="search-popular-section" id="search-popular-section">
             <h4>Những tìm kiếm phổ biến</h4>
             <ul class="search-popular-list" id="search-popular-list">

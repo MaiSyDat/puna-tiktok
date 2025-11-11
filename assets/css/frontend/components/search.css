@@ -180,6 +180,20 @@ body.search-panel-active .search-panel {
 }
 
 /* Search Loading Indicator */
+/* Hidden elements */
+#search-loading,
+#search-suggestions-list,
+#clear-history-btn {
+    display: none;
+}
+
+#search-loading.show,
+#search-suggestions-list.show,
+#clear-history-btn.show {
+    display: block;
+}
+
+/* Original search-loading styles */
 .search-loading {
     padding: 20px;
     text-align: center;
@@ -717,93 +731,3 @@ body.search-panel-active .search-panel {
 .main-content.search-results-page:has(.search-suggestions-sidebar) {
     padding-right: 280px;
 }
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .search-suggestions-sidebar {
-        display: none;
-    }
-    
-    .main-content.search-results-page,
-    .main-content.search-results-page:has(.search-suggestions-sidebar) {
-        padding-right: 0;
-    }
-    
-    .search-videos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 12px;
-    }
-}
-
-@media (max-width: 768px) {
-    .search-panel {
-        left: 0;
-        width: 100%;
-    }
-    
-    .search-results-page {
-        padding: 16px 0;
-    }
-    
-    .search-tabs,
-    .search-tab-content {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-    
-    .search-tabs {
-        gap: 16px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-    }
-    
-    .search-tabs::-webkit-scrollbar {
-        display: none;
-    }
-    
-    .search-tab {
-        font-size: 16px;
-        white-space: nowrap;
-        padding: 12px 0;
-    }
-    
-    .search-videos-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-    }
-    
-    .search-users-list {
-        gap: 4px;
-    }
-    
-    .search-user-item {
-        padding: 10px;
-    }
-    
-    .search-user-avatar {
-        width: 50px;
-        height: 50px;
-    }
-}
-
-@media (max-width: 480px) {
-    .search-videos-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
-    }
-    
-    .search-video-info {
-        padding: 8px 0 0;
-    }
-    
-    .search-video-title {
-        font-size: 12px;
-        -webkit-line-clamp: 1;
-    }
-    
-    .search-video-meta {
-        font-size: 11px;
-    }
-}
-

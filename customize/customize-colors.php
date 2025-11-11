@@ -1,7 +1,6 @@
 <?php
 /**
  * Colors Customizer Component
- * Handles global color settings and CSS variables output
  *
  * @package puna-tiktok
  */

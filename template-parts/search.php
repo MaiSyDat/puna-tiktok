@@ -1,7 +1,6 @@
 <?php
 /**
- * Search Results Template với 3 tabs
- * Top, Người dùng, Video
+ * Search Results Template
  */
 
 $search_query = get_search_query();
@@ -11,7 +10,6 @@ if (!in_array($active_tab, $valid_tabs)) {
     $active_tab = 'top';
 }
 
-// Cho phép comments_template hoạt động
 global $withcomments;
 $withcomments = 1;
 ?>
@@ -42,9 +40,8 @@ $withcomments = 1;
         <!-- Tab Content -->
         <div class="search-tab-content">
             <?php if ($active_tab === 'top' || $active_tab === 'videos') : ?>
-                <!-- TOP & VIDEOS TABS: Hiển thị video grid -->
                 <?php
-                // Query tất cả posts với block video trước, sau đó filter theo search
+                // Query all posts with video block first, then filter by search
                 $all_video_args = array(
                     'post_type' => 'post',
                     'posts_per_page' => -1,
@@ -87,7 +84,7 @@ $withcomments = 1;
                     }
                 }
                 
-                // Sắp xếp: ưu tiên title match, sau đó sắp xếp theo date (mới nhất)
+               // Sort: prioritize title match, then sort by date (latest)
                 if (!empty($matched_posts)) :
                     $sorted_posts = array();
                     $other_posts = array();
@@ -101,7 +98,7 @@ $withcomments = 1;
                         }
                     }
                     
-                    // Sắp xếp theo date (mới nhất)
+                    // Sort by date (latest)
                     usort($sorted_posts, function($a, $b) {
                         return get_post_time('U', true, $b) - get_post_time('U', true, $a);
                     });
@@ -129,9 +126,9 @@ $withcomments = 1;
                                 $likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
                                 $thumbnail = '';
                                 
-                                // Lấy thumbnail từ video
+                                // Get thumbnail from video
                                 if ($video_url) {
-                                    // Có thể lấy frame đầu của video làm thumbnail
+                                    // Can take the first frame of the video as a thumbnail
                                     $thumbnail = $video_url; // Fallback
                                 }
                                 ?>
@@ -174,9 +171,8 @@ $withcomments = 1;
                 <?php endif; ?>
                 
             <?php elseif ($active_tab === 'users') : ?>
-                <!-- USERS TAB: Hiển thị danh sách users -->
                 <?php
-                // Tìm users có tên hoặc username chứa keyword
+                // Find users whose name or username contains the keyword
                 $users_query = new WP_User_Query(array(
                     'search' => '*' . esc_attr($search_query) . '*',
                     'search_columns' => array('user_login', 'user_nicename', 'display_name'),

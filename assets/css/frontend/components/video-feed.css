@@ -177,6 +177,18 @@
     font-weight: 500;
 }
 
+.options-item.delete-video-item {
+    color: #ff3040;
+}
+
+.options-item.delete-video-item i {
+    color: #ff3040;
+}
+
+.options-item.delete-video-item:hover {
+    background-color: rgba(255, 48, 64, 0.1);
+}
+
 .toggle-switch {
     position: relative;
     display: inline-block;
@@ -325,8 +337,19 @@
     color: var(--puna-primary);
 }
 
+/* Saved State */
+.action-item.saved i {
+    color: var(--puna-primary);
+    background-color: rgba(254, 44, 85, 0.12);
+}
+
 /* Like animation */
 .action-item.liking {
+    animation: like-pulse 0.3s ease;
+}
+
+/* Save animation */
+.action-item.saving {
     animation: like-pulse 0.3s ease;
 }
 
@@ -355,20 +378,168 @@
     font-weight: 600;
 }
 
-/* Small responsive tweaks */
-@media (max-width: 768px) {
-    .video-row {
-        flex-direction: column;
-        align-items: center;
-    }
-    .video-details {
-        max-width: 100%;
-    }
-    .video-sidebar {
-        position: static;
-        flex-direction: row;
-        gap: 12px;
-        margin-top: 10px;
-    }
+/* Share Modal */
+.share-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    display: none !important;
+    align-items: center;
+    justify-content: center;
 }
 
+.share-modal.show {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.share-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+}
+
+.share-modal-content {
+    position: relative;
+    background: var(--puna-bg);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 420px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+.share-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(22, 24, 35, 0.12);
+}
+
+.share-modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--puna-text);
+    margin: 0;
+}
+
+.share-modal-close {
+    background: none;
+    border: none;
+    color: var(--puna-text);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.share-modal-close:hover {
+    background: rgba(22, 24, 35, 0.06);
+    opacity: 0.8;
+}
+
+.share-modal-body {
+    padding: 20px 24px;
+    max-height: calc(90vh - 80px);
+    overflow-y: auto;
+}
+
+.share-options-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+}
+
+.share-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.2s;
+    min-width: 80px;
+}
+
+.share-option:hover {
+    transform: translateY(-2px);
+}
+
+.share-option:active {
+    transform: translateY(0);
+}
+
+.share-option-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+
+/* Share option icon colors */
+.share-option[data-share="facebook"] .share-option-icon {
+    background: #1877F2;
+}
+
+.share-option[data-share="zalo"] .share-option-icon {
+    background: #0068FF;
+}
+
+.share-option[data-share="copy"] .share-option-icon {
+    background: #007AFF;
+}
+
+.share-option[data-share="instagram"] .share-option-icon {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.share-option[data-share="email"] .share-option-icon {
+    background: #EA4335;
+}
+
+.share-option[data-share="x"] .share-option-icon {
+    background: #000000;
+}
+
+.share-option[data-share="telegram"] .share-option-icon {
+    background: #0088cc;
+}
+
+.share-option:hover .share-option-icon {
+    transform: scale(1.1);
+}
+
+.share-option-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--puna-text);
+    text-align: center;
+    white-space: nowrap;
+}

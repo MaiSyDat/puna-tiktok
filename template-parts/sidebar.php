@@ -1,7 +1,6 @@
 <?php
 /**
  * Customizable Sidebar Template
- * Uses WordPress Customizer settings
  */
 $menu_items = Puna_TikTok_Customize_Sidebar::get_menu_items();
 

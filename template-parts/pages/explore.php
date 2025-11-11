@@ -23,7 +23,7 @@ get_header();
 
 		<div class="explore-grid">
 			<?php
-			// Query để lấy video thịnh hành
+			// Query
             $trending_query = new WP_Query(array(
                 'post_type' => 'post',
 				'posts_per_page' => 12,
@@ -49,7 +49,7 @@ get_header();
 				)
 			));
 			
-			// Nếu không có video thịnh hành trong 7 ngày, lấy video mới nhất
+			// If there is no trending video in 7 days, get the latest video
 			if (!$trending_query->have_posts()) {
                 $trending_query = new WP_Query(array(
                     'post_type' => 'post',
@@ -97,7 +97,7 @@ get_header();
 				endwhile;
 				wp_reset_postdata();
 			else :
-				// Hiển thị placeholder nếu không có video
+				// Show placeholder if no video
 				for ($i = 1; $i <= 12; $i++) : ?>
 					<a href="#" class="explore-card" aria-label="Explore item">
 						<div class="media-wrapper ratio-9x16">

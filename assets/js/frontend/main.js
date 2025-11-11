@@ -1,23 +1,20 @@
 /**
- * Main Frontend JavaScript cho Puna TikTok Theme
- * Xử lý tất cả các chức năng tương tác trên frontend
+ * Main Frontend JavaScript 
  */
 
 document.addEventListener("DOMContentLoaded", function() {
-    // ============================================
-    // BIẾN TOÀN CỤC VÀ SELECTORS
-    // ============================================
+    // GLOBAL VARIABLES AND SELECTORS
     const videos = document.querySelectorAll('.tiktok-video');
     const sidebar = document.querySelector('.sidebar');
     const mainContent = document.querySelector('.main-content');
     const navPrevBtn = document.querySelector('.video-nav-btn.nav-prev');
     const navNextBtn = document.querySelector('.video-nav-btn.nav-next');
 
-    // State quản lý volume toàn cục
+    // State manages global volume
     let globalMuted = true;
-    let globalVolume = 1; // 0..1
+    let globalVolume = 1;
     
-    // Theo dõi các video đã xem để tránh tính trùng lặp
+    // Track watched videos to avoid duplicate counting
     const viewedVideos = new Set();
     
     // State cho login modal
@@ -27,14 +24,8 @@ document.addEventListener("DOMContentLoaded", function() {
     let isScrolling = false;
     let userGestureHandled = false;
 
-    // ============================================
-    // UTILITY FUNCTIONS
-    // ============================================
-    
     /**
-     * Định dạng số lớn thành dạng ngắn gọn (1K, 1M)
-     * @param {number} num - Số cần định dạng
-     * @returns {string} - Số đã được định dạng
+     * Format number
      */
     function formatNumber(num) {
         if (num >= 1000000) {
@@ -153,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function() {
             e.stopPropagation();
             globalMuted = !globalMuted;
             if (!globalMuted && globalVolume === 0) {
-                globalVolume = 1; // Mặc định 100% khi unmute từ zero
+                globalVolume = 1;
             }
             applyVolumeToAllVideos();
             updateGlobalVolumeUI();
@@ -174,8 +165,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // ============================================
     // VIDEO AUTOPLAY & INTERSECTION OBSERVER
-    // ============================================
-    
     const observerOptions = {
         root: mainContent,
         rootMargin: '0px',
@@ -351,6 +340,28 @@ document.addEventListener("DOMContentLoaded", function() {
      * Mở popup đăng nhập
      */
     window.openLoginPopup = function() {
+        // Đóng tất cả comments sidebar đang mở
+        const openCommentsOverlays = document.querySelectorAll('.comments-overlay.show');
+        if (openCommentsOverlays.length > 0 && typeof closeCommentsSidebar === 'function') {
+            openCommentsOverlays.forEach(overlay => {
+                const postId = overlay.id.replace('comments-overlay-', '');
+                if (postId) {
+                    closeCommentsSidebar(postId);
+                }
+            });
+        }
+        
+        // Đóng search panel nếu đang mở
+        if (document.body.classList.contains('search-panel-active')) {
+            if (typeof closeSearchPanel === 'function') {
+                closeSearchPanel();
+            } else {
+                // Fallback: đóng thủ công
+                document.body.classList.remove('search-panel-active');
+            }
+        }
+        
+        // Mở login popup
         currentModal = 'login';
         const loginModal = document.getElementById('loginModal');
         if (loginModal) {
@@ -369,11 +380,20 @@ document.addEventListener("DOMContentLoaded", function() {
         // Kiểm tra nếu puna_tiktok_ajax chưa được định nghĩa
         if (typeof puna_tiktok_ajax === 'undefined') {
             console.warn('puna_tiktok_ajax is not defined');
+            // Nếu không có ajax object, giả định là chưa đăng nhập
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            openLoginPopup();
             return false;
         }
 
         // Kiểm tra trạng thái đăng nhập
-        if (!puna_tiktok_ajax.is_logged_in) {
+        // Chuyển sang boolean để đảm bảo kiểm tra đúng
+        const isLoggedIn = puna_tiktok_ajax.is_logged_in === true || puna_tiktok_ajax.is_logged_in === '1' || puna_tiktok_ajax.is_logged_in === 1;
+        
+        if (!isLoggedIn) {
             // Prevent default action nếu có event
             if (event) {
                 event.preventDefault();
@@ -420,20 +440,6 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     /**
-     * Chuyển đổi tab trong form đăng nhập
-     */
-    window.switchTab = function(tab) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.login-form').forEach(form => form.classList.remove('active'));
-        
-        if (event && event.target) {
-            event.target.classList.add('active');
-        }
-        const targetForm = document.getElementById(tab + '-login');
-        if (targetForm) targetForm.classList.add('active');
-    };
-
-    /**
      * Chuyển sang popup đăng ký
      */
     window.switchToSignup = function() {
@@ -451,19 +457,82 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(() => openLoginPopup(), 150);
     };
 
-    /**
-     * Chuyển sang đăng nhập bằng mật khẩu
-     */
-    window.switchToPasswordLogin = function() {
-        switchTab('email');
-    };
-
-    /**
-     * Chuyển sang đăng ký bằng email
-     */
-    window.switchToEmailSignup = function() {
-        alert('Tính năng đăng ký bằng email sẽ được thêm sau');
-    };
+    // Event listener cho signup form submit
+    document.addEventListener('click', function(e) {
+        const submitBtn = e.target.closest('.signup-submit-btn');
+        if (!submitBtn || submitBtn.disabled) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const form = submitBtn.closest('.signup-form');
+        if (!form) return;
+        
+        // Đăng ký bằng email
+        const email = form.querySelector('.email-input')?.value.trim() || '';
+        const username = form.querySelector('.username-input')?.value.trim() || '';
+        const password = form.querySelector('.password-input')?.value || '';
+        
+        // Lấy ngày sinh
+        const monthSelect = form.querySelector('select[name="birthday-month"]');
+        const daySelect = form.querySelector('select[name="birthday-day"]');
+        const yearSelect = form.querySelector('select[name="birthday-year"]');
+        
+        let birthday_month = 0;
+        let birthday_day = 0;
+        let birthday_year = 0;
+        
+        if (monthSelect && daySelect && yearSelect) {
+            birthday_month = parseInt(monthSelect.value) || 0;
+            birthday_day = parseInt(daySelect.value) || 0;
+            birthday_year = parseInt(yearSelect.value) || 0;
+        }
+        
+        // Validate
+        if (!email || !username || !password) {
+            showToast('Vui lòng nhập đầy đủ thông tin.', 'warning');
+            return;
+        }
+        
+        if (birthday_month === 0 || birthday_day === 0 || birthday_year === 0) {
+            showToast('Vui lòng chọn ngày sinh.', 'warning');
+            return;
+        }
+        
+        // Disable button và hiển thị loading
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang đăng ký...';
+        
+        // Gửi AJAX request
+        sendAjaxRequest('puna_tiktok_register', {
+            username: username,
+            email: email,
+            password: password,
+            birthday_month: birthday_month,
+            birthday_day: birthday_day,
+            birthday_year: birthday_year
+        })
+        .then(data => {
+            if (data.success) {
+                closeModal();
+                // Reload để cập nhật trạng thái đăng nhập
+                window.location.reload();
+            } else {
+                showToast(data.data && data.data.message 
+                    ? data.data.message 
+                    : 'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Register error:', error);
+            showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        });
+    });
 
     // Event listener cho login form submit
     document.addEventListener('click', function(e) {
@@ -473,29 +542,15 @@ document.addEventListener("DOMContentLoaded", function() {
         e.preventDefault();
         e.stopPropagation();
         
-        const form = submitBtn.closest('.login-form.active') || submitBtn.closest('.login-form');
+        const form = submitBtn.closest('.login-form');
         if (!form) return;
         
-        const isEmailLogin = form.id === 'email-login';
-        let username = '';
-        let password = '';
-        
-        if (isEmailLogin) {
-            username = form.querySelector('.email-input')?.value.trim() || '';
-            password = form.querySelector('.password-input')?.value || '';
-        } else {
-            const phoneInput = form.querySelector('.phone-input')?.value.trim() || '';
-            const codeInput = form.querySelector('.code-input')?.value.trim() || '';
-            if (!phoneInput || !codeInput) {
-                alert('Vui lòng nhập đầy đủ thông tin đăng nhập.');
-                return;
-            }
-            username = phoneInput;
-            password = codeInput;
-        }
+        // Đăng nhập bằng email hoặc username
+        const username = form.querySelector('.email-input')?.value.trim() || '';
+        const password = form.querySelector('.password-input')?.value || '';
         
         if (!username || !password) {
-            alert('Vui lòng nhập đầy đủ thông tin đăng nhập.');
+            showToast('Vui lòng nhập đầy đủ thông tin đăng nhập.', 'warning');
             return;
         }
         
@@ -515,16 +570,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 closeModal();
                 window.location.reload();
             } else {
-                alert(data.data && data.data.message 
+                showToast(data.data && data.data.message 
                     ? data.data.message 
-                    : 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+                    : 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.', 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
             }
         })
         .catch(error => {
             console.error('Login error:', error);
-            alert('Lỗi kết nối. Vui lòng thử lại.');
+            showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
         });
@@ -535,7 +590,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // ============================================
     
     document.addEventListener('click', function(e) {
-        const actionItem = e.target.closest('.action-item[data-action="like"]');
+        const actionItem = e.target.closest('.action-item[data-action="like"], .interaction-item[data-action="like"]');
         if (!actionItem) return;
         
         e.preventDefault();
@@ -545,7 +600,10 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!postId) return;
         
         // Kiểm tra đăng nhập
-        if (!checkLogin(e)) return;
+        if (!checkLogin(e)) {
+            // checkLogin đã mở popup nếu chưa đăng nhập
+            return;
+        }
         
         // Thêm animation
         actionItem.classList.add('liking');
@@ -561,8 +619,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Cập nhật UI
                 actionItem.classList.toggle('liked', isLiked);
                 
-                // Cập nhật số lượng likes
-                const countElement = actionItem.querySelector('.count');
+                // Cập nhật số lượng likes (xử lý cả .count và .stat-count)
+                const countElement = actionItem.querySelector('.count') || actionItem.querySelector('.stat-count');
                 if (countElement) {
                     countElement.textContent = formatNumber(likes);
                 }
@@ -572,6 +630,56 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .catch(error => {
             console.error('AJAX error:', error);
+        });
+    });
+
+    // Event listener cho save button (xử lý cả action-item và interaction-item)
+    document.addEventListener('click', function(e) {
+        const actionItem = e.target.closest('.action-item[data-action="save"], .interaction-item[data-action="save"]');
+        if (!actionItem) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const postId = actionItem.dataset.postId;
+        if (!postId) return;
+        
+        // Kiểm tra đăng nhập
+        if (!checkLogin(e)) {
+            // checkLogin đã mở popup nếu chưa đăng nhập
+            return;
+        }
+        
+        // Thêm animation
+        actionItem.classList.add('saving');
+        setTimeout(() => actionItem.classList.remove('saving'), 300);
+        
+        // Gửi AJAX request
+        sendAjaxRequest('puna_tiktok_toggle_save', { post_id: postId })
+        .then(data => {
+            if (data.success) {
+                const isSaved = data.data.is_saved;
+                const saves = data.data.saves;
+                
+                // Update UI
+                if (isSaved) {
+                    actionItem.classList.add('saved');
+                } else {
+                    actionItem.classList.remove('saved');
+                }
+                
+                // Update saves count (xử lý cả .count và .stat-count)
+                const countEl = actionItem.querySelector('.count') || actionItem.querySelector('.stat-count');
+                if (countEl && saves !== undefined) {
+                    countEl.textContent = formatNumber(saves);
+                }
+            } else {
+                showToast(data.data?.message || 'Có lỗi xảy ra', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error saving video:', error);
+            showToast('Có lỗi xảy ra khi lưu video', 'error');
         });
     });
 
@@ -604,13 +712,25 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Event listener cho nút mở comments
-    // Cho phép mở comments ngay cả khi chưa đăng nhập (chỉ cần đăng nhập để like/reply/comment)
+    // Cho phép xem comments nhưng cần đăng nhập để tương tác
     document.addEventListener('click', function(e) {
-        const actionItem = e.target.closest('.action-item[data-action="comment"]');
+        const actionItem = e.target.closest('.action-item[data-action="comment"], .interaction-item[data-action="comment-toggle"]');
         if (actionItem && actionItem.dataset.postId) {
             e.preventDefault();
             e.stopPropagation();
-            openCommentsSidebar(actionItem.dataset.postId);
+            
+            // Trang watch video không có overlay, chỉ cần scroll đến phần comments
+            const isWatchPage = document.querySelector('.video-watch-page');
+            if (isWatchPage) {
+                // Scroll đến phần comments (cho phép xem mà không cần login)
+                const commentsSection = document.querySelector('.video-watch-comments');
+                if (commentsSection) {
+                    commentsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            } else {
+                // Trang feed - mở sidebar (cho phép xem mà không cần login)
+                openCommentsSidebar(actionItem.dataset.postId);
+            }
         }
     });
 
@@ -622,6 +742,215 @@ document.addEventListener("DOMContentLoaded", function() {
             closeCommentsSidebar(closeBtn.dataset.postId);
         }
     });
+
+    // ============================================
+    // SHARE MODAL FUNCTIONALITY
+    // ============================================
+    
+    // Mở share modal khi click vào nút share (xử lý cả action-item và interaction-item)
+    document.addEventListener('click', function(e) {
+        const shareBtn = e.target.closest('.action-item[data-action="share"], .interaction-item[data-action="share"]');
+        if (shareBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const postId = shareBtn.dataset.postId;
+            if (!postId) return;
+            
+            openShareModal(postId);
+        }
+    });
+    
+    // Đóng modal khi click vào nút close hoặc overlay
+    document.addEventListener('click', function(e) {
+        const closeBtn = e.target.closest('.share-modal-close');
+        const overlay = e.target.closest('.share-modal-overlay');
+        
+        if (closeBtn || overlay) {
+            const modal = closeBtn ? closeBtn.closest('.share-modal') : overlay.closest('.share-modal');
+            if (modal) {
+                closeShareModal(modal);
+            }
+        }
+    });
+    
+    // Xử lý các tùy chọn chia sẻ
+    document.addEventListener('click', function(e) {
+        const shareOption = e.target.closest('.share-option');
+        if (!shareOption) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const shareType = shareOption.dataset.share;
+        const postId = shareOption.dataset.postId;
+        
+        if (!shareType || !postId) return;
+        
+        // Get share URL and title from share button (xử lý cả action-item và interaction-item)
+        const shareBtn = document.querySelector(`.action-item[data-action="share"][data-post-id="${postId}"], .interaction-item[data-action="share"][data-post-id="${postId}"]`);
+        const shareUrl = shareBtn?.dataset.shareUrl || shareOption.dataset.url || window.location.href;
+        const shareTitle = shareBtn?.dataset.shareTitle || document.title;
+        
+        handleShare(shareType, shareUrl, shareTitle, postId);
+    });
+    
+    function openShareModal(postId) {
+        const modal = document.getElementById(`shareModal-${postId}`);
+        if (!modal) return;
+        
+        // Get share data from share button (xử lý cả action-item và interaction-item)
+        const shareBtn = document.querySelector(`.action-item[data-action="share"][data-post-id="${postId}"], .interaction-item[data-action="share"][data-post-id="${postId}"]`);
+        if (shareBtn) {
+            modal.dataset.shareUrl = shareBtn.dataset.shareUrl || window.location.href;
+            modal.dataset.shareTitle = shareBtn.dataset.shareTitle || document.title;
+        }
+        
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeShareModal(modal) {
+        if (!modal) return;
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+    
+    function handleShare(type, url, title, postId) {
+        const encodedUrl = encodeURIComponent(url);
+        const encodedTitle = encodeURIComponent(title);
+        
+        switch(type) {
+            case 'facebook':
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`, '_blank', 'width=600,height=400');
+                break;
+                
+            case 'zalo':
+                window.open(`https://zalo.me/share?url=${encodedUrl}`, '_blank', 'width=600,height=400');
+                break;
+                
+            case 'copy':
+                copyToClipboard(url);
+                showToast('Đã sao chép liên kết!');
+                // Update share count
+                updateShareCount(postId);
+                break;
+                
+            case 'instagram':
+                // Instagram không hỗ trợ direct share link, mở app hoặc hướng dẫn
+                if (navigator.userAgent.match(/Instagram/i)) {
+                    window.open(`https://www.instagram.com/`, '_blank');
+                } else {
+                    showToast('Vui lòng mở Instagram app để chia sẻ');
+                }
+                break;
+                
+            case 'email':
+                window.location.href = `mailto:?subject=${encodedTitle}&body=${encodedUrl}`;
+                break;
+                
+            case 'x':
+                window.open(`https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`, '_blank', 'width=600,height=400');
+                break;
+                
+            case 'telegram':
+                window.open(`https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`, '_blank', 'width=600,height=400');
+                break;
+        }
+        
+        // Update share count for all platforms except copy (already handled)
+        if (type !== 'copy') {
+            updateShareCount(postId);
+        }
+        
+        // Đóng modal sau khi chia sẻ
+        setTimeout(() => {
+            const modal = document.getElementById(`shareModal-${postId}`);
+            if (modal) {
+                closeShareModal(modal);
+            }
+        }, 500);
+    }
+    
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text);
+        } else {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+        }
+    }
+    
+    function updateShareCount(postId) {
+        sendAjaxRequest('puna_tiktok_increment_shares', { post_id: postId })
+            .then(data => {
+                if (data.success && data.data.share_count !== undefined) {
+                    // Update share count in action item (xử lý cả action-item và interaction-item)
+                    const shareBtn = document.querySelector(`.action-item[data-action="share"][data-post-id="${postId}"], .interaction-item[data-action="share"][data-post-id="${postId}"]`);
+                    if (shareBtn) {
+                        const countEl = shareBtn.querySelector('.count') || shareBtn.querySelector('.stat-count');
+                        if (countEl) {
+                            countEl.textContent = formatNumber(data.data.share_count);
+                        }
+                    }
+                }
+            })
+            .catch(err => console.error('Error updating share count:', err));
+    }
+    
+    /**
+     * Hiển thị toast notification
+     * @param {string} message - Nội dung thông báo
+     * @param {string} type - Loại thông báo: 'success', 'error', 'warning', 'info' (mặc định: 'info')
+     * @param {number} duration - Thời gian hiển thị (ms, mặc định: 3000)
+     */
+    function showToast(message, type = 'info', duration = 3000) {
+        // Tạo toast notification
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        toast.textContent = message;
+        
+        // Thêm icon nếu có
+        const iconMap = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+        
+        if (iconMap[type]) {
+            const icon = document.createElement('span');
+            icon.className = 'toast-icon';
+            icon.textContent = iconMap[type];
+            toast.insertBefore(icon, toast.firstChild);
+        }
+        
+        document.body.appendChild(toast);
+        
+        // Trigger animation
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 10);
+        
+        // Tự động ẩn sau duration
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }, duration);
+    }
+    
+    // Toast CSS is now in toast.css file
 
     // Đóng khi click vào overlay
     document.addEventListener('click', function(e) {
@@ -716,7 +1045,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Cập nhật số lượng comments
                 updateCommentCount(postId);
             } else {
-                alert('Có lỗi xảy ra khi đăng bình luận.');
+                showToast('Có lỗi xảy ra khi đăng bình luận.', 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Đăng';
             }
@@ -732,10 +1061,19 @@ document.addEventListener("DOMContentLoaded", function() {
      * Thêm comment mới vào danh sách
      */
     function addCommentToList(postId, commentText, commentId) {
-        const overlay = document.getElementById('comments-overlay-' + postId) || document.querySelector('.comments-overlay');
-        if (!overlay) return;
+        // Tìm comments list từ overlay (feed) hoặc từ video-watch-comments (single page)
+        let commentsList = null;
+        const overlay = document.getElementById('comments-overlay-' + postId);
+        if (overlay) {
+            commentsList = overlay.querySelector('.comments-list');
+        } else {
+            // Single video page - tìm từ .video-watch-comments
+            const watchComments = document.querySelector('.video-watch-comments');
+            if (watchComments) {
+                commentsList = watchComments.querySelector('.comments-list');
+            }
+        }
         
-        const commentsList = overlay.querySelector('.comments-list');
         if (!commentsList) return;
         
         // Xóa message "no comments" nếu có
@@ -790,16 +1128,29 @@ document.addEventListener("DOMContentLoaded", function() {
      * Thêm reply mới vào danh sách
      */
     function addReplyToList(postId, parentId, commentText, commentId) {
-        const overlay = document.getElementById('comments-overlay-' + postId) || document.querySelector('.comments-overlay');
-        if (!overlay) return;
+        // Tìm comment item từ overlay (feed) hoặc từ video-watch-comments (single page)
+        let parentItem = null;
+        let container = null;
+        
+        const overlay = document.getElementById('comments-overlay-' + postId);
+        if (overlay) {
+            container = overlay;
+            parentItem = overlay.querySelector(`.comment-item[data-comment-id="${parentId}"]`);
+        } else {
+            // Single video page
+            const watchComments = document.querySelector('.video-watch-comments');
+            if (watchComments) {
+                container = watchComments;
+                parentItem = watchComments.querySelector(`.comment-item[data-comment-id="${parentId}"]`);
+            }
+        }
+        
+        if (!parentItem || !container) return;
         
         // Tìm hoặc tạo replies section
-        let repliesSection = overlay.querySelector(`.comment-replies[data-parent-id="${parentId}"]`);
+        let repliesSection = container.querySelector(`.comment-replies[data-parent-id="${parentId}"]`);
         
         if (!repliesSection) {
-            const parentItem = overlay.querySelector(`.comment-item[data-comment-id="${parentId}"]`);
-            if (!parentItem) return;
-            
             repliesSection = document.createElement('div');
             repliesSection.className = 'comment-replies';
             repliesSection.setAttribute('data-parent-id', parentId);
@@ -882,18 +1233,25 @@ document.addEventListener("DOMContentLoaded", function() {
      * Cập nhật số lượng comments
      */
     function updateCommentCount(postId) {
-        // Cập nhật trong video sidebar
-        const videoSidebar = document.querySelector(`.action-item[data-action="comment"][data-post-id="${postId}"] .count`);
+        // Cập nhật trong video sidebar (xử lý cả action-item và interaction-item)
+        const videoSidebar = document.querySelector(`.action-item[data-action="comment"][data-post-id="${postId}"] .count, .interaction-item[data-action="comment-toggle"][data-post-id="${postId}"] .stat-count`);
         if (videoSidebar) {
             const currentCount = parseInt(videoSidebar.textContent.replace(/[^\d]/g, '')) || 0;
             videoSidebar.textContent = formatNumber(currentCount + 1);
         }
         
-        // Cập nhật trong comments header
+        // Cập nhật trong comments header (overlay)
         const commentsHeader = document.querySelector(`#comments-overlay-${postId} .comments-header h3`);
         if (commentsHeader) {
             const currentCount = parseInt(commentsHeader.textContent.match(/\d+/)?.[0]) || 0;
             commentsHeader.textContent = `Bình luận (${formatNumber(currentCount + 1)})`;
+        }
+        
+        // Cập nhật trong comments tab (single video page)
+        const commentsTab = document.querySelector(`.comments-tab[data-tab="comments"]`);
+        if (commentsTab) {
+            const currentCount = parseInt(commentsTab.textContent.match(/\d+/)?.[0]) || 0;
+            commentsTab.textContent = `Bình luận (${formatNumber(currentCount + 1)})`;
         }
     }
 
@@ -910,7 +1268,34 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!checkLogin(e, () => {
             const commentItem = replyLink.closest('.comment-item');
         const overlay = replyLink.closest('.comments-overlay');
-        const postId = overlay ? overlay.id.replace('comments-overlay-', '') : '';
+        
+        // Lấy postId từ nhiều nguồn
+        let postId = '';
+        if (overlay) {
+            postId = overlay.id.replace('comments-overlay-', '');
+        } else {
+            // Nếu không có overlay (single-video page), tìm từ comment input hoặc video element
+            const commentInput = document.querySelector('.comment-input[data-post-id]');
+            if (commentInput) {
+                postId = commentInput.dataset.postId;
+            } else {
+                const videoElement = document.querySelector('.tiktok-video[data-post-id]');
+                if (videoElement) {
+                    postId = videoElement.dataset.postId;
+                } else {
+                    // Fallback: lấy từ URL hoặc global
+                    const urlMatch = window.location.pathname.match(/\/(\d+)\//);
+                    if (urlMatch) {
+                        postId = urlMatch[1];
+                    }
+                }
+            }
+        }
+        
+        if (!postId) {
+            console.error('Cannot find post ID for reply');
+            return;
+        }
         
         // Xóa reply input hiện tại nếu có
         const existingInput = document.querySelector('.reply-input-container');
@@ -1041,9 +1426,26 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!checkLogin(e)) return;
         
         const item = delBtn.closest('.comment-item');
+        // Tìm overlay (feed) hoặc video-watch-comments (single page)
         const overlay = delBtn.closest('.comments-overlay');
-        const overlayId = overlay ? overlay.id : '';
-        const postId = overlayId ? overlayId.replace('comments-overlay-', '') : '';
+        const watchComments = delBtn.closest('.video-watch-comments');
+        
+        let postId = '';
+        if (overlay) {
+            postId = overlay.id.replace('comments-overlay-', '');
+        } else if (watchComments) {
+            // Tìm postId từ comment input hoặc video element
+            const commentInput = watchComments.querySelector('.comment-input[data-post-id]');
+            if (commentInput) {
+                postId = commentInput.dataset.postId;
+            } else {
+                const videoElement = document.querySelector('.tiktok-video[data-post-id]');
+                if (videoElement) {
+                    postId = videoElement.dataset.postId;
+                }
+            }
+        }
+        
         const commentsList = delBtn.closest('.comments-list');
         const sidebar = delBtn.closest('.comments-sidebar');
         
@@ -1099,12 +1501,25 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
         
+        // Cập nhật trong video sidebar (xử lý cả action-item và interaction-item)
         if (postId) {
-            const sidebarCount = document.querySelector(`.action-item[data-action="comment"][data-post-id="${postId}"] .count`);
+            const sidebarCount = document.querySelector(`.action-item[data-action="comment"][data-post-id="${postId}"] .count, .interaction-item[data-action="comment-toggle"][data-post-id="${postId}"] .stat-count`);
             if (sidebarCount) {
                 const current = parseInt(sidebarCount.textContent.replace(/[^\d]/g, ''), 10) || 0;
                 const newCount = Math.max(0, current - totalCountToSubtract);
                 sidebarCount.textContent = formatNumber(newCount);
+            }
+        }
+        
+        // Cập nhật trong comments tab (single video page)
+        if (watchComments) {
+            const commentsTab = document.querySelector(`.comments-tab[data-tab="comments"]`);
+            if (commentsTab) {
+                const m = commentsTab.textContent.match(/\d+/);
+                if (m) {
+                    const newCount = Math.max(0, parseInt(m[0], 10) - totalCountToSubtract);
+                    commentsTab.textContent = `Bình luận (${formatNumber(newCount)})`;
+                }
             }
         }
         
@@ -1261,12 +1676,12 @@ document.addEventListener("DOMContentLoaded", function() {
         sendAjaxRequest('puna_tiktok_report_comment', { comment_id: commentId })
         .then(res => {
             if (res.success) {
-                alert('Đã báo cáo bình luận.');
+                showToast('Đã báo cáo bình luận.', 'success');
             } else {
-                alert(res.data && res.data.message ? res.data.message : 'Không thể báo cáo.');
+                showToast(res.data && res.data.message ? res.data.message : 'Không thể báo cáo.', 'error');
             }
         })
-        .catch(() => alert('Lỗi kết nối.'));
+        .catch(() => showToast('Lỗi kết nối.', 'error'));
     });
 
     // ============================================
@@ -1318,6 +1733,33 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!e.target.closest('.video-options-menu')) {
             document.querySelectorAll('.video-options-dropdown').forEach(d => d.classList.remove('show'));
         }
+        if (!e.target.closest('.video-info-more-menu')) {
+            document.querySelectorAll('.video-info-more-dropdown').forEach(d => d.classList.remove('show'));
+        }
+    });
+    
+    // Video Info More Button (single video page)
+    document.addEventListener('click', function(e) {
+        const moreBtn = e.target.closest('.video-info-more-btn');
+        if (moreBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const menu = moreBtn.closest('.video-info-more-menu');
+            const dropdown = menu?.querySelector('.video-info-more-dropdown');
+            
+            if (!dropdown) return;
+            
+            const isShowing = dropdown.classList.contains('show');
+            
+            // Close all other dropdowns
+            document.querySelectorAll('.video-info-more-dropdown').forEach(d => d.classList.remove('show'));
+            
+            // Toggle current dropdown
+            if (!isShowing) {
+                dropdown.classList.add('show');
+            }
+        }
     });
 
     // ============================================
@@ -1354,6 +1796,36 @@ document.addEventListener("DOMContentLoaded", function() {
     const profileVideosSections = document.querySelectorAll('.profile-videos-section');
     const profileTabContents = document.querySelectorAll('.profile-tab-content');
     
+    // Initialize active tab on page load
+    function initializeProfileTabs() {
+        const activeTab = document.querySelector('.profile-tab.active');
+        if (activeTab) {
+            const targetTab = activeTab.getAttribute('data-tab');
+            
+            // Show/hide content based on active tab
+            profileVideosSections.forEach(section => {
+                if (section.id === targetTab + '-tab') {
+                    section.classList.add('active');
+                    section.style.display = 'block';
+                } else {
+                    section.classList.remove('active');
+                    section.style.display = 'none';
+                }
+            });
+            
+            profileTabContents.forEach(content => {
+                if (content.id === targetTab + '-tab') {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+    }
+    
+    // Run on page load
+    initializeProfileTabs();
+    
     profileTabs.forEach(tab => {
         tab.addEventListener('click', function() {
             const targetTab = this.getAttribute('data-tab');
@@ -1364,16 +1836,20 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // Show/hide content - Support cả profile-videos-section và profile-tab-content
             profileVideosSections.forEach(section => {
-                section.style.display = 'none';
                 if (section.id === targetTab + '-tab') {
+                    section.classList.add('active');
                     section.style.display = 'block';
+                } else {
+                    section.classList.remove('active');
+                    section.style.display = 'none';
                 }
             });
             
             profileTabContents.forEach(content => {
-                content.classList.remove('active');
                 if (content.id === targetTab + '-tab') {
                     content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
                 }
             });
         });
@@ -2116,7 +2592,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         function handleFileSelect(file) {
             if (!file || !file.type.startsWith('video/')) {
-                alert('Vui lòng chọn file video hợp lệ');
+                showToast('Vui lòng chọn file video hợp lệ', 'warning');
                 return;
             }
 
@@ -2274,7 +2750,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (publishBtn) {
             publishBtn.addEventListener('click', () => {
                 if (!selectedVideoFile) {
-                    alert('Vui lòng chọn video');
+                    showToast('Vui lòng chọn video', 'warning');
                     return;
                 }
 
@@ -2342,7 +2818,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
             // Show loading overlay
             if (uploadLoadingOverlay) {
-                uploadLoadingOverlay.style.display = 'flex';
+                uploadLoadingOverlay.classList.add('show');
             }
 
             // Upload progress
@@ -2390,33 +2866,33 @@ document.addEventListener("DOMContentLoaded", function() {
                                     : '/';
                             }
                         } else {
-                            alert(response.data?.message || 'Có lỗi xảy ra khi upload video');
+                            showToast(response.data?.message || 'Có lỗi xảy ra khi upload video', 'error');
                             if (uploadLoadingOverlay) {
-                                uploadLoadingOverlay.style.display = 'none';
+                                uploadLoadingOverlay.classList.remove('show');
                             }
                             resetUploadProgress();
                         }
                     } catch (e) {
                         console.error('Error parsing response:', e);
-                        alert('Có lỗi xảy ra khi upload video');
+                        showToast('Có lỗi xảy ra khi upload video', 'error');
                         if (uploadLoadingOverlay) {
-                            uploadLoadingOverlay.style.display = 'none';
+                            uploadLoadingOverlay.classList.remove('show');
                         }
                         resetUploadProgress();
                     }
                 } else {
-                    alert('Có lỗi xảy ra khi upload video');
+                    showToast('Có lỗi xảy ra khi upload video', 'error');
                     if (uploadLoadingOverlay) {
-                        uploadLoadingOverlay.style.display = 'none';
+                        uploadLoadingOverlay.classList.remove('show');
                     }
                     resetUploadProgress();
                 }
             });
 
             xhr.addEventListener('error', () => {
-                alert('Có lỗi xảy ra khi upload video');
+                showToast('Có lỗi xảy ra khi upload video', 'error');
                 if (uploadLoadingOverlay) {
-                    uploadLoadingOverlay.style.display = 'none';
+                    uploadLoadingOverlay.classList.remove('show');
                 }
                 resetUploadProgress();
             });
@@ -2448,4 +2924,70 @@ document.addEventListener("DOMContentLoaded", function() {
             return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
     }
+
+    // ============================================
+    // LOGIN TO COMMENT LINK
+    // ============================================
+    
+    document.addEventListener('click', function(e) {
+        const loginLink = e.target.closest('.login-to-comment-link');
+        if (loginLink) {
+            e.preventDefault();
+            e.stopPropagation();
+            openLoginPopup();
+        }
+    });
+
+    // ============================================
+    // DELETE VIDEO
+    // ============================================
+    
+    document.addEventListener('click', function(e) {
+        const deleteBtn = e.target.closest('.delete-video-item');
+        if (!deleteBtn) return;
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const postId = deleteBtn.dataset.postId;
+        if (!postId) return;
+        
+        // Confirm deletion
+        if (!confirm('Bạn có chắc chắn muốn xóa video này? Hành động này không thể hoàn tác.')) {
+            return;
+        }
+        
+        // Close dropdown if open
+        const dropdown = deleteBtn.closest('.video-options-dropdown, .video-info-more-dropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+        
+        // Send AJAX request
+        sendAjaxRequest('puna_tiktok_delete_video', {
+            post_id: postId
+        })
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                if (data.data?.message) {
+                    showToast(data.data.message);
+                }
+                
+                // Redirect to home page or profile
+                const redirectUrl = data.data?.redirect_url || (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.home_url) || window.location.origin;
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 1000);
+            } else {
+                // Show error message
+                const errorMsg = data.data?.message || 'Có lỗi xảy ra khi xóa video.';
+                showToast(errorMsg, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('AJAX error:', error);
+            showToast('Có lỗi xảy ra khi xóa video. Vui lòng thử lại.', 'error');
+        });
+    });
 });

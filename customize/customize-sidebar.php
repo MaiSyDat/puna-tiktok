@@ -1,7 +1,6 @@
 <?php
 /**
  * Sidebar Customizer Component
- * Handles logo and menu settings
  *
  * @package puna-tiktok
  */
@@ -245,10 +244,9 @@ class Puna_TikTok_Customize_Sidebar {
 
     /**
      * Get upload page URL
-     * Sử dụng rewrite rule, không cần tạo page thực sự
      */
     public static function get_upload_page_url() {
-        // Sử dụng rewrite rule, URL sẽ là /upload
+        // Using rewrite rule, URL will be /upload
         return home_url('/upload');
     }
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Gutenberg Blocks (OOP)
+ * Gutenberg Blocks
  *
  * @package puna-tiktok
  */
@@ -79,13 +79,12 @@ class Puna_TikTok_Blocks
                 ),
             ),
             'category' => 'puna',
-            // Yêu cầu context để lấy $post_id
             'uses_context' => [ 'postId', 'postType' ],
         ));
     }
 
     /**
-     * Hàm render_callback ĐÃ ĐƯỢC CẬP NHẬT
+     * render_callback
      *
      * @param array $attributes
      * @param string $content
@@ -96,39 +95,35 @@ class Puna_TikTok_Blocks
     {
         $post_id = isset($block->context['postId']) ? intval($block->context['postId']) : 0;
         if (!$post_id) {
-            return ''; // Không có context của bài đăng
+            return '';
         }
 
-        // Lấy video ID từ attribute (đã được đồng bộ từ meta)
+        // get video id
         $video_id = isset($attributes['videoId']) ? intval($attributes['videoId']) : 0;
 
-        // Kiểm tra dự phòng nếu attribute rỗng
         if (!$video_id) {
             $video_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
         }
 
-        // Nếu không có video ID, hoặc video URL không hợp lệ -> không hiển thị gì cả
         if (!$video_id || !wp_get_attachment_url($video_id)) {
             return '';
         }
         
         global $post;
-        $post = get_post($post_id); // Lấy đối tượng bài đăng
+        $post = get_post($post_id);
         if (!$post) {
-            return ''; // Bài đăng không tồn tại
+            return '';
         }
         
-        setup_postdata($post); // Thiết lập dữ liệu toàn cục
+        setup_postdata($post);
 
         ob_start();
         
-        // Gọi file template part của bạn
-        // Đường dẫn 'template-parts/video/content'
         get_template_part('template-parts/video/content');
         
         $output = ob_get_clean();
         
-        wp_reset_postdata(); // Dọn dẹp dữ liệu toàn cục
+        wp_reset_postdata();
 
         return $output;
     }
