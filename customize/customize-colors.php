@@ -183,6 +183,67 @@ class Puna_TikTok_Customize_Colors {
                 --puna-font-family: <?php echo esc_attr($font_family); ?>;
             }
             
+            /* Dark theme overrides via CSS variables */
+            body.theme-dark {
+                --puna-bg: #0f0f11;
+                --puna-text: #e5e7eb;
+                --puna-link: #7cc4ff;
+                --puna-muted: rgba(255,255,255,0.12);
+                color: var(--puna-text, #e5e7eb);
+            }
+
+            body.theme-dark,
+            body.theme-dark .tiktok-app,
+            body.theme-dark .main-content,
+            body.theme-dark .sidebar,
+            body.theme-dark p,
+            body.theme-dark span,
+            body.theme-dark li,
+            body.theme-dark label,
+            body.theme-dark input,
+            body.theme-dark textarea,
+            body.theme-dark select,
+            body.theme-dark button,
+            body.theme-dark h1,
+            body.theme-dark h2,
+            body.theme-dark h3,
+            body.theme-dark h4,
+            body.theme-dark h5,
+            body.theme-dark h6,
+            body.theme-dark .video-caption,
+            body.theme-dark .video-details h4,
+            body.theme-dark .video-tags .tag,
+            body.theme-dark .comment-author,
+            body.theme-dark .comment-text,
+            body.theme-dark .comment-date,
+            body.theme-dark .reply-link,
+            body.theme-dark .comment-likes span,
+            body.theme-dark .comment-options-btn,
+            body.theme-dark .comment-action-btn,
+            body.theme-dark .comment-author-link,
+            body.theme-dark .search-suggestion-item,
+            body.theme-dark .search-suggestions-list li span,
+            body.theme-dark .search-tabs .search-tab {
+                color: var(--puna-text, #e5e7eb);
+            }
+
+            body.theme-dark a {
+                color: var(--puna-link, #7cc4ff);
+            }
+
+            body.theme-dark a:hover {
+                color: var(--puna-primary, #25F4EE);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                body:not(.theme-light):not(.theme-dark) {
+                    --puna-bg: #0f0f11;
+                    --puna-text: #e5e7eb;
+                    --puna-link: #7cc4ff;
+                    --puna-muted: rgba(255,255,255,0.12);
+                }
+            }
+            
             /* Apply font family globally */
             body {
                 font-family: var(--puna-font-family);

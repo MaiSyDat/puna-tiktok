@@ -1854,60 +1854,6 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     });
-    
-    // Profile Follow Button
-    const profileFollowBtn = document.querySelector('.profile-follow-btn');
-    if (profileFollowBtn) {
-        profileFollowBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const userId = this.getAttribute('data-user-id');
-            const isFollowing = this.getAttribute('data-is-following') === '1';
-            
-            // Check login first
-            if (!checkLogin(e)) {
-                return;
-            }
-            
-            // Toggle follow state (sẽ implement AJAX sau)
-            this.classList.toggle('following');
-            const newState = !isFollowing;
-            this.setAttribute('data-is-following', newState ? '1' : '0');
-            
-            if (newState) {
-                this.innerHTML = '<span>Đã theo dõi</span>';
-            } else {
-                this.innerHTML = '<span>Theo dõi</span>';
-            }
-            
-            // TODO: Add AJAX call to save follow state
-            // sendAjaxRequest('puna_tiktok_toggle_follow', { user_id: userId, follow: newState });
-        });
-    }
-    
-    // Comment Follow Button (small buttons in comments)
-    document.addEventListener('click', function(e) {
-        const commentFollowBtn = e.target.closest('.comment-follow-btn');
-        if (commentFollowBtn) {
-            e.preventDefault();
-            const userId = commentFollowBtn.getAttribute('data-user-id');
-            
-            // Check login
-            if (!checkLogin(e)) {
-                return;
-            }
-            
-            // Toggle follow state
-            commentFollowBtn.classList.toggle('following');
-            
-            if (commentFollowBtn.classList.contains('following')) {
-                commentFollowBtn.innerHTML = '<i class="fa-solid fa-check"></i> Đã theo dõi';
-            } else {
-                commentFollowBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Theo dõi';
-            }
-            
-            // TODO: Add AJAX call to save follow state
-        }
-    });
 
     // ============================================
     // SEARCH PANEL
@@ -2923,6 +2869,244 @@ document.addEventListener("DOMContentLoaded", function() {
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
+
+        // Hashtag functionality
+        const hashtagPlaceholder = document.getElementById('hashtagPlaceholder');
+        const hashtagDropdown = document.getElementById('hashtagDropdown');
+        const hashtagList = document.getElementById('hashtagList');
+        const hashtagCloseBtn = document.getElementById('hashtagCloseBtn');
+        let allHashtags = [];
+
+        // Load popular hashtags
+        function loadPopularHashtags() {
+            if (!hashtagList) return Promise.resolve();
+            
+            hashtagList.innerHTML = '<div class="hashtag-loading">Đang tải...</div>';
+            
+            return sendAjaxRequest('puna_tiktok_get_popular_hashtags', { limit: 100 })
+                .then(data => {
+                    if (data.success && data.data.hashtags) {
+                        allHashtags = data.data.hashtags;
+                        filteredHashtags = allHashtags;
+                        return allHashtags;
+                    } else {
+                        hashtagList.innerHTML = '<div class="hashtag-empty">Không có hashtag nào</div>';
+                        return [];
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading hashtags:', error);
+                    hashtagList.innerHTML = '<div class="hashtag-error">Có lỗi xảy ra khi tải hashtag</div>';
+                    return [];
+                });
+        }
+
+        // Render hashtags
+        function renderHashtags(hashtags) {
+            if (!hashtagList) return;
+            
+            if (hashtags.length === 0) {
+                hashtagList.innerHTML = '<div class="hashtag-empty">Không tìm thấy hashtag nào</div>';
+                return;
+            }
+            
+            hashtagList.innerHTML = hashtags.map(hashtag => `
+                <div class="hashtag-item" data-hashtag="${hashtag.name}">
+                    <span class="hashtag-name">#${hashtag.name}</span>
+                    <span class="hashtag-count">${hashtag.count} video</span>
+                </div>
+            `).join('');
+            
+            // Add click handlers
+            hashtagList.querySelectorAll('.hashtag-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const hashtagName = item.dataset.hashtag;
+                    insertHashtag(hashtagName);
+                });
+            });
+        }
+
+        // Insert hashtag into textarea
+        function insertHashtag(hashtagName) {
+            if (!descriptionInput) return;
+            
+            const cursorPos = descriptionInput.selectionStart;
+            const textBefore = descriptionInput.value.substring(0, cursorPos);
+            const textAfter = descriptionInput.value.substring(cursorPos);
+            
+            // Find the last "#" before cursor
+            const lastHashIndex = textBefore.lastIndexOf('#');
+            
+            if (lastHashIndex === -1) {
+                // No "#" found, insert "#" + hashtag name
+                let hashtagText = `#${hashtagName}`;
+                if (textBefore && !textBefore.match(/\s$/)) {
+                    hashtagText = ' ' + hashtagText;
+                }
+                if (textAfter && !textAfter.match(/^\s/)) {
+                    hashtagText = hashtagText + ' ';
+                }
+                const newText = textBefore + hashtagText + textAfter;
+                descriptionInput.value = newText;
+                
+                if (charCount) {
+                    charCount.textContent = newText.length;
+                }
+                
+                const newCursorPos = cursorPos + hashtagText.length;
+                descriptionInput.setSelectionRange(newCursorPos, newCursorPos);
+            } else {
+                // Replace text from "#" to cursor with "#" + hashtag name
+                const textBeforeHash = textBefore.substring(0, lastHashIndex);
+                const hashtagText = `#${hashtagName}`;
+                const spaceAfter = (textAfter && !textAfter.match(/^\s/)) ? ' ' : '';
+                const newText = textBeforeHash + hashtagText + spaceAfter + textAfter;
+                descriptionInput.value = newText;
+                
+                if (charCount) {
+                    charCount.textContent = newText.length;
+                }
+                
+                const newCursorPos = textBeforeHash.length + hashtagText.length + spaceAfter.length;
+                descriptionInput.setSelectionRange(newCursorPos, newCursorPos);
+            }
+            
+            descriptionInput.focus();
+            
+            // Close dropdown
+            if (hashtagDropdown) {
+                hashtagDropdown.classList.remove('show');
+            }
+        }
+
+        // Click hashtag placeholder - only insert "#"
+        if (hashtagPlaceholder) {
+            hashtagPlaceholder.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (!descriptionInput) return;
+                
+                // Insert "#" into textarea at cursor position
+                const cursorPos = descriptionInput.selectionStart;
+                const textBefore = descriptionInput.value.substring(0, cursorPos);
+                const textAfter = descriptionInput.value.substring(cursorPos);
+                
+                // Check if we need to add space before
+                let hashtagPrefix = '#';
+                if (textBefore && !textBefore.match(/\s$/)) {
+                    hashtagPrefix = ' #';
+                }
+                
+                const newText = textBefore + hashtagPrefix + textAfter;
+                descriptionInput.value = newText;
+                
+                // Update character count
+                if (charCount) {
+                    charCount.textContent = newText.length;
+                }
+                
+                // Set cursor position after "#"
+                const newCursorPos = cursorPos + hashtagPrefix.length;
+                descriptionInput.setSelectionRange(newCursorPos, newCursorPos);
+                descriptionInput.focus();
+            });
+        }
+        
+        // Detect hashtag typing and show suggestions
+        if (descriptionInput) {
+            descriptionInput.addEventListener('input', (e) => {
+                checkAndShowHashtagSuggestions();
+            });
+            
+            descriptionInput.addEventListener('keyup', (e) => {
+                checkAndShowHashtagSuggestions();
+            });
+            
+            descriptionInput.addEventListener('click', () => {
+                checkAndShowHashtagSuggestions();
+            });
+        }
+        
+        // Function to check if user is typing hashtag and show suggestions
+        function checkAndShowHashtagSuggestions() {
+            if (!descriptionInput || !hashtagDropdown) return;
+            
+            const cursorPos = descriptionInput.selectionStart;
+            const textBefore = descriptionInput.value.substring(0, cursorPos);
+            
+            // Find the last "#" before cursor
+            const lastHashIndex = textBefore.lastIndexOf('#');
+            
+            if (lastHashIndex === -1) {
+                // No "#" found, hide dropdown
+                hashtagDropdown.classList.remove('show');
+                return;
+            }
+            
+            // Check if there's a space or newline after "#" (hashtag is complete)
+            const textAfterHash = textBefore.substring(lastHashIndex + 1);
+            if (textAfterHash.match(/[\s\n]/)) {
+                // Hashtag is complete (has space after), hide dropdown
+                hashtagDropdown.classList.remove('show');
+                return;
+            }
+            
+            // Get the text after "#" (the search term)
+            const searchTerm = textAfterHash.toLowerCase().trim();
+            
+            // Show dropdown and filter hashtags
+            if (allHashtags.length === 0) {
+                // Load hashtags first
+                loadPopularHashtags().then(() => {
+                    filterAndShowHashtags(searchTerm);
+                });
+            } else {
+                filterAndShowHashtags(searchTerm);
+            }
+        }
+        
+        // Filter and show hashtags based on search term
+        function filterAndShowHashtags(searchTerm) {
+            if (!hashtagDropdown || !hashtagList) return;
+            
+            let filtered = allHashtags;
+            
+            if (searchTerm) {
+                // Filter hashtags that start with search term
+                filtered = allHashtags.filter(hashtag => 
+                    hashtag.name.toLowerCase().startsWith(searchTerm)
+                );
+            }
+            
+            // Show dropdown
+            hashtagDropdown.classList.add('show');
+            
+            // Render filtered hashtags
+            renderHashtags(filtered);
+        }
+
+        // Close hashtag dropdown
+        if (hashtagCloseBtn) {
+            hashtagCloseBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (hashtagDropdown) {
+                    hashtagDropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // Remove search input functionality - we'll use textarea input instead
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (hashtagDropdown && hashtagDropdown.classList.contains('show')) {
+                if (!hashtagDropdown.contains(e.target) && !hashtagPlaceholder.contains(e.target)) {
+                    hashtagDropdown.classList.remove('show');
+                }
+            }
+        });
     }
 
     // ============================================

@@ -108,11 +108,6 @@ $comments_count = get_comments_number($post_id);
                             <a href="<?php echo esc_url($comment_author_url); ?>" class="comment-author-link">
                                 <strong class="comment-author"><?php echo esc_html($comment->comment_author); ?></strong>
                             </a>
-                            <?php if (!$is_current_user && $comment_author_id) : ?>
-                                <button class="comment-follow-btn" data-user-id="<?php echo esc_attr($comment_author_id); ?>" title="Theo dõi">
-                                    <i class="fa-solid fa-plus"></i> Theo dõi
-                                </button>
-                            <?php endif; ?>
                         </div>
                         <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>
                         <div class="comment-footer">
@@ -183,11 +178,6 @@ $comments_count = get_comments_number($post_id);
                                         <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-author-link">
                                             <strong class="comment-author"><?php echo esc_html($reply->comment_author); ?></strong>
                                         </a>
-                                        <?php if (!$is_reply_current_user && $reply_author_id) : ?>
-                                            <button class="comment-follow-btn" data-user-id="<?php echo esc_attr($reply_author_id); ?>" title="Theo dõi">
-                                                <i class="fa-solid fa-plus"></i> Theo dõi
-                                            </button>
-                                        <?php endif; ?>
                                     </div>
                                     <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
                                     <div class="comment-footer">
@@ -263,11 +253,6 @@ $comments_count = get_comments_number($post_id);
                                                 <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-author-link">
                                                     <strong class="comment-author"><?php echo esc_html($reply->comment_author); ?></strong>
                                                 </a>
-                                                <?php if (!$is_more_reply_current_user && $more_reply_author_id) : ?>
-                                                    <button class="comment-follow-btn" data-user-id="<?php echo esc_attr($more_reply_author_id); ?>" title="Theo dõi">
-                                                        <i class="fa-solid fa-plus"></i> Theo dõi
-                                                    </button>
-                                                <?php endif; ?>
                                             </div>
                                             <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
                                             <div class="comment-footer">

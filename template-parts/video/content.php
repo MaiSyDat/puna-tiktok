@@ -1,21 +1,20 @@
 <?php
 $post_id = get_the_ID();
-
-$stored_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
-$video_url = $stored_id ? wp_get_attachment_url($stored_id) : '';
-if (! $video_url) {
-	$video_url = puna_tiktok_get_video_url($post_id);
-}
-
-// Get real stats
-$likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
-$comments = get_comments_number($post_id);
-$shares = get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0;
-$views = get_post_meta($post_id, '_puna_tiktok_video_views', true) ?: 0;
+$metadata = puna_tiktok_get_video_metadata($post_id);
+$video_url = $metadata['video_url'];
+$likes = $metadata['likes'];
+$comments = $metadata['comments'];
+$shares = $metadata['shares'];
+$saves = $metadata['saves'];
+$views = $metadata['views'];
 
 // Check if current user liked this video
 $is_liked = puna_tiktok_is_liked($post_id);
 $liked_class = $is_liked ? 'liked' : '';
+
+// Check if current user saved this video
+$is_saved = puna_tiktok_is_saved($post_id);
+$saved_class = $is_saved ? 'saved' : '';
 ?>
 
 <div class="video-row">
@@ -82,10 +81,9 @@ $liked_class = $is_liked ? 'liked' : '';
 	</section>
 
 	<aside class="video-sidebar" aria-hidden="false">
-		<div class="author-avatar-wrapper">
-			<img src="<?php echo get_avatar_url(get_the_author_meta('ID'), array('size' => 50)); ?>" alt="<?php the_author(); ?>" class="author-avatar">
-			<div class="follow-icon"><i class="fa-solid fa-plus"></i></div>
-		</div>
+	<div class="author-avatar-wrapper">
+		<img src="<?php echo get_avatar_url(get_the_author_meta('ID'), array('size' => 50)); ?>" alt="<?php the_author(); ?>" class="author-avatar">
+	</div>
 
 		<div class="action-item <?php echo esc_attr($liked_class); ?>" data-action="like" data-post-id="<?php echo esc_attr($post_id); ?>">
 			<i class="fa-solid fa-heart"></i>
@@ -97,12 +95,12 @@ $liked_class = $is_liked ? 'liked' : '';
 			<span class="count"><?php echo puna_tiktok_format_number($comments); ?></span>
 		</div>
 
-		<div class="action-item" data-action="save">
+		<div class="action-item <?php echo esc_attr($saved_class); ?>" data-action="save" data-post-id="<?php echo esc_attr($post_id); ?>">
 			<i class="fa-solid fa-bookmark"></i>
-			<span class="count"><?php echo puna_tiktok_format_number($shares); ?></span>
+			<span class="count"><?php echo puna_tiktok_format_number($saves); ?></span>
 		</div>
 
-		<div class="action-item" data-action="share">
+		<div class="action-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(get_the_title()); ?>">
 			<i class="fa-solid fa-share"></i>
 			<span class="count"><?php echo puna_tiktok_format_number($shares); ?></span>
 		</div>

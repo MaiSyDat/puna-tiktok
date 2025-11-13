@@ -36,19 +36,14 @@
             <?php
             global $withcomments;
             $withcomments = 1;
-            // Query
-            $video_query = new WP_Query(array(
-                'post_type' => 'post',
-                'posts_per_page' => -1,
-                'post_status' => 'publish',
-                'orderby' => 'date',
-                'order' => 'DESC'
-            ));
+            
+            // Query all posts (tag archives are handled by tag.php)
+            $video_query = puna_tiktok_get_video_query();
             
             if ( $video_query->have_posts() ) :
                 while ( $video_query->have_posts() ) : $video_query->the_post();
                     if ( has_block('puna/hupuna-tiktok', get_the_ID()) ) {
-                        get_template_part('template-parts/content', 'video');
+                        get_template_part('template-parts/video/content');
                         comments_template();
                     }
                 endwhile;

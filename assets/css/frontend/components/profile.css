@@ -171,8 +171,15 @@
 
 .profile-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 6px;
+}
+
+@media (max-width: 768px) {
+    .profile-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 4px;
+    }
 }
 
 .profile-video-card {
@@ -186,21 +193,38 @@
     aspect-ratio: 9/16;
 }
 
+.profile-video-card .media-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
 .profile-video-card video {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.profile-video-card .video-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--puna-text);
-    margin-top: 8px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    padding: 0 4px;
+.video-views-overlay {
+    position: absolute;
+    bottom: 6px;
+    left: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    color: #fff;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    z-index: 2;
+}
+
+.video-views-overlay i {
+    font-size: 9px;
 }
 
 .video-card-overlay {

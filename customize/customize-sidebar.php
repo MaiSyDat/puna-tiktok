@@ -14,6 +14,8 @@ class Puna_TikTok_Customize_Sidebar {
     public function __construct() {
         add_action('customize_register', array($this, 'register_settings'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
+        add_action('wp_head', array($this, 'output_dynamic_css'));
+        add_action('customize_preview_init', array($this, 'customize_preview_js'));
     }
 
     /**
@@ -80,6 +82,39 @@ class Puna_TikTok_Customize_Sidebar {
             'section'  => 'puna_sidebar_section',
             'type'     => 'number',
         ));
+    }
+
+    /**
+     * Live preview JS for logo size/link
+     */
+    public function customize_preview_js() {
+        wp_enqueue_script(
+            'puna-tiktok-sidebar-customizer-preview',
+            get_template_directory_uri() . '/assets/js/customizer/preview.js',
+            array('customize-preview', 'jquery'),
+            '1.0.0',
+            true
+        );
+    }
+
+    /**
+     * Output dynamic CSS for logo dimensions
+     */
+    public function output_dynamic_css() {
+        $logo_w = absint(get_theme_mod('sidebar_logo_width', 220));
+        $logo_h = absint(get_theme_mod('sidebar_logo_height', 0)); // 0 = auto
+        ?>
+        <style id="puna-tiktok-sidebar-dynamic-css">
+            .sidebar .logo img {
+                max-width: <?php echo $logo_w ? $logo_w : 220; ?>px;
+                height: <?php echo $logo_h ? $logo_h . 'px' : 'auto'; ?>;
+            }
+            .sidebar.collapsed .logo img {
+                max-width: 40px;
+                height: auto;
+            }
+        </style>
+        <?php
     }
 
     /**
@@ -222,12 +257,6 @@ class Puna_TikTok_Customize_Sidebar {
                 'active' => get_query_var('puna_page') === 'explore',
             ),
             array(
-                'title' => 'Đã follow',
-                'url' => home_url('/followed'),
-                'icon' => 'fa-solid fa-user-plus',
-                'active' => get_query_var('puna_page') === 'followed',
-            ),
-            array(
                 'title' => 'Tải lên',
                 'url' => self::get_upload_page_url(),
                 'icon' => 'fa-solid fa-square-plus',
@@ -259,7 +288,6 @@ class Puna_TikTok_Customize_Sidebar {
             'home' => 'fa-solid fa-house',
             'khám phá' => 'fa-regular fa-compass',
             'explore' => 'fa-regular fa-compass',
-            'follow' => 'fa-solid fa-user-plus',
             'tải lên' => 'fa-solid fa-square-plus',
             'upload' => 'fa-solid fa-square-plus',
             'hồ sơ' => 'fa-regular fa-user',

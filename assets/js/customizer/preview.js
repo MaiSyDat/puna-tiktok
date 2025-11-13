@@ -89,5 +89,33 @@
         });
     });
 
+    // Sidebar Logo width/height live
+    function applyLogoSize(w, h) {
+        var $img = $('.sidebar .logo img');
+        if (!$img.length) return;
+        if (w !== null && typeof w !== 'undefined') {
+            $img.css('max-width', (parseInt(w, 10) || 0) > 0 ? parseInt(w, 10) + 'px' : '');
+        }
+        if (h !== null && typeof h !== 'undefined') {
+            if ((parseInt(h, 10) || 0) > 0) {
+                $img.css('height', parseInt(h, 10) + 'px');
+            } else {
+                $img.css('height', 'auto');
+            }
+        }
+    }
+
+    wp.customize('sidebar_logo_width', function(value) {
+        value.bind(function(newval) {
+            applyLogoSize(newval, null);
+        });
+    });
+
+    wp.customize('sidebar_logo_height', function(value) {
+        value.bind(function(newval) {
+            applyLogoSize(null, newval);
+        });
+    });
+
 })(jQuery);
 

@@ -59,7 +59,6 @@ class Puna_TikTok_Setup {
         $custom_pages = array(
             'upload'   => 'page-upload.php',
             'explore'  => 'template-parts/pages/explore.php',
-            'followed' => 'template-parts/pages/followed.php',
             'friends'  => 'template-parts/pages/friends.php',
             'messages' => 'template-parts/pages/messages.php',
             'profile'  => 'template-parts/pages/profile.php',
@@ -98,7 +97,6 @@ class Puna_TikTok_Setup {
         $page_templates = array(
             'upload'   => 'page-upload.php',
             'explore'  => 'template-parts/pages/explore.php',
-            'followed' => 'template-parts/pages/followed.php',
             'friends'  => 'template-parts/pages/friends.php',
             'messages' => 'template-parts/pages/messages.php',
             'profile'  => 'template-parts/pages/profile.php',
@@ -113,7 +111,6 @@ class Puna_TikTok_Setup {
                 $page_titles = array(
                     'upload'   => 'Upload Video',
                     'explore'  => 'Khám phá',
-                    'followed' => 'Đã follow',
                     'friends'  => 'Bạn bè',
                     'messages' => 'Tin nhắn',
                     'profile'  => 'Hồ sơ',
@@ -186,7 +183,6 @@ class Puna_TikTok_Setup {
             $page_titles = array(
                 'upload'   => 'Upload Video',
                 'explore'  => 'Khám phá',
-                'followed' => 'Đã follow',
                 'friends'  => 'Bạn bè',
                 'messages' => 'Tin nhắn',
                 'profile'  => 'Hồ sơ',
@@ -212,14 +208,14 @@ class Puna_TikTok_Setup {
     }
 
     /**
-     * Kiểm tra và flush rewrite rules nếu cần
+     * Check and remove rewrite rules if necessary
      */
     public function maybe_flush_rewrite_rules() {
         // Kiểm tra xem rewrite rules đã được flush chưa
         $rules = get_option('rewrite_rules', array());
         $upload_rule_exists = isset($rules['^upload/?$']);
         
-        // Nếu rule chưa tồn tại, flush rewrite rules
+        //If the rule does not exist, flush rewrite rules
         if (!$upload_rule_exists) {
             flush_rewrite_rules(false);
         }

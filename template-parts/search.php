@@ -116,14 +116,9 @@ $withcomments = 1;
                                 $post_obj = get_post($post_id);
                                 setup_postdata($post_obj);
                                 
-                                $video_url = get_post_meta($post_id, '_puna_tiktok_video_file_id', true) 
-                                    ? wp_get_attachment_url(get_post_meta($post_id, '_puna_tiktok_video_file_id', true))
-                                    : '';
-                                if (!$video_url) {
-                                    $video_url = puna_tiktok_get_video_url($post_id);
-                                }
-                                
-                                $likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
+                                $metadata = puna_tiktok_get_video_metadata($post_id);
+                                $video_url = $metadata['video_url'];
+                                $likes = $metadata['likes'];
                                 $thumbnail = '';
                                 
                                 // Get thumbnail from video

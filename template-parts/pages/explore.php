@@ -23,10 +23,13 @@ get_header();
 
 		<div class="explore-grid">
 			<?php
-			// Query
+			$displayed_count = 0;
+			$target_count = 12;
+			
+			// Query trending videos in 7 days (sorted by views, highest to lowest)
             $trending_query = new WP_Query(array(
                 'post_type' => 'post',
-				'posts_per_page' => 12,
+				'posts_per_page' => 50, // Query more to ensure we get enough after filtering
 				'post_status' => 'publish',
 				'orderby' => 'meta_value_num',
 				'meta_key' => '_puna_tiktok_video_views',
@@ -37,14 +40,15 @@ get_header();
 					),
 				),
 				'meta_query' => array(
-					'relation' => 'OR',
 					array(
 						'key' => '_puna_tiktok_video_views',
 						'compare' => 'EXISTS'
 					),
 					array(
-						'key' => '_puna_tiktok_video_likes',
-						'compare' => 'EXISTS'
+						'key' => '_puna_tiktok_video_views',
+						'value' => 0,
+						'compare' => '>',
+						'type' => 'NUMERIC'
 					)
 				)
 			));
@@ -53,64 +57,102 @@ get_header();
 			if (!$trending_query->have_posts()) {
                 $trending_query = new WP_Query(array(
                     'post_type' => 'post',
-					'posts_per_page' => 12,
+					'posts_per_page' => 50,
 					'post_status' => 'publish',
 					'orderby' => 'date',
 					'order' => 'DESC'
 				));
 			}
 			
+			// If still no posts, get all videos sorted by views
+			if (!$trending_query->have_posts()) {
+                $trending_query = new WP_Query(array(
+                    'post_type' => 'post',
+					'posts_per_page' => 50,
+					'post_status' => 'publish',
+					'orderby' => 'meta_value_num',
+					'meta_key' => '_puna_tiktok_video_views',
+					'order' => 'DESC',
+					'meta_query' => array(
+						array(
+							'key' => '_puna_tiktok_video_views',
+							'compare' => 'EXISTS'
+						),
+						array(
+							'key' => '_puna_tiktok_video_views',
+							'value' => 0,
+							'compare' => '>',
+							'type' => 'NUMERIC'
+						)
+					)
+				));
+			}
+			
+			// If still no posts, get any posts with video file
+			if (!$trending_query->have_posts()) {
+                $trending_query = new WP_Query(array(
+                    'post_type' => 'post',
+					'posts_per_page' => 50,
+					'post_status' => 'publish',
+					'orderby' => 'date',
+					'order' => 'DESC',
+					'meta_query' => array(
+						array(
+							'key' => '_puna_tiktok_video_file_id',
+							'compare' => 'EXISTS'
+						)
+					)
+				));
+			}
+			
 			if ($trending_query->have_posts()) :
-                while ($trending_query->have_posts()) : $trending_query->the_post();
-                        if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
-                        $video_url = puna_tiktok_get_video_url();
-						$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
-						$views = $views ? $views : 0;
-						$likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true);
-						$likes = $likes ? $likes : 0;
-					?>
-					<a href="<?php the_permalink(); ?>" class="explore-card" aria-label="Explore item">
-						<div class="media-wrapper ratio-9x16">
-							<video class="explore-video" muted playsinline>
-								<source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-							</video>
-							<div class="video-overlay">	
-								<div class="play-icon">
-									<i class="fa-solid fa-play"></i>
-								</div>
-							</div>
-						</div>
-						<div class="card-meta">
-							<div class="author">
-								<div class="avatar">
-									<img src="<?php echo get_avatar_url(get_the_author_meta('ID'), array('size' => 32)); ?>" alt="<?php the_author(); ?>">
-								</div>
-								<span class="username"><?php the_author(); ?></span>
-							</div>
-							<div class="stats">
-								<i class="fa-solid fa-heart"></i>
-								<span><?php echo puna_tiktok_format_number($likes); ?></span>
-							</div>
-						</div>
-					</a>
-					<?php
+				// Collect posts with views for sorting
+				$posts_with_views = array();
+				while ($trending_query->have_posts()) : $trending_query->the_post();
+					if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
+					$video_url = puna_tiktok_get_video_url();
+					if (empty($video_url)) { continue; }
+					
+					$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
+					$views = $views ? (int)$views : 0;
+					
+					$posts_with_views[] = array(
+						'post_id' => get_the_ID(),
+						'views' => $views,
+						'video_url' => $video_url
+					);
 				endwhile;
 				wp_reset_postdata();
-			else :
+				
+				// Sort by views (highest to lowest)
+				usort($posts_with_views, function($a, $b) {
+					return $b['views'] - $a['views'];
+				});
+				
+				// Display sorted posts
+				foreach ($posts_with_views as $post_data) :
+					if ($displayed_count >= $target_count) { break; }
+					
+					$displayed_count++;
+					get_template_part('template-parts/video-card', null, array(
+						'post_id' => $post_data['post_id'],
+						'video_url' => $post_data['video_url'],
+						'views' => $post_data['views'],
+						'card_class' => 'explore-card'
+					));
+				endforeach;
+			endif;
+			
+			// Show placeholder if no video was displayed
+			if ($displayed_count == 0) :
 				// Show placeholder if no video
 				for ($i = 1; $i <= 12; $i++) : ?>
 					<a href="#" class="explore-card" aria-label="Explore item">
 						<div class="media-wrapper ratio-9x16">
 							<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/placeholders/ph-' . (($i % 6) + 1) . '.jpg' ); ?>" alt="placeholder" />
-						</div>
-						<div class="card-meta">
-							<div class="author">
-								<div class="avatar"></div>
-								<span class="username">username_<?php echo (int) $i; ?></span>
-							</div>
-							<div class="stats">
-								<i class="fa-regular fa-heart"></i>
-								<span>12.<?php echo (int) $i; ?>K</span>
+							<div class="video-views-overlay">
+								<i class="fa-solid fa-play"></i>
+								<span>0</span>
 							</div>
 						</div>
 					</a>

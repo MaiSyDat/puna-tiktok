@@ -92,36 +92,9 @@ $is_logged_in = is_user_logged_in();
 						<?php
                         while ($user_videos_query->have_posts()) : $user_videos_query->the_post();
                             if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
-                            $video_url = puna_tiktok_get_video_url();
-							$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
-							$likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true);
-							$views = $views ? $views : 0;
-							$likes = $likes ? $likes : 0;
-						?>
-							<a href="<?php the_permalink(); ?>" class="profile-video-card">
-								<div class="media-wrapper ratio-9x16">
-									<video class="explore-video" muted playsinline>
-										<source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-									</video>
-									<div class="video-overlay">
-										<div class="play-icon">
-											<i class="fa-solid fa-play"></i>
-										</div>
-									</div>
-									<div class="video-stats-overlay">
-										<div class="stat-badge">
-											<i class="fa-solid fa-play"></i>
-											<span><?php echo puna_tiktok_format_number($views); ?></span>
-										</div>
-										<div class="stat-badge">
-											<i class="fa-solid fa-heart"></i>
-											<span><?php echo puna_tiktok_format_number($likes); ?></span>
-										</div>
-									</div>
-								</div>
-								<div class="video-title"><?php echo esc_html(get_the_title()); ?></div>
-							</a>
-						<?php
+                            get_template_part('template-parts/video-card', null, array(
+								'card_class' => 'profile-video-card'
+							));
 						endwhile;
 						wp_reset_postdata();
 						?>
@@ -161,36 +134,9 @@ $is_logged_in = is_user_logged_in();
 							<?php
                             while ($liked_query->have_posts()) : $liked_query->the_post();
                                 if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
-                                $video_url = puna_tiktok_get_video_url();
-								$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
-								$likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true);
-								$views = $views ? $views : 0;
-								$likes = $likes ? $likes : 0;
-							?>
-								<a href="<?php the_permalink(); ?>" class="profile-video-card">
-									<div class="media-wrapper ratio-9x16">
-										<video class="explore-video" muted playsinline>
-											<source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-										</video>
-										<div class="video-overlay">
-											<div class="play-icon">
-												<i class="fa-solid fa-play"></i>
-											</div>
-										</div>
-										<div class="video-stats-overlay">
-											<div class="stat-badge">
-												<i class="fa-solid fa-play"></i>
-												<span><?php echo puna_tiktok_format_number($views); ?></span>
-											</div>
-											<div class="stat-badge liked">
-												<i class="fa-solid fa-heart"></i>
-												<span><?php echo puna_tiktok_format_number($likes); ?></span>
-											</div>
-										</div>
-									</div>
-									<div class="video-title"><?php echo esc_html(get_the_title()); ?></div>
-								</a>
-							<?php
+                                get_template_part('template-parts/video-card', null, array(
+									'card_class' => 'profile-video-card'
+								));
 							endwhile;
 							wp_reset_postdata();
 							?>
@@ -236,36 +182,9 @@ $is_logged_in = is_user_logged_in();
 							<?php
                             while ($saved_query->have_posts()) : $saved_query->the_post();
                                 if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
-                                $video_url = puna_tiktok_get_video_url();
-								$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
-								$likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true);
-								$views = $views ? $views : 0;
-								$likes = $likes ? $likes : 0;
-							?>
-								<a href="<?php the_permalink(); ?>" class="profile-video-card">
-									<div class="media-wrapper ratio-9x16">
-										<video class="explore-video" muted playsinline>
-											<source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-										</video>
-										<div class="video-overlay">
-											<div class="play-icon">
-												<i class="fa-solid fa-play"></i>
-											</div>
-										</div>
-										<div class="video-stats-overlay">
-											<div class="stat-badge">
-												<i class="fa-solid fa-play"></i>
-												<span><?php echo puna_tiktok_format_number($views); ?></span>
-											</div>
-											<div class="stat-badge">
-												<i class="fa-solid fa-heart"></i>
-												<span><?php echo puna_tiktok_format_number($likes); ?></span>
-											</div>
-										</div>
-									</div>
-									<div class="video-title"><?php echo esc_html(get_the_title()); ?></div>
-								</a>
-							<?php
+                                get_template_part('template-parts/video-card', null, array(
+									'card_class' => 'profile-video-card'
+								));
 							endwhile;
 							wp_reset_postdata();
 							?>

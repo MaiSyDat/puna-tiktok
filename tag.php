@@ -10,8 +10,14 @@
         global $withcomments;
         $withcomments = 1;
 
-        // Query posts (tag archives are handled by tag.php)
-        $video_query = puna_tiktok_get_video_query();
+        // Get current tag
+        $tag = get_queried_object();
+        
+        // Query posts with this tag (or all if tag not found)
+        $tag_id = ($tag && isset($tag->term_id)) ? $tag->term_id : null;
+        $video_query = puna_tiktok_get_video_query(array(
+            'tag_id' => $tag_id
+        ));
         
         if ( $video_query->have_posts() ) :
             while ( $video_query->have_posts() ) : $video_query->the_post();
@@ -23,9 +29,8 @@
         else :
             ?>
             <div class="video-loading">
-                <h3>Chưa có video nào</h3>
-                <p>Hãy thêm video đầu tiên của bạn!</p>
-                <a href="<?php echo admin_url('post-new.php'); ?>" class="btn-add-video">Thêm Video</a>
+                <h3>Chưa có video nào với tag này</h3>
+                <p>Không tìm thấy video nào với tag "<?php echo esc_html($tag->name ?? ''); ?>"</p>
             </div>
             <?php
         endif;
@@ -41,5 +46,4 @@
 </div>
 
 <?php get_footer(); ?>
-
 

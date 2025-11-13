@@ -122,3 +122,75 @@ function puna_tiktok_get_saved_videos($user_id = null) {
     
     return $saved_posts;
 }
+
+/**
+ * Get video metadata (views, likes, shares, saves, video_url)
+ * Returns an array with all video stats
+ */
+function puna_tiktok_get_video_metadata($post_id = null) {
+    if (!$post_id) {
+        $post_id = get_the_ID();
+    }
+    
+    return array(
+        'post_id' => $post_id,
+        'video_url' => puna_tiktok_get_video_url($post_id),
+        'views' => (int) get_post_meta($post_id, '_puna_tiktok_video_views', true) ?: 0,
+        'likes' => (int) get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0,
+        'shares' => (int) get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0,
+        'saves' => (int) get_post_meta($post_id, '_puna_tiktok_video_saves', true) ?: 0,
+        'comments' => (int) get_comments_number($post_id) ?: 0
+    );
+}
+
+/**
+ * Get WP_Query for video posts with optional filters
+ * 
+ * @param array $args {
+ *     @type int    $tag_id      Tag ID to filter by
+ *     @type int    $author_id   Author ID to filter by
+ *     @type array  $post__in    Array of post IDs to include
+ *     @type string $orderby     Order by field (default: 'date')
+ *     @type string $order       Order direction (default: 'DESC')
+ *     @type int    $posts_per_page Number of posts (default: -1 for all)
+ * }
+ * @return WP_Query
+ */
+function puna_tiktok_get_video_query($args = array()) {
+    $defaults = array(
+        'post_type' => 'post',
+        'post_status' => 'publish',
+        'posts_per_page' => -1,
+        'orderby' => 'date',
+        'order' => 'DESC'
+    );
+    
+    $query_args = wp_parse_args($args, $defaults);
+    
+    // Add tag filter if provided
+    if (!empty($args['tag_id'])) {
+        $query_args['tax_query'] = array(
+            array(
+                'taxonomy' => 'post_tag',
+                'field' => 'term_id',
+                'terms' => $args['tag_id'],
+                'operator' => 'IN'
+            )
+        );
+    }
+    
+    // Add author filter if provided
+    if (!empty($args['author_id'])) {
+        $query_args['author'] = $args['author_id'];
+    }
+    
+    // Add post__in if provided
+    if (!empty($args['post__in'])) {
+        $query_args['post__in'] = $args['post__in'];
+        if (empty($query_args['orderby']) || $query_args['orderby'] === 'date') {
+            $query_args['orderby'] = 'post__in';
+        }
+    }
+    
+    return new WP_Query($query_args);
+}

@@ -47,6 +47,14 @@
     padding: 20px 16px;
 }
 
+.logo img {
+    display: block;
+    max-width: 220px;
+    width: auto;
+    height: 50px;
+    object-fit: contain;
+}
+
 .sidebar ul {
     list-style: none;
     padding: 0 8px;

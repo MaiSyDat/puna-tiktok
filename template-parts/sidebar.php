@@ -22,7 +22,7 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
     <?php if ($logo_url) : ?>
         <div class="logo">
             <a href="<?php echo esc_url($logo_link); ?>">
-                <img src="<?php echo esc_url($logo_url); ?>" alt="Logo" width="<?php echo esc_attr($logo_width); ?>" height="<?php echo esc_attr($logo_height); ?>">
+                <img src="<?php echo esc_url($logo_url); ?>" alt="Logo">
             </a>
         </div>
     <?php else : ?>

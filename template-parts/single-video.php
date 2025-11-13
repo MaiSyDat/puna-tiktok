@@ -16,18 +16,13 @@ if (!has_block('puna/hupuna-tiktok', $post_id)) {
 }
 
 // Get video data
-$stored_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
-$video_url = $stored_id ? wp_get_attachment_url($stored_id) : '';
-if (!$video_url) {
-    $video_url = puna_tiktok_get_video_url($post_id);
-}
-
-// Get stats
-$likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
-$comments_count = get_comments_number($post_id);
-$shares = get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0;
-$saves = get_post_meta($post_id, '_puna_tiktok_video_saves', true) ?: 0;
-$views = get_post_meta($post_id, '_puna_tiktok_video_views', true) ?: 0;
+$metadata = puna_tiktok_get_video_metadata($post_id);
+$video_url = $metadata['video_url'];
+$likes = $metadata['likes'];
+$comments_count = $metadata['comments'];
+$shares = $metadata['shares'];
+$saves = $metadata['saves'];
+$views = $metadata['views'];
 
 // Check if liked
 $is_liked = puna_tiktok_is_liked($post_id);
@@ -56,6 +51,11 @@ if (has_block('puna/hupuna-tiktok', $post_id)) {
         if ($block['blockName'] !== 'puna/hupuna-tiktok' && !empty($block['innerHTML'])) {
             $caption .= $block['innerHTML'];
         }
+    }
+    // Remove any remaining hashtags from caption (in case they weren't removed during upload)
+    if (!empty($caption)) {
+        $caption = preg_replace('/#[\p{L}\p{N}_]+/u', '', $caption);
+        $caption = preg_replace('/\s+/', ' ', trim($caption));
     }
     if (empty(trim(strip_tags($caption)))) {
         $caption = get_the_title();
@@ -158,9 +158,6 @@ $withcomments = 1;
                             <span class="author-username"><?php echo esc_html(get_the_author_meta('user_login')); ?></span>
                         </div>
                     </a>
-                    <button class="follow-btn" title="Theo dõi">
-                        <i class="fa-solid fa-plus"></i> Theo dõi
-                    </button>
                     <div class="video-info-more-menu">
                         <button class="video-info-more-btn" title="Thêm">
                             <i class="fa-solid fa-ellipsis"></i>
@@ -192,9 +189,9 @@ $withcomments = 1;
                     
                     <!-- Hashtags -->
                     <?php if ($tags) : ?>
-                        <div class="video-hashtags">
+                        <div class="video-tags">
                             <?php foreach ($tags as $tag) : ?>
-                                <a href="<?php echo get_tag_link($tag->term_id); ?>" class="hashtag">#<?php echo esc_html($tag->name); ?></a>
+                                <a href="<?php echo get_tag_link($tag->term_id); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
                             <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
@@ -285,13 +282,9 @@ $withcomments = 1;
                         <div class="creator-videos-grid">
                             <?php foreach ($author_videos as $video_post) : 
                                 setup_postdata($video_post);
-                                $other_video_url = get_post_meta($video_post->ID, '_puna_tiktok_video_file_id', true) 
-                                    ? wp_get_attachment_url(get_post_meta($video_post->ID, '_puna_tiktok_video_file_id', true))
-                                    : '';
-                                if (!$other_video_url) {
-                                    $other_video_url = puna_tiktok_get_video_url($video_post->ID);
-                                }
-                                $other_likes = get_post_meta($video_post->ID, '_puna_tiktok_video_likes', true) ?: 0;
+                                $other_metadata = puna_tiktok_get_video_metadata($video_post->ID);
+                                $other_video_url = $other_metadata['video_url'];
+                                $other_likes = $other_metadata['likes'];
                                 ?>
                                 <a href="<?php echo esc_url(get_permalink($video_post->ID)); ?>" class="creator-video-item">
                                     <div class="creator-video-thumbnail">

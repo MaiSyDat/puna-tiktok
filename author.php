@@ -41,8 +41,6 @@ $author_videos_query = new WP_Query(array(
 
 $total_videos = $author_videos_query->found_posts;
 $total_likes = 0;
-$total_followers = get_user_meta($author_id, '_puna_tiktok_followers', true) ?: 0;
-$total_following = get_user_meta($author_id, '_puna_tiktok_following', true) ?: 0;
 
 // Calculate total likes from all videos
 foreach ($author_videos_query->posts as $video_post) {
@@ -51,15 +49,6 @@ foreach ($author_videos_query->posts as $video_post) {
 }
 
 wp_reset_postdata();
-
-// Check if current user is following this author
-$is_following = false;
-if ($current_user_id && !$is_own_profile) {
-    $user_following = get_user_meta($current_user_id, '_puna_tiktok_following_list', true);
-    if (is_array($user_following)) {
-        $is_following = in_array($author_id, $user_following);
-    }
-}
 
 // Get user's liked videos
 $liked_videos = array();
@@ -101,27 +90,9 @@ if ($is_own_profile && $current_user_id) {
                         <strong class="stat-number"><?php echo puna_tiktok_format_number($total_videos); ?></strong>
                         <span class="stat-label">Bài đăng</span>
                     </div>
-                    <div class="stat-item">
-                        <strong class="stat-number"><?php echo puna_tiktok_format_number($total_followers); ?></strong>
-                        <span class="stat-label">Người theo dõi</span>
-                    </div>
-                    <div class="stat-item">
-                        <strong class="stat-number"><?php echo puna_tiktok_format_number($total_following); ?></strong>
-                        <span class="stat-label">Đang theo dõi</span>
-                    </div>
                 </div>
                 
-                <?php if (!$is_own_profile && $current_user_id) : ?>
-                    <button class="profile-follow-btn edit-profile-btn <?php echo $is_following ? 'following' : ''; ?>" 
-                            data-user-id="<?php echo esc_attr($author_id); ?>" 
-                            data-is-following="<?php echo $is_following ? '1' : '0'; ?>">
-                        <?php if ($is_following) : ?>
-                            Đã theo dõi
-                        <?php else : ?>
-                            Theo dõi
-                        <?php endif; ?>
-                    </button>
-                <?php elseif ($is_own_profile) : ?>
+                <?php if ($is_own_profile) : ?>
                     <a href="<?php echo admin_url('profile.php'); ?>" class="edit-profile-btn">
                         Chỉnh sửa hồ sơ
                     </a>
@@ -161,36 +132,9 @@ if ($is_own_profile && $current_user_id) {
                         if (!has_block('puna/hupuna-tiktok', get_the_ID())) {
                             continue;
                         }
-                        
-                        $video_id = get_the_ID();
-                        $video_url = puna_tiktok_get_video_url($video_id);
-                        $views = get_post_meta($video_id, '_puna_tiktok_video_views', true) ?: 0;
-                        $likes = get_post_meta($video_id, '_puna_tiktok_video_likes', true) ?: 0;
-                    ?>
-                        <a href="<?php echo esc_url(get_permalink($video_id)); ?>" class="profile-video-card">
-                            <div class="media-wrapper ratio-9x16">
-                                <video class="explore-video" muted playsinline>
-                                    <source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-                                </video>
-                                <div class="video-overlay">
-                                    <div class="play-icon">
-                                        <i class="fa-solid fa-play"></i>
-                                    </div>
-                                </div>
-                                <div class="video-stats-overlay">
-                                    <div class="stat-badge">
-                                        <i class="fa-solid fa-play"></i>
-                                        <span><?php echo puna_tiktok_format_number($views); ?></span>
-                                    </div>
-                                    <div class="stat-badge">
-                                        <i class="fa-solid fa-heart"></i>
-                                        <span><?php echo puna_tiktok_format_number($likes); ?></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="video-title"><?php echo esc_html(get_the_title()); ?></div>
-                        </a>
-                    <?php 
+                        get_template_part('template-parts/video-card', null, array(
+							'card_class' => 'profile-video-card'
+						));
                     endwhile;
                     wp_reset_postdata();
                     ?>
@@ -235,34 +179,9 @@ if ($is_own_profile && $current_user_id) {
                                     if (!has_block('puna/hupuna-tiktok', get_the_ID())) {
                                         continue;
                                     }
-                                    $video_url = puna_tiktok_get_video_url();
-                                    $views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true) ?: 0;
-                                    $likes = get_post_meta(get_the_ID(), '_puna_tiktok_video_likes', true) ?: 0;
-                                ?>
-                                    <a href="<?php the_permalink(); ?>" class="profile-video-card">
-                                        <div class="media-wrapper ratio-9x16">
-                                            <video class="explore-video" muted playsinline>
-                                                <source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-                                            </video>
-                                            <div class="video-overlay">
-                                                <div class="play-icon">
-                                                    <i class="fa-solid fa-play"></i>
-                                                </div>
-                                            </div>
-                                            <div class="video-stats-overlay">
-                                                <div class="stat-badge">
-                                                    <i class="fa-solid fa-play"></i>
-                                                    <span><?php echo puna_tiktok_format_number($views); ?></span>
-                                                </div>
-                                                <div class="stat-badge liked">
-                                                    <i class="fa-solid fa-heart"></i>
-                                                    <span><?php echo puna_tiktok_format_number($likes); ?></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="video-title"><?php echo esc_html(get_the_title()); ?></div>
-                                    </a>
-                                <?php
+                                    get_template_part('template-parts/video-card', null, array(
+										'card_class' => 'profile-video-card'
+									));
                                 endwhile;
                                 wp_reset_postdata();
                                 ?>

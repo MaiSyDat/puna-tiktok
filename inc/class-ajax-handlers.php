@@ -65,6 +65,10 @@ class Puna_TikTok_AJAX_Handlers {
         add_action('wp_ajax_nopriv_puna_tiktok_toggle_save', array($this, 'toggle_save'));
         
         add_action('wp_ajax_puna_tiktok_delete_video', array($this, 'delete_video'));
+        
+        // Get popular hashtags
+        add_action('wp_ajax_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
+        add_action('wp_ajax_nopriv_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
     }
 
     /**
@@ -946,6 +950,34 @@ class Puna_TikTok_AJAX_Handlers {
         $schedule = isset($_POST['schedule']) ? sanitize_text_field($_POST['schedule']) : 'now';
         $schedule_date = isset($_POST['schedule_date']) ? sanitize_text_field($_POST['schedule_date']) : '';
         
+        // Extract hashtags from description before processing
+        $hashtags = array();
+        $clean_description = $description;
+        if (!empty($description)) {
+            // Extract hashtags (words starting with #, support Vietnamese characters)
+            preg_match_all('/#([\p{L}\p{N}_]+)/u', $description, $matches);
+            if (!empty($matches[1])) {
+                // Get all hashtags (keep original case for display, but use lowercase for tag slug)
+                $found_hashtags = $matches[1];
+                $hashtags = array();
+                foreach ($found_hashtags as $tag) {
+                    $tag_lower = mb_strtolower($tag, 'UTF-8');
+                    if (!in_array($tag_lower, $hashtags)) {
+                        $hashtags[] = $tag_lower;
+                    }
+                }
+                
+                // Remove hashtags from description (match original case)
+                foreach ($found_hashtags as $hashtag) {
+                    // Remove #hashtag pattern (case-insensitive, match whole word)
+                    $pattern = '/#' . preg_quote($hashtag, '/') . '(?=\s|$|[^\p{L}\p{N}_])/iu';
+                    $clean_description = preg_replace($pattern, '', $clean_description);
+                }
+                // Clean up extra spaces and newlines
+                $clean_description = preg_replace('/\s+/', ' ', trim($clean_description));
+            }
+        }
+        
         // Determine post status based on privacy and schedule
         $post_status = 'publish';
         if ($schedule === 'schedule' && !empty($schedule_date)) {
@@ -957,7 +989,7 @@ class Puna_TikTok_AJAX_Handlers {
         
         // Create post
         $post_data = array(
-            'post_title' => wp_trim_words($description, 10, '...') ?: 'Video ' . date('Y-m-d H:i:s'),
+            'post_title' => wp_trim_words($clean_description, 10, '...') ?: 'Video ' . date('Y-m-d H:i:s'),
             'post_content' => '',
             'post_status' => $post_status,
             'post_author' => get_current_user_id(),
@@ -980,14 +1012,22 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => 'Không thể tạo post: ' . $post_id->get_error_message()));
         }
         
-        // Add video block to post content
+        // Add video block to post content (with clean description, no hashtags)
         $video_url = wp_get_attachment_url($attachment_id);
         $block_content = '<!-- wp:puna/hupuna-tiktok {"videoId":' . $attachment_id . ',"videoUrl":"' . esc_url($video_url) . '"} /-->';
+        if (!empty($clean_description)) {
+            $block_content .= "\n\n" . wp_kses_post($clean_description);
+        }
         
         wp_update_post(array(
             'ID' => $post_id,
             'post_content' => $block_content
         ));
+        
+        // Save hashtags as WordPress tags
+        if (!empty($hashtags)) {
+            wp_set_post_tags($post_id, $hashtags, false);
+        }
         
         // Save video meta
         update_post_meta($post_id, '_puna_tiktok_video_file_id', $attachment_id);
@@ -1163,6 +1203,55 @@ class Puna_TikTok_AJAX_Handlers {
         wp_send_json_success(array(
             'message' => 'Đã xóa video thành công.',
             'redirect_url' => home_url('/')
+        ));
+    }
+    
+    /**
+     * Get Popular Hashtags - AJAX Handler
+     */
+    public function get_popular_hashtags() {
+        $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 20;
+        
+        // Get all tags with post count
+        $tags = get_terms(array(
+            'taxonomy' => 'post_tag',
+            'hide_empty' => true,
+            'number' => $limit,
+            'orderby' => 'count',
+            'order' => 'DESC',
+            'meta_query' => array(
+                array(
+                    'key' => '_puna_tiktok_hashtag_usage',
+                    'compare' => 'EXISTS'
+                )
+            )
+        ));
+        
+        // If no tags with meta, get by count
+        if (empty($tags) || is_wp_error($tags)) {
+            $tags = get_terms(array(
+                'taxonomy' => 'post_tag',
+                'hide_empty' => true,
+                'number' => $limit,
+                'orderby' => 'count',
+                'order' => 'DESC'
+            ));
+        }
+        
+        $hashtags = array();
+        if (!empty($tags) && !is_wp_error($tags)) {
+            foreach ($tags as $tag) {
+                $hashtags[] = array(
+                    'name' => $tag->name,
+                    'slug' => $tag->slug,
+                    'count' => $tag->count,
+                    'url' => get_tag_link($tag->term_id)
+                );
+            }
+        }
+        
+        wp_send_json_success(array(
+            'hashtags' => $hashtags
         ));
     }
 }

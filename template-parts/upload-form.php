@@ -112,7 +112,20 @@ $current_user = wp_get_current_user();
                             maxlength="4000"
                         ></textarea>
                         <div class="input-helpers">
-                            <span class="hashtag-placeholder"># Hashtag</span>
+                            <div class="hashtag-wrapper">
+                                <span class="hashtag-placeholder" id="hashtagPlaceholder"># Hashtag</span>
+                                <div class="hashtag-dropdown" id="hashtagDropdown">
+                                    <div class="hashtag-dropdown-header">
+                                        <h4>Gợi ý hashtag</h4>
+                                        <button type="button" class="hashtag-close-btn" id="hashtagCloseBtn">
+                                            <i class="fa-solid fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="hashtag-list" id="hashtagList">
+                                        <div class="hashtag-loading">Đang tải...</div>
+                                    </div>
+                                </div>
+                            </div>
                             <span class="mention-placeholder">@ Nhắc đến</span>
                         </div>
                         <div class="char-counter">
