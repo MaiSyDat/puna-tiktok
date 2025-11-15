@@ -10,6 +10,9 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
+// Mega configuration (credentials live inside the theme)
+require_once get_template_directory() . '/inc/class-mega-config.php';
+
 // Load module files
 require_once get_template_directory() . '/inc/class-setup.php';
 require_once get_template_directory() . '/inc/class-assets.php';
@@ -193,4 +196,51 @@ function puna_tiktok_get_video_query($args = array()) {
     }
     
     return new WP_Query($query_args);
+}
+
+/**
+ * Get upload page URL
+ * 
+ * @return string URL to upload page
+ */
+function puna_tiktok_get_upload_url() {
+    return home_url('/upload/');
+}
+
+/**
+ * Render empty state for video lists
+ * 
+ * @param array $args {
+ *     @type string $icon       Icon class (default: 'fa-video')
+ *     @type string $title      Title text (default: 'Chưa có video nào')
+ *     @type string $message    Message text (default: 'Hãy đăng video đầu tiên của bạn để bắt đầu!')
+ *     @type string $button_url Button URL (optional)
+ *     @type string $button_text Button text (optional)
+ *     @type string $wrapper_class Additional CSS class for wrapper
+ * }
+ */
+function puna_tiktok_empty_state($args = array()) {
+    $defaults = array(
+        'icon' => 'fa-video',
+        'title' => 'Chưa có video nào',
+        'message' => 'Hãy đăng video đầu tiên của bạn để bắt đầu!',
+        'button_url' => '',
+        'button_text' => '',
+        'wrapper_class' => ''
+    );
+    
+    $args = wp_parse_args($args, $defaults);
+    $wrapper_class = 'explore-empty-state' . (!empty($args['wrapper_class']) ? ' ' . esc_attr($args['wrapper_class']) : '');
+    ?>
+    <div class="<?php echo esc_attr($wrapper_class); ?>" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+        <i class="fa-solid <?php echo esc_attr($args['icon']); ?>" style="font-size: 64px; color: #ccc; margin-bottom: 20px;"></i>
+        <h3 style="color: #666; margin-bottom: 10px;"><?php echo esc_html($args['title']); ?></h3>
+        <p style="color: #999;"><?php echo esc_html($args['message']); ?></p>
+        <?php if (!empty($args['button_url']) && !empty($args['button_text']) && current_user_can('manage_options')) : ?>
+            <a href="<?php echo esc_url($args['button_url']); ?>" class="btn-primary" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: #fe2c55; color: #fff; text-decoration: none; border-radius: 4px;">
+                <?php echo esc_html($args['button_text']); ?>
+            </a>
+        <?php endif; ?>
+    </div>
+    <?php
 }

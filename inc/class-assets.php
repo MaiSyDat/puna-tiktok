@@ -14,11 +14,10 @@ class Puna_TikTok_Assets {
     
     public function __construct() {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_assets'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
     }
     
     /**
-     * Nạp CSS/JS cho frontend
+     * Enqueue frontend CSS/JS
      */
     public function enqueue_frontend_assets()
     {
@@ -26,7 +25,29 @@ class Puna_TikTok_Assets {
 
         wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css', array(), '7.0.1');
 
-        wp_enqueue_script('puna-tiktok-main', PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/main.js', array(), PUNA_TIKTOK_VERSION, true);
+        wp_enqueue_script(
+            'puna-tiktok-mega-sdk',
+            PUNA_TIKTOK_THEME_URI . '/assets/js/libs/mega.browser.js',
+            array(),
+            PUNA_TIKTOK_VERSION,
+            true
+        );
+
+        wp_enqueue_script(
+            'puna-tiktok-mega-uploader',
+            PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/mega-uploader.js',
+            array('puna-tiktok-mega-sdk'),
+            PUNA_TIKTOK_VERSION,
+            true
+        );
+
+        wp_enqueue_script(
+            'puna-tiktok-main',
+            PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/main.js',
+            array('puna-tiktok-mega-uploader'),
+            PUNA_TIKTOK_VERSION,
+            true
+        );
 
         $current_user = wp_get_current_user();
         wp_localize_script('puna-tiktok-main', 'puna_tiktok_ajax', array(
@@ -39,22 +60,14 @@ class Puna_TikTok_Assets {
                 'user_id' => $current_user->ID,
             ),
             'avatar_url' => get_avatar_url($current_user->ID, array('size' => 40)),
+            'mega' => array(
+                'email'   => Puna_TikTok_Mega_Config::get_email(),
+                'password'=> Puna_TikTok_Mega_Config::get_password(),
+                'folder'  => Puna_TikTok_Mega_Config::get_upload_folder(),
+            ),
         ));
     }
 
-    /**
-     * Load CSS/JS for admin
-     */
-    public function enqueue_admin_assets()
-    {
-        wp_enqueue_style('puna-tiktok-backend', PUNA_TIKTOK_THEME_URI . '/assets/css/backend/backend.css', array(), PUNA_TIKTOK_VERSION);
-        
-        // JS admin
-        $admin_js = PUNA_TIKTOK_THEME_DIR . '/assets/js/backend/admin.js';
-        if (file_exists($admin_js)) {
-            wp_enqueue_script('puna-tiktok-backend', PUNA_TIKTOK_THEME_URI . '/assets/js/backend/admin.js', array('jquery'), PUNA_TIKTOK_VERSION, true);
-        }
-    }
 }
 
 new Puna_TikTok_Assets();

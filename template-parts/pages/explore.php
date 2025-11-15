@@ -90,18 +90,24 @@ get_header();
 			
 			// If still no posts, get any posts with video file
 			if (!$trending_query->have_posts()) {
-                $trending_query = new WP_Query(array(
-                    'post_type' => 'post',
+				$trending_query = new WP_Query(array(
+                    'post_type'      => 'post',
 					'posts_per_page' => 50,
-					'post_status' => 'publish',
-					'orderby' => 'date',
-					'order' => 'DESC',
-					'meta_query' => array(
+					'post_status'    => 'publish',
+					'orderby'        => 'date',
+					'order'          => 'DESC',
+					'meta_query'     => array(
+						'relation' => 'OR',
 						array(
-							'key' => '_puna_tiktok_video_file_id',
-							'compare' => 'EXISTS'
-						)
-					)
+							'key'     => '_puna_tiktok_video_url',
+							'value'   => '',
+							'compare' => '!=',
+						),
+						array(
+							'key'     => '_puna_tiktok_video_file_id',
+							'compare' => 'EXISTS',
+						),
+					),
 				));
 			}
 			
@@ -143,20 +149,9 @@ get_header();
 				endforeach;
 			endif;
 			
-			// Show placeholder if no video was displayed
+			// Show empty state if no video was displayed
 			if ($displayed_count == 0) :
-				// Show placeholder if no video
-				for ($i = 1; $i <= 12; $i++) : ?>
-					<a href="#" class="explore-card" aria-label="Explore item">
-						<div class="media-wrapper ratio-9x16">
-							<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/placeholders/ph-' . (($i % 6) + 1) . '.jpg' ); ?>" alt="placeholder" />
-							<div class="video-views-overlay">
-								<i class="fa-solid fa-play"></i>
-								<span>0</span>
-							</div>
-						</div>
-					</a>
-				<?php endfor;
+				puna_tiktok_empty_state();
 			endif;
 			?>
 		</div>

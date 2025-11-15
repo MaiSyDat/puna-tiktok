@@ -7,6 +7,8 @@ $comments = $metadata['comments'];
 $shares = $metadata['shares'];
 $saves = $metadata['saves'];
 $views = $metadata['views'];
+$mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true);
+$is_mega_video = !empty($mega_node_id) && !empty($video_url);
 
 // Check if current user liked this video
 $is_liked = puna_tiktok_is_liked($post_id);
@@ -57,10 +59,14 @@ $saved_class = $is_saved ? 'saved' : '';
 			</div>
 		</div>
 		
-		<video class="tiktok-video" preload="metadata" playsinline loop muted data-post-id="<?php echo esc_attr($post_id); ?>">
-			<source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-			Trình duyệt của bạn không hỗ trợ video.
-		</video>
+			<video class="tiktok-video" preload="metadata" playsinline loop muted data-post-id="<?php echo esc_attr($post_id); ?>" <?php if ($is_mega_video) : ?>data-mega-link="<?php echo esc_url($video_url); ?>"<?php endif; ?>>
+				<?php if ($is_mega_video) : ?>
+					<!-- Mega.nz video will be loaded via JavaScript -->
+				<?php else : ?>
+					<source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
+				<?php endif; ?>
+				Trình duyệt của bạn không hỗ trợ video.
+			</video>
 
 		<div class="video-overlay">
 			<div class="video-details">

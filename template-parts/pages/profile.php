@@ -100,16 +100,15 @@ $is_logged_in = is_user_logged_in();
 						?>
 					</div>
 				<?php else : ?>
-					<div class="no-videos-message">
-						<div class="no-videos-icon">
-							<i class="fa-solid fa-video-slash"></i>
-						</div>
-						<h3>Chưa có video nào</h3>
-						<p>Đăng video đầu tiên của bạn để bắt đầu!</p>
-                        <a href="<?php echo admin_url('post-new.php'); ?>" class="upload-video-btn">
-							<i class="fa-solid fa-square-plus"></i> Tải video lên
-						</a>
-					</div>
+					<?php 
+					puna_tiktok_empty_state(array(
+						'icon' => 'fa-video-slash',
+						'title' => 'Chưa có video nào',
+						'message' => 'Đăng video đầu tiên của bạn để bắt đầu!',
+						'button_url' => puna_tiktok_get_upload_url(),
+						'button_text' => 'Tải video lên'
+					)); 
+					?>
 				<?php endif; ?>
 			</div>
 
@@ -142,22 +141,22 @@ $is_logged_in = is_user_logged_in();
 							?>
 						</div>
 					<?php else : ?>
-						<div class="no-videos-message">
-							<div class="no-videos-icon">
-								<i class="fa-solid fa-heart"></i>
-							</div>
-							<h3>Chưa có video yêu thích</h3>
-							<p>Video bạn thích sẽ xuất hiện ở đây.</p>
-						</div>
+						<?php 
+						puna_tiktok_empty_state(array(
+							'icon' => 'fa-heart',
+							'title' => 'Chưa có video yêu thích',
+							'message' => 'Video bạn thích sẽ xuất hiện ở đây.'
+						)); 
+						?>
 					<?php endif;
 				} else { ?>
-					<div class="no-videos-message">
-						<div class="no-videos-icon">
-							<i class="fa-solid fa-heart"></i>
-						</div>
-						<h3>Chưa có video yêu thích</h3>
-						<p>Video bạn thích sẽ xuất hiện ở đây.</p>
-					</div>
+					<?php 
+					puna_tiktok_empty_state(array(
+						'icon' => 'fa-heart',
+						'title' => 'Chưa có video yêu thích',
+						'message' => 'Video bạn thích sẽ xuất hiện ở đây.'
+					)); 
+					?>
 				<?php } ?>
 			</div>
 
@@ -190,22 +189,22 @@ $is_logged_in = is_user_logged_in();
 							?>
 						</div>
 					<?php else : ?>
-						<div class="no-videos-message">
-							<div class="no-videos-icon">
-								<i class="fa-solid fa-bookmark"></i>
-							</div>
-							<h3>Chưa có video đã lưu</h3>
-							<p>Video bạn lưu sẽ xuất hiện ở đây.</p>
-						</div>
+						<?php 
+						puna_tiktok_empty_state(array(
+							'icon' => 'fa-bookmark',
+							'title' => 'Chưa có video đã lưu',
+							'message' => 'Video bạn lưu sẽ xuất hiện ở đây.'
+						)); 
+						?>
 					<?php endif;
 				} else { ?>
-					<div class="no-videos-message">
-						<div class="no-videos-icon">
-							<i class="fa-solid fa-bookmark"></i>
-						</div>
-						<h3>Chưa có video đã lưu</h3>
-						<p>Video bạn lưu sẽ xuất hiện ở đây.</p>
-					</div>
+					<?php 
+					puna_tiktok_empty_state(array(
+						'icon' => 'fa-bookmark',
+						'title' => 'Chưa có video đã lưu',
+						'message' => 'Video bạn lưu sẽ xuất hiện ở đây.'
+					)); 
+					?>
 				<?php } ?>
 			</div>
 		<?php endif; ?>

@@ -107,20 +107,23 @@ $comments_count = get_comments_number($post_id);
                         <div class="comment-header">
                             <a href="<?php echo esc_url($comment_author_url); ?>" class="comment-author-link">
                                 <strong class="comment-author"><?php echo esc_html($comment->comment_author); ?></strong>
+                                <?php 
+                                // Hiển thị guest ID nếu là guest comment
+                                if (!$comment_author_id) {
+                                    $guest_id = get_comment_meta($comment->comment_ID, '_puna_tiktok_guest_id', true);
+                                    if ($guest_id) {
+                                        echo ' <span style="color: #999; font-size: 0.9em; font-weight: normal;">#' . esc_html(substr($guest_id, 6, 8)) . '</span>';
+                                    }
+                                }
+                                ?>
                             </a>
                         </div>
                         <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>
                         <div class="comment-footer">
                             <span class="comment-date"><?php echo esc_html($comment_date); ?> trước</span>
-                            <?php if (is_user_logged_in()) : ?>
-                                <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                                    Trả lời
-                                </a>
-                            <?php else : ?>
-                                <a href="#" class="reply-link" onclick="openLoginPopup(); return false;" title="Đăng nhập để trả lời">
-                                    Trả lời
-                                </a>
-                            <?php endif; ?>
+                            <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                                Trả lời
+                            </a>
                         </div>
                     </div>
                     <div class="comment-right-actions">
@@ -140,17 +143,10 @@ $comments_count = get_comments_number($post_id);
                                 </div>
                             </div>
                         <?php endif; ?>
-                        <?php if (is_user_logged_in()) : ?>
-                            <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                                <i class="<?php echo $is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $is_liked ? ' liked' : ''; ?>"></i>
-                                <span><?php echo esc_html($comment_likes); ?></span>
-                            </div>
-                        <?php else : ?>
-                            <div class="comment-likes" onclick="openLoginPopup(); return false;" title="Đăng nhập để thích">
-                                <i class="fa-regular fa-heart"></i>
-                                <span><?php echo esc_html($comment_likes); ?></span>
-                            </div>
-                        <?php endif; ?>
+                        <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                            <i class="<?php echo $is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $is_liked ? ' liked' : ''; ?>"></i>
+                            <span><?php echo esc_html($comment_likes); ?></span>
+                        </div>
                     </div>
                 </div>
                 
@@ -182,15 +178,9 @@ $comments_count = get_comments_number($post_id);
                                     <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
                                     <div class="comment-footer">
                                         <span class="comment-date"><?php echo esc_html($reply_date); ?> trước</span>
-                                        <?php if (is_user_logged_in()) : ?>
                                             <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                                                 Trả lời
                                             </a>
-                                        <?php else : ?>
-                                            <a href="#" class="reply-link" onclick="openLoginPopup(); return false;" title="Đăng nhập để trả lời">
-                                                Trả lời
-                                            </a>
-                                        <?php endif; ?>
                                     </div>
                                 </div>
                                 <div class="comment-right-actions">
@@ -210,17 +200,10 @@ $comments_count = get_comments_number($post_id);
                                             </div>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if (is_user_logged_in()) : ?>
-                                        <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                            <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
-                                            <span><?php echo esc_html($reply_likes); ?></span>
-                                        </div>
-                                    <?php else : ?>
-                                        <div class="comment-likes" onclick="openLoginPopup(); return false;" title="Đăng nhập để thích">
-                                            <i class="fa-regular fa-heart"></i>
-                                            <span><?php echo esc_html($reply_likes); ?></span>
-                                        </div>
-                                    <?php endif; ?>
+                                    <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                        <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
+                                        <span><?php echo esc_html($reply_likes); ?></span>
+                                    </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -257,15 +240,9 @@ $comments_count = get_comments_number($post_id);
                                             <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
                                             <div class="comment-footer">
                                                 <span class="comment-date"><?php echo esc_html($reply_date); ?> trước</span>
-                                                <?php if (is_user_logged_in()) : ?>
-                                                    <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                                        Trả lời
-                                                    </a>
-                                                <?php else : ?>
-                                                    <a href="#" class="reply-link" onclick="openLoginPopup(); return false;" title="Đăng nhập để trả lời">
-                                                        Trả lời
-                                                    </a>
-                                                <?php endif; ?>
+                                            <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                                Trả lời
+                                            </a>
                                             </div>
                                         </div>
                                         <div class="comment-right-actions">
@@ -285,17 +262,10 @@ $comments_count = get_comments_number($post_id);
                                                     </div>
                                                 </div>
                                             <?php endif; ?>
-                                            <?php if (is_user_logged_in()) : ?>
-                                                <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                                    <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
-                                                    <span><?php echo esc_html($reply_likes); ?></span>
-                                                </div>
-                                            <?php else : ?>
-                                                <div class="comment-likes" onclick="openLoginPopup(); return false;" title="Đăng nhập để thích">
-                                                    <i class="fa-regular fa-heart"></i>
-                                                    <span><?php echo esc_html($reply_likes); ?></span>
-                                                </div>
-                                            <?php endif; ?>
+                                            <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                                <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
+                                                <span><?php echo esc_html($reply_likes); ?></span>
+                                            </div>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -315,9 +285,8 @@ $comments_count = get_comments_number($post_id);
         ?>
     </div>
 
-    <!-- Comment Input -->
-    <?php if (is_user_logged_in()) : ?>
-        <div class="comment-input-container">
+    <!-- Comment Input (guest có thể comment) -->
+    <div class="comment-input-container">
             <input type="text" 
                    class="comment-input" 
                    placeholder="Thêm bình luận..." 
@@ -336,16 +305,5 @@ $comments_count = get_comments_number($post_id);
                 </div>
             </div>
         </div>
-    <?php else : ?>
-        <div class="comment-input-container">
-            <div class="login-to-comment-section">
-                <p>
-                    <a href="#" class="login-to-comment-link">
-                        Đăng nhập
-                    </a> để bình luận
-                </p>
-            </div>
-        </div>
-    <?php endif; ?>
 </div>
 

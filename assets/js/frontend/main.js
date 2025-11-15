@@ -4,7 +4,7 @@
 
 document.addEventListener("DOMContentLoaded", function() {
     // GLOBAL VARIABLES AND SELECTORS
-    const videos = document.querySelectorAll('.tiktok-video');
+    const videos = document.querySelectorAll('.tiktok-video, .explore-video, .creator-video-preview');
     const sidebar = document.querySelector('.sidebar');
     const mainContent = document.querySelector('.main-content');
     const navPrevBtn = document.querySelector('.video-nav-btn.nav-prev');
@@ -25,6 +25,155 @@ document.addEventListener("DOMContentLoaded", function() {
     let userGestureHandled = false;
 
     /**
+     * Guest localStorage helpers
+     */
+    const GuestStorage = {
+        // Keys
+        LIKED_VIDEOS: 'puna_tiktok_guest_liked_videos',
+        SAVED_VIDEOS: 'puna_tiktok_guest_saved_videos',
+        LIKED_COMMENTS: 'puna_tiktok_guest_liked_comments',
+        COMMENTS: 'puna_tiktok_guest_comments',
+        GUEST_ID: 'puna_tiktok_guest_id',
+        
+        // Get or create guest ID
+        getGuestId: function() {
+            try {
+                let guestId = localStorage.getItem(this.GUEST_ID);
+                if (!guestId) {
+                    // Generate new guest ID
+                    guestId = 'guest_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+                    localStorage.setItem(this.GUEST_ID, guestId);
+                }
+                return guestId;
+            } catch (e) {
+                console.error('Error getting guest ID:', e);
+                return 'guest_' + Date.now().toString(36);
+            }
+        },
+        
+        // Get liked videos
+        getLikedVideos: function() {
+            try {
+                const data = localStorage.getItem(this.LIKED_VIDEOS);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                return [];
+            }
+        },
+        
+        // Set liked videos
+        setLikedVideos: function(videoIds) {
+            try {
+                localStorage.setItem(this.LIKED_VIDEOS, JSON.stringify(videoIds));
+            } catch (e) {
+                console.error('Error saving liked videos:', e);
+            }
+        },
+        
+        // Toggle like video
+        toggleLikeVideo: function(postId) {
+            const liked = this.getLikedVideos();
+            const index = liked.indexOf(postId);
+            if (index > -1) {
+                liked.splice(index, 1);
+            } else {
+                liked.push(postId);
+            }
+            this.setLikedVideos(liked);
+            return liked.indexOf(postId) > -1;
+        },
+        
+        // Get saved videos
+        getSavedVideos: function() {
+            try {
+                const data = localStorage.getItem(this.SAVED_VIDEOS);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                return [];
+            }
+        },
+        
+        // Set saved videos
+        setSavedVideos: function(videoIds) {
+            try {
+                localStorage.setItem(this.SAVED_VIDEOS, JSON.stringify(videoIds));
+            } catch (e) {
+                console.error('Error saving saved videos:', e);
+            }
+        },
+        
+        // Toggle save video
+        toggleSaveVideo: function(postId) {
+            const saved = this.getSavedVideos();
+            const index = saved.indexOf(postId);
+            if (index > -1) {
+                saved.splice(index, 1);
+            } else {
+                saved.push(postId);
+            }
+            this.setSavedVideos(saved);
+            return saved.indexOf(postId) > -1;
+        },
+        
+        // Get liked comments
+        getLikedComments: function() {
+            try {
+                const data = localStorage.getItem(this.LIKED_COMMENTS);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                return [];
+            }
+        },
+        
+        // Set liked comments
+        setLikedComments: function(commentIds) {
+            try {
+                localStorage.setItem(this.LIKED_COMMENTS, JSON.stringify(commentIds));
+            } catch (e) {
+                console.error('Error saving liked comments:', e);
+            }
+        },
+        
+        // Toggle like comment
+        toggleLikeComment: function(commentId) {
+            const liked = this.getLikedComments();
+            const index = liked.indexOf(commentId);
+            if (index > -1) {
+                liked.splice(index, 1);
+            } else {
+                liked.push(commentId);
+            }
+            this.setLikedComments(liked);
+            return liked.indexOf(commentId) > -1;
+        },
+        
+        // Get all guest data (for migration when registering)
+        getAllData: function() {
+            return {
+                liked_videos: this.getLikedVideos(),
+                saved_videos: this.getSavedVideos(),
+                liked_comments: this.getLikedComments()
+            };
+        },
+        
+        // Clear all guest data
+        clearAll: function() {
+            localStorage.removeItem(this.LIKED_VIDEOS);
+            localStorage.removeItem(this.SAVED_VIDEOS);
+            localStorage.removeItem(this.LIKED_COMMENTS);
+            localStorage.removeItem(this.COMMENTS);
+        }
+    };
+
+    /**
+     * Check if user is logged in
+     */
+    function isLoggedIn() {
+        if (typeof puna_tiktok_ajax === 'undefined') return false;
+        return puna_tiktok_ajax.is_logged_in === true || puna_tiktok_ajax.is_logged_in === '1' || puna_tiktok_ajax.is_logged_in === 1;
+    }
+
+    /**
      * Format number
      */
     function formatNumber(num) {
@@ -34,6 +183,52 @@ document.addEventListener("DOMContentLoaded", function() {
             return (num / 1000).toFixed(1) + 'K';
         }
         return num.toString();
+    }
+
+    const megaVideoCache = new Map();
+
+    async function ensureMegaVideoSource(video) {
+        if (!video) return;
+        const megaLink = video.dataset.megaLink;
+        if (!megaLink || video.dataset.megaLoaded === '1') {
+            return;
+        }
+        if (video.dataset.megaLoading === '1') {
+            return;
+        }
+        if (typeof mega === 'undefined' || typeof mega.File !== 'function') {
+            console.warn('Mega SDK not loaded or unavailable.');
+            return;
+        }
+
+        video.dataset.megaLoading = '1';
+
+        try {
+            if (megaVideoCache.has(megaLink)) {
+                video.src = megaVideoCache.get(megaLink);
+                video.dataset.megaLoaded = '1';
+                video.dataset.megaLoading = '0';
+                return;
+            }
+
+            const megaFile = await Promise.resolve(mega.File.fromURL(megaLink));
+            const buffer = await megaFile.downloadBuffer();
+            const mime = video.dataset.megaMime || 'video/mp4';
+            const objectUrl = URL.createObjectURL(new Blob([buffer], { type: mime }));
+            megaVideoCache.set(megaLink, objectUrl);
+            video.src = objectUrl;
+            video.dataset.megaLoaded = '1';
+            
+            // Add loaded class when video source is set
+            video.addEventListener('loadedmetadata', () => {
+                video.classList.add('loaded');
+            });
+        } catch (error) {
+            console.error('Cannot load video from Mega.nz', error);
+            showToast?.('Cannot load video from Mega.nz', 'error');
+        } finally {
+            video.dataset.megaLoading = '0';
+        }
     }
 
     /**
@@ -165,22 +360,85 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // ============================================
     // VIDEO AUTOPLAY & INTERSECTION OBSERVER
+    // ============================================
+    
     const observerOptions = {
         root: mainContent,
         rootMargin: '0px',
-        threshold: 0.8
+        threshold: 0.5
     };
+    
+    // Observer to ensure video-row is always centered when entering viewport
+    let isAutoScrolling = false;
+    const videoRowObserver = new IntersectionObserver((entries) => {
+        if (isAutoScrolling) return; // Prevent infinite loop
+        
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const videoRow = entry.target;
+                const rect = videoRow.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                const expectedTop = (viewportHeight - rect.height) / 2;
+                const offset = Math.abs(rect.top - expectedTop);
+                
+                // If video-row is not centered (offset > 50px), scroll to center
+                if (offset > 50) {
+                    isAutoScrolling = true;
+                    videoRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => {
+                        isAutoScrolling = false;
+                    }, 500);
+                }
+            }
+        });
+    }, {
+        root: mainContent,
+        rootMargin: '0px',
+        threshold: 0.3
+    });
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                // Load Mega video if needed
+                if (entry.target.dataset.megaLink) {
+                    ensureMegaVideoSource(entry.target).then(() => {
+                        // Video source loaded, try to play
+                        if (entry.target.classList.contains('tiktok-video')) {
                 applyVideoVolumeSettings(entry.target);
-                entry.target.play().catch(e => {
-                    console.log('Trình duyệt chặn autoplay:', e);
-                });
+                            // Use play promise to avoid conflicts
+                            const playPromise = entry.target.play();
+                            if (playPromise !== undefined) {
+                                playPromise.catch(e => {
+                                    // Ignore AbortError - it's normal when video is paused quickly
+                                    if (e.name !== 'AbortError') {
+                                        console.log('Browser blocked autoplay:', e);
+                                    }
+                                });
+                            }
+                        }
+                    }).catch(err => {
+                        console.error('Failed to load Mega video:', err);
+                    });
+                } else {
+                    // Regular video
+                    if (entry.target.classList.contains('tiktok-video')) {
+                        applyVideoVolumeSettings(entry.target);
+                        // Use play promise to avoid conflicts
+                        const playPromise = entry.target.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(e => {
+                                // Ignore AbortError - it's normal when video is paused quickly
+                                if (e.name !== 'AbortError') {
+                                    console.log('Browser blocked autoplay:', e);
+                                }
+                            });
+                        }
+                    }
+                }
                 
-                // Track view sau 1 giây
-                if (!viewedVideos.has(entry.target.dataset.postId)) {
+                // Track view after 1 second (only for tiktok-video, not explore-video)
+                if (entry.target.classList.contains('tiktok-video') && entry.target.dataset.postId && !viewedVideos.has(entry.target.dataset.postId)) {
                     setTimeout(() => {
                         if (entry.isIntersecting) {
                             viewedVideos.add(entry.target.dataset.postId);
@@ -194,24 +452,96 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }, observerOptions);
 
-    // Khởi tạo videos
+    // Initialize videos
     videos.forEach(video => {
         video.muted = true;
         video.setAttribute('muted', '');
         video.playsInline = true;
         video.setAttribute('playsinline', '');
+        
+        // Add loaded class when video metadata is loaded
+        video.addEventListener('loadedmetadata', () => {
+            video.classList.add('loaded');
+            
+            // Determine video aspect ratio and add data attribute
+            const videoWidth = video.videoWidth;
+            const videoHeight = video.videoHeight;
+            if (videoWidth && videoHeight) {
+                const aspectRatio = videoWidth / videoHeight;
+                if (aspectRatio > 1.2) {
+                    video.dataset.aspectRatio = 'landscape';
+                } else if (aspectRatio < 0.8) {
+                    video.dataset.aspectRatio = 'portrait';
+                } else {
+                    video.dataset.aspectRatio = 'square';
+                }
+            }
+        });
+        
+        // Also check if video already has source loaded
+        if (video.readyState >= 1) {
+            video.classList.add('loaded');
+            const videoWidth = video.videoWidth;
+            const videoHeight = video.videoHeight;
+            if (videoWidth && videoHeight) {
+                const aspectRatio = videoWidth / videoHeight;
+                if (aspectRatio > 1.2) {
+                    video.dataset.aspectRatio = 'landscape';
+                } else if (aspectRatio < 0.8) {
+                    video.dataset.aspectRatio = 'portrait';
+                } else {
+                    video.dataset.aspectRatio = 'square';
+                }
+            }
+        }
+        
+        // Load Mega video source if needed (for both tiktok-video and explore-video)
+        if (video.dataset.megaLink) {
+            ensureMegaVideoSource(video);
+        }
+        
+        // Only observe tiktok-video for autoplay, explore-video is just for preview
+        if (video.classList.contains('tiktok-video')) {
         observer.observe(video);
         
-        // Click để play/pause
+            // Observe video-row to ensure centering
+            const videoRow = video.closest('.video-row');
+            if (videoRow) {
+                videoRowObserver.observe(videoRow);
+            }
+        }
+        
+        // Click to play/pause
         video.addEventListener('click', function() {
             if (this.paused) {
-                this.play();
+                // Check if Mega video needs to be loaded first
+                if (this.dataset.megaLink && !this.dataset.megaLoaded) {
+                    ensureMegaVideoSource(this).then(() => {
+                        const playPromise = this.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(e => {
+                                if (e.name !== 'AbortError') {
+                                    console.log('Play failed:', e);
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    const playPromise = this.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(e => {
+                            if (e.name !== 'AbortError') {
+                                console.log('Play failed:', e);
+                            }
+                        });
+                    }
+                }
             } else {
                 this.pause();
             }
         });
         
-        // Thêm post_id vào video element
+        // Add post_id to video element
         const videoRow = video.closest('.video-row');
         if (videoRow) {
             const postId = videoRow.querySelector('[data-post-id]')?.dataset.postId;
@@ -230,6 +560,9 @@ document.addEventListener("DOMContentLoaded", function() {
         
         const current = getCurrentVideo();
         if (current) {
+            if (current.dataset.megaLink) {
+                ensureMegaVideoSource(current);
+            }
             applyVideoVolumeSettings(current);
             current.play().catch(() => {});
         }
@@ -258,7 +591,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const nextIndex = currentIndex + direction;
         
         if (nextIndex >= 0 && nextIndex < videoList.length) {
-            videoList[nextIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const nextVideo = videoList[nextIndex];
+            const videoRow = nextVideo.closest('.video-row');
+            if (videoRow) {
+                videoRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                nextVideo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
         updateNavDisabledState();
     }
@@ -294,7 +633,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Cập nhật navigation state khi scroll
+    // Update navigation state on scroll
     const updateEvents = ['scroll', 'keydown', 'touchend'];
     updateEvents.forEach(evt => {
         (evt === 'scroll' && mainContent ? mainContent : document).addEventListener(evt, function() {
@@ -302,7 +641,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
-    // Navigation bằng phím mũi tên
+    // Navigation with arrow keys
     document.addEventListener('keydown', function(e) {
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             e.preventDefault();
@@ -311,7 +650,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Navigation bằng swipe trên mobile
+    // Navigation with swipe on mobile
     let startY = 0;
     let endY = 0;
     if (mainContent) {
@@ -329,7 +668,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Khởi tạo navigation state
+    // Initialize navigation state
     updateNavDisabledState();
 
     // ============================================
@@ -337,10 +676,10 @@ document.addEventListener("DOMContentLoaded", function() {
     // ============================================
     
     /**
-     * Mở popup đăng nhập
+     * Open login popup
      */
     window.openLoginPopup = function() {
-        // Đóng tất cả comments sidebar đang mở
+        // Close all open comments sidebars
         const openCommentsOverlays = document.querySelectorAll('.comments-overlay.show');
         if (openCommentsOverlays.length > 0 && typeof closeCommentsSidebar === 'function') {
             openCommentsOverlays.forEach(overlay => {
@@ -351,17 +690,17 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
         
-        // Đóng search panel nếu đang mở
+        // Close search panel if open
         if (document.body.classList.contains('search-panel-active')) {
             if (typeof closeSearchPanel === 'function') {
                 closeSearchPanel();
             } else {
-                // Fallback: đóng thủ công
+                // Fallback: close manually
                 document.body.classList.remove('search-panel-active');
             }
         }
         
-        // Mở login popup
+        // Open login popup
         currentModal = 'login';
         const loginModal = document.getElementById('loginModal');
         if (loginModal) {
@@ -371,16 +710,16 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     /**
-     * Kiểm tra đăng nhập chung cho toàn bộ website
-     * @param {Event} [event] - Event object (nếu có sẽ preventDefault)
-     * @param {Function} [callback] - Callback function nếu đã đăng nhập
-     * @returns {boolean} - true nếu đã đăng nhập, false nếu chưa
+     * Check login status for the entire website
+     * @param {Event} [event] - Event object (will preventDefault if provided)
+     * @param {Function} [callback] - Callback function if logged in
+     * @returns {boolean} - true if logged in, false otherwise
      */
     function checkLogin(event, callback) {
-        // Kiểm tra nếu puna_tiktok_ajax chưa được định nghĩa
+        // Check if puna_tiktok_ajax is defined
         if (typeof puna_tiktok_ajax === 'undefined') {
             console.warn('puna_tiktok_ajax is not defined');
-            // Nếu không có ajax object, giả định là chưa đăng nhập
+            // If no ajax object, assume not logged in
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -389,22 +728,22 @@ document.addEventListener("DOMContentLoaded", function() {
             return false;
         }
 
-        // Kiểm tra trạng thái đăng nhập
-        // Chuyển sang boolean để đảm bảo kiểm tra đúng
+        // Check login status
+        // Convert to boolean to ensure correct check
         const isLoggedIn = puna_tiktok_ajax.is_logged_in === true || puna_tiktok_ajax.is_logged_in === '1' || puna_tiktok_ajax.is_logged_in === 1;
         
         if (!isLoggedIn) {
-            // Prevent default action nếu có event
+            // Prevent default action if event exists
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
             }
-            // Mở popup đăng nhập
+            // Open login popup
             openLoginPopup();
             return false;
         }
 
-        // Nếu đã đăng nhập và có callback, gọi callback
+        // If logged in and callback exists, call callback
         if (typeof callback === 'function') {
             callback();
         }
@@ -468,12 +807,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const form = submitBtn.closest('.signup-form');
         if (!form) return;
         
-        // Đăng ký bằng email
+        // Register with email
         const email = form.querySelector('.email-input')?.value.trim() || '';
         const username = form.querySelector('.username-input')?.value.trim() || '';
         const password = form.querySelector('.password-input')?.value || '';
         
-        // Lấy ngày sinh
+        // Get birthday
         const monthSelect = form.querySelector('select[name="birthday-month"]');
         const daySelect = form.querySelector('select[name="birthday-day"]');
         const yearSelect = form.querySelector('select[name="birthday-year"]');
@@ -499,12 +838,12 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         
-        // Disable button và hiển thị loading
+        // Disable button and show loading
         const originalText = submitBtn.textContent;
         submitBtn.disabled = true;
         submitBtn.textContent = 'Đang đăng ký...';
         
-        // Gửi AJAX request
+        // Send AJAX request
         sendAjaxRequest('puna_tiktok_register', {
             username: username,
             email: email,
@@ -516,7 +855,9 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             if (data.success) {
                 closeModal();
-                // Reload để cập nhật trạng thái đăng nhập
+                // Dispatch event to migrate guest data
+                document.dispatchEvent(new CustomEvent('puna_tiktok_login_success'));
+                // Reload to update login status
                 window.location.reload();
             } else {
                 showToast(data.data && data.data.message 
@@ -545,7 +886,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const form = submitBtn.closest('.login-form');
         if (!form) return;
         
-        // Đăng nhập bằng email hoặc username
+        // Login with email or username
         const username = form.querySelector('.email-input')?.value.trim() || '';
         const password = form.querySelector('.password-input')?.value || '';
         
@@ -554,12 +895,12 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         
-        // Disable button và hiển thị loading
+        // Disable button and show loading
         const originalText = submitBtn.textContent;
         submitBtn.disabled = true;
         submitBtn.textContent = 'Đang đăng nhập...';
         
-        // Gửi AJAX request
+        // Send AJAX request
         sendAjaxRequest('puna_tiktok_login', {
             username: username,
             password: password,
@@ -568,6 +909,8 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             if (data.success) {
                 closeModal();
+                // Dispatch event to migrate guest data
+                document.dispatchEvent(new CustomEvent('puna_tiktok_login_success'));
                 window.location.reload();
             } else {
                 showToast(data.data && data.data.message 
@@ -599,41 +942,72 @@ document.addEventListener("DOMContentLoaded", function() {
         const postId = actionItem.dataset.postId;
         if (!postId) return;
         
-        // Kiểm tra đăng nhập
-        if (!checkLogin(e)) {
-            // checkLogin đã mở popup nếu chưa đăng nhập
-            return;
-        }
-        
-        // Thêm animation
+        // Add animation
         actionItem.classList.add('liking');
         setTimeout(() => actionItem.classList.remove('liking'), 300);
         
-        // Gửi AJAX request
-        sendAjaxRequest('puna_tiktok_toggle_like', { post_id: postId })
+        // Save to localStorage if guest
+        if (!isLoggedIn()) {
+            const isLiked = GuestStorage.toggleLikeVideo(postId);
+            actionItem.classList.toggle('liked', isLiked);
+        }
+        
+        // Send AJAX request (guests can like)
+        sendAjaxRequest('puna_tiktok_toggle_like', { 
+            post_id: postId,
+            action_type: actionItem.classList.contains('liked') ? 'like' : 'unlike'
+        })
         .then(data => {
             if (data.success) {
                 const isLiked = data.data.is_liked;
                 const likes = data.data.likes;
                 
-                // Cập nhật UI
+                // Update UI
                 actionItem.classList.toggle('liked', isLiked);
                 
-                // Cập nhật số lượng likes (xử lý cả .count và .stat-count)
+                // Save to localStorage if guest
+                if (!isLoggedIn()) {
+                    if (isLiked) {
+                        const liked = GuestStorage.getLikedVideos();
+                        if (liked.indexOf(postId) === -1) {
+                            liked.push(postId);
+                            GuestStorage.setLikedVideos(liked);
+                        }
+                    } else {
+                        const liked = GuestStorage.getLikedVideos();
+                        const index = liked.indexOf(postId);
+                        if (index > -1) {
+                            liked.splice(index, 1);
+                            GuestStorage.setLikedVideos(liked);
+                        }
+                    }
+                }
+                
+                // Update likes count (handle both .count and .stat-count)
                 const countElement = actionItem.querySelector('.count') || actionItem.querySelector('.stat-count');
                 if (countElement) {
                     countElement.textContent = formatNumber(likes);
                 }
             } else {
                 console.error('Like error:', data.data?.message);
+                // Revert if guest
+                if (!isLoggedIn()) {
+                    GuestStorage.toggleLikeVideo(postId);
+                    actionItem.classList.toggle('liked');
+                }
             }
         })
         .catch(error => {
             console.error('AJAX error:', error);
+            // Revert if guest
+            if (!isLoggedIn()) {
+                GuestStorage.toggleLikeVideo(postId);
+                actionItem.classList.toggle('liked');
+            }
         });
     });
 
-    // Event listener cho save button (xử lý cả action-item và interaction-item)
+    // Event listener for save button (handle both action-item and interaction-item)
     document.addEventListener('click', function(e) {
         const actionItem = e.target.closest('.action-item[data-action="save"], .interaction-item[data-action="save"]');
         if (!actionItem) return;
@@ -644,18 +1018,25 @@ document.addEventListener("DOMContentLoaded", function() {
         const postId = actionItem.dataset.postId;
         if (!postId) return;
         
-        // Kiểm tra đăng nhập
-        if (!checkLogin(e)) {
-            // checkLogin đã mở popup nếu chưa đăng nhập
-            return;
-        }
-        
-        // Thêm animation
+        // Add animation
         actionItem.classList.add('saving');
         setTimeout(() => actionItem.classList.remove('saving'), 300);
         
-        // Gửi AJAX request
-        sendAjaxRequest('puna_tiktok_toggle_save', { post_id: postId })
+        // Save to localStorage if guest
+        if (!isLoggedIn()) {
+            const isSaved = GuestStorage.toggleSaveVideo(postId);
+            if (isSaved) {
+                actionItem.classList.add('saved');
+            } else {
+                actionItem.classList.remove('saved');
+            }
+        }
+        
+        // Send AJAX request (guests can save)
+        sendAjaxRequest('puna_tiktok_toggle_save', { 
+            post_id: postId,
+            action_type: actionItem.classList.contains('saved') ? 'save' : 'unsave'
+        })
         .then(data => {
             if (data.success) {
                 const isSaved = data.data.is_saved;
@@ -668,18 +1049,46 @@ document.addEventListener("DOMContentLoaded", function() {
                     actionItem.classList.remove('saved');
                 }
                 
-                // Update saves count (xử lý cả .count và .stat-count)
+                // Save to localStorage if guest
+                if (!isLoggedIn()) {
+                    if (isSaved) {
+                        const saved = GuestStorage.getSavedVideos();
+                        if (saved.indexOf(postId) === -1) {
+                            saved.push(postId);
+                            GuestStorage.setSavedVideos(saved);
+                        }
+                    } else {
+                        const saved = GuestStorage.getSavedVideos();
+                        const index = saved.indexOf(postId);
+                        if (index > -1) {
+                            saved.splice(index, 1);
+                            GuestStorage.setSavedVideos(saved);
+                        }
+                    }
+                }
+                
+                // Update saves count (handle both .count and .stat-count)
                 const countEl = actionItem.querySelector('.count') || actionItem.querySelector('.stat-count');
                 if (countEl && saves !== undefined) {
                     countEl.textContent = formatNumber(saves);
                 }
             } else {
                 showToast(data.data?.message || 'Có lỗi xảy ra', 'error');
+                // Revert if guest
+                if (!isLoggedIn()) {
+                    GuestStorage.toggleSaveVideo(postId);
+                    actionItem.classList.toggle('saved');
+                }
             }
         })
         .catch(error => {
             console.error('Error saving video:', error);
             showToast('Có lỗi xảy ra khi lưu video', 'error');
+            // Revert nếu là guest
+            if (!isLoggedIn()) {
+                GuestStorage.toggleSaveVideo(postId);
+                actionItem.classList.toggle('saved');
+            }
         });
     });
 
@@ -1026,6 +1435,12 @@ document.addEventListener("DOMContentLoaded", function() {
             params.parent_id = parentId;
         }
         
+        // Thêm guest_id nếu là guest
+        if (!isLoggedIn()) {
+            params.guest_id = GuestStorage.getGuestId();
+            params.guest_name = 'Khách';
+        }
+        
         sendAjaxRequest('puna_tiktok_add_comment', params)
         .then(data => {
             if (data.success) {
@@ -1080,8 +1495,20 @@ document.addEventListener("DOMContentLoaded", function() {
         const noComments = commentsList.querySelector('.no-comments');
         if (noComments) noComments.remove();
         
-        // Lấy thông tin user hiện tại
-        const currentUser = puna_tiktok_ajax.current_user || { display_name: 'Bạn', user_id: 0 };
+        // Lấy thông tin user hiện tại hoặc guest
+        let authorName = 'Bạn';
+        let avatarUrl = 'https://via.placeholder.com/40';
+        
+        if (isLoggedIn() && puna_tiktok_ajax.current_user) {
+            authorName = puna_tiktok_ajax.current_user.display_name || 'Bạn';
+            avatarUrl = puna_tiktok_ajax.avatar_url || avatarUrl;
+        } else {
+            // Guest - format tên với ID
+            const guestId = GuestStorage.getGuestId();
+            const guestIdShort = guestId.substring(6, 14); // Lấy 8 ký tự sau "guest_"
+            authorName = 'Khách #' + guestIdShort;
+        }
+        
         const finalCommentId = commentId || ('temp-' + Date.now());
         
         // Tạo comment element
@@ -1089,12 +1516,12 @@ document.addEventListener("DOMContentLoaded", function() {
         commentElement.className = 'comment-item';
         commentElement.setAttribute('data-comment-id', finalCommentId);
         commentElement.innerHTML = `
-            <img src="${puna_tiktok_ajax.avatar_url || 'https://via.placeholder.com/40'}" 
-                 alt="${currentUser.display_name}" 
+            <img src="${avatarUrl}" 
+                 alt="${authorName}" 
                  class="comment-avatar">
             <div class="comment-content">
                 <div class="comment-header">
-                    <strong class="comment-author">${currentUser.display_name}</strong>
+                    <strong class="comment-author">${authorName}</strong>
                 </div>
                 <p class="comment-text">${commentText}</p>
                 <div class="comment-footer">
@@ -1157,7 +1584,20 @@ document.addEventListener("DOMContentLoaded", function() {
             parentItem.parentElement.insertBefore(repliesSection, parentItem.nextSibling);
         }
         
-        const currentUser = puna_tiktok_ajax.current_user || { display_name: 'Bạn', user_id: 0 };
+        // Lấy thông tin user hiện tại hoặc guest
+        let authorName = 'Bạn';
+        let avatarUrl = 'https://via.placeholder.com/40';
+        
+        if (isLoggedIn() && puna_tiktok_ajax.current_user) {
+            authorName = puna_tiktok_ajax.current_user.display_name || 'Bạn';
+            avatarUrl = puna_tiktok_ajax.avatar_url || avatarUrl;
+        } else {
+            // Guest - format tên với ID
+            const guestId = GuestStorage.getGuestId();
+            const guestIdShort = guestId.substring(6, 14); // Lấy 8 ký tự sau "guest_"
+            authorName = 'Khách #' + guestIdShort;
+        }
+        
         const finalCommentId = commentId || ('temp-' + Date.now());
         
         // Tạo reply element
@@ -1165,12 +1605,12 @@ document.addEventListener("DOMContentLoaded", function() {
         replyElement.className = 'comment-item comment-reply';
         replyElement.setAttribute('data-comment-id', finalCommentId);
         replyElement.innerHTML = `
-            <img src="${puna_tiktok_ajax.avatar_url || 'https://via.placeholder.com/40'}" 
-                 alt="${currentUser.display_name}" 
+            <img src="${avatarUrl}" 
+                 alt="${authorName}" 
                  class="comment-avatar">
             <div class="comment-content">
                 <div class="comment-header">
-                    <strong class="comment-author">${currentUser.display_name}</strong>
+                    <strong class="comment-author">${authorName}</strong>
                 </div>
                 <p class="comment-text">${commentText}</p>
                 <div class="comment-footer">
@@ -1262,10 +1702,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const replyLink = e.target.closest('.reply-link');
         if (!replyLink || !replyLink.dataset.commentId) return;
         
+        e.preventDefault();
+        e.stopPropagation();
+        
         const parentCommentId = parseInt(replyLink.dataset.commentId, 10);
         
-        // Kiểm tra đăng nhập và xử lý reply
-        if (!checkLogin(e, () => {
+        // Xử lý reply (guest có thể reply)
             const commentItem = replyLink.closest('.comment-item');
         const overlay = replyLink.closest('.comments-overlay');
         
@@ -1360,7 +1802,6 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // Event listeners cho reply input
             handleCommentInput(replyContainer.querySelector('.reply-input-field'));
-        })) return;
     });
 
     // Hủy reply
@@ -1598,13 +2039,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         
         const commentId = parseInt(likesElement.dataset.commentId, 10);
-        
-        // Kiểm tra đăng nhập
-        if (!checkLogin(e)) return;
         if (!commentId) return;
         
         const isLiked = heartIcon.classList.contains('fa-solid');
         const currentLikes = parseInt(span.textContent.replace(/[^\d]/g, ''), 10) || 0;
+        
+        // Lưu vào localStorage nếu là guest
+        if (!isLoggedIn()) {
+            GuestStorage.toggleLikeComment(commentId);
+        }
         
         // Optimistic update
         if (isLiked) {
@@ -1621,7 +2064,10 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(() => likesElement.classList.remove('liking'), 300);
         
         // Gửi AJAX request
-        sendAjaxRequest('puna_tiktok_toggle_comment_like', { comment_id: commentId })
+        sendAjaxRequest('puna_tiktok_toggle_comment_like', { 
+            comment_id: commentId,
+            action_type: isLiked ? 'unlike' : 'like'
+        })
         .then(data => {
             if (data.success) {
                 const isLikedNow = data.data.is_liked;
@@ -1634,6 +2080,25 @@ document.addEventListener("DOMContentLoaded", function() {
                     heartIcon.classList.remove('fa-solid', 'liked');
                     heartIcon.classList.add('fa-regular');
                 }
+                
+                // Save to localStorage if guest
+                if (!isLoggedIn()) {
+                    if (isLikedNow) {
+                        const liked = GuestStorage.getLikedComments();
+                        if (liked.indexOf(commentId) === -1) {
+                            liked.push(commentId);
+                            GuestStorage.setLikedComments(liked);
+                        }
+                    } else {
+                        const liked = GuestStorage.getLikedComments();
+                        const index = liked.indexOf(commentId);
+                        if (index > -1) {
+                            liked.splice(index, 1);
+                            GuestStorage.setLikedComments(liked);
+                        }
+                    }
+                }
+                
                 span.textContent = formatNumber(likes);
             } else {
                 // Revert optimistic update
@@ -1646,6 +2111,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 span.textContent = formatNumber(currentLikes);
                 console.error('Like comment error:', data.data?.message);
+                // Revert localStorage nếu là guest
+                if (!isLoggedIn()) {
+                    GuestStorage.toggleLikeComment(commentId);
+                }
             }
         })
         .catch(error => {
@@ -1659,6 +2128,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 heartIcon.classList.add('fa-regular');
             }
             span.textContent = formatNumber(currentLikes);
+            // Revert localStorage nếu là guest
+            if (!isLoggedIn()) {
+                GuestStorage.toggleLikeComment(commentId);
+            }
         });
     });
 
@@ -2307,7 +2780,7 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // Kiểm tra nếu là menu item cần đăng nhập
             const needsLogin = loginRequiredItems.some(item => text === item) ||
-                              (url && (url.includes('/messages') || url.includes('/profile') || url.includes('post-new.php')));
+                              (url && (url.includes('/messages') || url.includes('/profile') || url.includes('/upload')));
             
             if (needsLogin) {
                 link.addEventListener('click', function(e) {
@@ -2357,15 +2830,36 @@ document.addEventListener("DOMContentLoaded", function() {
         // Auto-play video (video sẽ dùng chung hàm với trang index)
         const watchVideo = videoWatchPage.querySelector('.tiktok-video');
         if (watchVideo) {
-            // Áp dụng volume state từ trang index
+            // Load Mega video first if needed
+            if (watchVideo.dataset.megaLink) {
+                ensureMegaVideoSource(watchVideo).then(() => {
+                    // Video source loaded, now apply settings and play
             applyVideoVolumeSettings(watchVideo);
-            // Cập nhật lại sau khi apply toàn bộ
+                    applyVolumeToAllVideos();
+                    
+                    // Auto-play after source is loaded
+                    const playPromise = watchVideo.play();
+                    if (playPromise !== undefined) {
+                        playPromise.catch(e => {
+                            console.log('Auto-play prevented:', e);
+                        });
+                    }
+                }).catch(err => {
+                    console.error('Failed to load Mega video:', err);
+                });
+            } else {
+                // Regular video - apply settings and play immediately
+                applyVideoVolumeSettings(watchVideo);
             applyVolumeToAllVideos();
             
             // Auto-play
-            watchVideo.play().catch(e => {
+                const playPromise = watchVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => {
                 console.log('Auto-play prevented:', e);
             });
+                }
+            }
         }
         
         // Back button
@@ -2492,9 +2986,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const uploadLoadingOverlay = document.getElementById('uploadLoadingOverlay');
         const uploadFileInfoElement = document.getElementById('uploadFileInfo');
 
+        const megaUploader = (typeof window.PunaTikTokMegaUploader === 'function' && puna_tiktok_ajax?.mega)
+            ? new window.PunaTikTokMegaUploader(puna_tiktok_ajax.mega)
+            : null;
+
         let selectedVideoFile = null;
         let videoDuration = 0;
-        let xhr = null;
+        let isUploading = false;
 
         // Select video button
         if (selectBtn) {
@@ -2661,7 +3159,6 @@ document.addEventListener("DOMContentLoaded", function() {
         // Location suggestions (placeholder)
         if (locationInput) {
             locationInput.addEventListener('focus', () => {
-                // TODO: Implement location suggestions
                 locationSuggestions?.classList.add('active');
             });
 
@@ -2707,20 +3204,58 @@ document.addEventListener("DOMContentLoaded", function() {
         // Cancel upload
         if (cancelUploadBtn) {
             cancelUploadBtn.addEventListener('click', () => {
-                if (xhr) {
-                    xhr.abort();
-                    xhr = null;
+                if (isUploading) {
+                    showToast('Đang tải lên Mega, vui lòng đợi hoàn tất.', 'warning');
                 }
                 resetUploadProgress();
             });
         }
 
-        function publishVideo() {
+        async function publishVideo() {
             if (!selectedVideoFile) return;
+            if (!megaUploader) {
+                showToast('Mega uploader chưa sẵn sàng.', 'error');
+                return;
+            }
+            if (isUploading) return;
 
+            isUploading = true;
+            if (publishBtn) {
+                publishBtn.disabled = true;
+            }
+
+            updateUploadProgress(0, selectedVideoFile.size);
+            if (uploadLoadingOverlay) {
+                uploadLoadingOverlay.classList.add('show');
+            }
+
+            console.log('[Uploader] Bắt đầu publishVideo', selectedVideoFile.name, selectedVideoFile.size);
+
+            try {
+                const megaResult = await megaUploader.uploadFile(selectedVideoFile, (uploaded, total) => {
+                    updateUploadProgress(uploaded, total);
+                    console.log('[Uploader] Progress', uploaded, '/', total);
+                });
+                console.log('[Uploader] Mega upload hoàn tất', megaResult);
+                await finalizePost(megaResult);
+            } catch (error) {
+                console.error('Mega upload error', error);
+                showToast(error?.message || 'Không thể tải video lên Mega.nz.', 'error');
+                if (uploadLoadingOverlay) {
+                    uploadLoadingOverlay.classList.remove('show');
+                }
+                resetUploadProgress();
+            }
+        }
+
+        async function finalizePost(megaResult) {
             const formData = new FormData();
             formData.append('action', 'puna_tiktok_upload_video');
-            formData.append('video', selectedVideoFile);
+            formData.append('nonce', puna_tiktok_ajax?.nonce || '');
+            formData.append('mega_link', megaResult?.link || '');
+            formData.append('mega_node_id', megaResult?.nodeId || '');
+            formData.append('video_name', megaResult?.name || selectedVideoFile.name);
+            formData.append('video_size', megaResult?.size || selectedVideoFile.size || 0);
             formData.append('description', descriptionInput?.value || '');
             formData.append('location', locationInput?.value || '');
             formData.append('privacy', document.getElementById('videoPrivacy')?.value || 'public');
@@ -2729,136 +3264,85 @@ document.addEventListener("DOMContentLoaded", function() {
             formData.append('music_copyright_check', document.getElementById('musicCopyrightCheck')?.checked ? '1' : '0');
             formData.append('content_check_lite', document.getElementById('contentCheckLite')?.checked ? '1' : '0');
             
-            // Cover image
             if (coverImageInput?.files[0]) {
                 formData.append('cover_image', coverImageInput.files[0]);
             }
 
-            formData.append('nonce', puna_tiktok_ajax?.nonce || '');
+            console.log('[Uploader] Gửi metadata tới AJAX…');
 
-            // Show upload file info and progress bar
+            try {
+                const response = await fetch(puna_tiktok_ajax?.ajax_url || '/wp-admin/admin-ajax.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const text = await response.text();
+                console.log('[Uploader] AJAX response raw:', text.substring(0, 300));
+
+                let payload = null;
+                try {
+                    payload = JSON.parse(text);
+                } catch (parseError) {
+                    console.error('[Uploader] Không parse được JSON', parseError);
+                    throw new Error('Máy chủ trả về dữ liệu không hợp lệ. Vui lòng đăng nhập lại và thử lại.');
+                }
+
+                if (payload.success) {
+                    const redirectUrl = payload.data?.redirect_url;
+                    if (redirectUrl) {
+                        window.location.href = redirectUrl;
+                    } else if (puna_tiktok_ajax?.current_user?.user_id) {
+                        window.location.href = `/author/${puna_tiktok_ajax.current_user.user_id}/`;
+                    } else {
+                        window.location.href = '/';
+                    }
+                } else {
+                    showToast(payload.data?.message || 'Có lỗi xảy ra khi lưu video.', 'error');
+                    console.warn('[Uploader] AJAX trả về lỗi', payload);
+                    resetUploadProgress();
+                }
+            } catch (error) {
+                console.error('Finalize post error', error);
+                showToast('Không thể lưu thông tin video. Vui lòng thử lại.', 'error');
+                resetUploadProgress();
+            }
+        }
+
+        function updateUploadProgress(uploaded, total) {
             if (uploadFileInfoElement) {
                 uploadFileInfoElement.style.display = 'block';
             }
-            
-            // Set file name
             if (fileName) {
-                fileName.textContent = selectedVideoFile.name;
-            }
-            
-            // Reset and initialize progress bar
-            if (uploadProgressFill) {
-                uploadProgressFill.style.width = '0%';
-            }
-            if (uploadProgressText) {
-                uploadProgressText.textContent = '0MB / ' + formatFileSize(selectedVideoFile.size);
-            }
-            if (uploadPercentage) {
-                uploadPercentage.textContent = '0%';
-            }
-            
-            // Set initial duration if available
-            if (uploadDuration && videoDuration > 0) {
-                uploadDuration.textContent = `Thời lượng: ${formatDuration(videoDuration)}`;
+                fileName.textContent = selectedVideoFile?.name || 'video.mp4';
             }
 
-            // Show loading overlay
-            if (uploadLoadingOverlay) {
-                uploadLoadingOverlay.classList.add('show');
-            }
+            const safeTotal = total || selectedVideoFile?.size || 0;
+            const percentComplete = safeTotal > 0 ? (uploaded / safeTotal) * 100 : 0;
 
-            // Upload progress
-            xhr = new XMLHttpRequest();
-            
-            xhr.upload.addEventListener('progress', (e) => {
-                if (e.lengthComputable && e.total > 0) {
-                    const percentComplete = (e.loaded / e.total) * 100;
-                    
-                    // Update progress bar
                     if (uploadProgressFill) {
                         uploadProgressFill.style.width = percentComplete + '%';
                     }
-                    
-                    // Update progress text
                     if (uploadProgressText) {
-                        uploadProgressText.textContent = formatFileSize(e.loaded) + ' / ' + formatFileSize(e.total);
+                uploadProgressText.textContent = `${formatFileSize(uploaded)} / ${formatFileSize(safeTotal)}`;
                     }
-                    
-                    // Update percentage
                     if (uploadPercentage) {
                         uploadPercentage.textContent = Math.round(percentComplete) + '%';
                     }
-                    
-                    // Update duration if not set yet
-                    if (uploadDuration && (!uploadDuration.textContent || uploadDuration.textContent === '')) {
-                        if (videoDuration > 0) {
+            if (uploadDuration && videoDuration > 0) {
                             uploadDuration.textContent = `Thời lượng: ${formatDuration(videoDuration)}`;
-                        }
-                    }
-                }
-            });
-
-            xhr.addEventListener('load', () => {
-                if (xhr.status === 200) {
-                    try {
-                        const response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            // Redirect to video or profile
-                            if (response.data && response.data.redirect_url) {
-                                window.location.href = response.data.redirect_url;
-                            } else {
-                                window.location.href = puna_tiktok_ajax?.current_user?.user_id 
-                                    ? `/author/${puna_tiktok_ajax.current_user.user_id}/`
-                                    : '/';
-                            }
-                        } else {
-                            showToast(response.data?.message || 'Có lỗi xảy ra khi upload video', 'error');
-                            if (uploadLoadingOverlay) {
-                                uploadLoadingOverlay.classList.remove('show');
-                            }
-                            resetUploadProgress();
-                        }
-                    } catch (e) {
-                        console.error('Error parsing response:', e);
-                        showToast('Có lỗi xảy ra khi upload video', 'error');
-                        if (uploadLoadingOverlay) {
-                            uploadLoadingOverlay.classList.remove('show');
-                        }
-                        resetUploadProgress();
-                    }
-                } else {
-                    showToast('Có lỗi xảy ra khi upload video', 'error');
-                    if (uploadLoadingOverlay) {
-                        uploadLoadingOverlay.classList.remove('show');
-                    }
-                    resetUploadProgress();
-                }
-            });
-
-            xhr.addEventListener('error', () => {
-                showToast('Có lỗi xảy ra khi upload video', 'error');
-                if (uploadLoadingOverlay) {
-                    uploadLoadingOverlay.classList.remove('show');
-                }
-                resetUploadProgress();
-            });
-
-            xhr.open('POST', puna_tiktok_ajax?.ajax_url || '/wp-admin/admin-ajax.php');
-            xhr.send(formData);
-
-            // Enable publish button after upload starts
-            if (publishBtn) {
-                publishBtn.disabled = true;
             }
         }
 
         function resetUploadProgress() {
+            isUploading = false;
             if (uploadProgressFill) uploadProgressFill.style.width = '0%';
             if (uploadProgressText) uploadProgressText.textContent = '0MB / 0MB';
             if (uploadPercentage) uploadPercentage.textContent = '0%';
             if (publishBtn) publishBtn.disabled = false;
             if (uploadFileInfoElement) {
                 uploadFileInfoElement.style.display = 'none';
+            }
+            if (uploadLoadingOverlay) {
+                uploadLoadingOverlay.classList.remove('show');
             }
         }
 
@@ -3173,5 +3657,67 @@ document.addEventListener("DOMContentLoaded", function() {
             console.error('AJAX error:', error);
             showToast('Có lỗi xảy ra khi xóa video. Vui lòng thử lại.', 'error');
         });
+    });
+
+    /**
+     * Load guest state from localStorage
+     */
+    function loadGuestState() {
+        if (isLoggedIn()) return; // Chỉ load cho guest
+        
+        const likedVideos = GuestStorage.getLikedVideos();
+        const savedVideos = GuestStorage.getSavedVideos();
+        const likedComments = GuestStorage.getLikedComments();
+        
+        // Update like buttons
+        likedVideos.forEach(postId => {
+            const likeBtn = document.querySelector(`.action-item[data-action="like"][data-post-id="${postId}"], .interaction-item[data-action="like"][data-post-id="${postId}"]`);
+            if (likeBtn) {
+                likeBtn.classList.add('liked');
+            }
+        });
+        
+        // Update save buttons
+        savedVideos.forEach(postId => {
+            const saveBtn = document.querySelector(`.action-item[data-action="save"][data-post-id="${postId}"], .interaction-item[data-action="save"][data-post-id="${postId}"]`);
+            if (saveBtn) {
+                saveBtn.classList.add('saved');
+            }
+        });
+        
+        // Update comment like buttons
+        likedComments.forEach(commentId => {
+            const commentLikes = document.querySelector(`.comment-likes[data-comment-id="${commentId}"]`);
+            if (commentLikes) {
+                const heartIcon = commentLikes.querySelector('i.fa-heart');
+                if (heartIcon) {
+                    heartIcon.classList.remove('fa-regular');
+                    heartIcon.classList.add('fa-solid', 'liked');
+                }
+            }
+        });
+    }
+    
+    // Load guest state on page load
+    loadGuestState();
+    
+    // Listen for login success to migrate guest data
+    document.addEventListener('puna_tiktok_login_success', function() {
+        const guestData = GuestStorage.getAllData();
+        if (guestData.liked_videos.length > 0 || guestData.saved_videos.length > 0 || guestData.liked_comments.length > 0) {
+            // Migrate guest data to user account
+            sendAjaxRequest('puna_tiktok_migrate_guest_data', guestData)
+                .then(data => {
+                    if (data.success) {
+                        console.log('Guest data migrated successfully');
+                        GuestStorage.clearAll();
+                        // Reload page to show updated state
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error migrating guest data:', error);
+                });
+        }
     });
 });

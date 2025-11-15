@@ -14,30 +14,18 @@ class Puna_TikTok_Blocks
 
     public function __construct()
     {
+        // Register post meta for video data (still needed for AJAX handlers)
         add_action('init', array($this, 'register_post_meta'));
-        add_action('init', array($this, 'register_blocks'));
-        add_filter('block_categories_all', array($this, 'register_block_category'), 10, 2);
+        
+        // Register block type for rendering only (existing posts need to render)
+        // Block is no longer available in Gutenberg editor - upload is done via frontend
+        add_action('init', array($this, 'register_blocks_render_only'));
     }
 
-    public function register_block_category($categories, $post)
-    {
-        $exists = false;
-        foreach ($categories as $cat) {
-            if (isset($cat['slug']) && $cat['slug'] === 'puna') {
-                $exists = true;
-                break;
-            }
-        }
-        if (!$exists) {
-            $categories[] = array(
-                'slug'  => 'puna',
-                'title' => __('Puna', 'puna-tiktok'),
-                'icon'  => null,
-            );
-        }
-        return $categories;
-    }
-
+    /**
+     * Register post meta for video data
+     * Still needed for AJAX handlers and data storage
+     */
     public function register_post_meta()
     {
         register_post_meta('post', '_puna_tiktok_video_file_id', array(
@@ -48,25 +36,34 @@ class Puna_TikTok_Blocks
                 return current_user_can('edit_posts');
             },
         ));
+
+        register_post_meta('post', '_puna_tiktok_video_url', array(
+            'single'        => true,
+            'type'          => 'string',
+            'show_in_rest'  => true,
+            'auth_callback' => function () {
+                return current_user_can('edit_posts');
+            },
+        ));
+
+        register_post_meta('post', '_puna_tiktok_video_node_id', array(
+            'single'        => true,
+            'type'          => 'string',
+            'show_in_rest'  => true,
+            'auth_callback' => function () {
+                return current_user_can('edit_posts');
+            },
+        ));
     }
-
-    public function register_blocks()
+    
+    /**
+     * Register block type for rendering only
+     * Block is NOT available in Gutenberg editor - only for rendering existing posts
+     */
+    public function register_blocks_render_only()
     {
-        $script_rel_path = '/assets/js/backend/hupuna-tiktok-block.js';
-        $script_path = PUNA_TIKTOK_THEME_DIR . $script_rel_path;
-        $script_uri  = PUNA_TIKTOK_THEME_URI . $script_rel_path;
-        $script_ver  = file_exists($script_path) ? filemtime($script_path) : PUNA_TIKTOK_VERSION;
-        
-        wp_register_script(
-            'puna-tiktok-hupuna-block',
-            $script_uri,
-            array('wp-blocks', 'wp-element', 'wp-components', 'wp-i18n', 'wp-block-editor', 'wp-data'),
-            $script_ver,
-            true
-        );
-
+        // Register block type without editor script - only for rendering existing posts
         register_block_type('puna/hupuna-tiktok', array(
-            'editor_script'   => 'puna-tiktok-hupuna-block',
             'render_callback' => array($this, 'render_hupuna_block'),
             'attributes'      => array(
                 'videoId' => array(
@@ -75,11 +72,16 @@ class Puna_TikTok_Blocks
                     'meta'   => '_puna_tiktok_video_file_id',
                 ),
                 'videoUrl' => array(
-                    'type' => 'string',
+                    'type'   => 'string',
+                    'source' => 'meta',
+                    'meta'   => '_puna_tiktok_video_url',
+                ),
+                'videoNodeId' => array(
+                    'type'   => 'string',
+                    'source' => 'meta',
+                    'meta'   => '_puna_tiktok_video_node_id',
                 ),
             ),
-            'category' => 'puna',
-            'uses_context' => [ 'postId', 'postType' ],
         ));
     }
 
@@ -98,14 +100,32 @@ class Puna_TikTok_Blocks
             return '';
         }
 
-        // get video id
-        $video_id = isset($attributes['videoId']) ? intval($attributes['videoId']) : 0;
+        $video_id  = isset($attributes['videoId']) ? intval($attributes['videoId']) : 0;
+        $video_url = '';
 
-        if (!$video_id) {
+        if (!empty($attributes['videoUrl'])) {
+            $video_url = esc_url($attributes['videoUrl']);
+        }
+
+        if (!$video_url) {
+            $video_url = get_post_meta($post_id, '_puna_tiktok_video_url', true);
+            if ($video_url) {
+                $video_url = esc_url($video_url);
+            }
+        }
+
+        if (!$video_url && !$video_id) {
             $video_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
         }
 
-        if (!$video_id || !wp_get_attachment_url($video_id)) {
+        if (!$video_url && $video_id) {
+            $attachment_url = wp_get_attachment_url($video_id);
+            if ($attachment_url) {
+                $video_url = esc_url($attachment_url);
+            }
+        }
+
+        if (!$video_url) {
             return '';
         }
         

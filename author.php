@@ -27,16 +27,22 @@ $author_url = get_author_posts_url($author_id);
 
 // Get author stats
 $author_videos_query = new WP_Query(array(
-    'post_type' => 'post',
-    'author' => $author_id,
+    'post_type'      => 'post',
+    'author'         => $author_id,
     'posts_per_page' => -1,
-    'post_status' => 'publish',
-    'meta_query' => array(
+    'post_status'    => 'publish',
+    'meta_query'     => array(
+        'relation' => 'OR',
         array(
-            'key' => '_puna_tiktok_video_file_id',
-            'compare' => 'EXISTS'
-        )
-    )
+            'key'     => '_puna_tiktok_video_url',
+            'value'   => '',
+            'compare' => '!=',
+        ),
+        array(
+            'key'     => '_puna_tiktok_video_file_id',
+            'compare' => 'EXISTS',
+        ),
+    ),
 ));
 
 $total_videos = $author_videos_query->found_posts;
@@ -146,8 +152,8 @@ if ($is_own_profile && $current_user_id) {
                     </div>
                     <h3>Chưa có video</h3>
                     <p><?php echo $is_own_profile ? 'Đăng video đầu tiên của bạn để bắt đầu!' : 'Người dùng này chưa đăng video nào.'; ?></p>
-                    <?php if ($is_own_profile) : ?>
-                        <a href="<?php echo admin_url('post-new.php'); ?>" class="upload-video-btn">
+                    <?php if ($is_own_profile && current_user_can('manage_options')) : ?>
+                        <a href="<?php echo esc_url(puna_tiktok_get_upload_url()); ?>" class="upload-video-btn">
                             <i class="fa-solid fa-square-plus"></i> Tải video lên
                         </a>
                     <?php endif; ?>

@@ -7,11 +7,9 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Check login
-if (!is_user_logged_in()) {
-    $current_url = home_url($_SERVER['REQUEST_URI']);
-    wp_redirect(wp_login_url($current_url));
-    exit;
+// Chỉ admin mới được upload video
+if (!current_user_can('manage_options')) {
+    wp_die('Chỉ quản trị viên mới được đăng video.', 'Không có quyền truy cập', array('response' => 403));
 }
 
 get_header();

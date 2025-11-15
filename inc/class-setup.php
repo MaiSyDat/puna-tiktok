@@ -59,8 +59,6 @@ class Puna_TikTok_Setup {
         $custom_pages = array(
             'upload'   => 'page-upload.php',
             'explore'  => 'template-parts/pages/explore.php',
-            'friends'  => 'template-parts/pages/friends.php',
-            'messages' => 'template-parts/pages/messages.php',
             'profile'  => 'template-parts/pages/profile.php',
         );
         
@@ -97,8 +95,6 @@ class Puna_TikTok_Setup {
         $page_templates = array(
             'upload'   => 'page-upload.php',
             'explore'  => 'template-parts/pages/explore.php',
-            'friends'  => 'template-parts/pages/friends.php',
-            'messages' => 'template-parts/pages/messages.php',
             'profile'  => 'template-parts/pages/profile.php',
         );
         
@@ -111,8 +107,6 @@ class Puna_TikTok_Setup {
                 $page_titles = array(
                     'upload'   => 'Upload Video',
                     'explore'  => 'Khám phá',
-                    'friends'  => 'Bạn bè',
-                    'messages' => 'Tin nhắn',
                     'profile'  => 'Hồ sơ',
                 );
                 

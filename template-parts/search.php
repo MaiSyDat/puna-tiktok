@@ -43,15 +43,21 @@ $withcomments = 1;
                 <?php
                 // Query all posts with video block first, then filter by search
                 $all_video_args = array(
-                    'post_type' => 'post',
+                    'post_type'      => 'post',
                     'posts_per_page' => -1,
-                    'post_status' => 'publish',
-                    'meta_query' => array(
+                    'post_status'    => 'publish',
+                    'meta_query'     => array(
+                        'relation' => 'OR',
                         array(
-                            'key' => '_puna_tiktok_video_file_id',
-                            'compare' => 'EXISTS'
-                        )
-                    )
+                            'key'     => '_puna_tiktok_video_url',
+                            'value'   => '',
+                            'compare' => '!=',
+                        ),
+                        array(
+                            'key'     => '_puna_tiktok_video_file_id',
+                            'compare' => 'EXISTS',
+                        ),
+                    ),
                 );
                 
                 $all_videos_query = new WP_Query($all_video_args);
@@ -155,14 +161,22 @@ $withcomments = 1;
                         ?>
                     </div>
                     <?php else : ?>
-                        <div class="search-empty">
-                            <p>Không tìm thấy video nào cho "<?php echo esc_html($search_query); ?>"</p>
-                        </div>
+                        <?php 
+                        puna_tiktok_empty_state(array(
+                            'icon' => 'fa-search',
+                            'title' => 'Không tìm thấy video',
+                            'message' => 'Không tìm thấy video nào cho "' . esc_html($search_query) . '"'
+                        )); 
+                        ?>
                     <?php endif; ?>
                 <?php else : ?>
-                    <div class="search-empty">
-                        <p>Không tìm thấy video nào cho "<?php echo esc_html($search_query); ?>"</p>
-                    </div>
+                    <?php 
+                    puna_tiktok_empty_state(array(
+                        'icon' => 'fa-search',
+                        'title' => 'Không tìm thấy video',
+                        'message' => 'Không tìm thấy video nào cho "' . esc_html($search_query) . '"'
+                    )); 
+                    ?>
                 <?php endif; ?>
                 
             <?php elseif ($active_tab === 'users') : ?>
@@ -189,15 +203,21 @@ $withcomments = 1;
                             
                             // Đếm số video của user
                             $video_count = get_posts(array(
-                                'post_type' => 'post',
-                                'author' => $user_id,
+                                'post_type'      => 'post',
+                                'author'         => $user_id,
                                 'posts_per_page' => -1,
-                                'post_status' => 'publish',
-                                'meta_query' => array(
+                                'post_status'    => 'publish',
+                                'meta_query'     => array(
+                                    'relation' => 'OR',
                                     array(
-                                        'key' => '_puna_tiktok_video_file_id',
-                                        'compare' => 'EXISTS'
-                                    )
+                                        'key'     => '_puna_tiktok_video_url',
+                                        'value'   => '',
+                                        'compare' => '!=',
+                                    ),
+                                    array(
+                                        'key'     => '_puna_tiktok_video_file_id',
+                                        'compare' => 'EXISTS',
+                                    ),
                                 ),
                                 'fields' => 'ids'
                             ));
@@ -216,9 +236,13 @@ $withcomments = 1;
                         <?php endforeach; ?>
                     </div>
                 <?php else : ?>
-                    <div class="search-empty">
-                        <p>Không tìm thấy người dùng nào cho "<?php echo esc_html($search_query); ?>"</p>
-                    </div>
+                    <?php 
+                    puna_tiktok_empty_state(array(
+                        'icon' => 'fa-user',
+                        'title' => 'Không tìm thấy người dùng',
+                        'message' => 'Không tìm thấy người dùng nào cho "' . esc_html($search_query) . '"'
+                    )); 
+                    ?>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

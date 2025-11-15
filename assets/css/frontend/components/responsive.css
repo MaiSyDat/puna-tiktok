@@ -28,21 +28,35 @@
         transition: all 0.2s;
     }
 
-    /* Video Feed - iPad Pro */
+    /* Video Feed - Tablet */
     .video-row {
-        position: relative; /* anchor absolute .video-sidebar inside each row */
+        position: relative;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         gap: 0;
         padding: 0;
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        background-color: #000;
     }
 
     .video-container {
+        width: 100%;
         height: 100vh;
         max-height: 100vh;
-        width: 100%;
-        max-width: 100%;
+        max-width: 100vw;
+        border-radius: 0;
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 9 / 16;
+        overflow: hidden;
+        background-color: #000;
     }
 
     .tiktok-video {
@@ -52,16 +66,34 @@
         max-height: 100%;
         object-fit: contain;
     }
+    
+    /* Video dọc trên tablet */
+    .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
+        aspect-ratio: 9 / 16;
+    }
+    
+    /* Video ngang trên tablet */
+    .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
+        aspect-ratio: 16 / 9;
+        max-height: 100vh;
+    }
+    
+    /* Video vuông trên tablet */
+    .video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
+        aspect-ratio: 1 / 1;
+        max-width: 100vw;
+        max-height: 100vh;
+    }
 
     .video-details {
         max-width: 60%;
         width: 100%;
     }
 
-    /* Di chuyển video-sidebar vào trong video */
+    /* Di chuyển video-sidebar vào trong video container */
     .video-sidebar {
         position: absolute;
-        right: 16px;
+        right: 10px;
         bottom: 80px;
         flex-direction: column;
         gap: 16px;
@@ -131,7 +163,7 @@
 
     .video-container .video-overlay {
         bottom: 80px;
-        padding-right: 80px; /* Tạo không gian cho sidebar */
+        padding-right: 70px; /* Tạo không gian cho sidebar */
     }
 
     /* Video Watch Page */
@@ -192,6 +224,7 @@
     /* Main Content */
     .main-content {
         padding-left: 0;
+        padding-right: 0; /* Bỏ padding cho video-nav trên tablet */
     }
 }
 
@@ -203,6 +236,7 @@
     /* Layout */
     .main-content {
         padding-left: 0;
+        padding-right: 0; /* Bỏ padding cho video-nav trên mobile */
     }
 
     /* Sidebar - Mobile */
@@ -278,27 +312,67 @@
 
     /* Video Feed - Mobile */
     .video-row {
-        position: relative; /* anchor absolute .video-sidebar inside each row */
+        position: relative;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         gap: 0;
         padding: 0;
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        background-color: #000;
     }
 
     .video-container {
+        width: 100%;
         height: 100vh;
+        max-height: 100vh;
+        max-width: 100vw;
         border-radius: 0;
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 9 / 16;
+        overflow: hidden;
+        background-color: #000;
+    }
+    
+    .tiktok-video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    /* Video dọc trên mobile */
+    .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
+        aspect-ratio: 9 / 16;
+    }
+    
+    /* Video ngang trên mobile */
+    .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
+        aspect-ratio: 16 / 9;
+        max-height: 100vh;
+    }
+    
+    /* Video vuông trên mobile */
+    .video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
+        aspect-ratio: 1 / 1;
+        max-width: 100vw;
+        max-height: 100vh;
     }
 
     .video-details {
         max-width: 60%;
     }
 
-    /* Di chuyển video-sidebar vào trong video */
+    /* Di chuyển video-sidebar vào trong video container */
     .video-sidebar {
         position: absolute;
-        right: 12px;
+        right: 10px;
         bottom: 80px;
         flex-direction: column;
         gap: 12px;
@@ -670,12 +744,57 @@
 
     /* Video Feed - Small Mobile */
     .video-row {
-        position: relative; /* anchor absolute .video-sidebar inside each row */
+        position: relative;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
         padding: 0;
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        background-color: #000;
     }
 
     .video-container {
+        width: 100%;
         height: 100vh;
+        max-height: 100vh;
+        max-width: 100vw;
+        border-radius: 0;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 9 / 16;
+        overflow: hidden;
+        background-color: #000;
+    }
+    
+    .tiktok-video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    
+    /* Video dọc trên small mobile */
+    .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
+        aspect-ratio: 9 / 16;
+    }
+    
+    /* Video ngang trên small mobile */
+    .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
+        aspect-ratio: 16 / 9;
+        max-height: 100vh;
+    }
+    
+    /* Video vuông trên small mobile */
+    .video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
+        aspect-ratio: 1 / 1;
+        max-width: 100vw;
+        max-height: 100vh;
     }
 
     .video-sidebar {

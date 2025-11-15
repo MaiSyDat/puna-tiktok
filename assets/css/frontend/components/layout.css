@@ -19,6 +19,8 @@
     scroll-behavior: smooth;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    padding-right: 80px; /* Tạo không gian cho video-nav */
+    overflow-x: hidden; /* Ẩn scroll ngang */
 }
 
 .main-content::-webkit-scrollbar {

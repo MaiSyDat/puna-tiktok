@@ -2,13 +2,7 @@
    SIDEBAR - Main Navigation
    ======================================== */
 
-/* Video Sidebar (bên phải video) */
-.video-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-}
+/* Video Sidebar - CSS được định nghĩa trong video-feed.css */
 
 .author-avatar-wrapper {
     position: relative;
@@ -16,18 +10,19 @@
 
 /* Main Sidebar (bên trái) */
 .sidebar {
-    flex: 0 0 240px;
-    width: 240px;
-    max-width: 240px;
+    flex: 0 0 300x;
+    width: 300px;
+    max-width: 300px;
     background-color: var(--puna-bg);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     height: 100vh;
-    padding-left: 20px;
+    padding: 0 20px 0;
     transition: width 0.3s ease, max-width 0.3s ease, flex 0.3s ease;
     position: relative;
     z-index: 10000;
+    border-right: 1px solid var(--puna-muted);
 }
 
 .sidebar::-webkit-scrollbar {

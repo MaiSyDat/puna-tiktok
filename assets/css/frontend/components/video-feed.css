@@ -2,23 +2,74 @@
    VIDEO DISPLAY
    ======================================== */
 
-/* Video Row Layout */
+/* Video Row Layout - Bọc video và sidebar */
 .video-row {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     gap: 20px;
     padding: 20px;
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    position: relative;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
 }
 
 /* Video Container */
 .video-container {
     position: relative;
-    background: var(--puna-bg);
+    background-color: #000;
     border-radius: 12px;
     overflow: hidden;
-    height: 95vh;
+    max-height: 85vh;
+    max-width: 600px;
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     scroll-snap-align: start;
+    aspect-ratio: 9 / 16; /* Default cho video dọc */
+}
+
+/* Video loading placeholder */
+.video-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+.video-container::after {
+    content: '📹';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 64px;
+    z-index: 2;
+    opacity: 0.8;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+/* Khi video đã load, ẩn placeholder */
+.video-container:has(.tiktok-video.loaded)::before,
+.video-container:has(.tiktok-video.loaded)::after {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* Video Top Controls */
@@ -236,12 +287,45 @@
 
 .tiktok-video {
     display: block;
-    max-width: 500px;
-    max-height: 700px;
-    border-radius: 12px;
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
+    border-radius: 12px;
+}
+
+/* Video dọc (portrait) - 9:16 */
+.tiktok-video[data-aspect-ratio="portrait"],
+.video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
+    aspect-ratio: 9 / 16;
+    max-width: 500px;
+    max-height: 85vh;
+}
+
+/* Video ngang (landscape) - 16:9 */
+.tiktok-video[data-aspect-ratio="landscape"],
+.video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
+    aspect-ratio: 16 / 9;
+    max-width: 80vw;
+    max-height: 70vh;
+}
+
+/* Video vuông (square) - 1:1 */
+.tiktok-video[data-aspect-ratio="square"],
+.video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
+    aspect-ratio: 1 / 1;
+    max-width: 550px;
+    max-height: 85vh;
+}
+
+/* Video Sidebar - Desktop: nằm cạnh video */
+.video-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    flex-shrink: 0;
 }
 
 /* Overlay content */

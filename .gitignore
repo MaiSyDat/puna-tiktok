@@ -35,6 +35,9 @@ composer.lock
 .env
 .env.*
 
+# Mega.nz credentials (do not commit)
+mega-credentials.php
+
 # WordPress uploads (do not commit user media)
 ../../uploads/
 

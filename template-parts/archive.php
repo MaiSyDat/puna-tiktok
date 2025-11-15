@@ -21,13 +21,13 @@
                 }
             endwhile;
         else :
-            ?>
-            <div class="video-loading">
-                <h3>Chưa có video nào</h3>
-                <p>Hãy thêm video đầu tiên của bạn!</p>
-                <a href="<?php echo admin_url('post-new.php'); ?>" class="btn-add-video">Thêm Video</a>
-            </div>
-            <?php
+            puna_tiktok_empty_state(array(
+                'icon' => 'fa-video',
+                'title' => 'Chưa có video nào',
+                'message' => 'Hãy thêm video đầu tiên của bạn!',
+                'button_url' => puna_tiktok_get_upload_url(),
+                'button_text' => 'Thêm Video'
+            ));
         endif;
         
         wp_reset_postdata();
