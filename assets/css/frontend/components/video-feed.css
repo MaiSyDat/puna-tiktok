@@ -332,7 +332,7 @@
 .video-container .video-overlay {
     position: absolute;
     left: 0;
-    bottom: 50px;
+    bottom: 0;
     padding: 16px;
     color: var(--puna-bg);
     width: calc(100% - 20px);

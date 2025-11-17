@@ -112,23 +112,18 @@ $comments_count = get_comments_number($post_id);
                         $is_current_user = get_current_user_id() && $comment_author_id == get_current_user_id();
                         ?>
                         <a href="<?php echo esc_url($comment_author_url); ?>" class="comment-avatar-link">
-                            <img src="<?php echo get_avatar_url($comment->user_id, array('size' => 40)); ?>" 
-                                 alt="<?php echo esc_attr($comment->comment_author); ?>" 
-                                 class="comment-avatar">
+                            <?php 
+                            $guest_id = '';
+                            if (!$comment_author_id) {
+                                $guest_id = get_comment_meta($comment->comment_ID, '_puna_tiktok_guest_id', true);
+                            }
+                            echo puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', $guest_id); 
+                            ?>
                         </a>
                         <div class="comment-content">
                             <div class="comment-header">
                                 <a href="<?php echo esc_url($comment_author_url); ?>" class="comment-author-link">
-                                    <strong class="comment-author"><?php echo esc_html($comment->comment_author); ?></strong>
-                                    <?php 
-                                    // Hiển thị guest ID nếu là guest comment
-                                    if (!$comment_author_id) {
-                                        $guest_id = get_comment_meta($comment->comment_ID, '_puna_tiktok_guest_id', true);
-                                        if ($guest_id) {
-                                            echo ' <span style="color: #999; font-size: 0.9em; font-weight: normal;">#' . esc_html(substr($guest_id, 6, 8)) . '</span>';
-                                        }
-                                    }
-                                    ?>
+                                    <strong class="comment-author"><?php echo esc_html($comment_author_id > 0 ? puna_tiktok_get_user_display_name($comment_author_id) : $comment->comment_author); ?></strong>
                                 </a>
                                 <?php if (!$is_current_user && $comment_author_id) : ?>
                                 <?php endif; ?>
@@ -142,11 +137,29 @@ $comments_count = get_comments_number($post_id);
                             </div>
                         </div>
                         <div class="comment-right-actions">
-                            <?php if (is_user_logged_in()) : ?>
+                            <?php 
+                            // Check if current user can delete this comment
+                            $can_delete_comment = false;
+                            if (current_user_can('moderate_comments')) {
+                                // Admin can delete any comment
+                                $can_delete_comment = true;
+                            } elseif ($is_current_user && $comment_author_id > 0) {
+                                // Registered user can delete own comment
+                                $can_delete_comment = true;
+                            } elseif (!$comment_author_id) {
+                                // Guest can delete own comment
+                                $comment_guest_id = get_comment_meta($comment->comment_ID, '_puna_tiktok_guest_id', true);
+                                $current_guest_id = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
+                                if (!empty($comment_guest_id) && !empty($current_guest_id) && $comment_guest_id === $current_guest_id) {
+                                    $can_delete_comment = true;
+                                }
+                            }
+                            ?>
+                            <?php if ($can_delete_comment || (!current_user_can('moderate_comments') && !$can_delete_comment && is_user_logged_in())) : ?>
                                 <div class="comment-actions">
                                     <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
                                     <div class="comment-options-dropdown">
-                                        <?php if ($current_id && intval($comment->user_id) === intval($current_id)) : ?>
+                                        <?php if ($can_delete_comment) : ?>
                                             <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
                                                 <i class="fa-solid fa-trash"></i> Xóa
                                             </button>
@@ -157,6 +170,21 @@ $comments_count = get_comments_number($post_id);
                                         <?php endif; ?>
                                     </div>
                                 </div>
+                            <?php elseif (!$comment_author_id) : ?>
+                                <?php 
+                                // Guest can delete own comment
+                                $comment_guest_id = get_comment_meta($comment->comment_ID, '_puna_tiktok_guest_id', true);
+                                $current_guest_id = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
+                                if (!empty($comment_guest_id) && !empty($current_guest_id) && $comment_guest_id === $current_guest_id) : ?>
+                                    <div class="comment-actions">
+                                        <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
+                                        <div class="comment-options-dropdown">
+                                            <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                                                <i class="fa-solid fa-trash"></i> Xóa
+                                            </button>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             <?php endif; ?>
                             <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
                                 <i class="<?php echo $is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $is_liked ? ' liked' : ''; ?>"></i>
@@ -180,14 +208,18 @@ $comments_count = get_comments_number($post_id);
                                     $is_reply_current_user = get_current_user_id() && $reply_author_id == get_current_user_id();
                                     ?>
                                     <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-avatar-link">
-                                        <img src="<?php echo get_avatar_url($reply->user_id, array('size' => 40)); ?>" 
-                                             alt="<?php echo esc_attr($reply->comment_author); ?>" 
-                                             class="comment-avatar">
+                                        <?php 
+                                        $reply_guest_id = '';
+                                        if (!$reply_author_id) {
+                                            $reply_guest_id = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
+                                        }
+                                        echo puna_tiktok_get_avatar_html($reply_author_id > 0 ? $reply_author_id : $reply->comment_author, 40, 'comment-avatar', $reply_guest_id); 
+                                        ?>
                                     </a>
                                     <div class="comment-content">
                                         <div class="comment-header">
                                             <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-author-link">
-                                                <strong class="comment-author"><?php echo esc_html($reply->comment_author); ?></strong>
+                                                <strong class="comment-author"><?php echo esc_html($reply_author_id > 0 ? puna_tiktok_get_user_display_name($reply_author_id) : $reply->comment_author); ?></strong>
                                             </a>
                                         </div>
                                         <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
@@ -199,11 +231,29 @@ $comments_count = get_comments_number($post_id);
                                         </div>
                                     </div>
                                     <div class="comment-right-actions">
-                                        <?php if (is_user_logged_in()) : ?>
+                                        <?php 
+                                        // Check if current user can delete this reply
+                                        $can_delete_reply = false;
+                                        if (current_user_can('moderate_comments')) {
+                                            // Admin can delete any reply
+                                            $can_delete_reply = true;
+                                        } elseif ($is_reply_current_user && $reply_author_id > 0) {
+                                            // Registered user can delete own reply
+                                            $can_delete_reply = true;
+                                        } elseif (!$reply_author_id) {
+                                            // Guest can delete own reply
+                                            $reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
+                                            $current_guest_id_check = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
+                                            if (!empty($reply_guest_id_check) && !empty($current_guest_id_check) && $reply_guest_id_check === $current_guest_id_check) {
+                                                $can_delete_reply = true;
+                                            }
+                                        }
+                                        ?>
+                                        <?php if ($can_delete_reply || (!current_user_can('moderate_comments') && !$can_delete_reply && is_user_logged_in())) : ?>
                                             <div class="comment-actions">
                                                 <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
                                                 <div class="comment-options-dropdown">
-                                                    <?php if ($current_id && intval($reply->user_id) === intval($current_id)) : ?>
+                                                    <?php if ($can_delete_reply) : ?>
                                                         <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                                                             <i class="fa-solid fa-trash"></i> Xóa
                                                         </button>
@@ -214,6 +264,21 @@ $comments_count = get_comments_number($post_id);
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
+                                        <?php elseif (!$reply_author_id) : ?>
+                                            <?php 
+                                            // Guest can delete own reply
+                                            $reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
+                                            $current_guest_id_check = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
+                                            if (!empty($reply_guest_id_check) && !empty($current_guest_id_check) && $reply_guest_id_check === $current_guest_id_check) : ?>
+                                                <div class="comment-actions">
+                                                    <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
+                                                    <div class="comment-options-dropdown">
+                                                        <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                                            <i class="fa-solid fa-trash"></i> Xóa
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
                                         <?php endif; ?>
                                         <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                                             <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
@@ -242,14 +307,18 @@ $comments_count = get_comments_number($post_id);
                                             $is_more_reply_current_user = get_current_user_id() && $more_reply_author_id == get_current_user_id();
                                             ?>
                                             <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-avatar-link">
-                                                <img src="<?php echo get_avatar_url($reply->user_id, array('size' => 40)); ?>" 
-                                                     alt="<?php echo esc_attr($reply->comment_author); ?>" 
-                                                     class="comment-avatar">
+                                                <?php 
+                                                $more_reply_guest_id = '';
+                                                if (!$more_reply_author_id) {
+                                                    $more_reply_guest_id = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
+                                                }
+                                                echo puna_tiktok_get_avatar_html($more_reply_author_id > 0 ? $more_reply_author_id : $reply->comment_author, 40, 'comment-avatar', $more_reply_guest_id); 
+                                                ?>
                                             </a>
                                             <div class="comment-content">
                                                 <div class="comment-header">
                                                     <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-author-link">
-                                                        <strong class="comment-author"><?php echo esc_html($reply->comment_author); ?></strong>
+                                                        <strong class="comment-author"><?php echo esc_html($more_reply_author_id > 0 ? puna_tiktok_get_user_display_name($more_reply_author_id) : $reply->comment_author); ?></strong>
                                                     </a>
                                                 </div>
                                                 <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
@@ -261,11 +330,29 @@ $comments_count = get_comments_number($post_id);
                                                 </div>
                                             </div>
                                             <div class="comment-right-actions">
-                                                <?php if (is_user_logged_in()) : ?>
+                                                <?php 
+                                                // Check if current user can delete this reply
+                                                $can_delete_more_reply = false;
+                                                if (current_user_can('moderate_comments')) {
+                                                    // Admin can delete any reply
+                                                    $can_delete_more_reply = true;
+                                                } elseif ($is_more_reply_current_user && $more_reply_author_id > 0) {
+                                                    // Registered user can delete own reply
+                                                    $can_delete_more_reply = true;
+                                                } elseif (!$more_reply_author_id) {
+                                                    // Guest can delete own reply
+                                                    $more_reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
+                                                    $current_guest_id_check_more = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
+                                                    if (!empty($more_reply_guest_id_check) && !empty($current_guest_id_check_more) && $more_reply_guest_id_check === $current_guest_id_check_more) {
+                                                        $can_delete_more_reply = true;
+                                                    }
+                                                }
+                                                ?>
+                                                <?php if ($can_delete_more_reply || (!current_user_can('moderate_comments') && !$can_delete_more_reply && is_user_logged_in())) : ?>
                                                     <div class="comment-actions">
                                                         <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
                                                         <div class="comment-options-dropdown">
-                                                            <?php if ($current_id && intval($reply->user_id) === intval($current_id)) : ?>
+                                                            <?php if ($can_delete_more_reply) : ?>
                                                                 <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                                                                     <i class="fa-solid fa-trash"></i> Xóa
                                                                 </button>
@@ -276,6 +363,21 @@ $comments_count = get_comments_number($post_id);
                                                             <?php endif; ?>
                                                         </div>
                                                     </div>
+                                                <?php elseif (!$more_reply_author_id) : ?>
+                                                    <?php 
+                                                    // Guest can delete own reply
+                                                    $more_reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
+                                                    $current_guest_id_check_more = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
+                                                    if (!empty($more_reply_guest_id_check) && !empty($current_guest_id_check_more) && $more_reply_guest_id_check === $current_guest_id_check_more) : ?>
+                                                        <div class="comment-actions">
+                                                            <button class="comment-options-btn" title="Tùy chọn"><i class="fa-solid fa-ellipsis"></i></button>
+                                                            <div class="comment-options-dropdown">
+                                                                <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                                                    <i class="fa-solid fa-trash"></i> Xóa
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    <?php endif; ?>
                                                 <?php endif; ?>
                                                 <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                                                     <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>

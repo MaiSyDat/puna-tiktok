@@ -19,6 +19,7 @@ require_once get_template_directory() . '/inc/class-assets.php';
 require_once get_template_directory() . '/inc/class-meta-boxes.php';
 require_once get_template_directory() . '/inc/class-ajax-handlers.php';
 require_once get_template_directory() . '/inc/class-blocks.php';
+require_once get_template_directory() . '/inc/class-video-post-type.php';
 
 require_once get_template_directory() . '/inc/class-customizer.php';
 
@@ -161,14 +162,35 @@ function puna_tiktok_get_video_metadata($post_id = null) {
  */
 function puna_tiktok_get_video_query($args = array()) {
     $defaults = array(
-        'post_type' => 'post',
+        'post_type' => 'video',
         'post_status' => 'publish',
         'posts_per_page' => -1,
         'orderby' => 'date',
-        'order' => 'DESC'
+        'order' => 'DESC',
+        'meta_query' => array(
+            'relation' => 'OR',
+            array(
+                'key' => '_puna_tiktok_mega_link',
+                'compare' => 'EXISTS'
+            ),
+            array(
+                'key' => '_puna_tiktok_video_url',
+                'compare' => 'EXISTS'
+            ),
+            array(
+                'key' => '_puna_tiktok_video_file_id',
+                'compare' => 'EXISTS'
+            )
+        )
     );
     
     $query_args = wp_parse_args($args, $defaults);
+    
+    // If custom meta_query is provided, use it instead of default
+    // Otherwise, use default meta_query to filter videos with URLs
+    if (!empty($args['meta_query'])) {
+        $query_args['meta_query'] = $args['meta_query'];
+    }
     
     // Add tag filter if provided
     if (!empty($args['tag_id'])) {
@@ -205,6 +227,166 @@ function puna_tiktok_get_video_query($args = array()) {
  */
 function puna_tiktok_get_upload_url() {
     return home_url('/upload/');
+}
+
+/**
+ * Get user display name (consistent across theme)
+ * 
+ * @param int|null $user_id User ID (default: current post author)
+ * @return string User display name
+ */
+function puna_tiktok_get_user_display_name($user_id = null) {
+    if (!$user_id) {
+        $user_id = get_the_author_meta('ID');
+    }
+    
+    if (!$user_id) {
+        return '';
+    }
+    
+    $user = get_userdata($user_id);
+    if (!$user) {
+        return '';
+    }
+    
+    // Use display_name, fallback to user_nicename
+    $display_name = $user->display_name;
+    if (empty($display_name)) {
+        $display_name = $user->user_nicename;
+    }
+    
+    return $display_name;
+}
+
+/**
+ * Get user username (consistent across theme)
+ * 
+ * @param int|null $user_id User ID (default: current post author)
+ * @return string User username (user_nicename)
+ */
+function puna_tiktok_get_user_username($user_id = null) {
+    if (!$user_id) {
+        $user_id = get_the_author_meta('ID');
+    }
+    
+    if (!$user_id) {
+        return '';
+    }
+    
+    $user = get_userdata($user_id);
+    if (!$user) {
+        return '';
+    }
+    
+    return $user->user_nicename;
+}
+
+/**
+ * Get avatar HTML with fallback to initials for guests
+ * 
+ * @param int|string $user_id_or_name User ID (for registered users) or name (for guests)
+ * @param int $size Avatar size (default: 50)
+ * @param string $class Additional CSS class
+ * @param string $guest_id Guest ID for generating initials (optional)
+ * @return string Avatar HTML
+ */
+function puna_tiktok_get_avatar_html($user_id_or_name, $size = 50, $class = '', $guest_id = '') {
+    $size = (int) $size;
+    $class = esc_attr($class);
+    
+    // If it's a valid user ID (registered user)
+    if (is_numeric($user_id_or_name) && $user_id_or_name > 0) {
+        $user_id = (int) $user_id_or_name;
+        $user = get_userdata($user_id);
+        
+        if ($user) {
+            // Registered user - use avatar (including Gravatar)
+            $avatar_url = get_avatar_url($user_id, array('size' => $size));
+            $display_name = puna_tiktok_get_user_display_name($user_id);
+            return '<img src="' . esc_url($avatar_url) . '" alt="' . esc_attr($display_name) . '" class="' . $class . '" style="width: ' . $size . 'px; height: ' . $size . 'px; object-fit: cover; border-radius: 50%;">';
+        }
+    }
+    
+    // For guests (no user ID or invalid user ID), use name to generate initials
+    $name = '';
+    if (is_string($user_id_or_name)) {
+        $name = $user_id_or_name;
+    } elseif (is_numeric($user_id_or_name) && $user_id_or_name == 0) {
+        $name = 'Guest';
+    } else {
+        $name = 'Guest';
+    }
+    
+    if (empty($name)) {
+        $name = 'Guest';
+    }
+    
+    $initials = puna_tiktok_get_user_initials($name, $guest_id);
+    $bg_color = puna_tiktok_get_avatar_color($name . $guest_id);
+    
+    return '<div class="avatar-initials ' . $class . '" style="width: ' . $size . 'px; height: ' . $size . 'px; background-color: ' . $bg_color . '; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: ' . ($size * 0.4) . 'px;">' . esc_html($initials) . '</div>';
+}
+
+/**
+ * Get user initials (first character of name + last 2 characters of guest ID if available)
+ * 
+ * @param string $name User name
+ * @param string $guest_id Guest ID (optional, for guests only)
+ * @return string Initials
+ */
+function puna_tiktok_get_user_initials($name, $guest_id = '') {
+    $name = trim($name);
+    if (empty($name)) {
+        return 'GU';
+    }
+    
+    // Get first character of name
+    $first_char = mb_substr($name, 0, 1);
+    
+    // If guest_id is provided, use first char + last 2 chars of ID
+    if (!empty($guest_id)) {
+        // Extract ID part (remove "guest_" prefix if exists)
+        $id_part = str_replace('guest_', '', $guest_id);
+        // Get last 2 characters of ID
+        $last_two = mb_substr($id_part, -2, 2);
+        return mb_strtoupper($first_char . $last_two);
+    }
+    
+    // For registered users or guests without ID, use first and last character of name
+    // Remove extra spaces
+    $name = preg_replace('/\s+/', ' ', $name);
+    $words = explode(' ', $name);
+    
+    if (count($words) >= 2) {
+        // First character of first word and first character of last word
+        $first = mb_substr($words[0], 0, 1);
+        $last = mb_substr($words[count($words) - 1], 0, 1);
+        return mb_strtoupper($first . $last);
+    } else {
+        // If only one word, use first and last character
+        $first = mb_substr($name, 0, 1);
+        $last = mb_substr($name, -1, 1);
+        return mb_strtoupper($first . $last);
+    }
+}
+
+/**
+ * Get avatar background color based on name (consistent color for same name)
+ * 
+ * @param string $name User name
+ * @return string Hex color
+ */
+function puna_tiktok_get_avatar_color($name) {
+    $colors = array(
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+        '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52BE80',
+        '#E74C3C', '#3498DB', '#9B59B6', '#1ABC9C', '#F39C12',
+        '#E67E22', '#34495E', '#16A085', '#27AE60', '#2980B9'
+    );
+    
+    $hash = md5($name);
+    $index = hexdec(substr($hash, 0, 2)) % count($colors);
+    return $colors[$index];
 }
 
 /**

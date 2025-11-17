@@ -46,7 +46,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 return guestId;
             } catch (e) {
-                console.error('Error getting guest ID:', e);
                 return 'guest_' + Date.now().toString(36);
             }
         },
@@ -66,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
             try {
                 localStorage.setItem(this.LIKED_VIDEOS, JSON.stringify(videoIds));
             } catch (e) {
-                console.error('Error saving liked videos:', e);
+                // Error saving liked videos
             }
         },
         
@@ -98,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
             try {
                 localStorage.setItem(this.SAVED_VIDEOS, JSON.stringify(videoIds));
             } catch (e) {
-                console.error('Error saving saved videos:', e);
+                // Error saving saved videos
             }
         },
         
@@ -130,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function() {
             try {
                 localStorage.setItem(this.LIKED_COMMENTS, JSON.stringify(commentIds));
             } catch (e) {
-                console.error('Error saving liked comments:', e);
+                // Error saving liked comments
             }
         },
         
@@ -197,7 +196,6 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         if (typeof mega === 'undefined' || typeof mega.File !== 'function') {
-            console.warn('Mega SDK not loaded or unavailable.');
             return;
         }
 
@@ -224,7 +222,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 video.classList.add('loaded');
             });
         } catch (error) {
-            console.error('Cannot load video from Mega.nz', error);
             showToast?.('Cannot load video from Mega.nz', 'error');
         } finally {
             video.dataset.megaLoading = '0';
@@ -412,13 +409,13 @@ document.addEventListener("DOMContentLoaded", function() {
                                 playPromise.catch(e => {
                                     // Ignore AbortError - it's normal when video is paused quickly
                                     if (e.name !== 'AbortError') {
-                                        console.log('Browser blocked autoplay:', e);
+                                        // Browser blocked autoplay
                                     }
                                 });
                             }
                         }
                     }).catch(err => {
-                        console.error('Failed to load Mega video:', err);
+                        // Failed to load Mega video
                     });
                 } else {
                     // Regular video
@@ -430,7 +427,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             playPromise.catch(e => {
                                 // Ignore AbortError - it's normal when video is paused quickly
                                 if (e.name !== 'AbortError') {
-                                    console.log('Browser blocked autoplay:', e);
+                                    // Browser blocked autoplay
                                 }
                             });
                         }
@@ -521,7 +518,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         if (playPromise !== undefined) {
                             playPromise.catch(e => {
                                 if (e.name !== 'AbortError') {
-                                    console.log('Play failed:', e);
+                                    // Play failed
                                 }
                             });
                         }
@@ -531,7 +528,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     if (playPromise !== undefined) {
                         playPromise.catch(e => {
                             if (e.name !== 'AbortError') {
-                                console.log('Play failed:', e);
+                                // Play failed
                             }
                         });
                     }
@@ -593,13 +590,20 @@ document.addEventListener("DOMContentLoaded", function() {
         if (nextIndex >= 0 && nextIndex < videoList.length) {
             const nextVideo = videoList[nextIndex];
             const videoRow = nextVideo.closest('.video-row');
-            if (videoRow) {
-                videoRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else {
-                nextVideo.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+            const targetElement = videoRow || nextVideo;
+            
+            // Use smooth scroll with center alignment for TikTok-like experience
+            targetElement.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center',
+                inline: 'nearest'
+            });
+            
+            // Update navigation state after a short delay to allow scroll to complete
+            setTimeout(() => {
+                updateNavDisabledState();
+            }, 100);
         }
-        updateNavDisabledState();
     }
 
     /**
@@ -650,22 +654,43 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Navigation with swipe on mobile
-    let startY = 0;
-    let endY = 0;
+    // Navigation with swipe on mobile - Simple TikTok-like implementation
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    let lastSwipeTime = 0;
+    const SWIPE_THRESHOLD = 50; // Minimum distance for swipe (px)
+    const SWIPE_COOLDOWN = 300; // Minimum time between swipes (ms)
+    
     if (mainContent) {
         mainContent.addEventListener('touchstart', function(e) {
-            startY = e.touches[0].clientY;
-        });
+            touchStartY = e.touches[0].clientY;
+            touchStartTime = Date.now();
+        }, { passive: true });
         
         mainContent.addEventListener('touchend', function(e) {
-            endY = e.changedTouches[0].clientY;
-            const diff = startY - endY;
-            if (Math.abs(diff) > 50) {
-                const direction = diff > 0 ? 1 : -1;
+            const now = Date.now();
+            
+            // Cooldown check - prevent rapid swipes
+            if (now - lastSwipeTime < SWIPE_COOLDOWN) {
+                return;
+            }
+            
+            const endY = e.changedTouches[0].clientY;
+            const diffY = touchStartY - endY;
+            const timeDiff = now - touchStartTime;
+            
+            // Only handle quick swipes (fast and far enough)
+            // Ignore slow scrolls (time > 200ms) or small movements
+            if (Math.abs(diffY) > SWIPE_THRESHOLD && timeDiff < 200) {
+                const direction = diffY > 0 ? 1 : -1; // Swipe up = next, swipe down = previous
+                
+                // Update last swipe time
+                lastSwipeTime = now;
+                
+                // Scroll to next/previous video smoothly
                 scrollToSibling(direction);
             }
-        });
+        }, { passive: true });
     }
 
     // Initialize navigation state
@@ -718,7 +743,6 @@ document.addEventListener("DOMContentLoaded", function() {
     function checkLogin(event, callback) {
         // Check if puna_tiktok_ajax is defined
         if (typeof puna_tiktok_ajax === 'undefined') {
-            console.warn('puna_tiktok_ajax is not defined');
             // If no ajax object, assume not logged in
             if (event) {
                 event.preventDefault();
@@ -868,7 +892,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('Register error:', error);
             showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
@@ -921,7 +944,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('Login error:', error);
             showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
@@ -989,7 +1011,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     countElement.textContent = formatNumber(likes);
                 }
             } else {
-                console.error('Like error:', data.data?.message);
                 // Revert if guest
                 if (!isLoggedIn()) {
                     GuestStorage.toggleLikeVideo(postId);
@@ -998,7 +1019,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('AJAX error:', error);
             // Revert if guest
             if (!isLoggedIn()) {
                 GuestStorage.toggleLikeVideo(postId);
@@ -1082,7 +1102,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('Error saving video:', error);
             showToast('Có lỗi xảy ra khi lưu video', 'error');
             // Revert nếu là guest
             if (!isLoggedIn()) {
@@ -1311,7 +1330,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
             })
-            .catch(err => console.error('Error updating share count:', err));
+            .catch(err => { /* Error updating share count */ });
     }
     
     /**
@@ -1466,7 +1485,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('AJAX error:', error);
             submitBtn.disabled = false;
             submitBtn.textContent = 'Đăng';
         });
@@ -1497,16 +1515,32 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // Lấy thông tin user hiện tại hoặc guest
         let authorName = 'Bạn';
-        let avatarUrl = 'https://via.placeholder.com/40';
+        let avatarHtml = '';
+        let isGuest = false;
+        let guestId = '';
         
         if (isLoggedIn() && puna_tiktok_ajax.current_user) {
             authorName = puna_tiktok_ajax.current_user.display_name || 'Bạn';
-            avatarUrl = puna_tiktok_ajax.avatar_url || avatarUrl;
+            const avatarUrl = puna_tiktok_ajax.avatar_url || 'https://via.placeholder.com/40';
+            avatarHtml = `<img src="${avatarUrl}" alt="${authorName}" class="comment-avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">`;
         } else {
             // Guest - format tên với ID
-            const guestId = GuestStorage.getGuestId();
+            guestId = GuestStorage.getGuestId();
             const guestIdShort = guestId.substring(6, 14); // Lấy 8 ký tự sau "guest_"
             authorName = 'Khách #' + guestIdShort;
+            isGuest = true;
+            
+            // Tạo avatar initials: chữ đầu "K" + 2 chữ cuối của ID
+            const idPart = guestId.replace('guest_', '');
+            const lastTwo = idPart.substring(idPart.length - 2);
+            const initials = 'K' + lastTwo.toUpperCase();
+            
+            // Tạo màu background dựa trên tên + ID
+            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52BE80', '#E74C3C', '#3498DB', '#9B59B6', '#1ABC9C', '#F39C12', '#E67E22', '#34495E', '#16A085', '#27AE60', '#2980B9'];
+            const hash = guestId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const bgColor = colors[hash % colors.length];
+            
+            avatarHtml = `<div class="avatar-initials comment-avatar" style="width: 40px; height: 40px; background-color: ${bgColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 16px;">${initials}</div>`;
         }
         
         const finalCommentId = commentId || ('temp-' + Date.now());
@@ -1516,12 +1550,14 @@ document.addEventListener("DOMContentLoaded", function() {
         commentElement.className = 'comment-item';
         commentElement.setAttribute('data-comment-id', finalCommentId);
         commentElement.innerHTML = `
-            <img src="${avatarUrl}" 
-                 alt="${authorName}" 
-                 class="comment-avatar">
+            <a href="#" class="comment-avatar-link">
+                ${avatarHtml}
+            </a>
             <div class="comment-content">
                 <div class="comment-header">
-                    <strong class="comment-author">${authorName}</strong>
+                    <a href="#" class="comment-author-link">
+                        <strong class="comment-author">${authorName}</strong>
+                    </a>
                 </div>
                 <p class="comment-text">${commentText}</p>
                 <div class="comment-footer">
@@ -1586,16 +1622,29 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // Lấy thông tin user hiện tại hoặc guest
         let authorName = 'Bạn';
-        let avatarUrl = 'https://via.placeholder.com/40';
+        let avatarHtml = '';
         
         if (isLoggedIn() && puna_tiktok_ajax.current_user) {
             authorName = puna_tiktok_ajax.current_user.display_name || 'Bạn';
-            avatarUrl = puna_tiktok_ajax.avatar_url || avatarUrl;
+            const avatarUrl = puna_tiktok_ajax.avatar_url || 'https://via.placeholder.com/40';
+            avatarHtml = `<img src="${avatarUrl}" alt="${authorName}" class="comment-avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">`;
         } else {
             // Guest - format tên với ID
             const guestId = GuestStorage.getGuestId();
             const guestIdShort = guestId.substring(6, 14); // Lấy 8 ký tự sau "guest_"
             authorName = 'Khách #' + guestIdShort;
+            
+            // Tạo avatar initials: chữ đầu "K" + 2 chữ cuối của ID
+            const idPart = guestId.replace('guest_', '');
+            const lastTwo = idPart.substring(idPart.length - 2);
+            const initials = 'K' + lastTwo.toUpperCase();
+            
+            // Tạo màu background dựa trên tên + ID
+            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52BE80', '#E74C3C', '#3498DB', '#9B59B6', '#1ABC9C', '#F39C12', '#E67E22', '#34495E', '#16A085', '#27AE60', '#2980B9'];
+            const hash = guestId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const bgColor = colors[hash % colors.length];
+            
+            avatarHtml = `<div class="avatar-initials comment-avatar" style="width: 40px; height: 40px; background-color: ${bgColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 16px;">${initials}</div>`;
         }
         
         const finalCommentId = commentId || ('temp-' + Date.now());
@@ -1605,12 +1654,14 @@ document.addEventListener("DOMContentLoaded", function() {
         replyElement.className = 'comment-item comment-reply';
         replyElement.setAttribute('data-comment-id', finalCommentId);
         replyElement.innerHTML = `
-            <img src="${avatarUrl}" 
-                 alt="${authorName}" 
-                 class="comment-avatar">
+            <a href="#" class="comment-avatar-link">
+                ${avatarHtml}
+            </a>
             <div class="comment-content">
                 <div class="comment-header">
-                    <strong class="comment-author">${authorName}</strong>
+                    <a href="#" class="comment-author-link">
+                        <strong class="comment-author">${authorName}</strong>
+                    </a>
                 </div>
                 <p class="comment-text">${commentText}</p>
                 <div class="comment-footer">
@@ -1735,7 +1786,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         
         if (!postId) {
-            console.error('Cannot find post ID for reply');
             return;
         }
         
@@ -1863,8 +1913,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const delBtn = e.target.closest('.comment-action-delete');
         if (!delBtn) return;
         
-        // Kiểm tra đăng nhập
-        if (!checkLogin(e)) return;
+        // Không cần kiểm tra đăng nhập nữa vì guest cũng có thể xóa comment của mình
+        // Chỉ cần kiểm tra nếu là user đăng nhập
+        if (isLoggedIn() && !checkLogin(e)) return;
         
         const item = delBtn.closest('.comment-item');
         // Tìm overlay (feed) hoặc video-watch-comments (single page)
@@ -2007,21 +2058,24 @@ document.addEventListener("DOMContentLoaded", function() {
         
         commentId = parseInt(commentId, 10);
         if (!commentId || isNaN(commentId)) {
-            console.warn('Invalid comment ID:', delBtn.dataset.commentId);
             return;
         }
         
         // Gửi delete request
-        sendAjaxRequest('puna_tiktok_delete_comment', { comment_id: commentId })
+        // Send guest_id if guest
+        const params = { comment_id: commentId };
+        if (!isLoggedIn()) {
+            params.guest_id = GuestStorage.getGuestId();
+        }
+        
+        sendAjaxRequest('puna_tiktok_delete_comment', params)
         .then(res => {
             if (!res.success) {
-                console.error('Delete comment error:', res.data?.message);
-            } else {
-                console.log('Comment deleted successfully, including', res.data?.deleted_count || 1, 'comment(s)');
+                // Delete comment error
             }
         })
         .catch(err => {
-            console.error('Delete comment request error:', err);
+            // Delete comment request error
         });
     });
 
@@ -2110,7 +2164,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     heartIcon.classList.add('fa-regular');
                 }
                 span.textContent = formatNumber(currentLikes);
-                console.error('Like comment error:', data.data?.message);
                 // Revert localStorage nếu là guest
                 if (!isLoggedIn()) {
                     GuestStorage.toggleLikeComment(commentId);
@@ -2118,7 +2171,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('AJAX error:', error);
             // Revert optimistic update
             if (isLiked) {
                 heartIcon.classList.remove('fa-regular');
@@ -2248,7 +2300,6 @@ document.addEventListener("DOMContentLoaded", function() {
         sendAjaxRequest('puna_tiktok_increment_view', { post_id: postId })
         .then(data => {
             if (data.success) {
-                console.log('View count updated:', data.data.views);
                 const viewElement = document.querySelector(`.action-item[data-post-id="${postId}"][data-action="view"] .count`);
                 if (viewElement && data.data.formatted_views) {
                     viewElement.textContent = data.data.formatted_views;
@@ -2256,7 +2307,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('AJAX error:', error);
+            // AJAX error
         });
     }
 
@@ -2461,7 +2512,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             })
             .catch(error => {
-                console.error('Error loading search history:', error);
+                // Error loading search history
             });
     }
     
@@ -2523,7 +2574,6 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => {
                 if (searchLoading) searchLoading.style.display = 'none';
-                console.error('Error loading suggestions:', error);
             });
     }
     
@@ -2542,7 +2592,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             })
             .catch(error => {
-                console.error('Error saving search:', error);
                 // Still redirect even if save fails
                 if (searchForm) {
                     window.location.href = searchForm.action + '?s=' + encodeURIComponent(query.trim());
@@ -2567,7 +2616,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     })
                     .catch(error => {
-                        console.error('Error clearing history:', error);
+                        // Error clearing history
                     });
             }
         });
@@ -2656,7 +2705,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             })
             .catch(error => {
-                console.error('Error loading related searches:', error);
                 // Fallback to popular searches
                 loadPopularSearchesForSidebar(relatedList);
             });
@@ -2691,7 +2739,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             })
             .catch(error => {
-                console.error('Error loading popular searches:', error);
+                // Error loading popular searches
             });
     }
     
@@ -2745,7 +2793,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             })
             .catch(error => {
-                console.error('Error loading popular searches:', error);
                 // Show default on error
                 if (popularList) {
                     popularList.innerHTML = `
@@ -2841,11 +2888,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     const playPromise = watchVideo.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(e => {
-                            console.log('Auto-play prevented:', e);
+                            // Auto-play prevented
                         });
                     }
                 }).catch(err => {
-                    console.error('Failed to load Mega video:', err);
+                    // Failed to load Mega video
                 });
             } else {
                 // Regular video - apply settings and play immediately
@@ -2856,7 +2903,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const playPromise = watchVideo.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(e => {
-                console.log('Auto-play prevented:', e);
+                // Auto-play prevented
             });
                 }
             }
@@ -2910,7 +2957,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             this.style.background = '';
                         }, 2000);
                     }).catch(err => {
-                        console.error('Failed to copy:', err);
+                        // Failed to copy
                     });
                 } else {
                     // Fallback for older browsers
@@ -2928,7 +2975,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             this.innerHTML = originalHTML;
                         }, 2000);
                     } catch (err) {
-                        console.error('Fallback copy failed:', err);
+                        // Fallback copy failed
                     }
                     document.body.removeChild(textArea);
                 }
@@ -2965,14 +3012,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const previewPlaceholder = document.getElementById('previewPlaceholder');
         const descriptionInput = document.getElementById('videoDescription');
         const charCount = document.getElementById('charCount');
-        const coverImageInput = document.getElementById('coverImageInput');
-        const coverPreviewImg = document.getElementById('coverPreviewImg');
-        const coverPreview = document.getElementById('coverPreview');
-        const editCoverBtn = document.getElementById('editCoverBtn');
-        const locationInput = document.getElementById('videoLocation');
-        const locationSuggestions = document.getElementById('locationSuggestions');
-        const scheduleRadio = document.querySelectorAll('input[name="postSchedule"]');
-        const scheduleDateTime = document.getElementById('scheduleDateTime');
+        const videoCategorySelect = document.getElementById('videoCategory');
         const publishBtn = document.getElementById('publishVideoBtn');
         const backToStep1Btn = document.getElementById('backToStep1Btn');
         const editVideoBtn = document.getElementById('editVideoBtn');
@@ -3074,16 +3114,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 previewPlaceholder.style.display = 'none';
             }
 
-            // Auto extract cover (first frame)
-            extractVideoFrame(videoURL, (frameDataUrl) => {
-                if (coverPreviewImg) {
-                    coverPreviewImg.src = frameDataUrl;
-                    coverPreviewImg.style.display = 'block';
-                    const placeholder = coverPreview.querySelector('.cover-placeholder');
-                    if (placeholder) placeholder.style.display = 'none';
-                }
-            });
-
             // Chuyển sang step 2
             if (step1) step1.classList.remove('active');
             if (step2) step2.classList.add('active');
@@ -3092,22 +3122,6 @@ document.addEventListener("DOMContentLoaded", function() {
             if (publishBtn) {
                 publishBtn.disabled = false;
             }
-        }
-
-        function extractVideoFrame(videoURL, callback) {
-            const video = document.createElement('video');
-            video.crossOrigin = 'anonymous';
-            video.src = videoURL;
-            video.currentTime = 0.1;
-            
-            video.onloadeddata = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                callback(canvas.toDataURL('image/jpeg'));
-            };
         }
 
         function getVideoResolution(file) {
@@ -3128,55 +3142,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (descriptionInput && charCount) {
             descriptionInput.addEventListener('input', () => {
                 charCount.textContent = descriptionInput.value.length;
-            });
-        }
-
-        // Cover image
-        if (editCoverBtn) {
-            editCoverBtn.addEventListener('click', () => {
-                coverImageInput?.click();
-            });
-        }
-
-        if (coverImageInput) {
-            coverImageInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        if (coverPreviewImg) {
-                            coverPreviewImg.src = event.target.result;
-                            coverPreviewImg.style.display = 'block';
-                            const placeholder = coverPreview.querySelector('.cover-placeholder');
-                            if (placeholder) placeholder.style.display = 'none';
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-
-        // Location suggestions (placeholder)
-        if (locationInput) {
-            locationInput.addEventListener('focus', () => {
-                locationSuggestions?.classList.add('active');
-            });
-
-            locationInput.addEventListener('blur', () => {
-                setTimeout(() => {
-                    locationSuggestions?.classList.remove('active');
-                }, 200);
-            });
-        }
-
-        // Schedule toggle
-        if (scheduleRadio.length > 0) {
-            scheduleRadio.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-                    if (scheduleDateTime) {
-                        scheduleDateTime.style.display = e.target.value === 'schedule' ? 'block' : 'none';
-                    }
-                });
             });
         }
 
@@ -3229,17 +3194,13 @@ document.addEventListener("DOMContentLoaded", function() {
                 uploadLoadingOverlay.classList.add('show');
             }
 
-            console.log('[Uploader] Bắt đầu publishVideo', selectedVideoFile.name, selectedVideoFile.size);
 
             try {
                 const megaResult = await megaUploader.uploadFile(selectedVideoFile, (uploaded, total) => {
                     updateUploadProgress(uploaded, total);
-                    console.log('[Uploader] Progress', uploaded, '/', total);
                 });
-                console.log('[Uploader] Mega upload hoàn tất', megaResult);
                 await finalizePost(megaResult);
             } catch (error) {
-                console.error('Mega upload error', error);
                 showToast(error?.message || 'Không thể tải video lên Mega.nz.', 'error');
                 if (uploadLoadingOverlay) {
                     uploadLoadingOverlay.classList.remove('show');
@@ -3257,18 +3218,7 @@ document.addEventListener("DOMContentLoaded", function() {
             formData.append('video_name', megaResult?.name || selectedVideoFile.name);
             formData.append('video_size', megaResult?.size || selectedVideoFile.size || 0);
             formData.append('description', descriptionInput?.value || '');
-            formData.append('location', locationInput?.value || '');
-            formData.append('privacy', document.getElementById('videoPrivacy')?.value || 'public');
-            formData.append('schedule', document.querySelector('input[name="postSchedule"]:checked')?.value || 'now');
-            formData.append('schedule_date', document.getElementById('scheduleDateInput')?.value || '');
-            formData.append('music_copyright_check', document.getElementById('musicCopyrightCheck')?.checked ? '1' : '0');
-            formData.append('content_check_lite', document.getElementById('contentCheckLite')?.checked ? '1' : '0');
-            
-            if (coverImageInput?.files[0]) {
-                formData.append('cover_image', coverImageInput.files[0]);
-            }
-
-            console.log('[Uploader] Gửi metadata tới AJAX…');
+            formData.append('category_id', videoCategorySelect?.value || '');
 
             try {
                 const response = await fetch(puna_tiktok_ajax?.ajax_url || '/wp-admin/admin-ajax.php', {
@@ -3276,13 +3226,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     body: formData
                 });
                 const text = await response.text();
-                console.log('[Uploader] AJAX response raw:', text.substring(0, 300));
 
                 let payload = null;
                 try {
                     payload = JSON.parse(text);
                 } catch (parseError) {
-                    console.error('[Uploader] Không parse được JSON', parseError);
                     throw new Error('Máy chủ trả về dữ liệu không hợp lệ. Vui lòng đăng nhập lại và thử lại.');
                 }
 
@@ -3297,11 +3245,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 } else {
                     showToast(payload.data?.message || 'Có lỗi xảy ra khi lưu video.', 'error');
-                    console.warn('[Uploader] AJAX trả về lỗi', payload);
                     resetUploadProgress();
                 }
             } catch (error) {
-                console.error('Finalize post error', error);
                 showToast('Không thể lưu thông tin video. Vui lòng thử lại.', 'error');
                 resetUploadProgress();
             }
@@ -3379,7 +3325,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 })
                 .catch(error => {
-                    console.error('Error loading hashtags:', error);
                     hashtagList.innerHTML = '<div class="hashtag-error">Có lỗi xảy ra khi tải hashtag</div>';
                     return [];
                 });
@@ -3654,7 +3599,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            console.error('AJAX error:', error);
             showToast('Có lỗi xảy ra khi xóa video. Vui lòng thử lại.', 'error');
         });
     });
@@ -3709,14 +3653,13 @@ document.addEventListener("DOMContentLoaded", function() {
             sendAjaxRequest('puna_tiktok_migrate_guest_data', guestData)
                 .then(data => {
                     if (data.success) {
-                        console.log('Guest data migrated successfully');
                         GuestStorage.clearAll();
                         // Reload page to show updated state
                         window.location.reload();
                     }
                 })
                 .catch(error => {
-                    console.error('Error migrating guest data:', error);
+                    // Error migrating guest data
                 });
         }
     });

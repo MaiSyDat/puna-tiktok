@@ -22,11 +22,19 @@ function puna_tiktok_get_video_url($post_id = null)
         $post_id = get_the_ID();
     }
 
+    // Check _puna_tiktok_mega_link first (from admin upload)
+    $mega_link = get_post_meta($post_id, '_puna_tiktok_mega_link', true);
+    if (!empty($mega_link)) {
+        return esc_url($mega_link);
+    }
+
+    // Check _puna_tiktok_video_url (backward compatibility and frontend upload)
     $video_url_meta = get_post_meta($post_id, '_puna_tiktok_video_url', true);
     if (!empty($video_url_meta)) {
         return esc_url($video_url_meta);
     }
 
+    // Check attachment file
     $video_file_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
     if ($video_file_id) {
         $video_url = wp_get_attachment_url($video_file_id);

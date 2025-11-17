@@ -27,37 +27,34 @@ $is_logged_in = is_user_logged_in();
 			<!-- Header Profile -->
 			<div class="profile-header">
 				<div class="profile-avatar-wrapper">
-					<img src="<?php echo get_avatar_url($user_id, array('size' => 116)); ?>" alt="<?php echo esc_attr($current_user->user_nicename); ?>" class="profile-avatar">
+					<?php echo puna_tiktok_get_avatar_html($user_id, 116, 'profile-avatar'); ?>
 				</div>
 				<div class="profile-info">
-					<h1 class="profile-username"><?php echo esc_html($current_user->display_name); ?></h1>
-					<h2 class="profile-usernicename"><?php echo esc_html($current_user->user_nicename); ?></h2>
+					<h1 class="profile-username"><?php echo esc_html(puna_tiktok_get_user_display_name($user_id)); ?></h1>
+					<h2 class="profile-usernicename">@<?php echo esc_html(puna_tiktok_get_user_username($user_id)); ?></h2>
 					<p class="profile-bio"><?php echo esc_html(get_user_meta($user_id, 'description', true) ?: 'Chưa có tiểu sử'); ?></p>
 					
 					<div class="profile-stats">
 						<div class="stat-item">
 							<strong class="stat-number"><?php 
                                 $user_videos = new WP_Query(array(
-                                    'post_type' => 'post',
+                                    'post_type' => 'video',
 									'author' => $user_id,
 									'posts_per_page' => -1,
-                                    'post_status' => 'publish'
+                                    'post_status' => 'publish',
+									'orderby' => 'date',
+									'order' => 'DESC'
 								));
-								echo number_format($user_videos->post_count);
+								
+								// Count videos
+								$video_count = $user_videos->found_posts;
+								wp_reset_postdata();
+								
+								echo puna_tiktok_format_number($video_count);
 							?></strong>
 							<span class="stat-label">Bài đăng</span>
 						</div>
-						<div class="stat-item">
-							<strong class="stat-number">-</strong>
-							<span class="stat-label">Người theo dõi</span>
-						</div>
-						<div class="stat-item">
-							<strong class="stat-number">-</strong>
-							<span class="stat-label">Đang theo dõi</span>
-						</div>
 					</div>
-					
-					<button class="edit-profile-btn">Chỉnh sửa hồ sơ</button>
 				</div>
 			</div>
 
@@ -79,7 +76,7 @@ $is_logged_in = is_user_logged_in();
 				<?php
 				// Query video của người dùng đăng nhập
                 $user_videos_query = new WP_Query(array(
-                    'post_type' => 'post',
+                    'post_type' => 'video',
 					'author' => $user_id,
 					'posts_per_page' => -1,
 					'post_status' => 'publish',
@@ -91,7 +88,6 @@ $is_logged_in = is_user_logged_in();
 					<div class="profile-grid">
 						<?php
                         while ($user_videos_query->have_posts()) : $user_videos_query->the_post();
-                            if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
                             get_template_part('template-parts/video-card', null, array(
 								'card_class' => 'profile-video-card'
 							));
@@ -120,7 +116,7 @@ $is_logged_in = is_user_logged_in();
 				
 				if (!empty($liked_video_ids)) {
                     $liked_query = new WP_Query(array(
-                        'post_type' => 'post',
+                        'post_type' => 'video',
 						'post__in' => $liked_video_ids,
 						'posts_per_page' => -1,
 						'post_status' => 'publish',
@@ -132,7 +128,6 @@ $is_logged_in = is_user_logged_in();
 						<div class="profile-grid">
 							<?php
                             while ($liked_query->have_posts()) : $liked_query->the_post();
-                                if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
                                 get_template_part('template-parts/video-card', null, array(
 									'card_class' => 'profile-video-card'
 								));
@@ -168,7 +163,7 @@ $is_logged_in = is_user_logged_in();
 				
 				if (!empty($saved_video_ids)) {
                     $saved_query = new WP_Query(array(
-                        'post_type' => 'post',
+                        'post_type' => 'video',
 						'post__in' => $saved_video_ids,
 						'posts_per_page' => -1,
 						'post_status' => 'publish',
@@ -180,7 +175,6 @@ $is_logged_in = is_user_logged_in();
 						<div class="profile-grid">
 							<?php
                             while ($saved_query->have_posts()) : $saved_query->the_post();
-                                if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
                                 get_template_part('template-parts/video-card', null, array(
 									'card_class' => 'profile-video-card'
 								));

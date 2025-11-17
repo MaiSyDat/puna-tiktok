@@ -2,13 +2,24 @@
 $post_id = get_the_ID();
 $metadata = puna_tiktok_get_video_metadata($post_id);
 $video_url = $metadata['video_url'];
+
+// Skip if no video URL
+if (empty($video_url) || $video_url === 'https://v16-webapp.tiktok.com/video-sample.mp4') {
+    return;
+}
+
 $likes = $metadata['likes'];
 $comments = $metadata['comments'];
 $shares = $metadata['shares'];
 $saves = $metadata['saves'];
 $views = $metadata['views'];
-$mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true);
-$is_mega_video = !empty($mega_node_id) && !empty($video_url);
+
+// Check for mega node ID (from admin or frontend)
+$mega_node_id = get_post_meta($post_id, '_puna_tiktok_mega_node_id', true);
+if (empty($mega_node_id)) {
+    $mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true); // backward compatibility
+}
+$is_mega_video = !empty($mega_node_id) || (strpos($video_url, 'mega.nz') !== false);
 
 // Check if current user liked this video
 $is_liked = puna_tiktok_is_liked($post_id);
@@ -70,7 +81,7 @@ $saved_class = $is_saved ? 'saved' : '';
 
 		<div class="video-overlay">
 			<div class="video-details">
-				<h4><?php the_author(); ?></h4>
+				<h4><?php echo esc_html(puna_tiktok_get_user_display_name()); ?></h4>
 				<p class="video-caption"><?php the_title(); ?></p>
 
 				<?php
@@ -88,7 +99,7 @@ $saved_class = $is_saved ? 'saved' : '';
 
 	<aside class="video-sidebar" aria-hidden="false">
 	<div class="author-avatar-wrapper">
-		<img src="<?php echo get_avatar_url(get_the_author_meta('ID'), array('size' => 50)); ?>" alt="<?php the_author(); ?>" class="author-avatar">
+		<?php echo puna_tiktok_get_avatar_html(get_the_author_meta('ID'), 50, 'author-avatar'); ?>
 	</div>
 
 		<div class="action-item <?php echo esc_attr($liked_class); ?>" data-action="like" data-post-id="<?php echo esc_attr($post_id); ?>">
@@ -112,6 +123,78 @@ $saved_class = $is_saved ? 'saved' : '';
 		</div>
 	</aside>
 	
+</div>
+
+<!-- Share Modal Popup -->
+<div class="share-modal" id="shareModal-<?php echo esc_attr($post_id); ?>">
+    <div class="share-modal-overlay"></div>
+    <div class="share-modal-content">
+        <div class="share-modal-header">
+            <h2 class="share-modal-title">Share to</h2>
+            <button type="button" class="share-modal-close" aria-label="Đóng">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+        <div class="share-modal-body">
+            <div class="share-options-list">
+                <!-- Facebook -->
+                <button class="share-option" data-share="facebook" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </div>
+                    <span class="share-option-label">Facebook</span>
+                </button>
+                
+                <!-- Zalo -->
+                <button class="share-option" data-share="zalo" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-solid fa-message"></i>
+                    </div>
+                    <span class="share-option-label">Zalo</span>
+                </button>
+                
+                <!-- Copy Link -->
+                <button class="share-option" data-share="copy" data-post-id="<?php echo esc_attr($post_id); ?>" data-url="<?php echo esc_url(get_permalink($post_id)); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-solid fa-link"></i>
+                    </div>
+                    <span class="share-option-label">Copy link</span>
+                </button>
+                
+                <!-- Instagram -->
+                <button class="share-option" data-share="instagram" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-brands fa-instagram"></i>
+                    </div>
+                    <span class="share-option-label">Instagram</span>
+                </button>
+                
+                <!-- Email -->
+                <button class="share-option" data-share="email" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <span class="share-option-label">Email</span>
+                </button>
+                
+                <!-- X (Twitter) -->
+                <button class="share-option" data-share="x" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </div>
+                    <span class="share-option-label">X</span>
+                </button>
+                
+                <!-- Telegram -->
+                <button class="share-option" data-share="telegram" data-post-id="<?php echo esc_attr($post_id); ?>">
+                    <div class="share-option-icon">
+                        <i class="fa-brands fa-telegram"></i>
+                    </div>
+                    <span class="share-option-label">Telegram</span>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 

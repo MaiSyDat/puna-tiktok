@@ -1,0 +1,203 @@
+/**
+ * Video Admin Styles
+ */
+
+.puna-video-upload-admin {
+    padding: 20px 0;
+}
+
+.video-upload-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.video-upload-dropzone {
+    border: 2px dashed #c3c4c7;
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    background: #f6f7f7;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.video-upload-dropzone:hover {
+    border-color: #2271b1;
+    background: #f0f6fc;
+}
+
+.video-upload-dropzone.dragover {
+    border-color: #2271b1;
+    background: #e5f5ff;
+}
+
+.dropzone-content {
+    pointer-events: none;
+}
+
+.dropzone-content .upload-icon {
+    font-size: 48px;
+    color: #646970;
+    margin-bottom: 15px;
+    position: relative;
+    display: inline-block;
+}
+
+.dropzone-content .upload-icon .dashicons-video-alt3 {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+}
+
+.dropzone-content .upload-icon .dashicons-arrow-up-alt {
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border-radius: 50%;
+    padding: 2px;
+}
+
+.dropzone-content h4 {
+    margin: 15px 0 5px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.dropzone-content p {
+    margin: 0 0 20px;
+    color: #646970;
+    font-size: 14px;
+}
+
+.video-preview-container {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f6f7f7;
+    border-radius: 8px;
+}
+
+.video-preview-container video {
+    max-width: 100%;
+    border-radius: 8px;
+    background: #000;
+}
+
+.video-info {
+    margin-top: 15px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.video-info strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #1d2327;
+}
+
+.current-video {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0f6fc;
+    border-left: 4px solid #2271b1;
+    border-radius: 4px;
+}
+
+.current-video h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.current-video p {
+    margin: 5px 0;
+    font-size: 13px;
+}
+
+.upload-progress {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f6f7f7;
+    border-radius: 8px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 24px;
+    background: #dcdcde;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #2271b1;
+    transition: width 0.3s ease;
+    border-radius: 12px;
+}
+
+.progress-text {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.puna-video-details-admin {
+    padding: 10px 0;
+}
+
+.puna-video-details-admin .form-table th {
+    width: 200px;
+    font-weight: 600;
+}
+
+.puna-video-details-admin .form-table td ul {
+    margin: 0;
+    list-style: none;
+}
+
+.puna-video-details-admin .form-table td ul li {
+    padding: 5px 0;
+    font-size: 14px;
+}
+
+/* Video list columns */
+.video-thumbnail-admin {
+    position: relative;
+    width: 100px;
+    height: 60px;
+    background: #000;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.video-thumbnail-admin video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-thumbnail-admin .mega-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: #2271b1;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+

@@ -37,6 +37,7 @@ $is_mega_video = !empty($mega_node_id) || (strpos($video_url, 'mega.nz') !== fal
     <div class="media-wrapper ratio-9x16">
         <video class="explore-video" muted playsinline <?php if ($is_mega_video) : ?>data-mega-link="<?php echo esc_url($video_url); ?>"<?php endif; ?>>
             <source src="<?php echo $is_mega_video ? '' : esc_url($video_url); ?>" type="video/mp4" <?php if ($is_mega_video) : ?>data-mega-src="<?php echo esc_url($video_url); ?>"<?php endif; ?>>
+        </video>
         <div class="video-overlay">	
             <div class="play-icon">
                 <i class="fa-solid fa-play"></i>

@@ -9,4 +9,3 @@ while ( have_posts() ) : the_post();
 endwhile;
 echo '</main>';
 
-

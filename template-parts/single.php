@@ -5,11 +5,11 @@
 	<div class="main-content">
 		<?php 
 		if ( have_posts() ) : while ( have_posts() ) : the_post();
-			if ( has_block('puna/hupuna-tiktok', get_the_ID()) ) {
+			if ( get_post_type(get_the_ID()) === 'video' ) {
 				get_template_part('template-parts/video/content');
 			} else {
 				// Fallback content for non-video posts
-				echo '<article id="post-' . get_the_ID() . '" ' . get_post_class('') . '>';
+				echo '<article id="post-' . get_the_ID() . '" class="' . implode(' ', get_post_class('')) . '">';
 				the_title('<h1 class="entry-title">','</h1>');
 				echo '<div class="entry-content">';
 				the_content();

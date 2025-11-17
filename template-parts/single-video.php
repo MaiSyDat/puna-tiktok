@@ -10,7 +10,7 @@ if (!have_posts()) {
 the_post();
 $post_id = get_the_ID();
 
-if (!has_block('puna/hupuna-tiktok', $post_id)) {
+if (get_post_type($post_id) !== 'video') {
     get_template_part('template-parts/single');
     return;
 }
@@ -25,7 +25,10 @@ $saves = $metadata['saves'];
 $views = $metadata['views'];
 
 // Check if this is a Mega.nz video
-$mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true);
+$mega_node_id = get_post_meta($post_id, '_puna_tiktok_mega_node_id', true);
+if (empty($mega_node_id)) {
+    $mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true); // backward compatibility
+}
 $is_mega_video = !empty($mega_node_id) || (strpos($video_url, 'mega.nz') !== false);
 
 // Check if liked
@@ -38,9 +41,9 @@ $saved_class = $is_saved ? 'saved' : '';
 
 // Author data
 $author_id = get_the_author_meta('ID');
-$author_name = get_the_author_meta('display_name');
+$author_name = puna_tiktok_get_user_display_name($author_id);
+$author_username = puna_tiktok_get_user_username($author_id);
 $author_url = get_author_posts_url($author_id);
-$author_avatar = get_avatar_url($author_id, array('size' => 60));
 
 // Check if current user is the author of this video
 $is_author = is_user_logged_in() && get_current_user_id() == $author_id;
@@ -48,22 +51,13 @@ $is_author = is_user_logged_in() && get_current_user_id() == $author_id;
 // Content
 $post_content = get_the_content();
 $caption = $post_content;
-if (has_block('puna/hupuna-tiktok', $post_id)) {
-    $blocks = parse_blocks($post_content);
-    $caption = '';
-    foreach ($blocks as $block) {
-        if ($block['blockName'] !== 'puna/hupuna-tiktok' && !empty($block['innerHTML'])) {
-            $caption .= $block['innerHTML'];
-        }
-    }
-    // Remove any remaining hashtags from caption (in case they weren't removed during upload)
-    if (!empty($caption)) {
-        $caption = preg_replace('/#[\p{L}\p{N}_]+/u', '', $caption);
-        $caption = preg_replace('/\s+/', ' ', trim($caption));
-    }
-    if (empty(trim(strip_tags($caption)))) {
-        $caption = get_the_title();
-    }
+// Remove any remaining hashtags from caption (in case they weren't removed during upload)
+if (!empty($caption)) {
+    $caption = preg_replace('/#[\p{L}\p{N}_]+/u', '', $caption);
+    $caption = preg_replace('/\s+/', ' ', trim($caption));
+}
+if (empty(trim(strip_tags($caption)))) {
+    $caption = get_the_title();
 }
 $tags = get_the_tags();
 
@@ -159,12 +153,10 @@ $withcomments = 1;
                 <!-- Author Info -->
                 <div class="video-info-author">
                     <a href="<?php echo esc_url($author_url); ?>" class="author-link">
-                        <img src="<?php echo esc_url($author_avatar); ?>" 
-                             alt="<?php echo esc_attr($author_name); ?>" 
-                             class="author-avatar-large">
+                        <?php echo puna_tiktok_get_avatar_html($author_id, 60, 'author-avatar-large'); ?>
                         <div class="author-info">
                             <h3 class="author-name"><?php echo esc_html($author_name); ?></h3>
-                            <span class="author-username"><?php echo esc_html(get_the_author_meta('user_login')); ?></span>
+                            <span class="author-username">@<?php echo esc_html($author_username); ?></span>
                         </div>
                     </a>
                     <div class="video-info-more-menu">

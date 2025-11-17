@@ -41,9 +41,9 @@ $withcomments = 1;
         <div class="search-tab-content">
             <?php if ($active_tab === 'top' || $active_tab === 'videos') : ?>
                 <?php
-                // Query all posts with video block first, then filter by search
+                // Query all videos first, then filter by search
                 $all_video_args = array(
-                    'post_type'      => 'post',
+                    'post_type'      => 'video',
                     'posts_per_page' => -1,
                     'post_status'    => 'publish',
                     'meta_query'     => array(
@@ -66,7 +66,7 @@ $withcomments = 1;
                 if ($all_videos_query->have_posts()) {
                     while ($all_videos_query->have_posts()) {
                         $all_videos_query->the_post();
-                        if (has_block('puna/hupuna-tiktok', get_the_ID())) {
+                        if (get_post_type(get_the_ID()) === 'video') {
                             $all_video_posts[] = get_the_ID();
                         }
                     }
@@ -150,7 +150,7 @@ $withcomments = 1;
                                     <div class="search-video-info">
                                         <h3 class="search-video-title"><?php echo esc_html(get_the_title($post_id)); ?></h3>
                                         <div class="search-video-meta">
-                                            <span class="search-video-author"><?php echo get_the_author_meta('display_name', $post_obj->post_author); ?></span>
+                                            <span class="search-video-author"><?php echo esc_html(puna_tiktok_get_user_display_name($post_obj->post_author)); ?></span>
                                             <span class="search-video-time"><?php echo human_time_diff(get_the_time('U', $post_id), current_time('timestamp')) . ' trước'; ?></span>
                                         </div>
                                     </div>
@@ -197,9 +197,8 @@ $withcomments = 1;
                     <div class="search-users-list">
                         <?php foreach ($users as $user) : 
                             $user_id = $user->ID;
-                            $avatar = get_avatar_url($user_id, array('size' => 60));
-                            $display_name = $user->display_name;
-                            $username = $user->user_nicename;
+                            $display_name = puna_tiktok_get_user_display_name($user_id);
+                            $username = puna_tiktok_get_user_username($user_id);
                             
                             // Đếm số video của user
                             $video_count = get_posts(array(
@@ -225,7 +224,7 @@ $withcomments = 1;
                             ?>
                             <a href="<?php echo esc_url(get_author_posts_url($user_id)); ?>" class="search-user-item">
                                 <div class="search-user-avatar">
-                                    <img src="<?php echo esc_url($avatar); ?>" alt="<?php echo esc_attr($display_name); ?>">
+                                    <?php echo puna_tiktok_get_avatar_html($user_id, 60, ''); ?>
                                 </div>
                                 <div class="search-user-info">
                                     <h3 class="search-user-name"><?php echo esc_html($display_name); ?></h3>

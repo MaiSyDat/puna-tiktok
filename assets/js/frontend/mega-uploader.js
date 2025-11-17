@@ -29,7 +29,6 @@
             return this.loginPromise;
         }
 
-        console.log('[MegaUploader] Logging in to Mega.nz…');
         this.loginPromise = new Promise((resolve, reject) => {
             const fail = (err) => {
                 this.loginPromise = null;
@@ -45,14 +44,12 @@
                 });
 
                 const onReady = () => {
-                    console.log('[MegaUploader] Login successful');
                     storage.removeListener?.('error', onError);
                     this.storage = storage;
                     resolve(storage);
                 };
 
                 const onError = (err) => {
-                    console.error('[MegaUploader] Login error', err);
                     storage.removeListener?.('ready', onReady);
                     fail(err);
                 };
@@ -66,7 +63,6 @@
                     onReady();
                 }
             } catch (error) {
-                console.error('[MegaUploader] Login exception', error);
                 fail(error);
             }
         });
@@ -93,11 +89,9 @@
 
         let current = storage.root;
         for (const segment of segments) {
-            console.log('[MegaUploader] Checking folder', segment);
             let child = this.findFolder(current, segment);
             if (!child && typeof current.mkdir === 'function') {
                 child = await current.mkdir(segment);
-                console.log('[MegaUploader] Created folder', segment);
             }
             current = child || current;
         }
@@ -119,7 +113,6 @@
         const buffer = new Uint8Array(arrayBuffer);
         const totalBytes = buffer.length || file.size || 0;
 
-        console.log('[MegaUploader] Starting upload', file.name, 'size:', totalBytes);
         if (typeof onProgress === 'function') {
             onProgress(0, totalBytes);
         }
@@ -157,7 +150,6 @@
                 };
 
                 const timeoutId = setTimeout(() => {
-                    console.warn('[MegaUploader] Upload timeout after 120s');
                     finish(new Error('Upload to Mega.nz took too long. Please try again.'));
                 }, 120000);
 
@@ -175,13 +167,9 @@
                         const total = evt?.bytesTotal ?? totalBytes;
                         onProgress(uploaded, total);
                     }
-                    if (evt?.bytesUploaded != null && evt?.bytesTotal) {
-                        console.log('[MegaUploader] progress', Math.round((evt.bytesUploaded / evt.bytesTotal) * 100), '%');
-                    }
                 });
 
                 stream.once('error', (err) => {
-                    console.error('[MegaUploader] error', err);
                     finish(err);
                 });
 
@@ -197,7 +185,6 @@
                             name: uploadedFile?.name || file.name,
                             size: file.size || buffer.length || 0
                         });
-                        console.log('[MegaUploader] Upload successful', file.name);
                     } catch (error) {
                         finish(error);
                     }
@@ -209,7 +196,6 @@
 
                 if (stream.complete && typeof stream.complete.then === 'function') {
                     stream.complete.then(handleSuccess).catch((err) => {
-                        console.error('[MegaUploader] Promise error', err);
                         finish(err);
                     });
                 }

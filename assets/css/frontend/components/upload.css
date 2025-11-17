@@ -82,6 +82,7 @@
 .upload-content-wrapper {
     padding: 24px;
     min-height: calc(100vh - 73px);
+    background: #f5f5f7;
 }
 
 /* Upload Steps */
@@ -94,27 +95,79 @@
 }
 
 /* Step 1: Select Video */
-.upload-drop-zone {
-    max-width: 800px;
+.upload-step-card {
+    max-width: 1000px;
     margin: 0 auto 40px;
-    padding: 80px 40px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 28px 28px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+.upload-step-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.step-badge {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(254, 44, 85, 0.06);
+    color: var(--puna-primary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.step-texts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.step-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--puna-text);
+}
+
+.step-subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.upload-step-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.upload-drop-zone {
+    width: 100%;
+    padding: 64px 40px;
     border: 2px dashed #d0d0d0;
-    border-radius: 12px;
+    border-radius: 14px;
     background: #fafafa;
     text-align: center;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
     cursor: pointer;
 }
 
 .upload-drop-zone:hover {
     border-color: var(--puna-primary);
-    background: #fff5f7;
+    background: #fffafc;
 }
 
 .upload-drop-zone.dragover {
     border-color: var(--puna-primary);
     background: #fff5f7;
-    transform: scale(1.02);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.04);
 }
 
 .drop-zone-content {
@@ -151,14 +204,14 @@
 }
 
 .drop-zone-title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 600;
     color: var(--puna-text);
     margin: 0;
 }
 
 .drop-zone-subtitle {
-    font-size: 16px;
+    font-size: 14px;
     color: #666;
     margin: 0;
 }
@@ -217,17 +270,17 @@
 /* Step 2: Edit Video Details */
 .upload-form-container {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.8fr);
     gap: 24px;
-    max-width: 1400px;
-    margin: 0 auto;
+    margin-top: 8px;
 }
 
 /* Left Panel: Form */
 .upload-form-panel {
     background: #fff;
     padding: 24px;
-    border-radius: 8px;
+    border-radius: 12px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
 }
 
 /* File Info & Progress */
@@ -304,18 +357,18 @@
 
 /* Form Sections */
 .upload-section {
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
 .section-title {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     color: var(--puna-text);
     margin-bottom: 16px;
 }
 
 .form-group {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .form-label {
@@ -346,8 +399,20 @@
 }
 
 .description-input {
-    min-height: 120px;
+    min-height: 140px;
     resize: vertical;
+}
+
+.form-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.form-label-hint {
+    font-size: 12px;
+    color: #888;
 }
 
 .input-helpers {
@@ -667,8 +732,9 @@
 /* Right Panel: Preview */
 .upload-preview-panel {
     background: #fff;
-    padding: 24px;
-    border-radius: 8px;
+    padding: 20px 20px 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.04);
     height: fit-content;
     position: sticky;
     top: 24px;
@@ -680,6 +746,23 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+.video-preview-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.video-preview-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--puna-text);
+}
+
+.video-preview-hint {
+    font-size: 12px;
+    color: #888;
 }
 
 .video-preview-wrapper {

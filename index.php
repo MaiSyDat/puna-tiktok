@@ -9,7 +9,7 @@
         // Check if this is a video post
         if (have_posts()) {
             the_post();
-            $is_video = has_block('puna/hupuna-tiktok', get_the_ID());
+            $is_video = get_post_type(get_the_ID()) === 'video';
             rewind_posts();
             
             if ($is_video) {
@@ -42,10 +42,8 @@
             
             if ( $video_query->have_posts() ) :
                 while ( $video_query->have_posts() ) : $video_query->the_post();
-                    if ( has_block('puna/hupuna-tiktok', get_the_ID()) ) {
-                        get_template_part('template-parts/video/content');
-                        comments_template();
-                    }
+                    get_template_part('template-parts/video/content');
+                    comments_template();
                 endwhile;
             else :
                 puna_tiktok_empty_state(array(

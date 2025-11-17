@@ -28,7 +28,7 @@ get_header();
 			
 			// Query trending videos in 7 days (sorted by views, highest to lowest)
             $trending_query = new WP_Query(array(
-                'post_type' => 'post',
+                'post_type' => 'video',
 				'posts_per_page' => 50, // Query more to ensure we get enough after filtering
 				'post_status' => 'publish',
 				'orderby' => 'meta_value_num',
@@ -56,7 +56,7 @@ get_header();
 			// If there is no trending video in 7 days, get the latest video
 			if (!$trending_query->have_posts()) {
                 $trending_query = new WP_Query(array(
-                    'post_type' => 'post',
+                    'post_type' => 'video',
 					'posts_per_page' => 50,
 					'post_status' => 'publish',
 					'orderby' => 'date',
@@ -67,7 +67,7 @@ get_header();
 			// If still no posts, get all videos sorted by views
 			if (!$trending_query->have_posts()) {
                 $trending_query = new WP_Query(array(
-                    'post_type' => 'post',
+                    'post_type' => 'video',
 					'posts_per_page' => 50,
 					'post_status' => 'publish',
 					'orderby' => 'meta_value_num',
@@ -91,7 +91,7 @@ get_header();
 			// If still no posts, get any posts with video file
 			if (!$trending_query->have_posts()) {
 				$trending_query = new WP_Query(array(
-                    'post_type'      => 'post',
+                    'post_type'      => 'video',
 					'posts_per_page' => 50,
 					'post_status'    => 'publish',
 					'orderby'        => 'date',
@@ -115,17 +115,13 @@ get_header();
 				// Collect posts with views for sorting
 				$posts_with_views = array();
 				while ($trending_query->have_posts()) : $trending_query->the_post();
-					if ( ! has_block('puna/hupuna-tiktok', get_the_ID()) ) { continue; }
-					$video_url = puna_tiktok_get_video_url();
-					if (empty($video_url)) { continue; }
-					
-					$views = get_post_meta(get_the_ID(), '_puna_tiktok_video_views', true);
-					$views = $views ? (int)$views : 0;
+					$metadata = puna_tiktok_get_video_metadata();
+					if (empty($metadata['video_url'])) { continue; }
 					
 					$posts_with_views[] = array(
 						'post_id' => get_the_ID(),
-						'views' => $views,
-						'video_url' => $video_url
+						'views' => $metadata['views'],
+						'video_url' => $metadata['video_url']
 					);
 				endwhile;
 				wp_reset_postdata();

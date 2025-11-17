@@ -19,39 +19,29 @@ if (!$author) {
 }
 
 // Author data
-$author_name = $author->display_name;
-$author_username = $author->user_login;
-$author_avatar = get_avatar_url($author_id, array('size' => 100));
+$author_name = puna_tiktok_get_user_display_name($author_id);
+$author_username = puna_tiktok_get_user_username($author_id);
 $author_bio = get_user_meta($author_id, 'description', true);
 $author_url = get_author_posts_url($author_id);
 
-// Get author stats
+// Get author stats - count only posts with video block
 $author_videos_query = new WP_Query(array(
-    'post_type'      => 'post',
+    'post_type'      => 'video',
     'author'         => $author_id,
     'posts_per_page' => -1,
     'post_status'    => 'publish',
-    'meta_query'     => array(
-        'relation' => 'OR',
-        array(
-            'key'     => '_puna_tiktok_video_url',
-            'value'   => '',
-            'compare' => '!=',
-        ),
-        array(
-            'key'     => '_puna_tiktok_video_file_id',
-            'compare' => 'EXISTS',
-        ),
-    ),
+    'orderby'        => 'date',
+    'order'          => 'DESC'
 ));
 
-$total_videos = $author_videos_query->found_posts;
-$total_likes = 0;
-
-// Calculate total likes from all videos
-foreach ($author_videos_query->posts as $video_post) {
-    $likes = get_post_meta($video_post->ID, '_puna_tiktok_video_likes', true) ?: 0;
-    $total_likes += $likes;
+// Count only posts with video block
+$total_videos = 0;
+if ($author_videos_query->have_posts()) {
+    foreach ($author_videos_query->posts as $video_post) {
+        if (has_block('puna/hupuna-tiktok', $video_post->ID)) {
+            $total_videos++;
+        }
+    }
 }
 
 wp_reset_postdata();
@@ -62,7 +52,7 @@ if ($is_own_profile && $current_user_id) {
     $user_liked = get_user_meta($current_user_id, '_puna_tiktok_liked_posts', true);
     if (is_array($user_liked) && !empty($user_liked)) {
         $liked_videos_query = new WP_Query(array(
-            'post_type' => 'post',
+            'post_type' => 'video',
             'post__in' => $user_liked,
             'posts_per_page' => -1,
             'post_status' => 'publish',
@@ -81,14 +71,12 @@ if ($is_own_profile && $current_user_id) {
         <!-- Profile Header -->
         <div class="profile-header">
             <div class="profile-avatar-wrapper">
-                <img src="<?php echo esc_url($author_avatar); ?>" 
-                     alt="<?php echo esc_attr($author_name); ?>" 
-                     class="profile-avatar">
+                <?php echo puna_tiktok_get_avatar_html($author_id, 116, 'profile-avatar'); ?>
             </div>
             
             <div class="profile-info">
                 <h1 class="profile-username"><?php echo esc_html($author_name); ?></h1>
-                <h2 class="profile-usernicename"><?php echo esc_html($author_username); ?></h2>
+                <h2 class="profile-usernicename">@<?php echo esc_html($author_username); ?></h2>
                 <p class="profile-bio"><?php echo esc_html($author_bio ?: 'Chưa có tiểu sử'); ?></p>
                 
                 <div class="profile-stats">
@@ -97,12 +85,6 @@ if ($is_own_profile && $current_user_id) {
                         <span class="stat-label">Bài đăng</span>
                     </div>
                 </div>
-                
-                <?php if ($is_own_profile) : ?>
-                    <a href="<?php echo admin_url('profile.php'); ?>" class="edit-profile-btn">
-                        Chỉnh sửa hồ sơ
-                    </a>
-                <?php endif; ?>
             </div>
         </div>
         
@@ -119,11 +101,11 @@ if ($is_own_profile && $current_user_id) {
         </div>
 
         <!-- Videos Tab -->
-        <div class="profile-videos-section" id="videos-tab">
+        <div class="profile-videos-section active" id="videos-tab">
             <?php
             // Query author video 
             $videos_query = new WP_Query(array(
-                'post_type' => 'post',
+                'post_type' => 'video',
                 'author' => $author_id,
                 'posts_per_page' => -1,
                 'post_status' => 'publish',
@@ -135,9 +117,6 @@ if ($is_own_profile && $current_user_id) {
             ?>
                 <div class="profile-grid">
                     <?php while ($videos_query->have_posts()) : $videos_query->the_post();
-                        if (!has_block('puna/hupuna-tiktok', get_the_ID())) {
-                            continue;
-                        }
                         get_template_part('template-parts/video-card', null, array(
 							'card_class' => 'profile-video-card'
 						));
@@ -146,20 +125,16 @@ if ($is_own_profile && $current_user_id) {
                     ?>
                 </div>
             <?php else : ?>
-                <div class="no-videos-message">
-                    <div class="no-videos-icon">
-                        <i class="fa-solid fa-video-slash"></i>
-                    </div>
-                    <h3>Chưa có video</h3>
-                    <p><?php echo $is_own_profile ? 'Đăng video đầu tiên của bạn để bắt đầu!' : 'Người dùng này chưa đăng video nào.'; ?></p>
-                    <?php if ($is_own_profile && current_user_can('manage_options')) : ?>
-                        <a href="<?php echo esc_url(puna_tiktok_get_upload_url()); ?>" class="upload-video-btn">
-                            <i class="fa-solid fa-square-plus"></i> Tải video lên
-                        </a>
-                    <?php endif; ?>
-                </div>
+                <?php 
+                puna_tiktok_empty_state(array(
+                    'icon' => 'fa-video-slash',
+                    'title' => 'Chưa có video',
+                    'message' => $is_own_profile ? 'Đăng video đầu tiên của bạn để bắt đầu!' : 'Người dùng này chưa đăng video nào.',
+                    'button_url' => $is_own_profile ? puna_tiktok_get_upload_url() : '',
+                    'button_text' => $is_own_profile ? 'Tải video lên' : ''
+                )); 
+                ?>
             <?php endif; ?>
-            </div>
             
             <!-- Liked Videos Tab (only for own profile) -->
             <?php if ($is_own_profile) : ?>
@@ -170,7 +145,7 @@ if ($is_own_profile && $current_user_id) {
                     
                     if (!empty($liked_video_ids)) {
                         $liked_query = new WP_Query(array(
-                            'post_type' => 'post',
+                            'post_type' => 'video',
                             'post__in' => $liked_video_ids,
                             'posts_per_page' => -1,
                             'post_status' => 'publish',
@@ -182,9 +157,6 @@ if ($is_own_profile && $current_user_id) {
                             <div class="profile-grid">
                                 <?php
                                 while ($liked_query->have_posts()) : $liked_query->the_post();
-                                    if (!has_block('puna/hupuna-tiktok', get_the_ID())) {
-                                        continue;
-                                    }
                                     get_template_part('template-parts/video-card', null, array(
 										'card_class' => 'profile-video-card'
 									));
@@ -193,22 +165,22 @@ if ($is_own_profile && $current_user_id) {
                                 ?>
                             </div>
                         <?php else : ?>
-                            <div class="no-videos-message">
-                                <div class="no-videos-icon">
-                                    <i class="fa-solid fa-heart"></i>
-                                </div>
-                                <h3>Chưa có video yêu thích</h3>
-                                <p>Video bạn thích sẽ xuất hiện ở đây.</p>
-                            </div>
+                            <?php 
+                            puna_tiktok_empty_state(array(
+                                'icon' => 'fa-heart',
+                                'title' => 'Chưa có video yêu thích',
+                                'message' => 'Video bạn thích sẽ xuất hiện ở đây.'
+                            )); 
+                            ?>
                         <?php endif;
                     } else { ?>
-                        <div class="no-videos-message">
-                            <div class="no-videos-icon">
-                                <i class="fa-solid fa-heart"></i>
-                            </div>
-                            <h3>Chưa có video yêu thích</h3>
-                            <p>Video bạn thích sẽ xuất hiện ở đây.</p>
-                        </div>
+                        <?php 
+                        puna_tiktok_empty_state(array(
+                            'icon' => 'fa-heart',
+                            'title' => 'Chưa có video yêu thích',
+                            'message' => 'Video bạn thích sẽ xuất hiện ở đây.'
+                        )); 
+                        ?>
                     <?php } ?>
                 </div>
             <?php endif; ?>

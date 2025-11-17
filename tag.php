@@ -21,10 +21,8 @@
         
         if ( $video_query->have_posts() ) :
             while ( $video_query->have_posts() ) : $video_query->the_post();
-                if ( has_block('puna/hupuna-tiktok', get_the_ID()) ) {
-                    get_template_part('template-parts/video/content');
-                    comments_template();
-                }
+                get_template_part('template-parts/video/content');
+                comments_template();
             endwhile;
         else :
             ?>

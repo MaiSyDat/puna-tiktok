@@ -1,9 +1,4 @@
 /* ========================================
-   RESPONSIVE STYLES
-   Gom tất cả media queries vào đây
-   ======================================== */
-
-/* ========================================
    TABLET & BELOW (max-width: 1024px)
    ======================================== */
 
@@ -162,7 +157,6 @@
     }
 
     .video-container .video-overlay {
-        bottom: 80px;
         padding-right: 70px; /* Tạo không gian cho sidebar */
     }
 
@@ -421,7 +415,6 @@
     }
 
     .video-container .video-overlay {
-        bottom: 80px;
         padding-right: 70px; /* Tạo không gian cho sidebar */
     }
 
@@ -832,7 +825,6 @@
 
     .video-container .video-overlay {
         padding-right: 60px;
-        bottom: 70px;
     }
 
     .video-details h4 {
