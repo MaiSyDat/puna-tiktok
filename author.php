@@ -24,36 +24,24 @@ $author_username = puna_tiktok_get_user_username($author_id);
 $author_bio = get_user_meta($author_id, 'description', true);
 $author_url = get_author_posts_url($author_id);
 
-// Get author stats - count only posts with video block
 $author_videos_query = new WP_Query(array(
     'post_type'      => 'video',
     'author'         => $author_id,
     'posts_per_page' => -1,
     'post_status'    => 'publish',
-    'orderby'        => 'date',
-    'order'          => 'DESC'
+    'fields'         => 'ids'
 ));
 
-// Count only posts with video block
-$total_videos = 0;
-if ($author_videos_query->have_posts()) {
-    foreach ($author_videos_query->posts as $video_post) {
-        if (has_block('puna/hupuna-tiktok', $video_post->ID)) {
-            $total_videos++;
-        }
-    }
-}
-
+$total_videos = $author_videos_query->found_posts;
 wp_reset_postdata();
 
-// Get user's liked videos
 $liked_videos = array();
 if ($is_own_profile && $current_user_id) {
-    $user_liked = get_user_meta($current_user_id, '_puna_tiktok_liked_posts', true);
-    if (is_array($user_liked) && !empty($user_liked)) {
+    $liked_video_ids = puna_tiktok_get_liked_videos($current_user_id);
+    if (!empty($liked_video_ids)) {
         $liked_videos_query = new WP_Query(array(
             'post_type' => 'video',
-            'post__in' => $user_liked,
+            'post__in' => $liked_video_ids,
             'posts_per_page' => -1,
             'post_status' => 'publish',
             'orderby' => 'post__in'

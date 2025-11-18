@@ -111,7 +111,6 @@ $is_logged_in = is_user_logged_in();
 			<!-- Liked Videos Tab -->
 			<div class="profile-videos-section" id="liked-tab">
 				<?php
-				// Get liked videos for current user
 				$liked_video_ids = puna_tiktok_get_liked_videos($user_id);
 				
 				if (!empty($liked_video_ids)) {
@@ -158,7 +157,6 @@ $is_logged_in = is_user_logged_in();
 			<!-- Saved Videos Tab -->
 			<div class="profile-videos-section" id="saved-tab">
 				<?php
-				// Get saved videos for current user
 				$saved_video_ids = puna_tiktok_get_saved_videos($user_id);
 				
 				if (!empty($saved_video_ids)) {

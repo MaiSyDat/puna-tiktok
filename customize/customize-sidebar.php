@@ -1,8 +1,6 @@
 <?php
 /**
- * Sidebar Customizer Component
- *
- * @package puna-tiktok
+ * Sidebar Customizer
  */
 
 if (!defined('ABSPATH')) {

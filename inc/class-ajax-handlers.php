@@ -2,8 +2,6 @@
 
 /**
  * AJAX Handlers
- *
- * @package puna-tiktok
  */
 
 if (!defined('ABSPATH')) {
@@ -13,69 +11,71 @@ if (!defined('ABSPATH')) {
 class Puna_TikTok_AJAX_Handlers {
     
     public function __construct() {
+        // Like
         add_action('wp_ajax_puna_tiktok_toggle_like', array($this, 'toggle_like'));
         add_action('wp_ajax_nopriv_puna_tiktok_toggle_like', array($this, 'toggle_like'));
 
+        // Comment
         add_action('wp_ajax_puna_tiktok_add_comment', array($this, 'add_comment'));
         add_action('wp_ajax_nopriv_puna_tiktok_add_comment', array($this, 'add_comment'));
 
+        // View
         add_action('wp_ajax_puna_tiktok_increment_view', array($this, 'increment_view'));
         add_action('wp_ajax_nopriv_puna_tiktok_increment_view', array($this, 'increment_view'));
 
+        // Delete comment
         add_action('wp_ajax_puna_tiktok_delete_comment', array($this, 'delete_comment'));
         add_action('wp_ajax_puna_tiktok_report_comment', array($this, 'report_comment'));
 
+        // Like comment
         add_action('wp_ajax_puna_tiktok_toggle_comment_like', array($this, 'toggle_comment_like'));
         add_action('wp_ajax_nopriv_puna_tiktok_toggle_comment_like', array($this, 'toggle_comment_like'));
         
-        add_action('wp_ajax_puna_tiktok_login', array($this, 'handle_login'));
-        add_action('wp_ajax_nopriv_puna_tiktok_login', array($this, 'handle_login'));
-        
-        add_action('wp_ajax_puna_tiktok_register', array($this, 'handle_register'));
-        add_action('wp_ajax_nopriv_puna_tiktok_register', array($this, 'handle_register'));
-        
-        // Search functionality
+        // Search
         add_action('wp_ajax_puna_tiktok_search_suggestions', array($this, 'get_search_suggestions'));
         add_action('wp_ajax_nopriv_puna_tiktok_search_suggestions', array($this, 'get_search_suggestions'));
         
+        // Save search history
         add_action('wp_ajax_puna_tiktok_save_search', array($this, 'save_search_history'));
         add_action('wp_ajax_nopriv_puna_tiktok_save_search', array($this, 'save_search_history'));
         
+        // Get search history
         add_action('wp_ajax_puna_tiktok_get_search_history', array($this, 'get_search_history'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_search_history', array($this, 'get_search_history'));
         
+        // Clear search history
         add_action('wp_ajax_puna_tiktok_clear_search_history', array($this, 'clear_search_history'));
         add_action('wp_ajax_nopriv_puna_tiktok_clear_search_history', array($this, 'clear_search_history'));
         
+        // Populer searcher
         add_action('wp_ajax_puna_tiktok_get_popular_searches', array($this, 'get_popular_searches'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_popular_searches', array($this, 'get_popular_searches'));
         
+        // Get related searches
         add_action('wp_ajax_puna_tiktok_get_related_searches', array($this, 'get_related_searches'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_related_searches', array($this, 'get_related_searches'));
         
         // Upload video
         add_action('wp_ajax_puna_tiktok_upload_video', array($this, 'upload_video'));
         
-        // Increment share count
+        // increment shares
         add_action('wp_ajax_puna_tiktok_increment_shares', array($this, 'increment_shares'));
         add_action('wp_ajax_nopriv_puna_tiktok_increment_shares', array($this, 'increment_shares'));
         
-        // Toggle save video
+        // Toggle save
         add_action('wp_ajax_puna_tiktok_toggle_save', array($this, 'toggle_save'));
         add_action('wp_ajax_nopriv_puna_tiktok_toggle_save', array($this, 'toggle_save'));
         
+        // Delete video
         add_action('wp_ajax_puna_tiktok_delete_video', array($this, 'delete_video'));
         
-        // Get popular hashtags
+        // Popular hashtags
         add_action('wp_ajax_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
-        
-        // Migrate guest data to user account
-        add_action('wp_ajax_puna_tiktok_migrate_guest_data', array($this, 'migrate_guest_data'));
     }
 
     /**
-     * Like/Unlike Video - AJAX Handler
+     * Toggle like video
      */
     public function toggle_like() {
     check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
@@ -86,14 +86,10 @@ class Puna_TikTok_AJAX_Handlers {
         wp_send_json_error(array('message' => 'Video không hợp lệ.'));
     }
     
-    // Get current likes
     $current_likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
-    
-    // Check if user is logged in
     $is_logged_in = is_user_logged_in();
     $user_id = $is_logged_in ? get_current_user_id() : 0;
     
-    // For logged in users, track in user meta
     if ($is_logged_in) {
     $liked_posts = get_user_meta($user_id, '_puna_tiktok_liked_videos', true);
     if (!is_array($liked_posts)) {
@@ -103,7 +99,6 @@ class Puna_TikTok_AJAX_Handlers {
     $is_liked = in_array($post_id, $liked_posts);
     
     if ($is_liked) {
-        // Unlike
         $liked_posts = array_values(array_diff($liked_posts, array($post_id)));
         update_user_meta($user_id, '_puna_tiktok_liked_videos', $liked_posts);
         $new_likes = max(0, $current_likes - 1);
@@ -115,7 +110,6 @@ class Puna_TikTok_AJAX_Handlers {
             'message' => 'Đã bỏ thích video'
         ));
     } else {
-        // Like
         $liked_posts[] = $post_id;
         update_user_meta($user_id, '_puna_tiktok_liked_videos', $liked_posts);
         $new_likes = $current_likes + 1;
@@ -128,8 +122,6 @@ class Puna_TikTok_AJAX_Handlers {
         ));
         }
     } else {
-        // For guests, just increment/decrement likes (no tracking)
-        // Frontend will handle state via localStorage/cookie
         $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'like';
         
         if ($action === 'unlike') {
@@ -153,7 +145,7 @@ class Puna_TikTok_AJAX_Handlers {
 }
 
     /**
-     * Add comment via AJAX
+     * Add comment
      */
     public function add_comment() {
     check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
@@ -172,28 +164,24 @@ class Puna_TikTok_AJAX_Handlers {
     $is_logged_in = is_user_logged_in();
     $user_id = $is_logged_in ? get_current_user_id() : 0;
     
-    // Get user info or use guest info
     if ($is_logged_in) {
     $user = get_userdata($user_id);
         $comment_author = $user->display_name;
         $comment_email = $user->user_email;
     } else {
-        // Guest comment - tạo ID duy nhất cho guest
         $guest_id = isset($_POST['guest_id']) ? sanitize_text_field($_POST['guest_id']) : '';
         if (empty($guest_id)) {
-            // Tạo guest ID từ IP và timestamp
             $guest_id = 'guest_' . md5($_SERVER['REMOTE_ADDR'] . time() . wp_generate_password(8, false));
         }
         
-        // Lưu guest ID vào session/cookie để tái sử dụng
         if (!isset($_COOKIE['puna_tiktok_guest_id'])) {
-            setcookie('puna_tiktok_guest_id', $guest_id, time() + (365 * 24 * 60 * 60), '/'); // 1 năm
+            setcookie('puna_tiktok_guest_id', $guest_id, time() + (365 * 24 * 60 * 60), '/');
         } else {
             $guest_id = $_COOKIE['puna_tiktok_guest_id'];
         }
         
         $guest_name = isset($_POST['guest_name']) ? sanitize_text_field($_POST['guest_name']) : 'Khách';
-        $comment_author = $guest_name . ' #' . substr($guest_id, 6, 8); // Hiển thị tên + 8 ký tự đầu của ID
+        $comment_author = $guest_name . ' #' . substr($guest_id, 6, 8);
         $comment_email = isset($_POST['guest_email']) ? sanitize_email($_POST['guest_email']) : '';
         if (empty($comment_email)) {
             $comment_email = $guest_id . '@guest.local';
@@ -210,7 +198,7 @@ class Puna_TikTok_AJAX_Handlers {
         'comment_status' => 'approve',
         'comment_author_IP' => $_SERVER['REMOTE_ADDR'],
         'user_id' => $user_id,
-        'comment_parent' => $parent_id, // Set parent for replies
+        'comment_parent' => $parent_id,
     );
     
     $comment_id = wp_insert_comment($comment_data);
@@ -219,7 +207,6 @@ class Puna_TikTok_AJAX_Handlers {
         wp_send_json_error(array('message' => 'Không thể thêm bình luận.'));
     }
     
-    // Lưu guest ID vào comment meta nếu là guest
     if (!$is_logged_in && !empty($guest_id)) {
         update_comment_meta($comment_id, '_puna_tiktok_guest_id', $guest_id);
     }
@@ -232,7 +219,7 @@ class Puna_TikTok_AJAX_Handlers {
 }
 
     /**
-     * Increment video view count via AJAX
+     * Increment video view
      */
     public function increment_view() {
     check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
@@ -242,7 +229,6 @@ class Puna_TikTok_AJAX_Handlers {
     if (!$post_id || get_post_type($post_id) !== 'video') {
         wp_send_json_error(array('message' => 'Video không hợp lệ.'));
     }
-    // Increment view count
     $new_views = puna_tiktok_increment_video_views($post_id);
     wp_send_json_success(array(
         'views' => $new_views,
@@ -251,7 +237,7 @@ class Puna_TikTok_AJAX_Handlers {
     }
 
     /**
-     * Like/Unlike Comment - AJAX Handler
+     * Toggle comment like
      */
     public function toggle_comment_like() {
         check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
@@ -266,15 +252,11 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => 'Bình luận không tồn tại.'));
         }
         
-        // Get current likes
         $current_likes = get_comment_meta($comment_id, '_comment_likes', true) ?: 0;
-        
-        // Check if user is logged in
         $is_logged_in = is_user_logged_in();
         $user_id = $is_logged_in ? get_current_user_id() : 0;
         
         if ($is_logged_in) {
-        // Get user liked comments
         $liked_comments = get_user_meta($user_id, '_puna_tiktok_liked_comments', true);
         if (!is_array($liked_comments)) {
             $liked_comments = array();
@@ -283,7 +265,6 @@ class Puna_TikTok_AJAX_Handlers {
         $is_liked = in_array($comment_id, $liked_comments);
         
         if ($is_liked) {
-            // Unlike
             $liked_comments = array_values(array_diff($liked_comments, array($comment_id)));
             update_user_meta($user_id, '_puna_tiktok_liked_comments', $liked_comments);
             $new_likes = max(0, $current_likes - 1);
@@ -295,7 +276,6 @@ class Puna_TikTok_AJAX_Handlers {
                 'message' => 'Đã bỏ thích bình luận'
             ));
         } else {
-            // Like
             $liked_comments[] = $comment_id;
             update_user_meta($user_id, '_puna_tiktok_liked_comments', $liked_comments);
             $new_likes = $current_likes + 1;
@@ -308,7 +288,6 @@ class Puna_TikTok_AJAX_Handlers {
             ));
             }
         } else {
-            // For guests, just increment/decrement likes
             $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'like';
             
             if ($action === 'unlike') {
@@ -332,29 +311,25 @@ class Puna_TikTok_AJAX_Handlers {
     }
 
     /**
-     * Delete a comment and all its replies recursively (owner or moderator)
+     * Delete comment recursively
      */
     private function delete_comment_recursive($comment_id) {
-        // Get all direct replies
         $replies = get_comments(array(
             'parent' => $comment_id,
-            'status' => 'any', // Get all statuses to ensure deletion
+            'status' => 'any',
         ));
         
-        // Recursively delete all child comments
         foreach ($replies as $reply) {
             $this->delete_comment_recursive($reply->comment_ID);
         }
         
-        // Delete the comment itself (force delete)
         wp_delete_comment($comment_id, true);
     }
 
     /**
-     * Delete a comment (owner or moderator)
+     * Delete comment
      */
     public function delete_comment() {
-    // Nonce optional for guests
     if (is_user_logged_in()) {
     check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
     }
@@ -370,18 +345,13 @@ class Puna_TikTok_AJAX_Handlers {
     
     $user_id = get_current_user_id();
     $is_admin = current_user_can('moderate_comments');
-    
-    // Check if user can delete: admin can delete any, user can delete own, guest can delete own
     $can_delete = false;
     
     if ($is_admin) {
-        // Admin can delete any comment
         $can_delete = true;
     } elseif ($user_id > 0 && $comment->user_id == $user_id) {
-        // Registered user can delete own comment
         $can_delete = true;
     } elseif ($user_id == 0) {
-        // Guest - check if comment belongs to this guest
         $comment_guest_id = get_comment_meta($comment_id, '_puna_tiktok_guest_id', true);
         $current_guest_id = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
         
@@ -394,8 +364,7 @@ class Puna_TikTok_AJAX_Handlers {
         wp_send_json_error(array('message' => 'Bạn không có quyền xóa bình luận này.'));
     }
     
-    // Count total comments to be deleted (including replies)
-    $total_to_delete = 1; // The comment itself
+    $total_to_delete = 1;
     $count_replies = function($parent_id) use (&$count_replies) {
         $replies = get_comments(array(
             'parent' => $parent_id,
@@ -410,7 +379,6 @@ class Puna_TikTok_AJAX_Handlers {
     };
     $total_to_delete += $count_replies($comment_id);
     
-    // Delete comment and all its replies recursively
     $this->delete_comment_recursive($comment_id);
     
     wp_send_json_success(array(
@@ -420,10 +388,9 @@ class Puna_TikTok_AJAX_Handlers {
     }
 
     /**
-     * Report a comment
+     * Report comment
      */
     public function report_comment() {
-    // Nonce optional for nopriv? We accept if provided
     if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
         wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
     }
@@ -437,127 +404,9 @@ class Puna_TikTok_AJAX_Handlers {
     }
 
     /**
-     * Handle user login via AJAX
-     */
-    public function handle_login() {
-    check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
-    
-    $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-    $remember = isset($_POST['remember']) ? true : false;
-    
-    if (empty($username) || empty($password)) {
-        wp_send_json_error(array('message' => 'Vui lòng nhập đầy đủ thông tin.'));
-    }
-    
-    $credentials = array(
-        'user_login'    => $username,
-        'user_password' => $password,
-        'remember'      => $remember
-    );
-    
-    $user = wp_signon($credentials, false);
-    
-    if (is_wp_error($user)) {
-        wp_send_json_error(array('message' => $user->get_error_message()));
-    }
-    
-    wp_send_json_success(array(
-        'message' => 'Đăng nhập thành công!',
-        'redirect' => home_url()
-    ));
-    }
-
-    /**
-     * Register new user - AJAX Handler
-     */
-    public function handle_register() {
-        check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
-        
-        $username = isset($_POST['username']) ? sanitize_user($_POST['username']) : '';
-        $email = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
-        $password = isset($_POST['password']) ? $_POST['password'] : '';
-        $birthday_month = isset($_POST['birthday_month']) ? intval($_POST['birthday_month']) : 0;
-        $birthday_day = isset($_POST['birthday_day']) ? intval($_POST['birthday_day']) : 0;
-        $birthday_year = isset($_POST['birthday_year']) ? intval($_POST['birthday_year']) : 0;
-        
-        // Validate required fields
-        if (empty($username) || empty($email) || empty($password)) {
-            wp_send_json_error(array('message' => 'Vui lòng nhập đầy đủ thông tin.'));
-        }
-        
-        // Validate email format
-        if (!is_email($email)) {
-            wp_send_json_error(array('message' => 'Email không hợp lệ.'));
-        }
-        
-        // Validate password length
-        if (strlen($password) < 6) {
-            wp_send_json_error(array('message' => 'Mật khẩu phải có ít nhất 6 ký tự.'));
-        }
-        
-        // Validate username
-        if (strlen($username) < 3) {
-            wp_send_json_error(array('message' => 'Tên người dùng phải có ít nhất 3 ký tự.'));
-        }
-        
-        // Check if username already exists
-        if (username_exists($username)) {
-            wp_send_json_error(array('message' => 'Tên người dùng đã được sử dụng.'));
-        }
-        
-        // Check if email already exists
-        if (email_exists($email)) {
-            wp_send_json_error(array('message' => 'Email đã được sử dụng.'));
-        }
-        
-        // Validate birthday (optional but if provided, must be valid)
-        $birthday = null;
-        if ($birthday_month > 0 && $birthday_day > 0 && $birthday_year > 0) {
-            if (!checkdate($birthday_month, $birthday_day, $birthday_year)) {
-                wp_send_json_error(array('message' => 'Ngày sinh không hợp lệ.'));
-            }
-            
-            // Check age (must be at least 13 years old)
-            $age = date('Y') - $birthday_year;
-            if ($age < 13) {
-                wp_send_json_error(array('message' => 'Bạn phải ít nhất 13 tuổi để đăng ký.'));
-            }
-            
-            $birthday = sprintf('%04d-%02d-%02d', $birthday_year, $birthday_month, $birthday_day);
-        }
-        
-        // Create user with subscriber role
-        $user_id = wp_create_user($username, $password, $email);
-        
-        if (is_wp_error($user_id)) {
-            wp_send_json_error(array('message' => $user_id->get_error_message()));
-        }
-        
-        // Set user role to subscriber
-        $user = new WP_User($user_id);
-        $user->set_role('subscriber');
-        
-        // Save birthday if provided
-        if ($birthday) {
-            update_user_meta($user_id, 'birthday', $birthday);
-        }
-        
-        // Auto login after registration
-        wp_set_current_user($user_id);
-        wp_set_auth_cookie($user_id);
-        
-        wp_send_json_success(array(
-            'message' => 'Đăng ký thành công!',
-            'redirect' => home_url()
-        ));
-    }
-
-    /**
-     * Get search suggestions based on query
+     * Get search suggestions
      */
     public function get_search_suggestions() {
-        // Nonce is optional for search suggestions (public feature)
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
             wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
             return;
@@ -571,7 +420,6 @@ class Puna_TikTok_AJAX_Handlers {
         
         $suggestions = array();
         
-        // 1. Get matching video titles
         $posts = get_posts(array(
             'post_type' => 'video',
             'post_status' => 'publish',
@@ -590,7 +438,6 @@ class Puna_TikTok_AJAX_Handlers {
             }
         }
         
-        // 2. Get matching users
         $users = get_users(array(
             'search' => '*' . $query . '*',
             'search_columns' => array('user_login', 'display_name', 'user_nicename'),
@@ -604,11 +451,9 @@ class Puna_TikTok_AJAX_Handlers {
             );
         }
         
-        // 3. Get popular searches that match
         $history = $this->get_all_search_history();
         foreach ($history as $item) {
             if (stripos($item['query'], $query) !== false && count($suggestions) < 10) {
-                // Avoid duplicates
                 $exists = false;
                 foreach ($suggestions as $sug) {
                     if ($sug['text'] === $item['query']) {
@@ -625,17 +470,15 @@ class Puna_TikTok_AJAX_Handlers {
             }
         }
         
-        // Limit to 10 suggestions
         $suggestions = array_slice($suggestions, 0, 10);
         
         wp_send_json_success(array('suggestions' => $suggestions));
     }
 
     /**
-     * Save search to history
+     * Save search history
      */
     public function save_search_history() {
-        // Nonce is optional for saving search (public feature)
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
             wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
             return;
@@ -647,11 +490,9 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => 'Query không được để trống.'));
         }
         
-        // Get user ID (or use IP for guests)
         $user_id = is_user_logged_in() ? get_current_user_id() : 0;
         $identifier = $user_id > 0 ? 'user_' . $user_id : 'ip_' . $_SERVER['REMOTE_ADDR'];
         
-        // Get existing history
         $option_key = 'puna_tiktok_search_history';
         $all_history = get_option($option_key, array());
         
@@ -659,26 +500,21 @@ class Puna_TikTok_AJAX_Handlers {
             $all_history = array();
         }
         
-        // Check if already exists for this identifier
         if (!isset($all_history[$identifier])) {
             $all_history[$identifier] = array();
         }
         
-        // Remove if already exists (to move to top)
         $all_history[$identifier] = array_filter($all_history[$identifier], function($item) use ($query) {
             return $item['query'] !== $query;
         });
         
-        // Add to beginning
         array_unshift($all_history[$identifier], array(
             'query' => $query,
             'timestamp' => current_time('timestamp')
         ));
         
-        // Keep only last 50 searches per user
         $all_history[$identifier] = array_slice($all_history[$identifier], 0, 50);
         
-        // Clean old searches (older than 7 days)
         $week_ago = current_time('timestamp') - (7 * DAY_IN_SECONDS);
         foreach ($all_history[$identifier] as $key => $item) {
             if ($item['timestamp'] < $week_ago) {
@@ -687,17 +523,15 @@ class Puna_TikTok_AJAX_Handlers {
         }
         $all_history[$identifier] = array_values($all_history[$identifier]);
         
-        // Save
         update_option($option_key, $all_history);
         
         wp_send_json_success(array('message' => 'Đã lưu lịch sử tìm kiếm.'));
     }
 
     /**
-     * Get search history for current user
+     * Get search history
      */
     public function get_search_history() {
-        // Nonce is optional for getting history (public feature)
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
             wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
             return;
@@ -713,23 +547,19 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array('history' => array()));
         }
         
-        // Clean old searches
         $week_ago = current_time('timestamp') - (7 * DAY_IN_SECONDS);
         $history = array_filter($all_history[$identifier], function($item) use ($week_ago) {
             return $item['timestamp'] >= $week_ago;
         });
         
-        // Re-index array
         $history = array_values($history);
-        
-        // Limit to 10 most recent
         $history = array_slice($history, 0, 10);
         
         wp_send_json_success(array('history' => $history));
     }
 
     /**
-     * Get all search history (for suggestions)
+     * Get all search history
      */
     private function get_all_search_history() {
         $option_key = 'puna_tiktok_search_history';
@@ -752,7 +582,6 @@ class Puna_TikTok_AJAX_Handlers {
             }
         }
         
-        // Sort by timestamp (newest first)
         usort($combined, function($a, $b) {
             return $b['timestamp'] - $a['timestamp'];
         });
@@ -761,10 +590,9 @@ class Puna_TikTok_AJAX_Handlers {
     }
 
     /**
-     * Clear search history for current user
+     * Clear search history
      */
     public function clear_search_history() {
-        // Nonce is optional for clearing history (public feature)
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
             wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
             return;
@@ -785,10 +613,9 @@ class Puna_TikTok_AJAX_Handlers {
     }
 
     /**
-     * Get popular searches based on search frequency
+     * Get popular searches
      */
     public function get_popular_searches() {
-        // Nonce is optional for getting popular searches (public feature)
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
             wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
             return;
@@ -801,15 +628,12 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array('popular' => array()));
         }
         
-        // Count search frequency
         $search_counts = array();
         $week_ago = current_time('timestamp') - (7 * DAY_IN_SECONDS);
         
-        // Loop through all users' search history
         foreach ($all_history as $identifier => $history) {
             if (is_array($history)) {
                 foreach ($history as $item) {
-                    // Only count searches from last 7 days
                     if ($item['timestamp'] >= $week_ago && !empty($item['query'])) {
                         $query = trim($item['query']);
                         if (!isset($search_counts[$query])) {
@@ -821,10 +645,8 @@ class Puna_TikTok_AJAX_Handlers {
             }
         }
         
-        // Sort by count (descending)
         arsort($search_counts);
         
-        // Get top 10 most popular searches
         $popular = array();
         $count = 0;
         foreach ($search_counts as $query => $frequency) {
@@ -836,9 +658,7 @@ class Puna_TikTok_AJAX_Handlers {
             $count++;
         }
         
-        // If no popular searches, return empty array or default suggestions
         if (empty($popular)) {
-            // Return empty - let frontend handle default display
             $popular = array();
         }
         
@@ -846,10 +666,9 @@ class Puna_TikTok_AJAX_Handlers {
     }
 
     /**
-     * Get related searches based on current search query
+     * Get related searches
      */
     public function get_related_searches() {
-        // Nonce is optional for getting related searches (public feature)
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
             wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
             return;
@@ -868,31 +687,25 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array('related' => array()));
         }
         
-        // Count search frequency and calculate similarity
         $related_searches = array();
         $week_ago = current_time('timestamp') - (7 * DAY_IN_SECONDS);
         $current_query_lower = mb_strtolower($current_query);
         $current_words = array_filter(explode(' ', $current_query_lower));
         
-        // Loop through all users' search history
         foreach ($all_history as $identifier => $history) {
             if (is_array($history)) {
                 foreach ($history as $item) {
-                    // Only count searches from last 7 days
                     if ($item['timestamp'] >= $week_ago && !empty($item['query'])) {
                         $query = trim($item['query']);
                         $query_lower = mb_strtolower($query);
                         
-                        // Skip exact match
                         if ($query_lower === $current_query_lower) {
                             continue;
                         }
                         
-                        // Calculate similarity score
                         $similarity = 0;
                         $query_words = array_filter(explode(' ', $query_lower));
                         
-                        // Check word matches
                         foreach ($current_words as $word) {
                             if (strlen($word) >= 2) {
                                 foreach ($query_words as $qword) {
@@ -906,7 +719,6 @@ class Puna_TikTok_AJAX_Handlers {
                             }
                         }
                         
-                        // Check if query contains current query or vice versa
                         if (strpos($query_lower, $current_query_lower) !== false) {
                             $similarity += 5;
                         }
@@ -914,7 +726,6 @@ class Puna_TikTok_AJAX_Handlers {
                             $similarity += 3;
                         }
                         
-                        // Only include if has some similarity
                         if ($similarity > 0) {
                             if (!isset($related_searches[$query])) {
                                 $related_searches[$query] = array(
@@ -924,7 +735,6 @@ class Puna_TikTok_AJAX_Handlers {
                                 );
                             }
                             $related_searches[$query]['count']++;
-                            // Boost score by frequency
                             $related_searches[$query]['score'] += $related_searches[$query]['count'];
                         }
                     }
@@ -932,7 +742,6 @@ class Puna_TikTok_AJAX_Handlers {
             }
         }
         
-        // Sort by score (highest first), then by count
         usort($related_searches, function($a, $b) {
             if ($a['score'] !== $b['score']) {
                 return $b['score'] - $a['score'];
@@ -940,7 +749,6 @@ class Puna_TikTok_AJAX_Handlers {
             return $b['count'] - $a['count'];
         });
         
-        // Get top 10 related searches
         $related = array();
         $count = 0;
         foreach ($related_searches as $item) {
@@ -956,12 +764,11 @@ class Puna_TikTok_AJAX_Handlers {
     }
 
     /**
-     * Upload Video - AJAX Handler
+     * Upload video
      */
     public function upload_video() {
         check_ajax_referer('puna_tiktok_nonce', 'nonce');
         
-        // Chỉ admin mới được upload video
         if (!current_user_can('manage_options')) {
             wp_send_json_error(array('message' => 'Chỉ quản trị viên mới được đăng video.'));
         }
@@ -975,7 +782,6 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => 'Thiếu thông tin video từ Mega.nz.'));
         }
         
-        // Duplicate check using link and filename
         $existing_link = get_posts(array(
             'post_type'      => 'video',
             'post_status'    => 'any',
@@ -985,7 +791,6 @@ class Puna_TikTok_AJAX_Handlers {
             'fields'         => 'ids',
         ));
         
-        // Also check _puna_tiktok_video_url for backward compatibility
         if (empty($existing_link)) {
             $existing_link = get_posts(array(
                 'post_type'      => 'video',
@@ -1012,7 +817,6 @@ class Puna_TikTok_AJAX_Handlers {
         require_once ABSPATH . 'wp-admin/includes/media.php';
         require_once ABSPATH . 'wp-admin/includes/image.php';
         
-        // Handle cover image if provided (still stored in WP media library)
         $cover_image_id = null;
         if (!empty($_FILES['cover_image']) && $_FILES['cover_image']['error'] === UPLOAD_ERR_OK) {
             $cover_file = $_FILES['cover_image'];
@@ -1066,7 +870,7 @@ class Puna_TikTok_AJAX_Handlers {
         
         $post_data = array(
             'post_title'   => wp_trim_words($clean_description, 10, '...') ?: 'Video ' . date('Y-m-d H:i:s'),
-            'post_content' => $clean_description, // Save description as post content
+            'post_content' => $clean_description,
             'post_status'  => $post_status,
             'post_author'  => get_current_user_id(),
             'post_type'    => 'video',
@@ -1077,9 +881,6 @@ class Puna_TikTok_AJAX_Handlers {
         if (is_wp_error($post_id)) {
             wp_send_json_error(array('message' => 'Không thể tạo post: ' . $post_id->get_error_message()));
         }
-        
-        // For video post type, we don't need block - just save meta
-        // Post content is already set in $post_data
 
         if (!empty($hashtags)) {
             wp_set_post_tags($post_id, $hashtags, false);
@@ -1092,14 +893,11 @@ class Puna_TikTok_AJAX_Handlers {
             }
         }
 
-        // Save MEGA link and node ID
         update_post_meta($post_id, '_puna_tiktok_mega_link', esc_url_raw($mega_upload['link']));
         update_post_meta($post_id, '_puna_tiktok_mega_node_id', sanitize_text_field($mega_upload['nodeId'] ?? ''));
-        // Also save as video_url for backward compatibility
         update_post_meta($post_id, '_puna_tiktok_video_url', esc_url_raw($mega_upload['link']));
         update_post_meta($post_id, '_puna_tiktok_video_node_id', sanitize_text_field($mega_upload['nodeId'] ?? ''));
         
-        // Save description to meta
         if (!empty($clean_description)) {
             update_post_meta($post_id, '_puna_tiktok_video_description', $clean_description);
         }
@@ -1126,21 +924,18 @@ class Puna_TikTok_AJAX_Handlers {
     }
     
     /**
-     * Increment Share Count - AJAX Handler
+     * Increment share count
      */
     public function increment_shares() {
         check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
         
         $post_id = intval($_POST['post_id']);
         
-        if (!$post_id || ! has_block('puna/hupuna-tiktok', $post_id)) {
+        if (!$post_id || get_post_type($post_id) !== 'video') {
             wp_send_json_error(array('message' => 'Video không hợp lệ.'));
         }
         
-        // Get current share count
         $current_shares = get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0;
-        
-        // Increment share count
         $new_shares = intval($current_shares) + 1;
         update_post_meta($post_id, '_puna_tiktok_video_shares', $new_shares);
         
@@ -1150,41 +945,34 @@ class Puna_TikTok_AJAX_Handlers {
     }
     
     /**
-     * Save/Unsave Video - AJAX Handler
+     * Toggle save video
      */
     public function toggle_save() {
         check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
         
         $post_id = intval($_POST['post_id']);
         
-        if (!$post_id || ! has_block('puna/hupuna-tiktok', $post_id)) {
+        if (!$post_id || get_post_type($post_id) !== 'video') {
             wp_send_json_error(array('message' => 'Video không hợp lệ.'));
         }
         
-        // Get current saves count
         $current_saves = get_post_meta($post_id, '_puna_tiktok_video_saves', true) ?: 0;
-        
-        // Check if user is logged in
         $is_logged_in = is_user_logged_in();
         $user_id = $is_logged_in ? get_current_user_id() : 0;
         
         if ($is_logged_in) {
-        // Get user's saved videos
         $saved_posts = get_user_meta($user_id, '_puna_tiktok_saved_videos', true);
         if (!is_array($saved_posts)) {
             $saved_posts = array();
         }
         
-        // Check if already saved
         $is_saved = in_array($post_id, $saved_posts);
         
         if ($is_saved) {
-            // Unsave: remove from array
             $saved_posts = array_diff($saved_posts, array($post_id));
-            $saved_posts = array_values($saved_posts); // Re-index array
+            $saved_posts = array_values($saved_posts);
             update_user_meta($user_id, '_puna_tiktok_saved_videos', $saved_posts);
             
-            // Decrease saves count
             $new_saves = max(0, $current_saves - 1);
             update_post_meta($post_id, '_puna_tiktok_video_saves', $new_saves);
             
@@ -1194,11 +982,9 @@ class Puna_TikTok_AJAX_Handlers {
                 'message' => 'Đã bỏ lưu video'
             ));
         } else {
-            // Save: add to array
             $saved_posts[] = $post_id;
             update_user_meta($user_id, '_puna_tiktok_saved_videos', $saved_posts);
             
-            // Increase saves count
             $new_saves = $current_saves + 1;
             update_post_meta($post_id, '_puna_tiktok_video_saves', $new_saves);
             
@@ -1209,7 +995,6 @@ class Puna_TikTok_AJAX_Handlers {
             ));
         }
     } else {
-        // For guests, just increment/decrement saves (no tracking)
         $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'save';
         
         if ($action === 'unsave') {
@@ -1236,7 +1021,7 @@ class Puna_TikTok_AJAX_Handlers {
 
     
     /**
-     * Delete Video - AJAX Handler
+     * Delete video
      */
     public function delete_video() {
         check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
@@ -1247,11 +1032,10 @@ class Puna_TikTok_AJAX_Handlers {
         
         $post_id = intval($_POST['post_id']);
         
-        if (!$post_id || !has_block('puna/hupuna-tiktok', $post_id)) {
+        if (!$post_id || get_post_type($post_id) !== 'video') {
             wp_send_json_error(array('message' => 'Video không hợp lệ.'));
         }
         
-        // Check if current user is the author
         $post = get_post($post_id);
         if (!$post || $post->post_author != get_current_user_id()) {
             wp_send_json_error(array('message' => 'Bạn không có quyền xóa video này.'));
@@ -1263,7 +1047,6 @@ class Puna_TikTok_AJAX_Handlers {
         $cover_image_id = get_post_meta($post_id, '_puna_tiktok_video_cover_id', true);
 
         if ($video_file_id && is_numeric($video_file_id)) {
-            // Backward compatibility for older posts stored in Media Library
             wp_delete_attachment($video_file_id, true);
         }
 
@@ -1286,12 +1069,11 @@ class Puna_TikTok_AJAX_Handlers {
 
     
     /**
-     * Get Popular Hashtags - AJAX Handler
+     * Get popular hashtags
      */
     public function get_popular_hashtags() {
         $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 20;
         
-        // Get all tags with post count
         $tags = get_terms(array(
             'taxonomy' => 'post_tag',
             'hide_empty' => true,
@@ -1306,7 +1088,6 @@ class Puna_TikTok_AJAX_Handlers {
             )
         ));
         
-        // If no tags with meta, get by count
         if (empty($tags) || is_wp_error($tags)) {
             $tags = get_terms(array(
                 'taxonomy' => 'post_tag',
@@ -1334,63 +1115,6 @@ class Puna_TikTok_AJAX_Handlers {
         ));
     }
     
-    /**
-     * Migrate guest data to user account
-     */
-    public function migrate_guest_data() {
-        check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
-        
-        if (!is_user_logged_in()) {
-            wp_send_json_error(array('message' => 'Bạn cần đăng nhập để thực hiện thao tác này.'));
-        }
-        
-        $user_id = get_current_user_id();
-        $liked_videos = isset($_POST['liked_videos']) ? array_map('intval', $_POST['liked_videos']) : array();
-        $saved_videos = isset($_POST['saved_videos']) ? array_map('intval', $_POST['saved_videos']) : array();
-        $liked_comments = isset($_POST['liked_comments']) ? array_map('intval', $_POST['liked_comments']) : array();
-        
-        // Migrate liked videos
-        if (!empty($liked_videos)) {
-            $existing_liked = get_user_meta($user_id, '_puna_tiktok_liked_videos', true);
-            if (!is_array($existing_liked)) {
-                $existing_liked = array();
-            }
-            // Merge và loại bỏ trùng lặp
-            $merged_liked = array_unique(array_merge($existing_liked, $liked_videos));
-            update_user_meta($user_id, '_puna_tiktok_liked_videos', array_values($merged_liked));
-        }
-        
-        // Migrate saved videos
-        if (!empty($saved_videos)) {
-            $existing_saved = get_user_meta($user_id, '_puna_tiktok_saved_videos', true);
-            if (!is_array($existing_saved)) {
-                $existing_saved = array();
-            }
-            // Merge và loại bỏ trùng lặp
-            $merged_saved = array_unique(array_merge($existing_saved, $saved_videos));
-            update_user_meta($user_id, '_puna_tiktok_saved_videos', array_values($merged_saved));
-        }
-        
-        // Migrate liked comments
-        if (!empty($liked_comments)) {
-            $existing_liked_comments = get_user_meta($user_id, '_puna_tiktok_liked_comments', true);
-            if (!is_array($existing_liked_comments)) {
-                $existing_liked_comments = array();
-            }
-            // Merge và loại bỏ trùng lặp
-            $merged_liked_comments = array_unique(array_merge($existing_liked_comments, $liked_comments));
-            update_user_meta($user_id, '_puna_tiktok_liked_comments', array_values($merged_liked_comments));
-        }
-        
-        wp_send_json_success(array(
-            'message' => 'Đã chuyển dữ liệu thành công.',
-            'migrated' => array(
-                'liked_videos' => count($liked_videos),
-                'saved_videos' => count($saved_videos),
-                'liked_comments' => count($liked_comments)
-            )
-        ));
-    }
 }
 
 // Initialize the class

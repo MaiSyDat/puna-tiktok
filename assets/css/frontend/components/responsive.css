@@ -651,7 +651,6 @@
         grid-template-columns: 1fr;
     }
 
-    /* Login Modal */
     .modal-content {
         width: 95%;
         margin: 20px;
@@ -661,26 +660,8 @@
         padding: 16px 20px 12px;
     }
     
-    .login-form {
-        padding: 20px;
-    }
-    
     .modal-footer {
         padding: 0 20px 20px;
-    }
-    
-    .birthday-inputs {
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .phone-input-group, .code-input-group {
-        flex-direction: column;
-    }
-    
-    .country-code, .send-code-btn {
-        border-right: none;
-        border-bottom: 1px solid #e0e0e0;
     }
     
     .contact-btn {

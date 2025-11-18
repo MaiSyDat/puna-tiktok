@@ -2,7 +2,6 @@
  * Customizer Preview Script
  * Handles live preview for color changes
  *
- * @package puna-tiktok
  */
 
 (function($) {

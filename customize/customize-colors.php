@@ -2,7 +2,6 @@
 /**
  * Colors Customizer Component
  *
- * @package puna-tiktok
  */
 
 if (!defined('ABSPATH')) {

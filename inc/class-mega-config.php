@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Mega.nz Configuration stored inside the theme.
- *
- * @package puna-tiktok
+ * Mega Config
  */
 
 if (!defined('ABSPATH')) {
@@ -13,7 +11,7 @@ if (!defined('ABSPATH')) {
 class Puna_TikTok_Mega_Config {
 
     /**
-     * Load credentials from external file if exists
+     * Load credentials file
      */
     private static function load_credentials_file() {
         $credentials_file = get_template_directory() . '/mega-credentials.php';
@@ -23,9 +21,7 @@ class Puna_TikTok_Mega_Config {
     }
 
     /**
-     * Get Mega.nz email.
-     *
-     * @return string
+     * Get email
      */
     public static function get_email() {
         self::load_credentials_file();
@@ -44,9 +40,7 @@ class Puna_TikTok_Mega_Config {
     }
 
     /**
-     * Get Mega.nz password.
-     *
-     * @return string
+     * Get password
      */
     public static function get_password() {
         self::load_credentials_file();
@@ -65,9 +59,7 @@ class Puna_TikTok_Mega_Config {
     }
 
     /**
-     * Get upload folder path.
-     *
-     * @return string
+     * Get upload folder
      */
     public static function get_upload_folder() {
         self::load_credentials_file();
@@ -83,6 +75,25 @@ class Puna_TikTok_Mega_Config {
         }
 
         return (string) $folder;
+    }
+
+    /**
+     * Get credentials
+     */
+    public static function get_credentials() {
+        $email = self::get_email();
+        $password = self::get_password();
+        $folder = self::get_upload_folder();
+
+        if (empty($email) || empty($password)) {
+            return array();
+        }
+
+        return array(
+            'email' => $email,
+            'password' => $password,
+            'folder' => $folder,
+        );
     }
 }
 

@@ -1,20 +1,11 @@
 <?php
 /**
- * Video Card Template Part
- * Reusable video card for explore, profile, and author pages
- * 
- * @param array $args {
- *     @type int    $post_id    Post ID (default: get_the_ID())
- *     @type string $video_url  Video URL (optional, will be fetched if not provided)
- *     @type int    $views      View count (optional, will be fetched if not provided)
- *     @type string $card_class Additional CSS class for the card (default: 'explore-card')
- * }
+ * Video Card Template
  */
 
 $post_id = isset($args['post_id']) ? $args['post_id'] : get_the_ID();
 $card_class = isset($args['card_class']) ? $args['card_class'] : 'explore-card';
 
-// Get video metadata if not provided
 if (isset($args['video_url']) && isset($args['views'])) {
     $video_url = $args['video_url'];
     $views = $args['views'];
@@ -28,7 +19,6 @@ if (empty($video_url)) {
     return;
 }
 
-// Check if this is a Mega.nz video
 $mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true);
 $is_mega_video = !empty($mega_node_id) || (strpos($video_url, 'mega.nz') !== false);
 ?>

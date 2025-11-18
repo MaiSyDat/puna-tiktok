@@ -127,10 +127,8 @@ $withcomments = 1;
                                 $likes = $metadata['likes'];
                                 $thumbnail = '';
                                 
-                                // Get thumbnail from video
                                 if ($video_url) {
-                                    // Can take the first frame of the video as a thumbnail
-                                    $thumbnail = $video_url; // Fallback
+                                    $thumbnail = $video_url;
                                 }
                                 ?>
                                 <a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="search-video-item">

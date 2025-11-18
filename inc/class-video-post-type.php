@@ -1,9 +1,7 @@
 <?php
 
 /**
- * Video Custom Post Type
- *
- * @package puna-tiktok
+ * Video Post Type
  */
 
 if (! defined('ABSPATH')) {
@@ -19,12 +17,11 @@ class Puna_TikTok_Video_Post_Type {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_filter('manage_video_posts_columns', array($this, 'add_video_columns'));
         add_action('manage_video_posts_custom_column', array($this, 'render_video_columns'), 10, 2);
-        // Flush rewrite rules on theme activation
         add_action('after_switch_theme', array($this, 'flush_rewrite_rules'));
     }
     
     /**
-     * Register Video post type
+     * Register video post type
      */
     public function register_video_post_type() {
         $labels = array(
@@ -63,7 +60,6 @@ class Puna_TikTok_Video_Post_Type {
 
         register_post_type('video', $args);
         
-        // Flush rewrite rules if this is the first time registering
         if (get_option('puna_tiktok_video_post_type_registered') !== 'yes') {
             flush_rewrite_rules();
             update_option('puna_tiktok_video_post_type_registered', 'yes');
@@ -71,7 +67,7 @@ class Puna_TikTok_Video_Post_Type {
     }
     
     /**
-     * Flush rewrite rules when theme is activated
+     * Flush rewrite rules
      */
     public function flush_rewrite_rules() {
         flush_rewrite_rules();
@@ -92,7 +88,7 @@ class Puna_TikTok_Video_Post_Type {
     }
     
     /**
-     * Render video upload meta box
+     * Render upload meta box
      */
     public function render_video_upload_meta_box($post) {
         wp_nonce_field('puna_tiktok_video_meta', 'puna_tiktok_video_meta_nonce');
@@ -105,7 +101,6 @@ class Puna_TikTok_Video_Post_Type {
             <div class="video-upload-section">
                 <h3><?php _e('Video File', 'puna-tiktok'); ?></h3>
                 
-                <!-- Upload Drop Zone -->
                 <div class="video-upload-dropzone" id="videoUploadDropzone">
                     <div class="dropzone-content">
                         <div class="upload-icon">
@@ -119,13 +114,11 @@ class Puna_TikTok_Video_Post_Type {
                     <input type="file" id="videoFileInput" accept="video/*" style="display: none;">
                 </div>
                 
-                <!-- Video Preview -->
                 <div class="video-preview-container" id="videoPreviewContainer" style="display: none;">
                     <video id="videoPreview" controls style="width: 100%; max-width: 500px; margin-top: 20px;"></video>
                     <div class="video-info" id="videoInfo"></div>
                 </div>
                 
-                <!-- Current Video -->
                 <?php if ($video_url || $mega_link): ?>
                 <div class="current-video">
                     <h4><?php _e('Video hiện tại:', 'puna-tiktok'); ?></h4>
@@ -140,7 +133,6 @@ class Puna_TikTok_Video_Post_Type {
                 </div>
                 <?php endif; ?>
                 
-                <!-- Upload Progress -->
                 <div class="upload-progress" id="uploadProgress" style="display: none;">
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
@@ -156,56 +148,45 @@ class Puna_TikTok_Video_Post_Type {
      * Save video meta
      */
     public function save_video_meta($post_id) {
-        // Static flag to prevent infinite loop
         static $saving = false;
         
         if ($saving) {
             return;
         }
         
-        // Check nonce
         if (!isset($_POST['puna_tiktok_video_meta_nonce']) || !wp_verify_nonce($_POST['puna_tiktok_video_meta_nonce'], 'puna_tiktok_video_meta')) {
             return;
         }
         
-        // Check autosave
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             return;
         }
         
-        // Check permissions
         if (!current_user_can('edit_post', $post_id)) {
             return;
         }
         
-        // Check post type
         if (get_post_type($post_id) !== 'video') {
             return;
         }
         
         $saving = true;
         
-        // WordPress tags are handled automatically by WordPress core
-        // No need to manually process description, location, or privacy
-        
         if (isset($_POST['mega_link'])) {
             $mega_link = esc_url_raw($_POST['mega_link']);
             update_post_meta($post_id, '_puna_tiktok_mega_link', $mega_link);
-            // Also save as video_url for backward compatibility
             update_post_meta($post_id, '_puna_tiktok_video_url', $mega_link);
         }
         
         if (isset($_POST['mega_node_id'])) {
             $mega_node_id = sanitize_text_field($_POST['mega_node_id']);
             update_post_meta($post_id, '_puna_tiktok_mega_node_id', $mega_node_id);
-            // Also save as video_node_id for backward compatibility
             update_post_meta($post_id, '_puna_tiktok_video_node_id', $mega_node_id);
         }
         
         if (isset($_POST['video_url'])) {
             $video_url = esc_url_raw($_POST['video_url']);
             update_post_meta($post_id, '_puna_tiktok_video_url', $video_url);
-            // If mega_link is not set, also save as mega_link
             if (empty(get_post_meta($post_id, '_puna_tiktok_mega_link', true))) {
                 update_post_meta($post_id, '_puna_tiktok_mega_link', $video_url);
             }
@@ -224,7 +205,6 @@ class Puna_TikTok_Video_Post_Type {
             return;
         }
         
-        // Enqueue Mega SDK for admin
         wp_enqueue_script(
             'puna-tiktok-mega-sdk-admin',
             get_template_directory_uri() . '/assets/js/libs/mega.browser.js',
@@ -268,7 +248,7 @@ class Puna_TikTok_Video_Post_Type {
     }
     
     /**
-     * Add custom columns
+     * Add columns
      */
     public function add_video_columns($columns) {
         $new_columns = array();
@@ -282,7 +262,7 @@ class Puna_TikTok_Video_Post_Type {
     }
     
     /**
-     * Render custom columns
+     * Render columns
      */
     public function render_video_columns($column, $post_id) {
         switch ($column) {

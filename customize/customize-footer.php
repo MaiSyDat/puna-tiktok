@@ -3,7 +3,6 @@
  * Footer Customizer Component
  * Handles footer settings
  *
- * @package puna-tiktok
  */
 
 if (!defined('ABSPATH')) {

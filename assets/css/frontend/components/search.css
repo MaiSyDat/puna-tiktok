@@ -39,15 +39,6 @@ body.search-panel-active .sidebar .sidebar-footer {
     display: none;
 }
 
-body.search-panel-active .sidebar .login-wrap {
-    padding: 0 8px;
-}
-
-body.search-panel-active .sidebar .login-btn {
-    padding: 15px 8px;
-    font-size: 12px;
-}
-
 body.search-panel-active .tiktok-app {
     gap: 0;
 }

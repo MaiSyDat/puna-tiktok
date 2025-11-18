@@ -3,7 +3,6 @@
  * Customizer Main Class
  * Loads and initializes all customize components
  *
- * @package puna-tiktok
  */
 
 if (!defined('ABSPATH')) {

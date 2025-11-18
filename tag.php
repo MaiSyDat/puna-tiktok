@@ -6,14 +6,10 @@
     
     <div class="main-content">
         <?php
-        // Allow comments_template on non-singular templates
         global $withcomments;
         $withcomments = 1;
 
-        // Get current tag
         $tag = get_queried_object();
-        
-        // Query posts with this tag (or all if tag not found)
         $tag_id = ($tag && isset($tag->term_id)) ? $tag->term_id : null;
         $video_query = puna_tiktok_get_video_query(array(
             'tag_id' => $tag_id

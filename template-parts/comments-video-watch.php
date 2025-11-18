@@ -14,7 +14,6 @@ $comments_count = get_comments_number($post_id);
 <div class="video-watch-comments">
     <div class="comments-list">
         <?php
-        // Query only top-level comments
         $top_level_args = array(
             'post_id' => $post_id,
             'status' => 'approve',
@@ -26,7 +25,6 @@ $comments_count = get_comments_number($post_id);
         $top_level_comments = get_comments($top_level_args);
         
         if ($top_level_comments) {
-            // Get user liked comments if logged in
             $user_id = get_current_user_id();
             $liked_comments = array();
             if ($user_id) {
@@ -36,7 +34,6 @@ $comments_count = get_comments_number($post_id);
                 }
             }
             
-            // Loop
             foreach ($top_level_comments as $comment) {
                 $comment_date = human_time_diff(strtotime($comment->comment_date), current_time('timestamp'));
                 $comment_meta_likes = get_comment_meta($comment->comment_ID, '_comment_likes', true);
@@ -44,7 +41,6 @@ $comments_count = get_comments_number($post_id);
                 $is_liked = $user_id && in_array($comment->comment_ID, $liked_comments);
                 $current_id = get_current_user_id();
                 
-                // Get all replies 
                 $direct_replies = get_comments(array(
                     'post_id' => $post_id,
                     'status' => 'approve',
@@ -53,11 +49,9 @@ $comments_count = get_comments_number($post_id);
                     'order' => 'ASC',
                 ));
                 
-                // Get all nested replies recursively
                 $all_replies = $direct_replies;
                 $processed_ids = array();
                 
-                // Closure to get nested replies
                 $get_all_nested_replies = function($parent_id, $post_id, &$all_replies, &$processed_ids) use (&$get_all_nested_replies) {
                     $nested = get_comments(array(
                         'post_id' => $post_id,
@@ -123,16 +117,12 @@ $comments_count = get_comments_number($post_id);
                     </div>
                     <div class="comment-right-actions">
                         <?php 
-                        // Check if current user can delete this comment
                         $can_delete_comment = false;
                         if (current_user_can('moderate_comments')) {
-                            // Admin can delete any comment
                             $can_delete_comment = true;
                         } elseif ($is_current_user && $comment_author_id > 0) {
-                            // Registered user can delete own comment
                             $can_delete_comment = true;
                         } elseif (!$comment_author_id) {
-                            // Guest can delete own comment
                             $comment_guest_id = get_comment_meta($comment->comment_ID, '_puna_tiktok_guest_id', true);
                             $current_guest_id = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
                             if (!empty($comment_guest_id) && !empty($current_guest_id) && $comment_guest_id === $current_guest_id) {
@@ -157,7 +147,6 @@ $comments_count = get_comments_number($post_id);
                             </div>
                         <?php elseif (!$comment_author_id) : ?>
                             <?php 
-                            // Guest can delete own comment
                             $comment_guest_id = get_comment_meta($comment->comment_ID, '_puna_tiktok_guest_id', true);
                             $current_guest_id = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
                             if (!empty($comment_guest_id) && !empty($current_guest_id) && $comment_guest_id === $current_guest_id) : ?>
@@ -217,13 +206,10 @@ $comments_count = get_comments_number($post_id);
                                 </div>
                                 <div class="comment-right-actions">
                                     <?php 
-                                    // Check if current user can delete this reply
                                     $can_delete_reply = false;
                                     if (current_user_can('moderate_comments')) {
-                                        // Admin can delete any reply
                                         $can_delete_reply = true;
                                     } elseif ($is_reply_current_user && $reply_author_id > 0) {
-                                        // Registered user can delete own reply
                                         $can_delete_reply = true;
                                     } elseif (!$reply_author_id) {
                                         // Guest can delete own reply
@@ -251,7 +237,6 @@ $comments_count = get_comments_number($post_id);
                                         </div>
                                     <?php elseif (!$reply_author_id) : ?>
                                         <?php 
-                                        // Guest can delete own reply
                                         $reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
                                         $current_guest_id_check = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
                                         if (!empty($reply_guest_id_check) && !empty($current_guest_id_check) && $reply_guest_id_check === $current_guest_id_check) : ?>
@@ -316,13 +301,10 @@ $comments_count = get_comments_number($post_id);
                                         </div>
                                         <div class="comment-right-actions">
                                             <?php 
-                                            // Check if current user can delete this reply
                                             $can_delete_more_reply = false;
                                             if (current_user_can('moderate_comments')) {
-                                                // Admin can delete any reply
                                                 $can_delete_more_reply = true;
                                             } elseif ($is_more_reply_current_user && $more_reply_author_id > 0) {
-                                                // Registered user can delete own reply
                                                 $can_delete_more_reply = true;
                                             } elseif (!$more_reply_author_id) {
                                                 // Guest can delete own reply
@@ -350,7 +332,6 @@ $comments_count = get_comments_number($post_id);
                                                 </div>
                                             <?php elseif (!$more_reply_author_id) : ?>
                                                 <?php 
-                                                // Guest can delete own reply
                                                 $more_reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
                                                 $current_guest_id_check_more = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
                                                 if (!empty($more_reply_guest_id_check) && !empty($current_guest_id_check_more) && $more_reply_guest_id_check === $current_guest_id_check_more) : ?>
@@ -387,7 +368,7 @@ $comments_count = get_comments_number($post_id);
         ?>
     </div>
 
-    <!-- Comment Input (guest có thể comment) -->
+    <!-- Comment Input -->
     <div class="comment-input-container">
             <input type="text" 
                    class="comment-input" 

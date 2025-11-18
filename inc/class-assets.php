@@ -1,9 +1,7 @@
 <?php
 
 /**
- * assets
- *
- * @package puna-tiktok
+ * Assets
  */
 
 if (! defined('ABSPATH')) {
@@ -17,7 +15,7 @@ class Puna_TikTok_Assets {
     }
     
     /**
-     * Enqueue frontend CSS/JS
+     * Enqueue frontend assets
      */
     public function enqueue_frontend_assets()
     {
@@ -50,6 +48,12 @@ class Puna_TikTok_Assets {
         );
 
         $current_user = wp_get_current_user();
+        $mega_credentials = array();
+
+        if (current_user_can('upload_files')) {
+            $mega_credentials = Puna_TikTok_Mega_Config::get_credentials();
+        }
+
         wp_localize_script('puna-tiktok-main', 'puna_tiktok_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('puna_tiktok_nonce'),
@@ -60,11 +64,7 @@ class Puna_TikTok_Assets {
                 'user_id' => $current_user->ID,
             ),
             'avatar_url' => get_avatar_url($current_user->ID, array('size' => 40)),
-            'mega' => array(
-                'email'   => Puna_TikTok_Mega_Config::get_email(),
-                'password'=> Puna_TikTok_Mega_Config::get_password(),
-                'folder'  => Puna_TikTok_Mega_Config::get_upload_folder(),
-            ),
+            'mega' => !empty($mega_credentials) ? $mega_credentials : false,
         ));
     }
 

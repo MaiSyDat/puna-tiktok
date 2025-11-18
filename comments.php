@@ -402,7 +402,7 @@ $comments_count = get_comments_number($post_id);
             ?>
         </div>
 
-        <!-- Comment Input (guest có thể comment) -->
+        <!-- Comment Input -->
         <div class="comment-input-container">
             <input type="text" 
                    class="comment-input" 

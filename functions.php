@@ -2,29 +2,22 @@
 
 /**
  * Functions
- *
- * @package puna-tiktok
  */
 
 if (! defined('ABSPATH')) {
     exit;
 }
 
-// Mega configuration (credentials live inside the theme)
 require_once get_template_directory() . '/inc/class-mega-config.php';
-
-// Load module files
 require_once get_template_directory() . '/inc/class-setup.php';
 require_once get_template_directory() . '/inc/class-assets.php';
-require_once get_template_directory() . '/inc/class-meta-boxes.php';
 require_once get_template_directory() . '/inc/class-ajax-handlers.php';
-require_once get_template_directory() . '/inc/class-blocks.php';
 require_once get_template_directory() . '/inc/class-video-post-type.php';
 
 require_once get_template_directory() . '/inc/class-customizer.php';
 
 /**
- * Increase limit upload
+ * Increase upload limits
  */
 function puna_tiktok_increase_upload_limits() {
     ini_set('upload_max_filesize', '500M');
@@ -36,7 +29,7 @@ function puna_tiktok_increase_upload_limits() {
 add_action('init', 'puna_tiktok_increase_upload_limits');
 
 /**
- * Format number (1.2K, 1.5M, etc.)
+ * Format number
  */
 function puna_tiktok_format_number($number) {
     if ($number >= 1000000) {
@@ -128,8 +121,7 @@ function puna_tiktok_get_saved_videos($user_id = null) {
 }
 
 /**
- * Get video metadata (views, likes, shares, saves, video_url)
- * Returns an array with all video stats
+ * Get video metadata
  */
 function puna_tiktok_get_video_metadata($post_id = null) {
     if (!$post_id) {
@@ -148,17 +140,7 @@ function puna_tiktok_get_video_metadata($post_id = null) {
 }
 
 /**
- * Get WP_Query for video posts with optional filters
- * 
- * @param array $args {
- *     @type int    $tag_id      Tag ID to filter by
- *     @type int    $author_id   Author ID to filter by
- *     @type array  $post__in    Array of post IDs to include
- *     @type string $orderby     Order by field (default: 'date')
- *     @type string $order       Order direction (default: 'DESC')
- *     @type int    $posts_per_page Number of posts (default: -1 for all)
- * }
- * @return WP_Query
+ * Get video query
  */
 function puna_tiktok_get_video_query($args = array()) {
     $defaults = array(
@@ -186,13 +168,10 @@ function puna_tiktok_get_video_query($args = array()) {
     
     $query_args = wp_parse_args($args, $defaults);
     
-    // If custom meta_query is provided, use it instead of default
-    // Otherwise, use default meta_query to filter videos with URLs
     if (!empty($args['meta_query'])) {
         $query_args['meta_query'] = $args['meta_query'];
     }
     
-    // Add tag filter if provided
     if (!empty($args['tag_id'])) {
         $query_args['tax_query'] = array(
             array(
@@ -204,12 +183,10 @@ function puna_tiktok_get_video_query($args = array()) {
         );
     }
     
-    // Add author filter if provided
     if (!empty($args['author_id'])) {
         $query_args['author'] = $args['author_id'];
     }
     
-    // Add post__in if provided
     if (!empty($args['post__in'])) {
         $query_args['post__in'] = $args['post__in'];
         if (empty($query_args['orderby']) || $query_args['orderby'] === 'date') {
@@ -222,18 +199,13 @@ function puna_tiktok_get_video_query($args = array()) {
 
 /**
  * Get upload page URL
- * 
- * @return string URL to upload page
  */
 function puna_tiktok_get_upload_url() {
     return home_url('/upload/');
 }
 
 /**
- * Get user display name (consistent across theme)
- * 
- * @param int|null $user_id User ID (default: current post author)
- * @return string User display name
+ * Get user display name
  */
 function puna_tiktok_get_user_display_name($user_id = null) {
     if (!$user_id) {
@@ -259,10 +231,7 @@ function puna_tiktok_get_user_display_name($user_id = null) {
 }
 
 /**
- * Get user username (consistent across theme)
- * 
- * @param int|null $user_id User ID (default: current post author)
- * @return string User username (user_nicename)
+ * Get user username
  */
 function puna_tiktok_get_user_username($user_id = null) {
     if (!$user_id) {
@@ -282,32 +251,23 @@ function puna_tiktok_get_user_username($user_id = null) {
 }
 
 /**
- * Get avatar HTML with fallback to initials for guests
- * 
- * @param int|string $user_id_or_name User ID (for registered users) or name (for guests)
- * @param int $size Avatar size (default: 50)
- * @param string $class Additional CSS class
- * @param string $guest_id Guest ID for generating initials (optional)
- * @return string Avatar HTML
+ * Get avatar HTML
  */
 function puna_tiktok_get_avatar_html($user_id_or_name, $size = 50, $class = '', $guest_id = '') {
     $size = (int) $size;
     $class = esc_attr($class);
     
-    // If it's a valid user ID (registered user)
     if (is_numeric($user_id_or_name) && $user_id_or_name > 0) {
         $user_id = (int) $user_id_or_name;
         $user = get_userdata($user_id);
         
         if ($user) {
-            // Registered user - use avatar (including Gravatar)
             $avatar_url = get_avatar_url($user_id, array('size' => $size));
             $display_name = puna_tiktok_get_user_display_name($user_id);
             return '<img src="' . esc_url($avatar_url) . '" alt="' . esc_attr($display_name) . '" class="' . $class . '" style="width: ' . $size . 'px; height: ' . $size . 'px; object-fit: cover; border-radius: 50%;">';
         }
     }
     
-    // For guests (no user ID or invalid user ID), use name to generate initials
     $name = '';
     if (is_string($user_id_or_name)) {
         $name = $user_id_or_name;
@@ -328,11 +288,7 @@ function puna_tiktok_get_avatar_html($user_id_or_name, $size = 50, $class = '', 
 }
 
 /**
- * Get user initials (first character of name + last 2 characters of guest ID if available)
- * 
- * @param string $name User name
- * @param string $guest_id Guest ID (optional, for guests only)
- * @return string Initials
+ * Get user initials
  */
 function puna_tiktok_get_user_initials($name, $guest_id = '') {
     $name = trim($name);
@@ -340,30 +296,22 @@ function puna_tiktok_get_user_initials($name, $guest_id = '') {
         return 'GU';
     }
     
-    // Get first character of name
     $first_char = mb_substr($name, 0, 1);
     
-    // If guest_id is provided, use first char + last 2 chars of ID
     if (!empty($guest_id)) {
-        // Extract ID part (remove "guest_" prefix if exists)
         $id_part = str_replace('guest_', '', $guest_id);
-        // Get last 2 characters of ID
         $last_two = mb_substr($id_part, -2, 2);
         return mb_strtoupper($first_char . $last_two);
     }
     
-    // For registered users or guests without ID, use first and last character of name
-    // Remove extra spaces
     $name = preg_replace('/\s+/', ' ', $name);
     $words = explode(' ', $name);
     
     if (count($words) >= 2) {
-        // First character of first word and first character of last word
         $first = mb_substr($words[0], 0, 1);
         $last = mb_substr($words[count($words) - 1], 0, 1);
         return mb_strtoupper($first . $last);
     } else {
-        // If only one word, use first and last character
         $first = mb_substr($name, 0, 1);
         $last = mb_substr($name, -1, 1);
         return mb_strtoupper($first . $last);
@@ -371,10 +319,7 @@ function puna_tiktok_get_user_initials($name, $guest_id = '') {
 }
 
 /**
- * Get avatar background color based on name (consistent color for same name)
- * 
- * @param string $name User name
- * @return string Hex color
+ * Get avatar color
  */
 function puna_tiktok_get_avatar_color($name) {
     $colors = array(
@@ -390,16 +335,47 @@ function puna_tiktok_get_avatar_color($name) {
 }
 
 /**
- * Render empty state for video lists
- * 
- * @param array $args {
- *     @type string $icon       Icon class (default: 'fa-video')
- *     @type string $title      Title text (default: 'Chưa có video nào')
- *     @type string $message    Message text (default: 'Hãy đăng video đầu tiên của bạn để bắt đầu!')
- *     @type string $button_url Button URL (optional)
- *     @type string $button_text Button text (optional)
- *     @type string $wrapper_class Additional CSS class for wrapper
- * }
+ * Get video URL
+ */
+function puna_tiktok_get_video_url($post_id = null)
+{
+    if (! $post_id) {
+        $post_id = get_the_ID();
+    }
+
+    $mega_link = get_post_meta($post_id, '_puna_tiktok_mega_link', true);
+    if (!empty($mega_link)) {
+        return esc_url($mega_link);
+    }
+
+    $video_url_meta = get_post_meta($post_id, '_puna_tiktok_video_url', true);
+    if (!empty($video_url_meta)) {
+        return esc_url($video_url_meta);
+    }
+
+    $video_file_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
+    if ($video_file_id) {
+        $video_url = wp_get_attachment_url($video_file_id);
+        if ($video_url) {
+            return $video_url;
+        }
+    }
+    return 'https://v16-webapp.tiktok.com/video-sample.mp4';
+}
+
+/**
+ * Increment video views
+ */
+function puna_tiktok_increment_video_views($post_id)
+{
+    $current_views = get_post_meta($post_id, '_puna_tiktok_video_views', true);
+    $new_views = $current_views ? $current_views + 1 : 1;
+    update_post_meta($post_id, '_puna_tiktok_video_views', $new_views);
+    return $new_views;
+}
+
+/**
+ * Render empty state
  */
 function puna_tiktok_empty_state($args = array()) {
     $defaults = array(

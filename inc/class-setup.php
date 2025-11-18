@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package puna-tiktok
+ * Theme Setup
  */
 
 if (! defined('ABSPATH')) {
@@ -26,34 +26,33 @@ class Puna_TikTok_Setup {
         add_action('init', array($this, 'add_rewrite_rules'));
         add_filter('query_vars', array($this, 'register_query_vars'));
         add_filter('template_include', array($this, 'handle_custom_pages'));
-        add_filter('wp_title', array($this, 'custom_page_title'), 10, 2);
+        add_filter('pre_get_document_title', array($this, 'custom_page_title'));
         add_action('after_switch_theme', array($this, 'flush_rewrite_rules_on_activation'));
         add_action('admin_init', array($this, 'maybe_flush_rewrite_rules'));
     }
     
     /**
-     * Initialize theme support
+     * Setup theme
      */
     public function setup()
     {
-    add_theme_support('post-thumbnails');
-    add_theme_support('title-tag');
-    add_theme_support('html5', array(
-        'search-form',
-        'comment-form',
-        'comment-list',
-        'gallery',
-        'caption',
+        add_theme_support('post-thumbnails');
+        add_theme_support('title-tag');
+        add_theme_support('html5', array(
+            'search-form',
+            'comment-form',
+            'comment-list',
+            'gallery',
+            'caption',
         ));
-    
-    // Register menu location for sidebar
-    register_nav_menus(array(
-        'puna-tiktok-sidebar' => __('TikTok Sidebar Menu', 'puna-tiktok'),
-    ));
+        
+        register_nav_menus(array(
+            'puna-tiktok-sidebar' => __('TikTok Sidebar Menu', 'puna-tiktok'),
+        ));
     }
 
     /**
-    * Add rewrite rules for custom pages
+     * Add rewrite rules
      */
     public function add_rewrite_rules() {
         $custom_pages = array(
@@ -72,7 +71,7 @@ class Puna_TikTok_Setup {
     }
 
     /**
-     * Register query vars for custom pages
+     * Register query vars
      */
     public function register_query_vars($vars) {
         $vars[] = 'puna_page';
@@ -80,7 +79,7 @@ class Puna_TikTok_Setup {
     }
 
     /**
-     * Handling templates for custom pages
+     * Handle custom pages
      */
     public function handle_custom_pages($template) {
         global $wp_query;
@@ -91,7 +90,6 @@ class Puna_TikTok_Setup {
             return $template;
         }
         
-        // Map page slugs to template files
         $page_templates = array(
             'upload'   => 'page-upload.php',
             'explore'  => 'template-parts/pages/explore.php',
@@ -103,7 +101,6 @@ class Puna_TikTok_Setup {
             $found_template = locate_template($template_file);
             
             if ($found_template) {
-                // Map page slugs to titles
                 $page_titles = array(
                     'upload'   => 'Upload Video',
                     'explore'  => 'Khám phá',
@@ -112,14 +109,12 @@ class Puna_TikTok_Setup {
                 
                 $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
                 
-                // Set query vars để WordPress hiểu đây là page
                 $wp_query->is_page = true;
                 $wp_query->is_singular = true;
                 $wp_query->is_404 = false;
                 $wp_query->is_home = false;
                 $wp_query->is_front_page = false;
                 
-                // Tạo một WP_Post object giả để WordPress core hoạt động đúng
                 $fake_post = new stdClass();
                 $fake_post->ID = 0;
                 $fake_post->post_author = get_current_user_id();
@@ -146,17 +141,12 @@ class Puna_TikTok_Setup {
                 $fake_post->comment_count = 0;
                 $fake_post->filter = 'raw';
                 
-                // Set queried object và queried object id
                 $wp_query->queried_object = $fake_post;
                 $wp_query->queried_object_id = 0;
-                
-                // Set posts array để các functions như get_the_title() hoạt động
                 $wp_query->posts = array($fake_post);
                 $wp_query->post_count = 1;
                 $wp_query->found_posts = 1;
                 $wp_query->max_num_pages = 1;
-                
-                // Set current post
                 $wp_query->post = $fake_post;
                 $GLOBALS['post'] = $fake_post;
                 
@@ -168,48 +158,47 @@ class Puna_TikTok_Setup {
     }
 
     /**
-     * Custom page title cho wp_title()
+     * Custom page title
      */
-    public function custom_page_title($title, $sep = '') {
+    public function custom_page_title($title) {
         $puna_page = get_query_var('puna_page');
         
-        if ($puna_page) {
-            $page_titles = array(
-                'upload'   => 'Upload Video',
-                'explore'  => 'Khám phá',
-                'friends'  => 'Bạn bè',
-                'messages' => 'Tin nhắn',
-                'profile'  => 'Hồ sơ',
-            );
-            
-            $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
-            
-            if ($sep) {
-                return $page_title . ' ' . $sep . ' ' . get_bloginfo('name');
-            }
-            
-            return $page_title;
+        if (!$puna_page) {
+            return $title;
         }
         
-        return $title;
+        $page_titles = array(
+            'upload'   => 'Upload Video',
+            'explore'  => 'Khám phá',
+            'friends'  => 'Bạn bè',
+            'messages' => 'Tin nhắn',
+            'profile'  => 'Hồ sơ',
+        );
+        
+        $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
+        $site_name = get_bloginfo('name');
+        
+        if (!empty($site_name)) {
+            return sprintf('%s | %s', $page_title, $site_name);
+        }
+        
+        return $page_title;
     }
 
     /**
-     * Flush rewrite rules khi activate theme
+     * Flush rewrite rules
      */
     public function flush_rewrite_rules_on_activation() {
         flush_rewrite_rules();
     }
 
     /**
-     * Check and remove rewrite rules if necessary
+     * Maybe flush rewrite rules
      */
     public function maybe_flush_rewrite_rules() {
-        // Kiểm tra xem rewrite rules đã được flush chưa
         $rules = get_option('rewrite_rules', array());
         $upload_rule_exists = isset($rules['^upload/?$']);
         
-        //If the rule does not exist, flush rewrite rules
         if (!$upload_rule_exists) {
             flush_rewrite_rules(false);
         }

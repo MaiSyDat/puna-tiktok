@@ -191,15 +191,6 @@ body.sidebar-open::before {
     display: none;
 }
 
-.sidebar.collapsed .login-wrap {
-    padding: 0 8px;
-}
-
-.sidebar.collapsed .login-btn {
-    padding: 15px 8px;
-    font-size: 12px;
-}
-
 /* ========================================
    SEARCH PANEL - Collapsed Sidebar State
    ======================================== */
@@ -239,15 +230,6 @@ body.search-panel-active .sidebar .logo img {
 
 body.search-panel-active .sidebar .sidebar-footer {
     display: none;
-}
-
-body.search-panel-active .sidebar .login-wrap {
-    padding: 0 8px;
-}
-
-body.search-panel-active .sidebar .login-btn {
-    padding: 15px 8px;
-    font-size: 12px;
 }
 
 body.search-panel-active .tiktok-app {
@@ -623,21 +605,6 @@ body.search-panel-active .search-panel {
     font-size: 14px;
     color: var(--puna-text);
     flex: 1;
-}
-
-/* Sidebar Login Button */
-.sidebar .login-btn {
-    padding: 15px 60px;
-    background-color: var(--puna-primary);
-    border-radius: 4px;
-    border: none;
-    color: var(--puna-bg);
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.sidebar .login-btn:hover {
-    background-color: var(--puna-primary);
 }
 
 /* Sidebar Footer */

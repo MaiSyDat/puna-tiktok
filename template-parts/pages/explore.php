@@ -88,7 +88,6 @@ get_header();
 				));
 			}
 			
-			// If still no posts, get any posts with video file
 			if (!$trending_query->have_posts()) {
 				$trending_query = new WP_Query(array(
                     'post_type'      => 'video',

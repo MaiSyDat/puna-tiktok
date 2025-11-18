@@ -2,7 +2,6 @@
 /**
  * Theme mode Customizer (Light/Dark/System)
  *
- * @package puna-tiktok
  */
 
 if (!defined('ABSPATH')) {

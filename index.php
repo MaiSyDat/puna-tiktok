@@ -6,14 +6,13 @@
         <?php get_template_part('template-parts/page'); ?>
     <?php else : ?>
         <?php 
-        // Check if this is a video post
         if (have_posts()) {
             the_post();
             $is_video = get_post_type(get_the_ID()) === 'video';
             rewind_posts();
             
             if ($is_video) {
-                get_template_part('template-parts/single-video');
+                get_template_part('template-parts/video/content', 'single-video');
             } else {
                 get_template_part('template-parts/single');
             }
@@ -37,7 +36,6 @@
             global $withcomments;
             $withcomments = 1;
             
-            // Query all posts (tag archives are handled by tag.php)
             $video_query = puna_tiktok_get_video_query();
             
             if ( $video_query->have_posts() ) :

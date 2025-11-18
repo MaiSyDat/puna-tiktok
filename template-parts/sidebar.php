@@ -1,16 +1,14 @@
 <?php
 /**
- * Customizable Sidebar Template
+ * Sidebar Template
  */
 $menu_items = Puna_TikTok_Customize_Sidebar::get_menu_items();
 
-// Logo settings
 $logo_url = get_theme_mod('sidebar_logo', '');
 $logo_link = get_theme_mod('sidebar_logo_link', home_url('/'));
 $logo_width = get_theme_mod('sidebar_logo_width', 118);
 $logo_height = get_theme_mod('sidebar_logo_height', 42);
 
-// Footer settings
 $footer_title_1 = get_theme_mod('sidebar_footer_title_1', 'Công ty');
 $footer_title_2 = get_theme_mod('sidebar_footer_title_2', 'Chương trình');
 $footer_title_3 = get_theme_mod('sidebar_footer_title_3', 'Điều khoản & Dịch vụ');
@@ -54,12 +52,6 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
             </li>
         <?php endforeach; ?>
     </ul>
-
-    <?php if (!is_user_logged_in()) : ?>
-    <div class="login-wrap">
-        <button class="login-btn" onclick="openLoginPopup()">Đăng nhập</button>
-    </div>
-    <?php endif; ?>
     
     <div class="sidebar-footer">
         <?php if ($footer_title_1) : ?><h3><?php echo esc_html($footer_title_1); ?></h3><?php endif; ?>
@@ -72,5 +64,3 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
         <?php endif; ?>
     </div>
 </aside>
-
-<?php get_template_part('template-parts/login-popup'); ?>

@@ -6,11 +6,9 @@
     
     <div class="main-content">
         <?php
-        // Allow comments_template on non-singular templates
         global $withcomments;
         $withcomments = 1;
 
-        // Query posts (tag archives are handled by tag.php)
         $video_query = puna_tiktok_get_video_query();
         
         if ( $video_query->have_posts() ) :

@@ -1,6 +1,6 @@
 <?php
 /**
- * Single Video Watch Page Template
+ * Single Video Template
  */
 
 if (!have_posts()) {
@@ -15,7 +15,6 @@ if (get_post_type($post_id) !== 'video') {
     return;
 }
 
-// Get video data
 $metadata = puna_tiktok_get_video_metadata($post_id);
 $video_url = $metadata['video_url'];
 $likes = $metadata['likes'];
@@ -24,34 +23,27 @@ $shares = $metadata['shares'];
 $saves = $metadata['saves'];
 $views = $metadata['views'];
 
-// Check if this is a Mega.nz video
 $mega_node_id = get_post_meta($post_id, '_puna_tiktok_mega_node_id', true);
 if (empty($mega_node_id)) {
     $mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true); // backward compatibility
 }
 $is_mega_video = !empty($mega_node_id) || (strpos($video_url, 'mega.nz') !== false);
 
-// Check if liked
 $is_liked = puna_tiktok_is_liked($post_id);
 $liked_class = $is_liked ? 'liked' : '';
 
-// Check if saved
 $is_saved = puna_tiktok_is_saved($post_id);
 $saved_class = $is_saved ? 'saved' : '';
 
-// Author data
 $author_id = get_the_author_meta('ID');
 $author_name = puna_tiktok_get_user_display_name($author_id);
 $author_username = puna_tiktok_get_user_username($author_id);
 $author_url = get_author_posts_url($author_id);
 
-// Check if current user is the author of this video
 $is_author = is_user_logged_in() && get_current_user_id() == $author_id;
 
-// Content
 $post_content = get_the_content();
 $caption = $post_content;
-// Remove any remaining hashtags from caption (in case they weren't removed during upload)
 if (!empty($caption)) {
     $caption = preg_replace('/#[\p{L}\p{N}_]+/u', '', $caption);
     $caption = preg_replace('/\s+/', ' ', trim($caption));
@@ -61,11 +53,9 @@ if (empty(trim(strip_tags($caption)))) {
 }
 $tags = get_the_tags();
 
-// Music info
 $music_name = get_post_meta($post_id, '_puna_tiktok_music_name', true);
 $music_artist = get_post_meta($post_id, '_puna_tiktok_music_artist', true);
 
-// Allow comments
 global $withcomments;
 $withcomments = 1;
 ?>
@@ -182,7 +172,6 @@ $withcomments = 1;
                 <!-- Video Caption -->
                 <div class="video-info-caption">
                     <?php 
-                    // render caption
                     if (!empty(trim($caption))) {
                         echo wp_kses_post(wpautop($caption));
                     }
@@ -263,9 +252,8 @@ $withcomments = 1;
                 <!-- Creator Videos Tab Content -->
                 <div class="comments-tab-content" id="creator-videos-tab-content">
                     <?php
-                    // Get other videos from same author
                     $author_videos = get_posts(array(
-                        'post_type'      => 'post',
+                        'post_type'      => 'video',
                         'author'         => $author_id,
                         'posts_per_page' => 10,
                         'post_status'    => 'publish',
@@ -399,7 +387,4 @@ $withcomments = 1;
     </div>
 </div>
 
-<?php 
-get_template_part('template-parts/login-popup'); 
-?>
 

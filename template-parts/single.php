@@ -8,7 +8,6 @@
 			if ( get_post_type(get_the_ID()) === 'video' ) {
 				get_template_part('template-parts/video/content');
 			} else {
-				// Fallback content for non-video posts
 				echo '<article id="post-' . get_the_ID() . '" class="' . implode(' ', get_post_class('')) . '">';
 				the_title('<h1 class="entry-title">','</h1>');
 				echo '<div class="entry-content">';
@@ -16,7 +15,6 @@
 				echo '</div></article>';
 			}
 		endwhile; else :
-			// No content
 			echo '<p>' . esc_html__('Không có nội dung.', 'puna-tiktok') . '</p>';
 		endif;
 		?>

@@ -14,18 +14,15 @@ $shares = $metadata['shares'];
 $saves = $metadata['saves'];
 $views = $metadata['views'];
 
-// Check for mega node ID (from admin or frontend)
 $mega_node_id = get_post_meta($post_id, '_puna_tiktok_mega_node_id', true);
 if (empty($mega_node_id)) {
     $mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true); // backward compatibility
 }
 $is_mega_video = !empty($mega_node_id) || (strpos($video_url, 'mega.nz') !== false);
 
-// Check if current user liked this video
 $is_liked = puna_tiktok_is_liked($post_id);
 $liked_class = $is_liked ? 'liked' : '';
 
-// Check if current user saved this video
 $is_saved = puna_tiktok_is_saved($post_id);
 $saved_class = $is_saved ? 'saved' : '';
 ?>
