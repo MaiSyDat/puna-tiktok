@@ -201,3 +201,17 @@
     text-transform: uppercase;
 }
 
+/* Hide editor for video post type */
+.post-type-video #wp-content-wrap,
+.post-type-video #wp-content-editor-tools,
+.post-type-video #wp-content-editor-container,
+.post-type-video #wp-content-editor-container .mce-tinymce,
+.post-type-video #wp-content-editor-container .quicktags-toolbar,
+.post-type-video .uploader-editor {
+    display: none !important;
+}
+
+.column-comments {
+    width: unset !important;
+}
+

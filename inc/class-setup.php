@@ -21,6 +21,28 @@ if (! defined('PUNA_TIKTOK_THEME_URI')) {
 
 class Puna_TikTok_Setup {
     
+    /**
+     * Get custom pages config
+     */
+    private function get_custom_pages() {
+        return array(
+            'upload'   => 'page-upload.php',
+            'explore'  => 'template-parts/pages/explore.php',
+            'profile'  => 'template-parts/pages/profile.php',
+        );
+    }
+    
+    /**
+     * Get page titles
+     */
+    private function get_page_titles() {
+        return array(
+            'upload'   => 'Upload Video',
+            'explore'  => 'Khám phá',
+            'profile'  => 'Hồ sơ',
+        );
+    }
+    
     public function __construct() {
         add_action('after_setup_theme', array($this, 'setup'));
         add_action('init', array($this, 'add_rewrite_rules'));
@@ -55,11 +77,7 @@ class Puna_TikTok_Setup {
      * Add rewrite rules
      */
     public function add_rewrite_rules() {
-        $custom_pages = array(
-            'upload'   => 'page-upload.php',
-            'explore'  => 'template-parts/pages/explore.php',
-            'profile'  => 'template-parts/pages/profile.php',
-        );
+        $custom_pages = $this->get_custom_pages();
         
         foreach ($custom_pages as $slug => $template) {
             add_rewrite_rule(
@@ -90,23 +108,14 @@ class Puna_TikTok_Setup {
             return $template;
         }
         
-        $page_templates = array(
-            'upload'   => 'page-upload.php',
-            'explore'  => 'template-parts/pages/explore.php',
-            'profile'  => 'template-parts/pages/profile.php',
-        );
+        $page_templates = $this->get_custom_pages();
         
         if (isset($page_templates[$puna_page])) {
             $template_file = $page_templates[$puna_page];
             $found_template = locate_template($template_file);
             
             if ($found_template) {
-                $page_titles = array(
-                    'upload'   => 'Upload Video',
-                    'explore'  => 'Khám phá',
-                    'profile'  => 'Hồ sơ',
-                );
-                
+                $page_titles = $this->get_page_titles();
                 $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
                 
                 $wp_query->is_page = true;
@@ -167,14 +176,7 @@ class Puna_TikTok_Setup {
             return $title;
         }
         
-        $page_titles = array(
-            'upload'   => 'Upload Video',
-            'explore'  => 'Khám phá',
-            'friends'  => 'Bạn bè',
-            'messages' => 'Tin nhắn',
-            'profile'  => 'Hồ sơ',
-        );
-        
+        $page_titles = $this->get_page_titles();
         $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
         $site_name = get_bloginfo('name');
         
@@ -197,9 +199,17 @@ class Puna_TikTok_Setup {
      */
     public function maybe_flush_rewrite_rules() {
         $rules = get_option('rewrite_rules', array());
-        $upload_rule_exists = isset($rules['^upload/?$']);
+        $custom_pages = $this->get_custom_pages();
+        $all_rules_exist = true;
         
-        if (!$upload_rule_exists) {
+        foreach (array_keys($custom_pages) as $slug) {
+            if (!isset($rules['^' . $slug . '/?$'])) {
+                $all_rules_exist = false;
+                break;
+            }
+        }
+        
+        if (!$all_rules_exist) {
             flush_rewrite_rules(false);
         }
     }

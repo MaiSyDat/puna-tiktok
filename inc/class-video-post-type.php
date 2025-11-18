@@ -13,6 +13,7 @@ class Puna_TikTok_Video_Post_Type {
     public function __construct() {
         add_action('init', array($this, 'register_video_post_type'));
         add_action('add_meta_boxes', array($this, 'add_video_meta_boxes'));
+        add_action('add_meta_boxes', array($this, 'remove_editor_meta_box'), 99);
         add_action('save_post', array($this, 'save_video_meta'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_filter('manage_video_posts_columns', array($this, 'add_video_columns'));
@@ -53,7 +54,7 @@ class Puna_TikTok_Video_Post_Type {
             'capability_type'    => 'post',
             'has_archive'        => true,
             'hierarchical'       => false,
-            'supports'           => array('title', 'editor', 'thumbnail', 'comments'),
+            'supports'           => array('title', 'thumbnail', 'comments'),
             'show_in_rest'       => false,
             'taxonomies'         => array('category', 'post_tag'),
         );
@@ -71,6 +72,14 @@ class Puna_TikTok_Video_Post_Type {
      */
     public function flush_rewrite_rules() {
         flush_rewrite_rules();
+    }
+    
+    /**
+     * Remove editor meta box
+     */
+    public function remove_editor_meta_box() {
+        remove_meta_box('postdivrich', 'video', 'normal');
+        remove_meta_box('contentdiv', 'video', 'normal');
     }
     
     /**
@@ -252,12 +261,12 @@ class Puna_TikTok_Video_Post_Type {
      */
     public function add_video_columns($columns) {
         $new_columns = array();
-        $new_columns['cb'] = $columns['cb'];
-        $new_columns['title'] = $columns['title'];
-        $new_columns['video_thumbnail'] = __('Video', 'puna-tiktok');
-        $new_columns['views'] = __('Lượt xem', 'puna-tiktok');
-        $new_columns['likes'] = __('Lượt thích', 'puna-tiktok');
-        $new_columns['date'] = $columns['date'];
+        $new_columns['cb']          = $columns['cb'];
+        $new_columns['title']       = $columns['title'];
+        $new_columns['views']       = __('Lượt xem', 'puna-tiktok');
+        $new_columns['likes']       = __('Lượt thích', 'puna-tiktok');
+        $new_columns['comments']    = __('Bình luận', 'puna-tiktok');
+        $new_columns['date']        = $columns['date'];
         return $new_columns;
     }
     
@@ -266,21 +275,6 @@ class Puna_TikTok_Video_Post_Type {
      */
     public function render_video_columns($column, $post_id) {
         switch ($column) {
-            case 'video_thumbnail':
-                $video_url = get_post_meta($post_id, '_puna_tiktok_video_url', true);
-                $mega_link = get_post_meta($post_id, '_puna_tiktok_mega_link', true);
-                if ($mega_link) {
-                    echo '<div class="video-thumbnail-admin">';
-                    echo '<span class="mega-badge">MEGA</span>';
-                    echo '</div>';
-                } elseif ($video_url) {
-                    echo '<div class="video-thumbnail-admin">';
-                    echo '<video src="' . esc_url($video_url) . '" style="width: 100px; height: auto;"></video>';
-                    echo '</div>';
-                } else {
-                    echo '—';
-                }
-                break;
             case 'views':
                 $views = get_post_meta($post_id, '_puna_tiktok_video_views', true) ?: 0;
                 echo number_format($views);
@@ -288,6 +282,10 @@ class Puna_TikTok_Video_Post_Type {
             case 'likes':
                 $likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
                 echo number_format($likes);
+                break;
+            case 'comments':
+                $comments_count = get_comments_number($post_id);
+                echo number_format($comments_count);
                 break;
         }
     }

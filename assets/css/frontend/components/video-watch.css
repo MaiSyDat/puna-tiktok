@@ -78,6 +78,35 @@ body.single .tiktok-app .main-content {
     justify-content: center;
 }
 
+.video-player-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    z-index: 2;
+    opacity: 0.8;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    animation: video-watch-spin 1s linear infinite;
+}
+
+@keyframes video-watch-spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.video-player-wrapper:has(.tiktok-video.loaded)::after {
+    opacity: 0;
+    pointer-events: none;
+}
+
 /* Video dùng chung class với trang index */
 .video-watch-player .tiktok-video {
     width: 100%;

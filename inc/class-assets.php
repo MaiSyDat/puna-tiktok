@@ -19,7 +19,7 @@ class Puna_TikTok_Assets {
      * Add defer attribute to non-critical scripts
      */
     public function add_defer_to_scripts($tag, $handle, $src) {
-        $defer_scripts = array('puna-tiktok-main');
+        $defer_scripts = array('puna-tiktok-video-playback', 'puna-tiktok-video-navigation', 'puna-tiktok-video-actions', 'puna-tiktok-comments', 'puna-tiktok-search', 'puna-tiktok-profile', 'puna-tiktok-video-watch', 'puna-tiktok-upload', 'puna-tiktok-explore');
         
         if (in_array($handle, $defer_scripts)) {
             return str_replace(' src', ' defer src', $tag);
@@ -41,6 +41,7 @@ class Puna_TikTok_Assets {
         $is_single_video = is_singular('video');
         $is_author_page = is_author();
         $is_search_page = is_search();
+        $is_tag_page = is_tag();
         $is_home = is_home() || is_front_page();
         $is_upload_page = $puna_page === 'upload' || is_page_template('page-upload.php');
         $is_explore_page = $puna_page === 'explore';
@@ -57,7 +58,7 @@ class Puna_TikTok_Assets {
             wp_enqueue_style('puna-tiktok-search', $css_dir . 'search.css', array('puna-tiktok-layout'), $version);
         }
         
-        if ($is_home || $is_single_video) {
+        if ($is_home || $is_single_video || $is_tag_page) {
             wp_enqueue_style('puna-tiktok-video-feed', $css_dir . 'video-feed.css', array('puna-tiktok-layout'), $version);
             wp_enqueue_style('puna-tiktok-video-nav', $css_dir . 'video-nav.css', array('puna-tiktok-layout'), $version);
             wp_enqueue_style('puna-tiktok-comments', $css_dir . 'comments.css', array('puna-tiktok-layout'), $version);
@@ -71,12 +72,8 @@ class Puna_TikTok_Assets {
             wp_enqueue_style('puna-tiktok-explore', $css_dir . 'explore.css', array('puna-tiktok-layout'), $version);
         }
         
-        if ($is_profile_page) {
+        if ($is_profile_page || $is_author_page) {
             wp_enqueue_style('puna-tiktok-profile', $css_dir . 'profile.css', array('puna-tiktok-layout'), $version);
-        }
-        
-        if ($is_author_page) {
-            wp_enqueue_style('puna-tiktok-author', $css_dir . 'author.css', array('puna-tiktok-layout'), $version);
         }
         
         if ($is_upload_page) {
@@ -85,7 +82,7 @@ class Puna_TikTok_Assets {
         
         // Responsive CSS - Always needed, but with conditional dependencies
         $responsive_deps = array('puna-tiktok-layout', 'puna-tiktok-sidebar');
-        if ($is_home || $is_single_video) {
+        if ($is_home || $is_single_video || $is_tag_page) {
             $responsive_deps[] = 'puna-tiktok-video-feed';
         }
         if ($is_single_video) {
@@ -105,11 +102,123 @@ class Puna_TikTok_Assets {
             true
         );
 
+        // Core JS - Always needed
+        wp_enqueue_script(
+            'puna-tiktok-core',
+            PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/core.js',
+            array(),
+            PUNA_TIKTOK_VERSION,
+            true
+        );
+
+        wp_enqueue_script(
+            'puna-tiktok-mega-video',
+            PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/mega-video.js',
+            array('puna-tiktok-mega-sdk', 'puna-tiktok-core'),
+            PUNA_TIKTOK_VERSION,
+            true
+        );
+
         // Check if user can upload
         $can_upload = current_user_can('upload_files');
         
-        // Only load mega-uploader on upload page
-        $main_deps = array('puna-tiktok-mega-sdk');
+        // Base JS dependencies
+        $base_deps = array('puna-tiktok-mega-sdk', 'puna-tiktok-core', 'puna-tiktok-mega-video');
+        
+        // Guest state - Always needed
+        wp_enqueue_script(
+            'puna-tiktok-guest-state',
+            PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/guest-state.js',
+            array('puna-tiktok-core'),
+            PUNA_TIKTOK_VERSION,
+            true
+        );
+
+        // Dropdowns - Always needed
+        wp_enqueue_script(
+            'puna-tiktok-dropdowns',
+            PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/dropdowns.js',
+            array('puna-tiktok-core'),
+            PUNA_TIKTOK_VERSION,
+            true
+        );
+
+        // Video playback - Load on pages with videos
+        if ($is_home || $is_single_video || $is_search_page || $is_author_page || $is_explore_page || $is_tag_page) {
+            wp_enqueue_script(
+                'puna-tiktok-video-playback',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/video-playback.js',
+                $base_deps,
+                PUNA_TIKTOK_VERSION,
+                true
+            );
+        }
+
+        // Video navigation - Load on pages with video navigation
+        if ($is_home || $is_single_video || $is_search_page || $is_author_page || $is_tag_page) {
+            wp_enqueue_script(
+                'puna-tiktok-video-navigation',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/video-navigation.js',
+                array('puna-tiktok-core'),
+                PUNA_TIKTOK_VERSION,
+                true
+            );
+        }
+
+        // Video actions - Load on pages with videos
+        if ($is_home || $is_single_video || $is_search_page || $is_author_page || $is_explore_page || $is_profile_page || $is_tag_page) {
+            wp_enqueue_script(
+                'puna-tiktok-video-actions',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/video-actions.js',
+                array('puna-tiktok-core', 'puna-tiktok-mega-video'),
+                PUNA_TIKTOK_VERSION,
+                true
+            );
+        }
+
+        // Comments - Load on pages with comments
+        if ($is_home || $is_single_video || $is_search_page || $is_tag_page) {
+            wp_enqueue_script(
+                'puna-tiktok-comments',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/comments.js',
+                array('puna-tiktok-core', 'puna-tiktok-mega-video'),
+                PUNA_TIKTOK_VERSION,
+                true
+            );
+        }
+
+        // Search - Always needed (search panel available everywhere)
+        wp_enqueue_script(
+            'puna-tiktok-search',
+            PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/search.js',
+            array('puna-tiktok-core'),
+            PUNA_TIKTOK_VERSION,
+            true
+        );
+
+        // Profile - Load on profile and author pages
+        if ($is_profile_page || $is_author_page) {
+            wp_enqueue_script(
+                'puna-tiktok-profile',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/profile.js',
+                array('puna-tiktok-core', 'puna-tiktok-mega-video'),
+                PUNA_TIKTOK_VERSION,
+                true
+            );
+        }
+
+        // Video watch - Load on single video page
+        if ($is_single_video) {
+            wp_enqueue_script(
+                'puna-tiktok-video-watch',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/video-watch.js',
+                array('puna-tiktok-core', 'puna-tiktok-mega-video'),
+                PUNA_TIKTOK_VERSION,
+                true
+            );
+        }
+
+        // Upload - Load on upload page
         if ($is_upload_page && $can_upload) {
             wp_enqueue_script(
                 'puna-tiktok-mega-uploader',
@@ -118,17 +227,26 @@ class Puna_TikTok_Assets {
                 PUNA_TIKTOK_VERSION,
                 true
             );
-            
-            $main_deps[] = 'puna-tiktok-mega-uploader';
+
+            wp_enqueue_script(
+                'puna-tiktok-upload',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/upload.js',
+                array('puna-tiktok-core', 'puna-tiktok-mega-uploader'),
+                PUNA_TIKTOK_VERSION,
+                true
+            );
         }
 
-        wp_enqueue_script(
-            'puna-tiktok-main',
-            PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/main.js',
-            $main_deps,
-            PUNA_TIKTOK_VERSION,
-            true
-        );
+        // Explore - Load on explore page
+        if ($is_explore_page) {
+            wp_enqueue_script(
+                'puna-tiktok-explore',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/explore.js',
+                array('puna-tiktok-core', 'puna-tiktok-mega-video'),
+                PUNA_TIKTOK_VERSION,
+                true
+            );
+        }
 
         $current_user = wp_get_current_user();
         $mega_credentials = array();
@@ -143,7 +261,8 @@ class Puna_TikTok_Assets {
             $mega_data = $mega_credentials;
         }
         
-        wp_localize_script('puna-tiktok-main', 'puna_tiktok_ajax', array(
+        // Localize script - attach to core.js so it's available everywhere
+        wp_localize_script('puna-tiktok-core', 'puna_tiktok_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce'    => wp_create_nonce('puna_tiktok_nonce'),
             'like_nonce' => wp_create_nonce('puna_tiktok_like_nonce'),
