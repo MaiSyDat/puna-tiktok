@@ -72,6 +72,10 @@ class Puna_TikTok_AJAX_Handlers {
         // Popular hashtags
         add_action('wp_ajax_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
+        
+        // Get explore videos
+        add_action('wp_ajax_puna_tiktok_get_explore_videos', array($this, 'get_explore_videos'));
+        add_action('wp_ajax_nopriv_puna_tiktok_get_explore_videos', array($this, 'get_explore_videos'));
     }
 
     /**
@@ -1041,8 +1045,6 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => 'Bạn không có quyền xóa video này.'));
         }
         
-        $video_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true);
-        $video_url     = get_post_meta($post_id, '_puna_tiktok_video_url', true);
         $video_file_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
         $cover_image_id = get_post_meta($post_id, '_puna_tiktok_video_cover_id', true);
 
@@ -1112,6 +1114,111 @@ class Puna_TikTok_AJAX_Handlers {
         
         wp_send_json_success(array(
             'hashtags' => $hashtags
+        ));
+    }
+    
+    /** *Get explore videos */
+    public function get_explore_videos() {
+        if (isset($_POST['nonce'])) {
+            if (!wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
+                wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+                return;
+            }
+        }
+        
+        $tab_type = isset($_POST['tab_type']) ? sanitize_text_field($_POST['tab_type']) : 'trending';
+        $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
+        
+        $args = array(
+            'post_type' => 'video',
+            'post_status' => 'publish',
+            'posts_per_page' => 50,
+        );
+        
+        if ($tab_type === 'category' && $category_id > 0) {
+            $args['tax_query'] = array(
+                array(
+                    'taxonomy' => 'category',
+                    'field' => 'term_id',
+                    'terms' => $category_id,
+                ),
+            );
+            $args['orderby'] = 'date';
+            $args['order'] = 'DESC';
+        } elseif ($tab_type === 'trending') {
+            $args['orderby'] = 'meta_value_num';
+            $args['meta_key'] = '_puna_tiktok_video_views';
+            $args['order'] = 'DESC';
+            $args['date_query'] = array(
+                array(
+                    'after' => '7 days ago',
+                ),
+            );
+            $args['meta_query'] = array(
+                array(
+                    'key' => '_puna_tiktok_video_views',
+                    'compare' => 'EXISTS'
+                ),
+                array(
+                    'key' => '_puna_tiktok_video_views',
+                    'value' => 0,
+                    'compare' => '>',
+                    'type' => 'NUMERIC'
+                )
+            );
+        } elseif ($tab_type === 'foryou') {
+            $args['orderby'] = 'date';
+            $args['order'] = 'DESC';
+        }
+        
+        $query = new WP_Query($args);
+        
+        if (!$query->have_posts() && $tab_type === 'trending') {
+            $args = array(
+                'post_type' => 'video',
+                'post_status' => 'publish',
+                'posts_per_page' => 50,
+                'orderby' => 'date',
+                'order' => 'DESC',
+            );
+            $query = new WP_Query($args);
+        }
+        
+        $videos = array();
+        if ($query->have_posts()) {
+            $posts_with_views = array();
+            while ($query->have_posts()) {
+                $query->the_post();
+                $metadata = puna_tiktok_get_video_metadata();
+                if (empty($metadata['video_url'])) { continue; }
+                
+                $posts_with_views[] = array(
+                    'post_id' => get_the_ID(),
+                    'views' => $metadata['views'],
+                    'video_url' => $metadata['video_url']
+                );
+            }
+            wp_reset_postdata();
+            
+            if ($tab_type === 'trending') {
+                usort($posts_with_views, function($a, $b) {
+                    return $b['views'] - $a['views'];
+                });
+            }
+            
+            foreach ($posts_with_views as $post_data) {
+                $videos[] = array(
+                    'post_id' => $post_data['post_id'],
+                    'video_url' => $post_data['video_url'],
+                    'views' => $post_data['views'],
+                    'permalink' => get_permalink($post_data['post_id']),
+                );
+            }
+        }
+        
+        wp_send_json_success(array(
+            'videos' => $videos,
+            'count' => count($videos)
         ));
     }
     

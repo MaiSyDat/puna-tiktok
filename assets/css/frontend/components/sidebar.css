@@ -610,7 +610,7 @@ body.search-panel-active .search-panel {
 /* Sidebar Footer */
 .sidebar-footer {
     font-size: 12px;
-    margin: auto 0;
+    margin: auto 0 20px 0;
     color: rgba(17, 24, 35, 0.5);
 }
 

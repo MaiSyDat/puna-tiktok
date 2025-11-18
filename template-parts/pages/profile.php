@@ -5,9 +5,7 @@
 
 get_header();
 
-// get info user
-$current_user = wp_get_current_user();
-$user_id = $current_user->ID;
+$user_id = get_current_user_id();
 $is_logged_in = is_user_logged_in();
 
 ?>

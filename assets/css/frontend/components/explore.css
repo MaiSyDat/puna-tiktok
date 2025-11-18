@@ -24,9 +24,28 @@
 .explore-tabs {
     display: flex;
     gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 4px;
+    cursor: grab;
+    user-select: none;
+}
+
+.explore-tabs:active {
+    cursor: grabbing;
+}
+
+.explore-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .explore-tabs .tab {
+    flex-shrink: 0;
+    white-space: nowrap;
     border: 1px solid rgba(22,24,35,0.12);
     background: var(--puna-bg);
     color: var(--puna-text);

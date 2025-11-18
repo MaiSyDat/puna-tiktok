@@ -39,7 +39,6 @@ $comments_count = get_comments_number($post_id);
                 $comment_meta_likes = get_comment_meta($comment->comment_ID, '_comment_likes', true);
                 $comment_likes = $comment_meta_likes ? $comment_meta_likes : 0;
                 $is_liked = $user_id && in_array($comment->comment_ID, $liked_comments);
-                $current_id = get_current_user_id();
                 
                 $direct_replies = get_comments(array(
                     'post_id' => $post_id,

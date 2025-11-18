@@ -361,49 +361,61 @@ body.single .tiktok-app .main-content {
     margin-bottom: 16px;
 }
 
-.video-info-caption p {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--puna-text);
-    margin: 0 0 12px 0;
-}
-
-.video-hashtags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.hashtag {
-    color: var(--puna-primary);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 500;
-    transition: opacity 0.3s ease;
-}
-
-.hashtag:hover {
-    opacity: 0.8;
-}
-
-.video-music-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    font-size: 14px;
-    color: var(--puna-text);
-}
-
-.video-music-info i {
+.video-caption-content {
     font-size: 16px;
+    line-height: 1.5;
     color: var(--puna-text);
+    margin-bottom: 8px;
+    word-wrap: break-word;
+}
+
+.video-caption-content .caption-text {
+    color: var(--puna-text);
+    margin-right: 4px;
+}
+
+.video-caption-content .tag {
+    color: #161823;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    margin-left: 4px;
+    transition: opacity 0.2s ease;
+    display: inline;
+}
+
+body.theme-dark .video-caption-content .tag {
+    color: #fff;
+}
+
+.video-caption-content .tag:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+}
+
+.video-tags {
+    display: inline;
+}
+
+.video-tags .tag {
+    color: #161823;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    margin-left: 4px;
+    transition: opacity 0.2s ease;
+    display: inline;
+}
+
+.video-tags .tag:hover {
+    opacity: 0.7;
+    text-decoration: underline;
 }
 
 .video-post-date {
-    font-size: 12px;
-    color: var(--puna-primary);
+    font-size: 14px;
+    color: rgba(22, 24, 35, 0.5);
+    margin-top: 4px;
 }
 
 /* Interaction Stats */

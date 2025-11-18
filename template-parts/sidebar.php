@@ -6,8 +6,6 @@ $menu_items = Puna_TikTok_Customize_Sidebar::get_menu_items();
 
 $logo_url = get_theme_mod('sidebar_logo', '');
 $logo_link = get_theme_mod('sidebar_logo_link', home_url('/'));
-$logo_width = get_theme_mod('sidebar_logo_width', 118);
-$logo_height = get_theme_mod('sidebar_logo_height', 42);
 
 $footer_title_1 = get_theme_mod('sidebar_footer_title_1', 'Công ty');
 $footer_title_2 = get_theme_mod('sidebar_footer_title_2', 'Chương trình');

@@ -12,24 +12,52 @@ get_header();
 	<div class="main-content explore-content">
 		<div class="explore-header">
 			<h2>Khám phá</h2>
-			<div class="explore-tabs">
-				<button class="tab">Dành cho bạn</button>
-				<button class="tab active">Thịnh hành</button>
-				<button class="tab">Game</button>
-				<button class="tab">Thể thao</button>
-				<button class="tab">Âm nhạc</button>
+			<div class="explore-tabs" id="explore-tabs">
+				<button class="tab" data-tab="foryou">Dành cho bạn</button>
+				<button class="tab active" data-tab="trending">Thịnh hành</button>
+				<?php
+				// Lấy danh sách categories có video
+				$all_categories = get_terms(array(
+					'taxonomy' => 'category',
+					'hide_empty' => false,
+				));
+				
+				if (!is_wp_error($all_categories) && !empty($all_categories)) {
+					foreach ($all_categories as $category) {
+						// Kiểm tra xem category có video không
+						$video_count_query = new WP_Query(array(
+							'post_type' => 'video',
+							'post_status' => 'publish',
+							'posts_per_page' => 1,
+							'tax_query' => array(
+								array(
+									'taxonomy' => 'category',
+									'field' => 'term_id',
+									'terms' => $category->term_id,
+								),
+							),
+							'fields' => 'ids',
+						));
+						
+						if ($video_count_query->found_posts > 0) {
+							echo '<button class="tab" data-tab="category-' . esc_attr($category->term_id) . '" data-category-id="' . esc_attr($category->term_id) . '">' . esc_html($category->name) . '</button>';
+						}
+						wp_reset_postdata();
+					}
+				}
+				?>
 			</div>
 		</div>
 
-		<div class="explore-grid">
+		<div class="explore-grid" id="explore-grid">
 			<?php
 			$displayed_count = 0;
 			$target_count = 12;
 			
-			// Query trending videos in 7 days (sorted by views, highest to lowest)
+			// Query trending videos in 7 days
             $trending_query = new WP_Query(array(
                 'post_type' => 'video',
-				'posts_per_page' => 50, // Query more to ensure we get enough after filtering
+				'posts_per_page' => 50,
 				'post_status' => 'publish',
 				'orderby' => 'meta_value_num',
 				'meta_key' => '_puna_tiktok_video_views',

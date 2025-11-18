@@ -21,7 +21,6 @@ $likes = $metadata['likes'];
 $comments_count = $metadata['comments'];
 $shares = $metadata['shares'];
 $saves = $metadata['saves'];
-$views = $metadata['views'];
 
 $mega_node_id = get_post_meta($post_id, '_puna_tiktok_mega_node_id', true);
 if (empty($mega_node_id)) {
@@ -42,8 +41,7 @@ $author_url = get_author_posts_url($author_id);
 
 $is_author = is_user_logged_in() && get_current_user_id() == $author_id;
 
-$post_content = get_the_content();
-$caption = $post_content;
+$caption = get_the_content();
 if (!empty($caption)) {
     $caption = preg_replace('/#[\p{L}\p{N}_]+/u', '', $caption);
     $caption = preg_replace('/\s+/', ' ', trim($caption));
@@ -52,9 +50,6 @@ if (empty(trim(strip_tags($caption)))) {
     $caption = get_the_title();
 }
 $tags = get_the_tags();
-
-$music_name = get_post_meta($post_id, '_puna_tiktok_music_name', true);
-$music_artist = get_post_meta($post_id, '_puna_tiktok_music_artist', true);
 
 global $withcomments;
 $withcomments = 1;
@@ -171,42 +166,24 @@ $withcomments = 1;
                 
                 <!-- Video Caption -->
                 <div class="video-info-caption">
-                    <?php 
-                    if (!empty(trim($caption))) {
-                        echo wp_kses_post(wpautop($caption));
-                    }
-                    ?>
-                    
-                    <!-- Hashtags -->
-                    <?php if ($tags) : ?>
-                        <div class="video-tags">
+                    <div class="video-caption-content">
+                        <?php 
+                        if (!empty(trim($caption))) {
+                            echo '<span class="caption-text">' . esc_html(trim($caption)) . '</span>';
+                        }
+                        ?>
+                        
+                        <!-- Hashtags inline -->
+                        <?php if ($tags) : ?>
                             <?php foreach ($tags as $tag) : ?>
                                 <a href="<?php echo get_tag_link($tag->term_id); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
                             <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <!-- Music Info -->
-                    <?php if ($music_name || $music_artist) : ?>
-                        <div class="video-music-info">
-                            <i class="fa-solid fa-music"></i>
-                            <span>
-                                <?php 
-                                if ($music_name && $music_artist) {
-                                    echo esc_html($music_name . ' - ' . $music_artist);
-                                } elseif ($music_name) {
-                                    echo esc_html($music_name);
-                                } elseif ($music_artist) {
-                                    echo esc_html($music_artist);
-                                }
-                                ?>
-                            </span>
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                     
                     <!-- Post Date -->
                     <div class="video-post-date">
-                        <?php echo esc_html(get_the_date('Y-m-d')); ?>
+                        <?php echo esc_html(human_time_diff(get_the_time('U'), current_time('timestamp')) . ' trước'); ?>
                     </div>
                 </div>
             </div>

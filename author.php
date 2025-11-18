@@ -22,7 +22,6 @@ if (!$author) {
 $author_name = puna_tiktok_get_user_display_name($author_id);
 $author_username = puna_tiktok_get_user_username($author_id);
 $author_bio = get_user_meta($author_id, 'description', true);
-$author_url = get_author_posts_url($author_id);
 
 $author_videos_query = new WP_Query(array(
     'post_type'      => 'video',
@@ -34,22 +33,6 @@ $author_videos_query = new WP_Query(array(
 
 $total_videos = $author_videos_query->found_posts;
 wp_reset_postdata();
-
-$liked_videos = array();
-if ($is_own_profile && $current_user_id) {
-    $liked_video_ids = puna_tiktok_get_liked_videos($current_user_id);
-    if (!empty($liked_video_ids)) {
-        $liked_videos_query = new WP_Query(array(
-            'post_type' => 'video',
-            'post__in' => $liked_video_ids,
-            'posts_per_page' => -1,
-            'post_status' => 'publish',
-            'orderby' => 'post__in'
-        ));
-        $liked_videos = $liked_videos_query->posts;
-        wp_reset_postdata();
-    }
-}
 ?>
 
 <div class="tiktok-app">

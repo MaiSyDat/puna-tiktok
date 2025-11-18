@@ -256,7 +256,7 @@ class Puna_TikTok_Customize_Sidebar {
             ),
         );
         
-        // Chỉ hiển thị menu "Tải lên" cho admin
+        // admin
         if (current_user_can('manage_options')) {
             $menu_items[] = array(
                 'title' => 'Tải lên',
@@ -266,12 +266,15 @@ class Puna_TikTok_Customize_Sidebar {
             );
         }
         
-        $menu_items[] = array(
-            'title' => 'Hồ sơ',
-            'url' => home_url('/profile'),
-            'icon' => 'fa-regular fa-user',
-            'active' => get_query_var('puna_page') === 'profile',
-        );
+        // admin
+        if (is_user_logged_in()) {
+            $menu_items[] = array(
+                'title' => 'Hồ sơ',
+                'url' => home_url('/profile'),
+                'icon' => 'fa-regular fa-user',
+                'active' => get_query_var('puna_page') === 'profile',
+            );
+        }
         
         return $menu_items;
     }
