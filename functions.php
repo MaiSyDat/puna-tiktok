@@ -17,14 +17,33 @@ require_once get_template_directory() . '/inc/class-video-post-type.php';
 require_once get_template_directory() . '/inc/class-customizer.php';
 
 /**
- * Increase upload limits
+ * Increase upload limits - only when needed
  */
 function puna_tiktok_increase_upload_limits() {
-    ini_set('upload_max_filesize', '500M');
-    ini_set('post_max_size', '500M');
-    ini_set('max_execution_time', 300);
-    ini_set('max_input_time', 300);
-    ini_set('memory_limit', '512M');
+    // Only increase limits on upload page or admin
+    $is_upload_page = get_query_var('puna_page') === 'upload' || is_page_template('page-upload.php');
+    $is_admin_upload = is_admin() && (isset($_GET['post_type']) && $_GET['post_type'] === 'video');
+    
+    if ($is_upload_page || $is_admin_upload) {
+        // Try to increase, but don't fail if server doesn't allow
+        @ini_set('upload_max_filesize', '500M');
+        @ini_set('post_max_size', '500M');
+        @ini_set('max_execution_time', 300);
+        @ini_set('max_input_time', 300);
+        
+        // Only increase memory if current limit is lower (use WordPress function if available)
+        if (function_exists('wp_raise_memory_limit')) {
+            wp_raise_memory_limit('admin');
+        } else {
+            $current_memory = ini_get('memory_limit');
+            $current_memory_bytes = wp_convert_hr_to_bytes($current_memory);
+            $target_memory_bytes = wp_convert_hr_to_bytes('512M');
+            
+            if ($current_memory_bytes < $target_memory_bytes) {
+                @ini_set('memory_limit', '512M');
+            }
+        }
+    }
 }
 add_action('init', 'puna_tiktok_increase_upload_limits');
 

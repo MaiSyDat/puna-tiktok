@@ -24,12 +24,13 @@ git clone https://github.com/MaiSyDat/puna-tiktok.git
 
 ## Phát triển
 - CSS/JS frontend:
-  - `assets/css/frontend/frontend.css`
+  - `assets/css/frontend/components/` (CSS modules)
   - `assets/js/frontend/main.js`
 - Template phần trang: `template-parts/pages/`
-- Đăng ký post type/meta box: `inc/post-types.php`, `inc/meta-boxes.php`
-- Nạp tài nguyên: `inc/assets.php`
-- Cấu hình theme & auto tạo trang: `inc/setup.php`
+- Đăng ký post type: `inc/class-video-post-type.php`
+- Nạp tài nguyên: `inc/class-assets.php`
+- Cấu hình theme & auto tạo trang: `inc/class-setup.php`
+- AJAX handlers: `inc/class-ajax-handlers.php`
 
 ## Góp ý / Issue
 Mở issue trên GitHub hoặc tạo PR.

@@ -3432,7 +3432,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         card.innerHTML = `
             <div class="media-wrapper ratio-9x16">
-                <video class="explore-video" muted playsinline ${isMegaVideo ? `data-mega-link="${videoUrl}"` : ''}>
+                <video class="explore-video" muted playsinline loading="lazy" ${isMegaVideo ? `data-mega-link="${videoUrl}"` : ''}>
                     <source src="${isMegaVideo ? '' : videoUrl}" type="video/mp4" ${isMegaVideo ? `data-mega-src="${videoUrl}"` : ''}>
                 </video>
                 <div class="video-overlay">
