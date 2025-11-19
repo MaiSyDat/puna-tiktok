@@ -34,6 +34,42 @@ document.addEventListener("DOMContentLoaded", function() {
     
     initializeProfileTabs();
     
+    // Load video previews for all profile video cards
+    function loadProfileVideoPreviews() {
+        const profileVideos = document.querySelectorAll('.profile-video-card .explore-video, .profile-video-card video[data-mega-link]');
+        profileVideos.forEach((video, index) => {
+            if (video.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
+                // Stagger loading to avoid overwhelming the browser
+                setTimeout(() => {
+                    ensureMegaVideoSource(video).then(() => {
+                        // Set video to first frame for thumbnail preview
+                        if (video.readyState >= 2) {
+                            video.currentTime = 0.1;
+                            video.pause();
+                        } else {
+                            video.addEventListener('loadedmetadata', () => {
+                                video.currentTime = 0.1;
+                                video.pause();
+                            }, { once: true });
+                            
+                            // Also try to load first frame after canplay
+                            video.addEventListener('canplay', () => {
+                                video.currentTime = 0.1;
+                                video.pause();
+                            }, { once: true });
+                        }
+                    }).catch(() => {});
+                }, index * 50); // Stagger by 50ms per video
+            }
+        });
+    }
+    
+    // Load previews on page load (wait a bit for DOM to be ready)
+    setTimeout(() => {
+        loadProfileVideoPreviews();
+    }, 200);
+    
+    // Also load when tabs are switched
     profileTabs.forEach(tab => {
         tab.addEventListener('click', function() {
             const targetTab = this.getAttribute('data-tab');
@@ -58,6 +94,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     content.classList.remove('active');
                 }
             });
+            
+            // Load video previews when tab is switched
+            setTimeout(() => {
+                loadProfileVideoPreviews();
+            }, 100);
         });
     });
 
@@ -122,18 +163,37 @@ document.addEventListener("DOMContentLoaded", function() {
         card.className = 'profile-video-card';
         
         const views = (typeof formatNumber !== 'undefined') ? formatNumber(video.views || 0) : (video.views || 0);
+        const videoUrl = video.video_url || '';
         
+        // All videos are Mega videos
         card.innerHTML = `
-            <div class="media-wrapper">
-                <video muted playsinline loading="lazy" ${video.video_url && video.video_url.indexOf('mega.nz') !== -1 ? `data-mega-link="${video.video_url}"` : ''}>
-                    <source src="${video.video_url && video.video_url.indexOf('mega.nz') === -1 ? video.video_url : ''}" type="video/mp4">
+            <div class="media-wrapper ratio-9x16">
+                <video class="explore-video" muted playsinline loading="lazy" data-mega-link="${videoUrl}">
+                    <!-- Mega.nz video will be loaded via JavaScript -->
                 </video>
+                <div class="video-overlay">
+                    <div class="play-icon">
+                        <i class="fa-solid fa-play"></i>
+                    </div>
+                </div>
                 <div class="video-views-overlay">
                     <i class="fa-solid fa-play"></i>
                     <span>${views}</span>
                 </div>
             </div>
         `;
+        
+        // Load video preview when card is created
+        const videoElement = card.querySelector('video');
+        if (videoElement && typeof ensureMegaVideoSource !== 'undefined' && videoElement.dataset.megaLink) {
+            // Load video source for preview
+            ensureMegaVideoSource(videoElement).then(() => {
+                // Set video to first frame for thumbnail
+                if (videoElement.readyState >= 2) {
+                    videoElement.currentTime = 0.1;
+                }
+            }).catch(() => {});
+        }
         
         return card;
     }

@@ -14,11 +14,7 @@ $shares = $metadata['shares'];
 $saves = $metadata['saves'];
 $views = $metadata['views'];
 
-$mega_node_id = get_post_meta($post_id, '_puna_tiktok_mega_node_id', true);
-if (empty($mega_node_id)) {
-    $mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true); // backward compatibility
-}
-$is_mega_video = !empty($mega_node_id) || (strpos($video_url, 'mega.nz') !== false);
+// All videos are Mega videos
 
 $is_liked = puna_tiktok_is_liked($post_id);
 $liked_class = $is_liked ? 'liked' : '';
@@ -67,12 +63,8 @@ $saved_class = $is_saved ? 'saved' : '';
 			</div>
 		</div>
 		
-			<video class="tiktok-video" preload="metadata" playsinline loop muted data-post-id="<?php echo esc_attr($post_id); ?>" <?php if ($is_mega_video) : ?>data-mega-link="<?php echo esc_url($video_url); ?>"<?php endif; ?>>
-				<?php if ($is_mega_video) : ?>
-					<!-- Mega.nz video will be loaded via JavaScript -->
-				<?php else : ?>
-					<source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-				<?php endif; ?>
+			<video class="tiktok-video" preload="metadata" playsinline loop muted data-post-id="<?php echo esc_attr($post_id); ?>" data-mega-link="<?php echo esc_url($video_url); ?>">
+				<!-- Mega.nz video will be loaded via JavaScript -->
 				Trình duyệt của bạn không hỗ trợ video.
 			</video>
 

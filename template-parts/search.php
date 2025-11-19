@@ -134,8 +134,8 @@ $withcomments = 1;
                                 <a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="search-video-item">
                                     <div class="search-video-thumbnail">
                                         <?php if ($thumbnail) : ?>
-                                            <video class="search-video-preview" muted playsinline loading="lazy">
-                                                <source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
+                                            <video class="search-video-preview" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">
+                                                <!-- Mega.nz video will be loaded via JavaScript -->
                                             </video>
                                         <?php endif; ?>
                                         <div class="search-video-overlay">

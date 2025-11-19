@@ -153,14 +153,14 @@ document.addEventListener("DOMContentLoaded", function() {
         card.className = 'explore-card';
         card.setAttribute('aria-label', 'Video');
         
-        const isMegaVideo = video.video_url && video.video_url.indexOf('mega.nz') !== -1;
+        // All videos are Mega videos
         const videoUrl = video.video_url || '';
         const views = (typeof formatNumber !== 'undefined') ? formatNumber(video.views || 0) : (video.views || 0);
         
         card.innerHTML = `
             <div class="media-wrapper ratio-9x16">
-                <video class="explore-video" muted playsinline loading="lazy" ${isMegaVideo ? `data-mega-link="${videoUrl}"` : ''}>
-                    <source src="${isMegaVideo ? '' : videoUrl}" type="video/mp4" ${isMegaVideo ? `data-mega-src="${videoUrl}"` : ''}>
+                <video class="explore-video" muted playsinline loading="lazy" data-mega-link="${videoUrl}">
+                    <!-- Mega.nz video will be loaded via JavaScript -->
                 </video>
                 <div class="video-overlay">
                     <div class="play-icon">

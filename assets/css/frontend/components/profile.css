@@ -198,15 +198,58 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    background: var(--puna-muted);
 }
 
-.profile-video-card video {
+.profile-video-card .media-wrapper.ratio-9x16::before {
+    content: "";
+    display: block;
+    padding-top: calc(16 / 9 * 100%);
+}
+
+.profile-video-card video,
+.profile-video-card .explore-video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.video-views-overlay {
+/* Video overlay - tối màu như trang khám phá */
+.profile-video-card .video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.profile-video-card:hover .video-overlay {
+    opacity: 1;
+}
+
+.profile-video-card .play-icon {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--puna-text);
+    font-size: 16px;
+}
+
+.profile-video-card .video-views-overlay {
     position: absolute;
     bottom: 6px;
     left: 6px;
@@ -220,7 +263,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    z-index: 2;
+    z-index: 3;
 }
 
 .video-views-overlay i {

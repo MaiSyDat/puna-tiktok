@@ -177,10 +177,6 @@ function puna_tiktok_get_video_query($args = array()) {
             array(
                 'key' => '_puna_tiktok_video_url',
                 'compare' => 'EXISTS'
-            ),
-            array(
-                'key' => '_puna_tiktok_video_file_id',
-                'compare' => 'EXISTS'
             )
         )
     );
@@ -362,24 +358,28 @@ function puna_tiktok_get_video_url($post_id = null)
         $post_id = get_the_ID();
     }
 
+    // All videos are Mega videos - prioritize Mega link
     $mega_link = get_post_meta($post_id, '_puna_tiktok_mega_link', true);
     if (!empty($mega_link)) {
         return esc_url($mega_link);
     }
 
+    // Fallback to video_url (which should also be Mega link)
     $video_url_meta = get_post_meta($post_id, '_puna_tiktok_video_url', true);
     if (!empty($video_url_meta)) {
         return esc_url($video_url_meta);
     }
 
-    $video_file_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
-    if ($video_file_id) {
-        $video_url = wp_get_attachment_url($video_file_id);
-        if ($video_url) {
-            return $video_url;
+    // Backward compatibility: check old meta key
+    $old_mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true);
+    if (!empty($old_mega_node_id)) {
+        $old_mega_link = get_post_meta($post_id, '_puna_tiktok_video_url', true);
+        if (!empty($old_mega_link) && strpos($old_mega_link, 'mega.nz') !== false) {
+            return esc_url($old_mega_link);
         }
     }
-    return 'https://v16-webapp.tiktok.com/video-sample.mp4';
+
+    return '';
 }
 
 /**

@@ -147,33 +147,28 @@ document.addEventListener("DOMContentLoaded", function() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                if (entry.target.dataset.megaLink) {
-                    if (typeof ensureMegaVideoSource !== 'undefined') {
-                        ensureMegaVideoSource(entry.target).then(() => {
-                            if (entry.target.classList.contains('tiktok-video')) {
-                                applyVideoVolumeSettings(entry.target);
-                                const playPromise = entry.target.play();
-                                if (playPromise !== undefined) {
-                                    playPromise.catch(e => {
-                                        if (e.name !== 'AbortError') {
-                                        }
-                                    });
-                                }
+                // Reset video to the beginning when returning to viewport
+                if (entry.target.currentTime > 0) {
+                    entry.target.currentTime = 0;
+                }
+                
+                // All videos are Mega videos
+                if (typeof ensureMegaVideoSource !== 'undefined') {
+                    ensureMegaVideoSource(entry.target).then(() => {
+                        if (entry.target.classList.contains('tiktok-video')) {
+                            applyVideoVolumeSettings(entry.target);
+                            // Make sure the video starts from the beginning
+                            entry.target.currentTime = 0;
+                            const playPromise = entry.target.play();
+                            if (playPromise !== undefined) {
+                                playPromise.catch(e => {
+                                    if (e.name !== 'AbortError') {
+                                    }
+                                });
                             }
-                        }).catch(err => {
-                        });
-                    }
-                } else {
-                    if (entry.target.classList.contains('tiktok-video')) {
-                        applyVideoVolumeSettings(entry.target);
-                        const playPromise = entry.target.play();
-                        if (playPromise !== undefined) {
-                            playPromise.catch(e => {
-                                if (e.name !== 'AbortError') {
-                                }
-                            });
                         }
-                    }
+                    }).catch(err => {
+                    });
                 }
                 
                 if (entry.target.classList.contains('tiktok-video') && entry.target.dataset.postId && !viewedVideos.has(entry.target.dataset.postId)) {
@@ -187,7 +182,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     }, 1000);
                 }
             } else {
+                // When the video leaves the viewport: pause and reset to the beginning
                 entry.target.pause();
+                entry.target.currentTime = 0;
             }
         });
     }, observerOptions);
@@ -231,8 +228,26 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
         
-        if (video.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
-            ensureMegaVideoSource(video);
+        // All videos are Mega videos - always load via Mega
+        if (typeof ensureMegaVideoSource !== 'undefined' && video.dataset.megaLink) {
+            // For explore-video and profile cards, load preview (first frame)
+            if (video.classList.contains('explore-video') || video.closest('.profile-video-card')) {
+                ensureMegaVideoSource(video).then(() => {
+                    // Set to first frame for thumbnail preview
+                    if (video.readyState >= 2) {
+                        video.currentTime = 0.1;
+                        video.pause();
+                    } else {
+                        video.addEventListener('loadedmetadata', () => {
+                            video.currentTime = 0.1;
+                            video.pause();
+                        }, { once: true });
+                    }
+                }).catch(() => {});
+            } else {
+                // For main feed videos, just load source
+                ensureMegaVideoSource(video);
+            }
         }
         
         if (video.classList.contains('tiktok-video')) {
@@ -244,10 +259,20 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
         
+        // Mark explore-video for lazy preview loading
+        if (video.classList.contains('explore-video') && !video.closest('.video-row')) {
+            video.dataset.needsPreview = '1';
+        }
+        
         video.addEventListener('click', function() {
             if (this.paused) {
-                if (this.dataset.megaLink && !this.dataset.megaLoaded && typeof ensureMegaVideoSource !== 'undefined') {
+                // Reset to the beginning when user clicks to play
+                this.currentTime = 0;
+                
+                // All videos are Mega videos
+                if (!this.dataset.megaLoaded && typeof ensureMegaVideoSource !== 'undefined') {
                     ensureMegaVideoSource(this).then(() => {
+                        this.currentTime = 0;
                         const playPromise = this.play();
                         if (playPromise !== undefined) {
                             playPromise.catch(e => {
@@ -257,6 +282,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     });
                 } else {
+                    this.currentTime = 0;
                     const playPromise = this.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(e => {
@@ -288,8 +314,14 @@ document.addEventListener("DOMContentLoaded", function() {
         
         const current = getCurrentVideo();
         if (current) {
-            if (current.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
-                ensureMegaVideoSource(current);
+            // Reset to the beginning when playing for the first time
+            current.currentTime = 0;
+            
+            // All videos are Mega videos
+            if (typeof ensureMegaVideoSource !== 'undefined' && current.dataset.megaLink) {
+                ensureMegaVideoSource(current).then(() => {
+                    current.currentTime = 0;
+                });
             }
             applyVideoVolumeSettings(current);
             current.play().catch(() => {});
@@ -303,6 +335,32 @@ document.addEventListener("DOMContentLoaded", function() {
     // Initialize volume state
     applyVolumeToAllVideos();
     updateGlobalVolumeUI();
+
+    // Lazy load previews for explore-video cards
+    const exploreVideoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.target.dataset.needsPreview === '1' && entry.target.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
+                ensureMegaVideoSource(entry.target).then(() => {
+                    if (entry.target.readyState >= 2) {
+                        entry.target.currentTime = 0.1;
+                        entry.target.pause();
+                    } else {
+                        entry.target.addEventListener('loadedmetadata', () => {
+                            entry.target.currentTime = 0.1;
+                            entry.target.pause();
+                        }, { once: true });
+                    }
+                }).catch(() => {});
+                entry.target.removeAttribute('data-needs-preview');
+                exploreVideoObserver.unobserve(entry.target);
+            }
+        });
+    }, { rootMargin: '100px' });
+    
+    // Observe all explore-videos that need preview
+    document.querySelectorAll('.explore-video[data-needs-preview="1"]').forEach(video => {
+        exploreVideoObserver.observe(video);
+    });
 
     // Export functions for other modules
     window.applyVideoVolumeSettings = applyVideoVolumeSettings;

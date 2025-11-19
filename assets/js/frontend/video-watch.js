@@ -13,7 +13,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const watchVideo = videoWatchPage.querySelector('.tiktok-video');
     if (watchVideo) {
-        if (watchVideo.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
+        // All videos are Mega videos
+        if (typeof ensureMegaVideoSource !== 'undefined' && watchVideo.dataset.megaLink) {
             ensureMegaVideoSource(watchVideo).then(() => {
                 if (typeof applyVideoVolumeSettings !== 'undefined') {
                     applyVideoVolumeSettings(watchVideo);
@@ -27,18 +28,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     playPromise.catch(e => {});
                 }
             }).catch(err => {});
-        } else {
-            if (typeof applyVideoVolumeSettings !== 'undefined') {
-                applyVideoVolumeSettings(watchVideo);
-            }
-            if (typeof applyVolumeToAllVideos !== 'undefined') {
-                applyVolumeToAllVideos();
-            }
-            
-            const playPromise = watchVideo.play();
-            if (playPromise !== undefined) {
-                playPromise.catch(e => {});
-            }
         }
     }
     

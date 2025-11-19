@@ -22,11 +22,7 @@ $comments_count = $metadata['comments'];
 $shares = $metadata['shares'];
 $saves = $metadata['saves'];
 
-$mega_node_id = get_post_meta($post_id, '_puna_tiktok_mega_node_id', true);
-if (empty($mega_node_id)) {
-    $mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true); // backward compatibility
-}
-$is_mega_video = !empty($mega_node_id) || (strpos($video_url, 'mega.nz') !== false);
+// All videos are Mega videos
 
 $is_liked = puna_tiktok_is_liked($post_id);
 $liked_class = $is_liked ? 'liked' : '';
@@ -120,12 +116,8 @@ $withcomments = 1;
                        loop 
                        muted
                        data-post-id="<?php echo esc_attr($post_id); ?>"
-                       <?php if ($is_mega_video) : ?>data-mega-link="<?php echo esc_url($video_url); ?>"<?php endif; ?>>
-                    <?php if ($is_mega_video) : ?>
-                        <!-- Mega.nz video will be loaded via JavaScript -->
-                    <?php else : ?>
-                        <source src="<?php echo esc_url($video_url); ?>" type="video/mp4">
-                    <?php endif; ?>
+                       data-mega-link="<?php echo esc_url($video_url); ?>">
+                    <!-- Mega.nz video will be loaded via JavaScript -->
                     Trình duyệt của bạn không hỗ trợ video.
                 </video>
             </div>
@@ -257,17 +249,11 @@ $withcomments = 1;
                                 $other_metadata = puna_tiktok_get_video_metadata($video_post->ID);
                                 $other_video_url = $other_metadata['video_url'];
                                 $other_likes = $other_metadata['likes'];
-                                $other_mega_node_id = get_post_meta($video_post->ID, '_puna_tiktok_video_node_id', true);
-                                $other_is_mega = !empty($other_mega_node_id) || (strpos($other_video_url, 'mega.nz') !== false);
                                 ?>
                                 <a href="<?php echo esc_url(get_permalink($video_post->ID)); ?>" class="creator-video-item">
                                     <div class="creator-video-thumbnail">
-                                        <video class="creator-video-preview" muted playsinline <?php if ($other_is_mega) : ?>data-mega-link="<?php echo esc_url($other_video_url); ?>"<?php endif; ?>>
-                                            <?php if ($other_is_mega) : ?>
-                                                <!-- Mega.nz video will be loaded via JavaScript -->
-                                            <?php else : ?>
-                                                <source src="<?php echo esc_url($other_video_url); ?>" type="video/mp4">
-                                            <?php endif; ?>
+                                        <video class="creator-video-preview" muted playsinline data-mega-link="<?php echo esc_url($other_video_url); ?>">
+                                            <!-- Mega.nz video will be loaded via JavaScript -->
                                         </video>
                                         <div class="creator-video-overlay">
                                             <div class="creator-video-likes">
