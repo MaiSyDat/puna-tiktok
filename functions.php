@@ -189,7 +189,7 @@ function puna_tiktok_get_video_query($args = array()) {
     if (!empty($args['tag_id'])) {
         $query_args['tax_query'] = array(
             array(
-                'taxonomy' => 'post_tag',
+                'taxonomy' => 'video_tag',
                 'field' => 'term_id',
                 'terms' => $args['tag_id'],
                 'operator' => 'IN'

@@ -9,7 +9,7 @@ get_header();
 $tag_id = get_query_var('tag_id') ? intval(get_query_var('tag_id')) : 0;
 $tag = null;
 if ($tag_id > 0) {
-	$tag = get_term($tag_id, 'post_tag');
+	$tag = get_term($tag_id, 'video_tag');
 }
 
 ?>
@@ -26,7 +26,7 @@ if ($tag_id > 0) {
 				<?php
 				// Lấy danh sách tags có video, sắp xếp theo popularity
 				$all_tags = get_terms(array(
-					'taxonomy' => 'post_tag',
+					'taxonomy' => 'video_tag',
 					'hide_empty' => false,
 					'orderby' => 'count',
 					'order' => 'DESC',
@@ -42,7 +42,7 @@ if ($tag_id > 0) {
 							'posts_per_page' => 1,
 							'tax_query' => array(
 								array(
-									'taxonomy' => 'post_tag',
+									'taxonomy' => 'video_tag',
 									'field' => 'term_id',
 									'terms' => $tag_item->term_id,
 								),
@@ -77,7 +77,7 @@ if ($tag_id > 0) {
 					'order' => 'DESC',
 					'tax_query' => array(
 						array(
-							'taxonomy' => 'post_tag',
+							'taxonomy' => 'video_tag',
 							'field' => 'term_id',
 							'terms' => $tag->term_id,
 						),

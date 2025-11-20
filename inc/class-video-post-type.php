@@ -11,9 +11,9 @@ if (! defined('ABSPATH')) {
 class Puna_TikTok_Video_Post_Type {
     
     public function __construct() {
+        add_action('init', array($this, 'register_video_taxonomies'));
         add_action('init', array($this, 'register_video_post_type'));
         add_action('add_meta_boxes', array($this, 'add_video_meta_boxes'));
-        add_action('add_meta_boxes', array($this, 'remove_editor_meta_box'), 99);
         add_action('save_post', array($this, 'save_video_meta'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_filter('manage_video_posts_columns', array($this, 'add_video_columns'));
@@ -21,6 +21,69 @@ class Puna_TikTok_Video_Post_Type {
         add_action('after_switch_theme', array($this, 'flush_rewrite_rules'));
     }
     
+    /**
+     * Register video taxonomies
+     */
+    public function register_video_taxonomies() {
+        // Register video category taxonomy
+        $category_labels = array(
+            'name'              => _x('Video Categories', 'taxonomy general name', 'puna-tiktok'),
+            'singular_name'     => _x('Video Category', 'taxonomy singular name', 'puna-tiktok'),
+            'search_items'      => __('Tìm kiếm danh mục', 'puna-tiktok'),
+            'all_items'         => __('Tất cả danh mục', 'puna-tiktok'),
+            'parent_item'       => __('Danh mục cha', 'puna-tiktok'),
+            'parent_item_colon' => __('Danh mục cha:', 'puna-tiktok'),
+            'edit_item'         => __('Chỉnh sửa danh mục', 'puna-tiktok'),
+            'update_item'       => __('Cập nhật danh mục', 'puna-tiktok'),
+            'add_new_item'      => __('Thêm danh mục mới', 'puna-tiktok'),
+            'new_item_name'     => __('Tên danh mục mới', 'puna-tiktok'),
+            'menu_name'         => __('Danh mục Video', 'puna-tiktok'),
+        );
+
+        $category_args = array(
+            'hierarchical'      => true,
+            'labels'            => $category_labels,
+            'show_ui'           => true,
+            'show_admin_column' => true,
+            'query_var'         => true,
+            'rewrite'           => array('slug' => 'video-category'),
+            'show_in_rest'      => false,
+        );
+
+        register_taxonomy('video_category', array('video'), $category_args);
+
+        // Register video tag taxonomy
+        $tag_labels = array(
+            'name'                       => _x('Video Tags', 'taxonomy general name', 'puna-tiktok'),
+            'singular_name'              => _x('Video Tag', 'taxonomy singular name', 'puna-tiktok'),
+            'search_items'               => __('Tìm kiếm tag', 'puna-tiktok'),
+            'popular_items'              => __('Tag phổ biến', 'puna-tiktok'),
+            'all_items'                  => __('Tất cả tag', 'puna-tiktok'),
+            'edit_item'                  => __('Chỉnh sửa tag', 'puna-tiktok'),
+            'update_item'                => __('Cập nhật tag', 'puna-tiktok'),
+            'add_new_item'               => __('Thêm tag mới', 'puna-tiktok'),
+            'new_item_name'              => __('Tên tag mới', 'puna-tiktok'),
+            'separate_items_with_commas' => __('Phân cách tag bằng dấu phẩy', 'puna-tiktok'),
+            'add_or_remove_items'        => __('Thêm hoặc xóa tag', 'puna-tiktok'),
+            'choose_from_most_used'      => __('Chọn từ tag được dùng nhiều nhất', 'puna-tiktok'),
+            'not_found'                  => __('Không tìm thấy tag', 'puna-tiktok'),
+            'menu_name'                  => __('Tag Video', 'puna-tiktok'),
+        );
+
+        $tag_args = array(
+            'hierarchical'          => false,
+            'labels'                => $tag_labels,
+            'show_ui'               => true,
+            'show_admin_column'     => true,
+            'update_count_callback' => '_update_post_term_count',
+            'query_var'             => true,
+            'rewrite'               => array('slug' => 'video-tag'),
+            'show_in_rest'          => false,
+        );
+
+        register_taxonomy('video_tag', array('video'), $tag_args);
+    }
+
     /**
      * Register video post type
      */
@@ -54,9 +117,9 @@ class Puna_TikTok_Video_Post_Type {
             'capability_type'    => 'post',
             'has_archive'        => true,
             'hierarchical'       => false,
-            'supports'           => array('title', 'thumbnail', 'comments'),
+            'supports'           => array('title', 'editor', 'thumbnail', 'comments'),
             'show_in_rest'       => false,
-            'taxonomies'         => array('category', 'post_tag'),
+            'taxonomies'         => array('video_category', 'video_tag'),
         );
 
         register_post_type('video', $args);
@@ -72,14 +135,6 @@ class Puna_TikTok_Video_Post_Type {
      */
     public function flush_rewrite_rules() {
         flush_rewrite_rules();
-    }
-    
-    /**
-     * Remove editor meta box
-     */
-    public function remove_editor_meta_box() {
-        remove_meta_box('postdivrich', 'video', 'normal');
-        remove_meta_box('contentdiv', 'video', 'normal');
     }
     
     /**

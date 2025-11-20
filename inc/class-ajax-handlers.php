@@ -909,7 +909,7 @@ class Puna_TikTok_AJAX_Handlers {
         $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 20;
         
         $tags = get_terms(array(
-            'taxonomy' => 'post_tag',
+            'taxonomy' => 'video_tag',
             'hide_empty' => true,
             'number' => $limit,
             'orderby' => 'count',
@@ -924,7 +924,7 @@ class Puna_TikTok_AJAX_Handlers {
         
         if (empty($tags) || is_wp_error($tags)) {
             $tags = get_terms(array(
-                'taxonomy' => 'post_tag',
+                'taxonomy' => 'video_tag',
                 'hide_empty' => true,
                 'number' => $limit,
                 'orderby' => 'count',
@@ -971,7 +971,7 @@ class Puna_TikTok_AJAX_Handlers {
         if ($tab_type === 'category' && $category_id > 0) {
             $args['tax_query'] = array(
                 array(
-                    'taxonomy' => 'category',
+                    'taxonomy' => 'video_category',
                     'field' => 'term_id',
                     'terms' => $category_id,
                 ),
@@ -981,7 +981,7 @@ class Puna_TikTok_AJAX_Handlers {
         } elseif ($tab_type === 'tag' && $tag_id > 0) {
             $args['tax_query'] = array(
                 array(
-                    'taxonomy' => 'post_tag',
+                    'taxonomy' => 'video_tag',
                     'field' => 'term_id',
                     'terms' => $tag_id,
                 ),

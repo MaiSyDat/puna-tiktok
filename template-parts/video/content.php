@@ -71,10 +71,20 @@ $saved_class = $is_saved ? 'saved' : '';
 		<div class="video-overlay">
 			<div class="video-details">
 				<h4><?php echo esc_html(puna_tiktok_get_user_display_name()); ?></h4>
-				<p class="video-caption"><?php the_title(); ?></p>
+				<?php
+				$caption = get_the_content();
+				if (!empty($caption)) {
+					$caption = preg_replace('/#[\p{L}\p{N}_]+/u', '', $caption);
+					$caption = preg_replace('/\s+/', ' ', trim($caption));
+				}
+				if (empty(trim(strip_tags($caption)))) {
+					$caption = get_the_title();
+				}
+				?>
+				<p class="video-caption"><?php echo esc_html($caption); ?></p>
 
 				<?php
-				$tags = get_the_tags();
+				$tags = get_the_terms(get_the_ID(), 'video_tag');
 				if ($tags) : ?>
 					<div class="video-tags">
 						<?php foreach ($tags as $tag) : ?>

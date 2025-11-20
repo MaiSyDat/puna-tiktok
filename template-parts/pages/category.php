@@ -18,7 +18,7 @@ get_header();
 				<?php
 				// Lấy danh sách categories có video
 				$all_categories = get_terms(array(
-					'taxonomy' => 'category',
+					'taxonomy' => 'video_category',
 					'hide_empty' => false,
 				));
 				
@@ -31,7 +31,7 @@ get_header();
 							'posts_per_page' => 1,
 							'tax_query' => array(
 								array(
-									'taxonomy' => 'category',
+									'taxonomy' => 'video_category',
 									'field' => 'term_id',
 									'terms' => $category->term_id,
 								),

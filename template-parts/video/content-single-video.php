@@ -45,7 +45,7 @@ if (!empty($caption)) {
 if (empty(trim(strip_tags($caption)))) {
     $caption = get_the_title();
 }
-$tags = get_the_tags();
+$tags = get_the_terms(get_the_ID(), 'video_tag');
 
 global $withcomments;
 $withcomments = 1;
