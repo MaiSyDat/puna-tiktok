@@ -438,3 +438,37 @@ if (!function_exists('puna_tiktok_empty_state')) {
     }
 }
 
+/**
+ * Get video description (caption)
+ */
+if (!function_exists('puna_tiktok_get_video_description')) {
+    function puna_tiktok_get_video_description($post_id = null) {
+        if (!$post_id) {
+            $post_id = get_the_ID();
+        }
+        
+        $description = get_post_field('post_content', $post_id);
+        
+        // Clean up description
+        if (!empty($description)) {
+            // Remove hashtags
+            $description = preg_replace('/#[\p{L}\p{N}_]+/u', '', $description);
+            // Normalize whitespace
+            $description = preg_replace('/\s+/', ' ', trim($description));
+            // Strip HTML tags
+            $description = strip_tags($description);
+        }
+        
+        // If empty, try excerpt
+        if (empty(trim($description))) {
+            $description = get_post_field('post_excerpt', $post_id);
+            if (!empty($description)) {
+                $description = strip_tags($description);
+                $description = trim($description);
+            }
+        }
+        
+        return apply_filters('puna_tiktok_get_video_description', $description, $post_id);
+    }
+}
+

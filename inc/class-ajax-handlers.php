@@ -550,10 +550,13 @@ class Puna_TikTok_AJAX_Handlers {
         
         foreach ($posts as $post) {
             if (get_post_type($post->ID) === 'video') {
-                $suggestions[] = array(
-                    'text' => $post->post_title,
-                    'type' => 'video'
-                );
+                $description = puna_tiktok_get_video_description($post->ID);
+                if (!empty($description)) {
+                    $suggestions[] = array(
+                        'text' => $description,
+                        'type' => 'video'
+                    );
+                }
             }
         }
         
@@ -1168,11 +1171,17 @@ class Puna_TikTok_AJAX_Handlers {
             }
             
             foreach ($posts_with_views as $post_data) {
+                $featured_image_url = '';
+                if (has_post_thumbnail($post_data['post_id'])) {
+                    $featured_image_url = get_the_post_thumbnail_url($post_data['post_id'], 'medium');
+                }
+                
                 $videos[] = array(
                     'post_id' => $post_data['post_id'],
                     'video_url' => $post_data['video_url'],
                     'views' => $post_data['views'],
                     'permalink' => get_permalink($post_data['post_id']),
+                    'featured_image_url' => $featured_image_url,
                 );
             }
         }

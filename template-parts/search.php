@@ -82,26 +82,24 @@ $withcomments = 1;
                 $matched_posts = array();
                 
                 foreach ($all_video_posts as $post_id) {
-                    $title = mb_strtolower(get_the_title($post_id));
                     $content = mb_strtolower(get_post_field('post_content', $post_id));
                     $excerpt = mb_strtolower(get_post_field('post_excerpt', $post_id));
                     
-                    // Kiểm tra keyword trong title, content, excerpt
-                    if (strpos($title, $search_lower) !== false || 
-                        strpos($content, $search_lower) !== false || 
+                    // Kiểm tra keyword trong content, excerpt (không dùng title)
+                    if (strpos($content, $search_lower) !== false || 
                         strpos($excerpt, $search_lower) !== false) {
                         $matched_posts[] = $post_id;
                     }
                 }
                 
-               // Sort: prioritize title match, then sort by date (latest)
-                if (!empty($matched_posts)) :
+               // Sort: prioritize content match, then sort by date (latest)
+                if (!empty($matched_posts)) : 
                     $sorted_posts = array();
                     $other_posts = array();
                     
                     foreach ($matched_posts as $post_id) {
-                        $title = mb_strtolower(get_the_title($post_id));
-                        if (strpos($title, $search_lower) !== false) {
+                        $content = mb_strtolower(get_post_field('post_content', $post_id));
+                        if (strpos($content, $search_lower) !== false) {
                             $sorted_posts[] = $post_id;
                         } else {
                             $other_posts[] = $post_id;
@@ -129,15 +127,18 @@ $withcomments = 1;
                                 $metadata = puna_tiktok_get_video_metadata($post_id);
                                 $video_url = $metadata['video_url'];
                                 $likes = $metadata['likes'];
-                                $thumbnail = '';
                                 
-                                if ($video_url) {
-                                    $thumbnail = $video_url;
+                                // Check for featured image
+                                $featured_image_url = '';
+                                if (has_post_thumbnail($post_id)) {
+                                    $featured_image_url = get_the_post_thumbnail_url($post_id, 'medium');
                                 }
                                 ?>
                                 <a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="search-video-item">
                                     <div class="search-video-thumbnail">
-                                        <?php if ($thumbnail) : ?>
+                                        <?php if ($featured_image_url) : ?>
+                                            <img src="<?php echo esc_url($featured_image_url); ?>" alt="" class="search-video-preview" loading="lazy">
+                                        <?php elseif ($video_url) : ?>
                                             <video class="search-video-preview" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">
                                                 <!-- Mega.nz video will be loaded via JavaScript -->
                                             </video>
@@ -150,7 +151,7 @@ $withcomments = 1;
                                         </div>
                                     </div>
                                     <div class="search-video-info">
-                                        <h3 class="search-video-title"><?php echo esc_html(get_the_title($post_id)); ?></h3>
+                                        <h3 class="search-video-title"><?php echo esc_html(puna_tiktok_get_video_description($post_id)); ?></h3>
                                         <div class="search-video-meta">
                                             <span class="search-video-author"><?php echo esc_html(puna_tiktok_get_user_display_name($post_obj->post_author)); ?></span>
                                             <span class="search-video-time"><?php echo human_time_diff(get_the_time('U', $post_id), current_time('timestamp')) . ' trước'; ?></span>

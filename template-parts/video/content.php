@@ -76,14 +76,7 @@ $saved_class = $is_saved ? 'saved' : '';
 			<div class="video-details">
 				<h4><?php echo esc_html(puna_tiktok_get_user_display_name()); ?></h4>
 				<?php
-				$caption = get_the_content();
-				if (!empty($caption)) {
-					$caption = preg_replace('/#[\p{L}\p{N}_]+/u', '', $caption);
-					$caption = preg_replace('/\s+/', ' ', trim($caption));
-				}
-				if (empty(trim(strip_tags($caption)))) {
-					$caption = get_the_title();
-				}
+				$caption = puna_tiktok_get_video_description();
 				?>
 				<p class="video-caption"><?php echo esc_html($caption); ?></p>
 
@@ -120,7 +113,7 @@ $saved_class = $is_saved ? 'saved' : '';
 			<span class="count"><?php echo puna_tiktok_format_number($saves); ?></span>
 		</div>
 
-		<div class="action-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(get_the_title()); ?>">
+		<div class="action-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(puna_tiktok_get_video_description()); ?>">
 			<i class="fa-solid fa-share"></i>
 			<span class="count"><?php echo puna_tiktok_format_number($shares); ?></span>
 		</div>

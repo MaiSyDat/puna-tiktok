@@ -247,15 +247,23 @@ document.addEventListener("DOMContentLoaded", function() {
         card.className = 'taxonomy-card';
         card.setAttribute('aria-label', 'Video');
         
-        // All videos are Mega videos
         const videoUrl = video.video_url || '';
         const views = (typeof formatNumber !== 'undefined') ? formatNumber(video.views || 0) : (video.views || 0);
+        const featuredImageUrl = video.featured_image_url || '';
+        
+        // Use featured image if available, otherwise use video
+        let mediaElement = '';
+        if (featuredImageUrl) {
+            mediaElement = `<img src="${featuredImageUrl}" alt="" class="taxonomy-video" loading="lazy">`;
+        } else {
+            mediaElement = `<video class="taxonomy-video" muted playsinline loading="lazy" data-mega-link="${videoUrl}">
+                <!-- Mega.nz video will be loaded via JavaScript -->
+            </video>`;
+        }
         
         card.innerHTML = `
             <div class="media-wrapper ratio-9x16">
-                <video class="taxonomy-video" muted playsinline loading="lazy" data-mega-link="${videoUrl}">
-                    <!-- Mega.nz video will be loaded via JavaScript -->
-                </video>
+                ${mediaElement}
                 <div class="video-overlay">
                     <div class="play-icon">
                         <i class="fa-solid fa-play"></i>

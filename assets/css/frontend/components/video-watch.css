@@ -705,6 +705,29 @@ body.theme-dark .video-caption-content .tag {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     padding: 16px 24px;
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Scrollbar styling for creator videos grid */
+.creator-videos-grid::-webkit-scrollbar {
+    width: 6px;
+}
+
+.creator-videos-grid::-webkit-scrollbar-track {
+    background: var(--puna-muted);
+    border-radius: 3px;
+}
+
+.creator-videos-grid::-webkit-scrollbar-thumb {
+    background: var(--puna-primary);
+    border-radius: 3px;
+}
+
+.creator-videos-grid::-webkit-scrollbar-thumb:hover {
+    background: var(--puna-primary);
+    opacity: 0.8;
 }
 
 .creator-video-item {
@@ -730,6 +753,7 @@ body.theme-dark .video-caption-content .tag {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    display: block;
 }
 
 .creator-video-overlay {

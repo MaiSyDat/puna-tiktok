@@ -319,9 +319,13 @@ document.addEventListener("DOMContentLoaded", function() {
         
         sendAjaxRequest('puna_tiktok_get_related_searches', { query: currentQuery.trim() })
             .then(data => {
+                relatedList.innerHTML = '';
+                
+                // Load related searches first
+                let relatedItems = [];
                 if (data.success && data.data.related && data.data.related.length > 0) {
-                    relatedList.innerHTML = '';
-                    data.data.related.forEach(function(item) {
+                    relatedItems = data.data.related;
+                    relatedItems.forEach(function(item) {
                         const li = document.createElement('li');
                         const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query);
                         li.innerHTML = `
@@ -332,12 +336,46 @@ document.addEventListener("DOMContentLoaded", function() {
                         `;
                         relatedList.appendChild(li);
                     });
-                } else {
-                    loadPopularSearchesForSidebar(relatedList);
+                }
+                
+                // If we have less than 5 items, load popular searches to fill up
+                if (relatedItems.length < 5) {
+                    sendAjaxRequest('puna_tiktok_get_popular_searches', {})
+                        .then(popularData => {
+                            if (popularData.success && popularData.data.popular && popularData.data.popular.length > 0) {
+                                const existingQueries = new Set(relatedItems.map(item => item.query.toLowerCase()));
+                                const currentQueryLower = currentQuery.trim().toLowerCase();
+                                let addedCount = 0;
+                                
+                                popularData.data.popular.forEach(function(item) {
+                                    if (addedCount >= (5 - relatedItems.length)) return;
+                                    const itemQueryLower = item.query.toLowerCase();
+                                    
+                                    // Skip if already in related searches or matches current query
+                                    if (!existingQueries.has(itemQueryLower) && itemQueryLower !== currentQueryLower) {
+                                        const li = document.createElement('li');
+                                        const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query);
+                                        li.innerHTML = `
+                                            <a href="${searchUrl}" class="search-suggestion-link">
+                                                <i class="fa-solid fa-fire"></i>
+                                                <span>${item.query}</span>
+                                            </a>
+                                        `;
+                                        relatedList.appendChild(li);
+                                        existingQueries.add(itemQueryLower);
+                                        addedCount++;
+                                    }
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            // Do nothing, keep what we have
+                        });
                 }
             })
             .catch(error => {
-                loadPopularSearchesForSidebar(relatedList);
+                // On error, keep empty
+                relatedList.innerHTML = '';
             });
     }
     
@@ -358,14 +396,14 @@ document.addEventListener("DOMContentLoaded", function() {
                         container.appendChild(li);
                     });
                 } else {
-                    container.innerHTML = `
-                        <li><a href="${window.location.pathname}?s=Sơn+Tùng+M-TP" class="search-suggestion-link"><i class="fa-solid fa-magnifying-glass"></i><span>Sơn Tùng M-TP</span></a></li>
-                        <li><a href="${window.location.pathname}?s=Nhạc+TikTok" class="search-suggestion-link"><i class="fa-solid fa-magnifying-glass"></i><span>Nhạc TikTok</span></a></li>
-                        <li><a href="${window.location.pathname}?s=Video+hài" class="search-suggestion-link"><i class="fa-solid fa-magnifying-glass"></i><span>Video hài</span></a></li>
-                    `;
+                    // No data, keep empty
+                    container.innerHTML = '';
                 }
             })
-            .catch(error => {});
+            .catch(error => {
+                // On error, keep empty
+                container.innerHTML = '';
+            });
     }
 
     const relatedList = document.getElementById('related-searches-list');

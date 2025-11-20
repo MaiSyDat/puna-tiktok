@@ -28,11 +28,6 @@ if (!defined('ABSPATH')) {
     </div>
     <!-- Search Suggestions & History Container -->
     <div class="search-suggestions-container" id="search-suggestions-container">
-        <!-- Loading indicator -->
-        <div class="search-loading" id="search-loading">
-            <p>Đang tải...</p>
-        </div>
-        
         <!-- Suggestions -->
         <ul class="search-suggestions" id="search-suggestions-list">
             <!-- Suggestions will be loaded using AJAX -->

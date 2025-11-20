@@ -41,14 +41,7 @@ $author_url = '#';
 
 $is_author = is_user_logged_in() && get_current_user_id() == $author_id;
 
-$caption = get_the_content();
-if (!empty($caption)) {
-    $caption = preg_replace('/#[\p{L}\p{N}_]+/u', '', $caption);
-    $caption = preg_replace('/\s+/', ' ', trim($caption));
-}
-if (empty(trim(strip_tags($caption)))) {
-    $caption = get_the_title();
-}
+$caption = puna_tiktok_get_video_description();
 $tags = get_the_terms(get_the_ID(), 'video_tag');
 
 global $withcomments;
@@ -198,7 +191,7 @@ $withcomments = 1;
                     <i class="fa-solid fa-bookmark"></i>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($saves); ?></span>
                 </div>
-                <div class="interaction-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(get_the_title()); ?>">
+                <div class="interaction-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(puna_tiktok_get_video_description()); ?>">
                     <i class="fa-solid fa-share"></i>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($shares); ?></span>
                 </div>
@@ -253,12 +246,22 @@ $withcomments = 1;
                                 $other_metadata = puna_tiktok_get_video_metadata($video_post->ID);
                                 $other_video_url = $other_metadata['video_url'];
                                 $other_likes = $other_metadata['likes'];
+                                
+                                // Check for featured image
+                                $featured_image_url = '';
+                                if (has_post_thumbnail($video_post->ID)) {
+                                    $featured_image_url = get_the_post_thumbnail_url($video_post->ID, 'medium');
+                                }
                                 ?>
                                 <a href="<?php echo esc_url(get_permalink($video_post->ID)); ?>" class="creator-video-item">
                                     <div class="creator-video-thumbnail">
-                                        <video class="creator-video-preview" muted playsinline data-mega-link="<?php echo esc_url($other_video_url); ?>">
-                                            <!-- Mega.nz video will be loaded via JavaScript -->
-                                        </video>
+                                        <?php if ($featured_image_url) : ?>
+                                            <img src="<?php echo esc_url($featured_image_url); ?>" alt="" class="creator-video-preview" loading="lazy">
+                                        <?php else : ?>
+                                            <video class="creator-video-preview" muted playsinline data-mega-link="<?php echo esc_url($other_video_url); ?>">
+                                                <!-- Mega.nz video will be loaded via JavaScript -->
+                                            </video>
+                                        <?php endif; ?>
                                         <div class="creator-video-overlay">
                                             <div class="creator-video-likes">
                                                 <i class="fa-solid fa-heart"></i>
@@ -266,7 +269,7 @@ $withcomments = 1;
                                             </div>
                                         </div>
                                     </div>
-                                    <h4 class="creator-video-title"><?php echo esc_html(get_the_title($video_post->ID)); ?></h4>
+                                    <h4 class="creator-video-title"><?php echo esc_html(puna_tiktok_get_video_description($video_post->ID)); ?></h4>
                                 </a>
                             <?php 
                             endforeach;

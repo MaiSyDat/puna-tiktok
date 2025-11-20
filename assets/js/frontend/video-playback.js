@@ -3,7 +3,7 @@
  */
 
 document.addEventListener("DOMContentLoaded", function() {
-    const videos = document.querySelectorAll('.tiktok-video, .taxonomy-video, .creator-video-preview');
+    const videos = document.querySelectorAll('.tiktok-video, .taxonomy-video, .creator-video-preview, .search-video-preview');
     const mainContent = document.querySelector('.main-content');
     
     let globalMuted = true;
@@ -190,6 +190,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }, observerOptions);
 
     videos.forEach(video => {
+        // Skip if it's an img tag (not a video element)
+        if (video.tagName !== 'VIDEO') {
+            return;
+        }
+        
         video.muted = true;
         video.setAttribute('muted', '');
         video.playsInline = true;
@@ -230,8 +235,8 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // All videos are Mega videos - always load via Mega
         if (typeof ensureMegaVideoSource !== 'undefined' && video.dataset.megaLink) {
-            // For taxonomy-video and profile cards, load preview (first frame)
-            if (video.classList.contains('taxonomy-video') || video.closest('.profile-video-card')) {
+            // For taxonomy-video, search-video-preview and profile cards, load preview (first frame)
+            if (video.classList.contains('taxonomy-video') || video.classList.contains('search-video-preview') || video.closest('.profile-video-card')) {
                 ensureMegaVideoSource(video).then(() => {
                     // Set to first frame for thumbnail preview
                     if (video.readyState >= 2) {
@@ -336,30 +341,64 @@ document.addEventListener("DOMContentLoaded", function() {
     applyVolumeToAllVideos();
     updateGlobalVolumeUI();
 
-    // Lazy load previews for taxonomy-video cards
+    // Lazy load previews for taxonomy-video and search-video-preview cards (only video elements, not img)
     const taxonomyVideoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting && entry.target.dataset.needsPreview === '1' && entry.target.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
-                ensureMegaVideoSource(entry.target).then(() => {
-                    if (entry.target.readyState >= 2) {
-                        entry.target.currentTime = 0.1;
-                        entry.target.pause();
+            const video = entry.target;
+            // Skip if it's an img tag (not a video element)
+            if (video.tagName !== 'VIDEO') {
+                return;
+            }
+            
+            const isSearchVideo = video.classList.contains('search-video-preview');
+            const needsPreview = video.dataset.needsPreview === '1' || isSearchVideo;
+            
+            if (entry.isIntersecting && needsPreview && video.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
+                ensureMegaVideoSource(video).then(() => {
+                    if (video.readyState >= 2) {
+                        video.currentTime = 0.1;
+                        video.pause();
                     } else {
-                        entry.target.addEventListener('loadedmetadata', () => {
-                            entry.target.currentTime = 0.1;
-                            entry.target.pause();
+                        video.addEventListener('loadedmetadata', () => {
+                            video.currentTime = 0.1;
+                            video.pause();
                         }, { once: true });
                     }
                 }).catch(() => {});
-                entry.target.removeAttribute('data-needs-preview');
-                taxonomyVideoObserver.unobserve(entry.target);
+                
+                if (video.dataset.needsPreview === '1') {
+                    video.removeAttribute('data-needs-preview');
+                    taxonomyVideoObserver.unobserve(video);
+                }
             }
         });
     }, { rootMargin: '100px' });
     
-    // Observe all taxonomy-videos that need preview
-    document.querySelectorAll('.taxonomy-video[data-needs-preview="1"]').forEach(video => {
-        taxonomyVideoObserver.observe(video);
+    // Observe all taxonomy-videos and search-video-preview that need preview (only video elements)
+    document.querySelectorAll('.taxonomy-video[data-needs-preview="1"], .search-video-preview').forEach(video => {
+        // Skip if it's an img tag (not a video element)
+        if (video.tagName !== 'VIDEO') {
+            return;
+        }
+        
+        if (video.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
+            taxonomyVideoObserver.observe(video);
+            // Also load immediately if in viewport
+            const rect = video.getBoundingClientRect();
+            if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
+                ensureMegaVideoSource(video).then(() => {
+                    if (video.readyState >= 2) {
+                        video.currentTime = 0.1;
+                        video.pause();
+                    } else {
+                        video.addEventListener('loadedmetadata', () => {
+                            video.currentTime = 0.1;
+                            video.pause();
+                        }, { once: true });
+                    }
+                }).catch(() => {});
+            }
+        }
     });
 
     // Export functions for other modules
