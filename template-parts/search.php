@@ -3,6 +3,10 @@
  * Search Results Template
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 $search_query = get_search_query();
 $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'top';
 $valid_tabs = array('top', 'users', 'videos');

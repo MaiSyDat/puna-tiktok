@@ -1,4 +1,8 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 $post_id = get_the_ID();
 $metadata = puna_tiktok_get_video_metadata($post_id);
 $video_url = $metadata['video_url'];

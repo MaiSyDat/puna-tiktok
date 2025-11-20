@@ -73,6 +73,14 @@ class Puna_TikTok_AJAX_Handlers {
         // Get taxonomy videos (category & tag)
         add_action('wp_ajax_puna_tiktok_get_taxonomy_videos', array($this, 'get_taxonomy_videos'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_taxonomy_videos', array($this, 'get_taxonomy_videos'));
+        
+        // Get reply input HTML
+        add_action('wp_ajax_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
+        add_action('wp_ajax_nopriv_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
+        
+        // Get reply input HTML
+        add_action('wp_ajax_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
+        add_action('wp_ajax_nopriv_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
     }
 
     /**
@@ -212,10 +220,103 @@ class Puna_TikTok_AJAX_Handlers {
         update_comment_meta($comment_id, '_puna_tiktok_guest_id', $guest_id);
     }
     
+    // Get the comment object
+    $comment = get_comment($comment_id);
+    if (!$comment) {
+        wp_send_json_error(array('message' => 'Không thể lấy thông tin bình luận.'));
+    }
+    
+    // Refresh comment object to ensure all data is up to date
+    $comment = get_comment($comment_id);
+    
+    // Get liked comments for current user - same logic as in comments.php
+    $liked_comments = array();
+    $current_user_id = get_current_user_id();
+    if ($current_user_id) {
+        $liked_comments = get_user_meta($current_user_id, '_puna_tiktok_liked_comments', true);
+        if (!is_array($liked_comments)) {
+            $liked_comments = array();
+        }
+    }
+    
+    // Render HTML using template part - same as in comments.php
+    ob_start();
+    
+    if ($parent_id > 0) {
+        // This is a reply
+        get_template_part('template-parts/components/comments/comment-reply', null, array(
+            'reply' => $comment,
+            'post_id' => $post_id,
+            'liked_comments' => $liked_comments,
+        ));
+    } else {
+        // This is a top-level comment
+        get_template_part('template-parts/components/comments/comment-item', null, array(
+            'comment' => $comment,
+            'post_id' => $post_id,
+            'liked_comments' => $liked_comments,
+        ));
+    }
+    
+    $html = ob_get_clean();
+    
+    // Normalize HTML to match page load output
+    // Only remove excessive whitespace, preserve structure
+    // Remove whitespace between tags (but keep text content spacing)
+    $html = preg_replace('/>\s*\n\s*</', '><', $html);
+    // Normalize multiple spaces to single space (but not in text content)
+    $html = preg_replace('/\s{2,}/', ' ', $html);
+    $html = trim($html);
+    
+    // Ensure HTML is not empty
+    if (empty($html) || trim($html) === '') {
+        // Fallback: create basic HTML structure
+        $comment_author_id = $comment->user_id ? $comment->user_id : 0;
+        $comment_author_name = $comment_author_id > 0 ? puna_tiktok_get_user_display_name($comment_author_id) : $comment->comment_author;
+        $comment_date = human_time_diff(strtotime($comment->comment_date), current_time('timestamp'));
+        $comment_likes = get_comment_meta($comment->comment_ID, '_comment_likes', true) ?: 0;
+        
+        $is_reply_class = $parent_id > 0 ? ' comment-reply' : '';
+        $html = sprintf(
+            '<div class="comment-item%s" data-comment-id="%d">
+                <div class="comment-avatar-wrapper">%s</div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author-wrapper">
+                            <strong class="comment-author">%s</strong>
+                        </span>
+                    </div>
+                    <p class="comment-text">%s</p>
+                    <div class="comment-footer">
+                        <span class="comment-date">%s trước</span>
+                        <a href="#" class="reply-link" data-comment-id="%d">Trả lời</a>
+                    </div>
+                </div>
+                <div class="comment-right-actions">
+                    <div class="comment-likes" data-comment-id="%d">
+                        <i class="fa-regular fa-heart"></i>
+                        <span>%d</span>
+                    </div>
+                </div>
+            </div>',
+            $is_reply_class,
+            $comment->comment_ID,
+            puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', ''),
+            esc_html($comment_author_name),
+            wp_kses_post($comment->comment_content),
+            esc_html($comment_date),
+            $comment->comment_ID,
+            $comment->comment_ID,
+            $comment_likes
+        );
+    }
+    
     wp_send_json_success(array(
         'message' => 'Bình luận đã được thêm.',
         'comment_id' => $comment_id,
-        'guest_id' => isset($guest_id) ? $guest_id : ''
+        'guest_id' => isset($guest_id) ? $guest_id : '',
+        'html' => $html,
+        'is_reply' => $parent_id > 0
     ));
 }
 
@@ -1062,6 +1163,58 @@ class Puna_TikTok_AJAX_Handlers {
         wp_send_json_success(array(
             'videos' => $videos,
             'count' => count($videos)
+        ));
+    }
+    
+    /**
+     * Get reply input HTML
+     */
+    public function get_reply_input() {
+        if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
+            wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+            return;
+        }
+        
+        $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+        $parent_id = isset($_POST['parent_id']) ? intval($_POST['parent_id']) : 0;
+        $is_reply = isset($_POST['is_reply']) ? (bool) $_POST['is_reply'] : false;
+        
+        // Validate post_id
+        if (!$post_id || $post_id <= 0) {
+            // Try to get from current post if on single page
+            if (is_singular('video')) {
+                $post_id = get_the_ID();
+            }
+            
+            if (!$post_id || $post_id <= 0) {
+                wp_send_json_error(array('message' => 'Thiếu thông tin video.'));
+                return;
+            }
+        }
+        
+        // Validate parent_id
+        if (!$parent_id || $parent_id <= 0) {
+            wp_send_json_error(array('message' => 'Thiếu thông tin bình luận gốc.'));
+            return;
+        }
+        
+        // Validate post type
+        if (get_post_type($post_id) !== 'video') {
+            wp_send_json_error(array('message' => 'Video không hợp lệ.'));
+            return;
+        }
+        
+        // Render HTML using template part
+        ob_start();
+        get_template_part('template-parts/components/comments/reply-input', null, array(
+            'post_id' => $post_id,
+            'parent_id' => $parent_id,
+            'is_reply' => $is_reply,
+        ));
+        $html = ob_get_clean();
+        
+        wp_send_json_success(array(
+            'html' => $html
         ));
     }
     

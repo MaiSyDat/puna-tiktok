@@ -2,6 +2,11 @@
 /**
  * Sidebar Template
  */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 $menu_items = Puna_TikTok_Customize_Sidebar::get_menu_items();
 
 $logo_url = get_theme_mod('sidebar_logo', '');

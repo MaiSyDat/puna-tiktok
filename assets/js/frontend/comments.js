@@ -68,6 +68,48 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    /**
+     * Helper function to find postId from various sources
+     */
+    function findPostId(element) {
+        // Try element's dataset
+        if (element?.dataset?.postId && element.dataset.postId !== '0') {
+            return parseInt(element.dataset.postId, 10);
+        }
+        
+        // Try closest overlay
+        const overlay = element?.closest('.comments-overlay');
+        if (overlay?.id) {
+            const overlayId = overlay.id.replace('comments-overlay-', '');
+            if (overlayId && overlayId !== '0') {
+                return parseInt(overlayId, 10);
+            }
+        }
+        
+        // Try watch comments container
+        const watchComments = element?.closest('.video-watch-comments');
+        if (watchComments) {
+            const commentInput = watchComments.querySelector('.comment-input[data-post-id]');
+            if (commentInput?.dataset.postId && commentInput.dataset.postId !== '0') {
+                return parseInt(commentInput.dataset.postId, 10);
+            }
+        }
+        
+        // Try video element
+        const videoElement = document.querySelector('.tiktok-video[data-post-id]');
+        if (videoElement?.dataset.postId && videoElement.dataset.postId !== '0') {
+            return parseInt(videoElement.dataset.postId, 10);
+        }
+        
+        // Try URL
+        const urlMatch = window.location.pathname.match(/\/(\d+)\//);
+        if (urlMatch?.[1] && urlMatch[1] !== '0') {
+            return parseInt(urlMatch[1], 10);
+        }
+        
+        return null;
+    }
+
     function handleCommentInput(input) {
         const container = input.closest('.comment-input-container');
         const btn = container?.querySelector('.submit-comment-btn');
@@ -90,20 +132,84 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.addEventListener('click', function(e) {
         const submitBtn = e.target.closest('.submit-comment-btn');
-        if (!submitBtn || submitBtn.disabled || !submitBtn.dataset.postId) return;
+        if (!submitBtn || submitBtn.disabled) return;
         
         e.preventDefault();
         
-        const postId = submitBtn.dataset.postId;
-        const parentId = submitBtn.dataset.parentId ? parseInt(submitBtn.dataset.parentId, 10) : 0;
         const container = submitBtn.closest('.comment-input-container');
-        const input = container?.querySelector('.comment-input');
+        
+        // Check if this is a reply input container
+        const replyContainer = submitBtn.closest('.reply-input-container');
+        const isReplyContainer = !!replyContainer;
+        
+        // Find input - prioritize reply-input-field if in reply container
+        let input = null;
+        if (isReplyContainer) {
+            input = container?.querySelector('.reply-input-field');
+        }
+        if (!input) {
+            input = container?.querySelector('.comment-input:not(.reply-input-field)') || container?.querySelector('.comment-input');
+        }
+        
+        // Get postId using helper function
+        let postId = findPostId(submitBtn) || findPostId(input);
+        
+        if (!postId || postId === 0 || isNaN(postId)) {
+            showToast('Không tìm thấy video. Vui lòng thử lại.', 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Đăng';
+            return;
+        }
+        
+        // Get parentId from submitBtn or input field
+        let parentId = 0;
+        
+        // Check if this is a reply input (has reply-input-field class or is inside reply-input-container)
+        const isReplyInput = isReplyContainer || 
+                            container?.classList.contains('reply-input') || 
+                            input?.classList.contains('reply-input-field') ||
+                            submitBtn.closest('.reply-input-container') !== null;
+        
+        if (isReplyInput) {
+            // For reply, parentId is required
+            if (submitBtn.dataset.parentId) {
+                parentId = parseInt(submitBtn.dataset.parentId, 10);
+            } else if (input && input.dataset.parentId) {
+                parentId = parseInt(input.dataset.parentId, 10);
+            }
+            
+            // If still no parentId, try to find from the closest comment item
+            if (!parentId || parentId === 0) {
+                const replyContainer = submitBtn.closest('.reply-input-container');
+                if (replyContainer) {
+                    // Find the comment item that this reply is for
+                    let prevSibling = replyContainer.previousElementSibling;
+                    while (prevSibling) {
+                        if (prevSibling.classList?.contains('comment-item')) {
+                            parentId = parseInt(prevSibling.dataset.commentId, 10);
+                            break;
+                        }
+                        prevSibling = prevSibling.previousElementSibling;
+                    }
+                }
+            }
+            
+        } else {
+            // For top-level comment, check if parentId exists (should be 0)
+            if (submitBtn.dataset.parentId) {
+                parentId = parseInt(submitBtn.dataset.parentId, 10);
+            } else if (input && input.dataset.parentId) {
+                parentId = parseInt(input.dataset.parentId, 10);
+            }
+        }
+        
         const commentText = input?.value.trim();
         
         if (!commentText) return;
         
         submitBtn.disabled = true;
         submitBtn.textContent = 'Đang đăng...';
+        
         
         const params = {
             post_id: postId,
@@ -121,233 +227,182 @@ document.addEventListener("DOMContentLoaded", function() {
         sendAjaxRequest('puna_tiktok_add_comment', params)
         .then(data => {
             if (data.success) {
+                const html = data.data?.html || '';
+                const isReply = data.data?.is_reply || false;
                 const commentId = data.data?.comment_id || null;
-                if (parentId > 0) {
-                    addReplyToList(postId, parentId, commentText, commentId);
-                } else {
-                    addCommentToList(postId, commentText, commentId);
+                
+                if (!html || !html.trim()) {
+                    showToast('Bình luận đã được thêm. Đang tải lại...', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                    return;
                 }
                 
-                if (input) input.value = '';
+                let commentsList = null;
+                const overlay = document.getElementById('comments-overlay-' + postId);
+                if (overlay) {
+                    commentsList = overlay.querySelector('.comments-list');
+                } else {
+                    const watchComments = document.querySelector('.video-watch-comments');
+                    if (watchComments) {
+                        commentsList = watchComments.querySelector('.comments-list');
+                    }
+                }
+                
+                if (!commentsList) {
+                    showToast('Bình luận đã được thêm. Đang tải lại...', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                    return;
+                }
+                
+                const noComments = commentsList.querySelector('.no-comments');
+                if (noComments) noComments.remove();
+                
+                // Create a temporary container to parse HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html.trim();
+                
+                // Get the first element (should be comment-item)
+                let commentElement = tempDiv.firstElementChild;
+                
+                // If first child is text node (whitespace), get next element
+                while (commentElement && commentElement.nodeType !== 1) {
+                    commentElement = commentElement.nextSibling;
+                }
+                
+                if (!commentElement) {
+                    showToast('Bình luận đã được thêm. Đang tải lại...', 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                    return;
+                }
+                
+                // Insert comment into DOM
+                if (isReply && parentId > 0) {
+                    // Find the parent comment - search in entire document
+                    let parentItem = null;
+                    
+                    // First try to find in the same container as commentsList
+                    parentItem = commentsList.querySelector(`.comment-item[data-comment-id="${parentId}"]`);
+                    
+                    // If not found, search in entire document
+                    if (!parentItem) {
+                        const overlay = document.getElementById('comments-overlay-' + postId);
+                        const watchComments = document.querySelector('.video-watch-comments');
+                        const searchContainer = overlay || watchComments || document;
+                        parentItem = searchContainer.querySelector(`.comment-item[data-comment-id="${parentId}"]`);
+                    }
+                    
+                    if (!parentItem) {
+                        showToast('Không tìm thấy bình luận gốc. Đang tải lại...', 'error');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                        return;
+                    }
+                    
+                    let repliesSection = null;
+                    let nextSibling = parentItem.nextElementSibling;
+                    
+                    // Look for existing replies section
+                    while (nextSibling) {
+                        if (nextSibling.classList?.contains('comment-replies') && 
+                            nextSibling.dataset.parentId === parentId.toString()) {
+                            repliesSection = nextSibling;
+                            break;
+                        }
+                        if (nextSibling.classList?.contains('comment-item') && 
+                            !nextSibling.classList.contains('comment-reply')) {
+                            break;
+                        }
+                        nextSibling = nextSibling.nextElementSibling;
+                    }
+                    
+                    if (repliesSection) {
+                        // Remove reply input if exists
+                        const replyInput = repliesSection.querySelector('.reply-input-container');
+                        if (replyInput) replyInput.remove();
+                        
+                        const showMoreBtn = repliesSection.querySelector('.show-more-replies-btn');
+                        const moreContainer = repliesSection.querySelector('.more-replies-container');
+                        
+                        if (showMoreBtn && moreContainer) {
+                            repliesSection.insertBefore(commentElement, showMoreBtn);
+                            
+                            // Update show more button count
+                            const currentLoaded = parseInt(showMoreBtn.dataset.loaded, 10) || 0;
+                            const total = parseInt(showMoreBtn.dataset.total, 10) || 0;
+                            const newLoaded = currentLoaded + 1;
+                            const newRemaining = total - newLoaded;
+                            
+                            showMoreBtn.dataset.loaded = newLoaded;
+                            
+                            if (newRemaining > 0) {
+                                showMoreBtn.textContent = `Xem thêm phản hồi (${newRemaining})`;
+                            } else {
+                                const remainingReplies = moreContainer.querySelectorAll('.comment-item');
+                                remainingReplies.forEach(r => repliesSection.insertBefore(r, showMoreBtn));
+                                showMoreBtn.style.display = 'none';
+                                moreContainer.style.display = 'none';
+                            }
+                        } else {
+                            repliesSection.appendChild(commentElement);
+                        }
+                    } else {
+                        // Create new replies section
+                        repliesSection = document.createElement('div');
+                        repliesSection.className = 'comment-replies';
+                        repliesSection.setAttribute('data-parent-id', parentId);
+                        repliesSection.appendChild(commentElement);
+                        parentItem.parentElement.insertBefore(repliesSection, parentItem.nextSibling);
+                    }
+                    
+                    commentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    // Top-level comment - insert at the beginning
+                    commentsList.insertBefore(commentElement, commentsList.firstChild);
+                    commentsList.scrollTop = 0;
+                }
+                
+                // Remove reply input if exists (must be done after inserting comment)
+                if (isReply && parentId > 0) {
+                    const replyInput = document.querySelector('.reply-input-container');
+                    if (replyInput) replyInput.remove();
+                }
+                
+                // Clear input and reset button
+                if (input) {
+                    input.value = '';
+                    handleCommentInput(input);
+                }
+                
+                // Reset submit button
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Đăng';
-                submitBtn.removeAttribute('data-parent-id');
+                if (submitBtn.hasAttribute('data-parent-id')) {
+                    submitBtn.removeAttribute('data-parent-id');
+                }
                 
+                // Update comment count
                 updateCommentCount(postId);
             } else {
-                showToast('Có lỗi xảy ra khi đăng bình luận.', 'error');
+                const errorMsg = data.data?.message || 'Có lỗi xảy ra khi đăng bình luận.';
+                showToast(errorMsg, 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Đăng';
             }
         })
-        .catch(error => {
+        .catch(() => {
+            showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Đăng';
         });
     });
 
-    function addCommentToList(postId, commentText, commentId) {
-        let commentsList = null;
-        const overlay = document.getElementById('comments-overlay-' + postId);
-        if (overlay) {
-            commentsList = overlay.querySelector('.comments-list');
-        } else {
-            const watchComments = document.querySelector('.video-watch-comments');
-            if (watchComments) {
-                commentsList = watchComments.querySelector('.comments-list');
-            }
-        }
-        
-        if (!commentsList) return;
-        
-        const noComments = commentsList.querySelector('.no-comments');
-        if (noComments) noComments.remove();
-        
-        let authorName = 'Bạn';
-        let avatarHtml = '';
-        
-        if (isLoggedIn() && puna_tiktok_ajax.current_user) {
-            authorName = puna_tiktok_ajax.current_user.display_name || 'Bạn';
-            const avatarUrl = puna_tiktok_ajax.avatar_url || 'https://via.placeholder.com/40';
-            avatarHtml = `<img src="${avatarUrl}" alt="${authorName}" class="comment-avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">`;
-        } else {
-            const guestId = GuestStorage.getGuestId();
-            const guestIdShort = guestId.substring(6, 14);
-            authorName = 'Khách #' + guestIdShort;
-            
-            const idPart = guestId.replace('guest_', '');
-            const lastTwo = idPart.substring(idPart.length - 2);
-            const initials = 'K' + lastTwo.toUpperCase();
-            
-            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52BE80', '#E74C3C', '#3498DB', '#9B59B6', '#1ABC9C', '#F39C12', '#E67E22', '#34495E', '#16A085', '#27AE60', '#2980B9'];
-            const hash = guestId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const bgColor = colors[hash % colors.length];
-            
-            avatarHtml = `<div class="avatar-initials comment-avatar" style="width: 40px; height: 40px; background-color: ${bgColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 16px;">${initials}</div>`;
-        }
-        
-        const finalCommentId = commentId || ('temp-' + Date.now());
-        
-        const commentElement = document.createElement('div');
-        commentElement.className = 'comment-item';
-        commentElement.setAttribute('data-comment-id', finalCommentId);
-        commentElement.innerHTML = `
-            <a href="#" class="comment-avatar-link">
-                ${avatarHtml}
-            </a>
-            <div class="comment-content">
-                <div class="comment-header">
-                    <a href="#" class="comment-author-link">
-                        <strong class="comment-author">${authorName}</strong>
-                    </a>
-                </div>
-                <p class="comment-text">${commentText}</p>
-                <div class="comment-footer">
-                    <span class="comment-date">Vừa xong</span>
-                    <a href="#" class="reply-link" data-comment-id="${finalCommentId}">Trả lời</a>
-                </div>
-            </div>
-            <div class="comment-right-actions">
-                <div class="comment-actions">
-                    <button class="comment-options-btn" title="Tùy chọn">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </button>
-                    <div class="comment-options-dropdown">
-                        <button class="comment-action-delete" data-comment-id="${finalCommentId}">
-                            <i class="fa-solid fa-trash"></i> Xóa
-                        </button>
-                    </div>
-                </div>
-                <div class="comment-likes" data-comment-id="${finalCommentId}">
-                    <i class="fa-regular fa-heart"></i>
-                    <span>0</span>
-                </div>
-            </div>
-        `;
-        
-        commentsList.insertBefore(commentElement, commentsList.firstChild);
-        commentsList.scrollTop = 0;
-    }
-
-    function addReplyToList(postId, parentId, commentText, commentId) {
-        let parentItem = null;
-        let container = null;
-        
-        const overlay = document.getElementById('comments-overlay-' + postId);
-        if (overlay) {
-            container = overlay;
-            parentItem = overlay.querySelector(`.comment-item[data-comment-id="${parentId}"]`);
-        } else {
-            const watchComments = document.querySelector('.video-watch-comments');
-            if (watchComments) {
-                container = watchComments;
-                parentItem = watchComments.querySelector(`.comment-item[data-comment-id="${parentId}"]`);
-            }
-        }
-        
-        if (!parentItem || !container) return;
-        
-        let repliesSection = container.querySelector(`.comment-replies[data-parent-id="${parentId}"]`);
-        
-        if (!repliesSection) {
-            repliesSection = document.createElement('div');
-            repliesSection.className = 'comment-replies';
-            repliesSection.setAttribute('data-parent-id', parentId);
-            parentItem.parentElement.insertBefore(repliesSection, parentItem.nextSibling);
-        }
-        
-        let authorName = 'Bạn';
-        let avatarHtml = '';
-        
-        if (isLoggedIn() && puna_tiktok_ajax.current_user) {
-            authorName = puna_tiktok_ajax.current_user.display_name || 'Bạn';
-            const avatarUrl = puna_tiktok_ajax.avatar_url || 'https://via.placeholder.com/40';
-            avatarHtml = `<img src="${avatarUrl}" alt="${authorName}" class="comment-avatar" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">`;
-        } else {
-            const guestId = GuestStorage.getGuestId();
-            const guestIdShort = guestId.substring(6, 14);
-            authorName = 'Khách #' + guestIdShort;
-            
-            const idPart = guestId.replace('guest_', '');
-            const lastTwo = idPart.substring(idPart.length - 2);
-            const initials = 'K' + lastTwo.toUpperCase();
-            
-            const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B739', '#52BE80', '#E74C3C', '#3498DB', '#9B59B6', '#1ABC9C', '#F39C12', '#E67E22', '#34495E', '#16A085', '#27AE60', '#2980B9'];
-            const hash = guestId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const bgColor = colors[hash % colors.length];
-            
-            avatarHtml = `<div class="avatar-initials comment-avatar" style="width: 40px; height: 40px; background-color: ${bgColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 16px;">${initials}</div>`;
-        }
-        
-        const finalCommentId = commentId || ('temp-' + Date.now());
-        
-        const replyElement = document.createElement('div');
-        replyElement.className = 'comment-item comment-reply';
-        replyElement.setAttribute('data-comment-id', finalCommentId);
-        replyElement.innerHTML = `
-            <a href="#" class="comment-avatar-link">
-                ${avatarHtml}
-            </a>
-            <div class="comment-content">
-                <div class="comment-header">
-                    <a href="#" class="comment-author-link">
-                        <strong class="comment-author">${authorName}</strong>
-                    </a>
-                </div>
-                <p class="comment-text">${commentText}</p>
-                <div class="comment-footer">
-                    <span class="comment-date">Vừa xong</span>
-                    <a href="#" class="reply-link" data-comment-id="${finalCommentId}">Trả lời</a>
-                </div>
-            </div>
-            <div class="comment-right-actions">
-                <div class="comment-actions">
-                    <button class="comment-options-btn" title="Tùy chọn">
-                        <i class="fa-solid fa-ellipsis"></i>
-                    </button>
-                    <div class="comment-options-dropdown">
-                        <button class="comment-action-delete" data-comment-id="${finalCommentId}">
-                            <i class="fa-solid fa-trash"></i> Xóa
-                        </button>
-                    </div>
-                </div>
-                <div class="comment-likes" data-comment-id="${finalCommentId}">
-                    <i class="fa-regular fa-heart"></i>
-                    <span>0</span>
-                </div>
-            </div>
-        `;
-        
-        const replyInput = repliesSection.querySelector('.reply-input-container');
-        if (replyInput) replyInput.remove();
-        
-        const showMoreBtn = repliesSection.querySelector('.show-more-replies-btn');
-        const moreContainer = repliesSection.querySelector('.more-replies-container');
-        
-        if (showMoreBtn && moreContainer) {
-            repliesSection.insertBefore(replyElement, showMoreBtn);
-            
-            const currentLoaded = parseInt(showMoreBtn.dataset.loaded, 10) || 0;
-            const total = parseInt(showMoreBtn.dataset.total, 10) || 0;
-            const newLoaded = currentLoaded + 1;
-            const newRemaining = total - newLoaded;
-            
-            showMoreBtn.dataset.loaded = newLoaded;
-            
-            if (newRemaining > 0) {
-                showMoreBtn.textContent = `Xem thêm phản hồi (${newRemaining})`;
-            } else {
-                const remainingReplies = moreContainer.querySelectorAll('.comment-item');
-                remainingReplies.forEach(r => repliesSection.insertBefore(r, showMoreBtn));
-                showMoreBtn.style.display = 'none';
-                moreContainer.style.display = 'none';
-            }
-        } else {
-            repliesSection.appendChild(replyElement);
-        }
-        
-        replyElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
 
     function updateCommentCount(postId) {
         const videoSidebar = document.querySelector(`.action-item[data-action="comment"][data-post-id="${postId}"] .count, .interaction-item[data-action="comment-toggle"][data-post-id="${postId}"] .stat-count`);
@@ -378,28 +433,8 @@ document.addEventListener("DOMContentLoaded", function() {
         
         const parentCommentId = parseInt(replyLink.dataset.commentId, 10);
         const commentItem = replyLink.closest('.comment-item');
-        const overlay = replyLink.closest('.comments-overlay');
         
-        let postId = '';
-        if (overlay) {
-            postId = overlay.id.replace('comments-overlay-', '');
-        } else {
-            const commentInput = document.querySelector('.comment-input[data-post-id]');
-            if (commentInput) {
-                postId = commentInput.dataset.postId;
-            } else {
-                const videoElement = document.querySelector('.tiktok-video[data-post-id]');
-                if (videoElement) {
-                    postId = videoElement.dataset.postId;
-                } else {
-                    const urlMatch = window.location.pathname.match(/\/(\d+)\//);
-                    if (urlMatch) {
-                        postId = urlMatch[1];
-                    }
-                }
-            }
-        }
-        
+        const postId = findPostId(replyLink);
         if (!postId) {
             return;
         }
@@ -407,60 +442,55 @@ document.addEventListener("DOMContentLoaded", function() {
         const existingInput = document.querySelector('.reply-input-container');
         if (existingInput) existingInput.remove();
         
-        let repliesSection = null;
-        let nextSibling = commentItem.nextElementSibling;
-        
-        while (nextSibling) {
-            if (nextSibling.classList?.contains('comment-replies') && 
-                nextSibling.dataset.parentId === parentCommentId.toString()) {
-                repliesSection = nextSibling;
-                break;
+        // Get reply input HTML from server
+        const isReply = commentItem.classList.contains('comment-reply');
+        sendAjaxRequest('puna_tiktok_get_reply_input', {
+            post_id: postId,
+            parent_id: parentCommentId,
+            is_reply: isReply
+        })
+        .then(data => {
+            if (data.success && data.data?.html) {
+                const html = data.data.html;
+                
+                // Create a temporary container to parse HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html.trim();
+                const replyContainer = tempDiv.firstElementChild;
+                
+                if (replyContainer) {
+                    let repliesSection = null;
+                    let nextSibling = commentItem.nextElementSibling;
+                    
+                    while (nextSibling) {
+                        if (nextSibling.classList?.contains('comment-replies') && 
+                            nextSibling.dataset.parentId === parentCommentId.toString()) {
+                            repliesSection = nextSibling;
+                            break;
+                        }
+                        if (nextSibling.classList?.contains('comment-item') && 
+                            !nextSibling.classList.contains('comment-reply')) {
+                            break;
+                        }
+                        nextSibling = nextSibling.nextElementSibling;
+                    }
+                    
+                    if (repliesSection) {
+                        repliesSection.insertBefore(replyContainer, repliesSection.firstChild);
+                    } else {
+                        commentItem.parentElement.insertBefore(replyContainer, commentItem.nextSibling);
+                    }
+                    
+                    const input = replyContainer.querySelector('.reply-input-field');
+                    if (input) setTimeout(() => input.focus(), 100);
+                    
+                    handleCommentInput(input);
+                }
             }
-            if (nextSibling.classList?.contains('comment-item') && 
-                !nextSibling.classList.contains('comment-reply')) {
-                break;
-            }
-            nextSibling = nextSibling.nextElementSibling;
-        }
-        
-        const replyContainer = document.createElement('div');
-        replyContainer.className = 'reply-input-container';
-        replyContainer.style.paddingLeft = commentItem.classList.contains('comment-reply') ? '52px' : '28px';
-        replyContainer.innerHTML = `
-            <div class="comment-input-container reply-input">
-                <input type="text" 
-                       class="comment-input reply-input-field" 
-                       placeholder="Viết phản hồi..." 
-                       data-post-id="${postId}"
-                       data-parent-id="${parentCommentId}">
-                <div class="comment-input-actions">
-                    <button class="comment-action-btn" title="Gắn thẻ người dùng">
-                        <i class="fa-solid fa-at"></i>
-                    </button>
-                    <button class="comment-action-btn" title="Emoji">
-                        <i class="fa-regular fa-face-smile"></i>
-                    </button>
-                    <div class="comment-submit-actions">
-                        <button class="submit-comment-btn" 
-                                data-post-id="${postId}" 
-                                data-parent-id="${parentCommentId}"
-                                disabled>Đăng</button>
-                        <button class="cancel-reply-btn" title="Hủy">Hủy</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        if (repliesSection) {
-            repliesSection.insertBefore(replyContainer, repliesSection.firstChild);
-        } else {
-            commentItem.parentElement.insertBefore(replyContainer, commentItem.nextSibling);
-        }
-        
-        const input = replyContainer.querySelector('.reply-input-field');
-        if (input) setTimeout(() => input.focus(), 100);
-        
-        handleCommentInput(replyContainer.querySelector('.reply-input-field'));
+        })
+        .catch(() => {
+            // Silently fail - user can try again
+        });
     });
 
     document.addEventListener('click', function(e) {
@@ -514,23 +544,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!delBtn) return;
         
         const item = delBtn.closest('.comment-item');
-        const overlay = delBtn.closest('.comments-overlay');
-        const watchComments = delBtn.closest('.video-watch-comments');
-        
-        let postId = '';
-        if (overlay) {
-            postId = overlay.id.replace('comments-overlay-', '');
-        } else if (watchComments) {
-            const commentInput = watchComments.querySelector('.comment-input[data-post-id]');
-            if (commentInput) {
-                postId = commentInput.dataset.postId;
-            } else {
-                const videoElement = document.querySelector('.tiktok-video[data-post-id]');
-                if (videoElement) {
-                    postId = videoElement.dataset.postId;
-                }
-            }
-        }
+        const postId = findPostId(delBtn);
         
         const commentsList = delBtn.closest('.comments-list');
         const sidebar = delBtn.closest('.comments-sidebar');

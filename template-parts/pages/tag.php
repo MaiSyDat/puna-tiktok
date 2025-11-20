@@ -3,6 +3,10 @@
  * Template Name: Tag
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 get_header();
 
 // Get tag from query var

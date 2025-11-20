@@ -1,4 +1,9 @@
-<?php get_header(); ?>
+<?php
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+get_header(); ?>
 
 <div class="tiktok-app">
 	<?php get_template_part('template-parts/sidebar'); ?>

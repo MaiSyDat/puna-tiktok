@@ -3,6 +3,10 @@
  * Video Card Template
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 $post_id = isset($args['post_id']) ? $args['post_id'] : get_the_ID();
 $card_class = isset($args['card_class']) ? $args['card_class'] : 'taxonomy-card';
 

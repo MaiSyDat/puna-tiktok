@@ -3,6 +3,10 @@
  * Single Video Template
  */
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 if (!have_posts()) {
     return;
 }

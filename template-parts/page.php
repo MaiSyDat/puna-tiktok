@@ -1,4 +1,8 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 echo '<main id="primary" class="site-main">';
 while ( have_posts() ) : the_post();
     echo '<article id="post-' . get_the_ID() . '" class="' . implode(' ', get_post_class('')) . '">';

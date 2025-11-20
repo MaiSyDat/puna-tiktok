@@ -2,6 +2,10 @@
 /**
  * Search Panel Template
  */
+
+if (!defined('ABSPATH')) {
+    exit;
+}
 ?>
 
 <!-- Search Panel -->
