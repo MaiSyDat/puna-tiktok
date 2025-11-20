@@ -26,7 +26,8 @@ class Puna_TikTok_Setup {
      */
     private function get_custom_pages() {
         return array(
-            'explore'  => 'template-parts/pages/explore.php',
+            'category' => 'template-parts/pages/category.php',
+            'tag'      => 'template-parts/pages/tag.php',
         );
     }
     
@@ -35,7 +36,8 @@ class Puna_TikTok_Setup {
      */
     private function get_page_titles() {
         return array(
-            'explore'  => 'Khám phá',
+            'category' => 'Danh mục',
+            'tag'      => 'Tag',
         );
     }
     
@@ -82,6 +84,13 @@ class Puna_TikTok_Setup {
                 'top'
             );
         }
+        
+        // Add rewrite rule for tag with ID: /tag/123
+        add_rewrite_rule(
+            '^tag/([0-9]+)/?$',
+            'index.php?puna_page=tag&tag_id=$matches[1]',
+            'top'
+        );
     }
 
     /**
@@ -89,6 +98,7 @@ class Puna_TikTok_Setup {
      */
     public function register_query_vars($vars) {
         $vars[] = 'puna_page';
+        $vars[] = 'tag_id';
         return $vars;
     }
 

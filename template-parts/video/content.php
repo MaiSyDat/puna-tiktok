@@ -78,7 +78,7 @@ $saved_class = $is_saved ? 'saved' : '';
 				if ($tags) : ?>
 					<div class="video-tags">
 						<?php foreach ($tags as $tag) : ?>
-							<a href="<?php echo get_tag_link($tag->term_id); ?>" class="tag">#<?php echo $tag->name; ?></a>
+							<a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id)); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
 						<?php endforeach; ?>
 					</div>
 				<?php endif; ?>

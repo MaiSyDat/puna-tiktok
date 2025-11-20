@@ -200,8 +200,8 @@
         gap: 12px;
     }
 
-    /* Explore Page */
-    .explore-grid {
+    /* Taxonomy Page */
+    .taxonomy-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
@@ -585,8 +585,8 @@
         height: 50px;
     }
 
-    /* Explore Page */
-    .explore-grid {
+    /* Taxonomy Page */
+    .taxonomy-grid {
         grid-template-columns: 1fr;
     }
 

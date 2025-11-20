@@ -3,7 +3,7 @@
  */
 
 document.addEventListener("DOMContentLoaded", function() {
-    const videos = document.querySelectorAll('.tiktok-video, .explore-video, .creator-video-preview');
+    const videos = document.querySelectorAll('.tiktok-video, .taxonomy-video, .creator-video-preview');
     const mainContent = document.querySelector('.main-content');
     
     let globalMuted = true;
@@ -230,8 +230,8 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // All videos are Mega videos - always load via Mega
         if (typeof ensureMegaVideoSource !== 'undefined' && video.dataset.megaLink) {
-            // For explore-video and profile cards, load preview (first frame)
-            if (video.classList.contains('explore-video') || video.closest('.profile-video-card')) {
+            // For taxonomy-video and profile cards, load preview (first frame)
+            if (video.classList.contains('taxonomy-video') || video.closest('.profile-video-card')) {
                 ensureMegaVideoSource(video).then(() => {
                     // Set to first frame for thumbnail preview
                     if (video.readyState >= 2) {
@@ -259,8 +259,8 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
         
-        // Mark explore-video for lazy preview loading
-        if (video.classList.contains('explore-video') && !video.closest('.video-row')) {
+        // Mark taxonomy-video for lazy preview loading
+        if (video.classList.contains('taxonomy-video') && !video.closest('.video-row')) {
             video.dataset.needsPreview = '1';
         }
         
@@ -336,8 +336,8 @@ document.addEventListener("DOMContentLoaded", function() {
     applyVolumeToAllVideos();
     updateGlobalVolumeUI();
 
-    // Lazy load previews for explore-video cards
-    const exploreVideoObserver = new IntersectionObserver((entries) => {
+    // Lazy load previews for taxonomy-video cards
+    const taxonomyVideoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting && entry.target.dataset.needsPreview === '1' && entry.target.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
                 ensureMegaVideoSource(entry.target).then(() => {
@@ -352,14 +352,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }).catch(() => {});
                 entry.target.removeAttribute('data-needs-preview');
-                exploreVideoObserver.unobserve(entry.target);
+                taxonomyVideoObserver.unobserve(entry.target);
             }
         });
     }, { rootMargin: '100px' });
     
-    // Observe all explore-videos that need preview
-    document.querySelectorAll('.explore-video[data-needs-preview="1"]').forEach(video => {
-        exploreVideoObserver.observe(video);
+    // Observe all taxonomy-videos that need preview
+    document.querySelectorAll('.taxonomy-video[data-needs-preview="1"]').forEach(video => {
+        taxonomyVideoObserver.observe(video);
     });
 
     // Export functions for other modules

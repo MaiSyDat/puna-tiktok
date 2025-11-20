@@ -19,7 +19,7 @@ class Puna_TikTok_Assets {
      * Add defer attribute to non-critical scripts
      */
     public function add_defer_to_scripts($tag, $handle, $src) {
-        $defer_scripts = array('puna-tiktok-video-playback', 'puna-tiktok-video-navigation', 'puna-tiktok-video-actions', 'puna-tiktok-comments', 'puna-tiktok-search', 'puna-tiktok-video-watch', 'puna-tiktok-explore');
+        $defer_scripts = array('puna-tiktok-video-playback', 'puna-tiktok-video-navigation', 'puna-tiktok-video-actions', 'puna-tiktok-comments', 'puna-tiktok-search', 'puna-tiktok-video-watch', 'puna-tiktok-taxonomy');
         
         if (in_array($handle, $defer_scripts)) {
             return str_replace(' src', ' defer src', $tag);
@@ -40,9 +40,10 @@ class Puna_TikTok_Assets {
         $puna_page = get_query_var('puna_page');
         $is_single_video = is_singular('video');
         $is_search_page = is_search();
-        $is_tag_page = is_tag();
         $is_home = is_home() || is_front_page();
-        $is_explore_page = $puna_page === 'explore';
+        $is_category_page = $puna_page === 'category';
+        $is_tag_page = $puna_page === 'tag';
+        $is_taxonomy_page = $is_category_page || $is_tag_page;
         
         // Base CSS - Always needed
         wp_enqueue_style('puna-tiktok-reset', $css_dir . 'reset.css', array(), $version);
@@ -55,7 +56,7 @@ class Puna_TikTok_Assets {
             wp_enqueue_style('puna-tiktok-search', $css_dir . 'search.css', array('puna-tiktok-layout'), $version);
         }
         
-        if ($is_home || $is_single_video || $is_tag_page) {
+        if ($is_home || $is_single_video) {
             wp_enqueue_style('puna-tiktok-video-feed', $css_dir . 'video-feed.css', array('puna-tiktok-layout'), $version);
             wp_enqueue_style('puna-tiktok-video-nav', $css_dir . 'video-nav.css', array('puna-tiktok-layout'), $version);
             wp_enqueue_style('puna-tiktok-comments', $css_dir . 'comments.css', array('puna-tiktok-layout'), $version);
@@ -65,17 +66,20 @@ class Puna_TikTok_Assets {
             wp_enqueue_style('puna-tiktok-video-watch', $css_dir . 'video-watch.css', array('puna-tiktok-layout'), $version);
         }
         
-        if ($is_explore_page) {
-            wp_enqueue_style('puna-tiktok-explore', $css_dir . 'explore.css', array('puna-tiktok-layout'), $version);
+        if ($is_taxonomy_page) {
+            wp_enqueue_style('puna-tiktok-taxonomy', $css_dir . 'taxonomy.css', array('puna-tiktok-layout'), $version);
         }
         
         // Responsive CSS - Always needed, but with conditional dependencies
         $responsive_deps = array('puna-tiktok-layout', 'puna-tiktok-sidebar');
-        if ($is_home || $is_single_video || $is_tag_page) {
+        if ($is_home || $is_single_video) {
             $responsive_deps[] = 'puna-tiktok-video-feed';
         }
         if ($is_single_video) {
             $responsive_deps[] = 'puna-tiktok-video-watch';
+        }
+        if ($is_taxonomy_page) {
+            $responsive_deps[] = 'puna-tiktok-taxonomy';
         }
         
         wp_enqueue_style('puna-tiktok-responsive', $css_dir . 'responsive.css', $responsive_deps, $version);
@@ -108,9 +112,6 @@ class Puna_TikTok_Assets {
             true
         );
 
-        // Check if user can upload
-        $can_upload = current_user_can('upload_files');
-        
         // Base JS dependencies
         $base_deps = array('puna-tiktok-mega-sdk', 'puna-tiktok-core', 'puna-tiktok-mega-video');
         
@@ -133,7 +134,7 @@ class Puna_TikTok_Assets {
         );
 
         // Video playback - Load on pages with videos
-        if ($is_home || $is_single_video || $is_search_page || $is_explore_page || $is_tag_page) {
+        if ($is_home || $is_single_video || $is_search_page || $is_taxonomy_page) {
             wp_enqueue_script(
                 'puna-tiktok-video-playback',
                 PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/video-playback.js',
@@ -144,7 +145,7 @@ class Puna_TikTok_Assets {
         }
 
         // Video navigation - Load on pages with video navigation
-        if ($is_home || $is_single_video || $is_search_page || $is_tag_page) {
+        if ($is_home || $is_single_video || $is_search_page) {
             wp_enqueue_script(
                 'puna-tiktok-video-navigation',
                 PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/video-navigation.js',
@@ -155,7 +156,7 @@ class Puna_TikTok_Assets {
         }
 
         // Video actions - Load on pages with videos
-        if ($is_home || $is_single_video || $is_search_page || $is_explore_page || $is_tag_page) {
+        if ($is_home || $is_single_video || $is_search_page || $is_taxonomy_page) {
             wp_enqueue_script(
                 'puna-tiktok-video-actions',
                 PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/video-actions.js',
@@ -166,7 +167,7 @@ class Puna_TikTok_Assets {
         }
 
         // Comments - Load on pages with comments
-        if ($is_home || $is_single_video || $is_search_page || $is_tag_page) {
+        if ($is_home || $is_single_video || $is_search_page) {
             wp_enqueue_script(
                 'puna-tiktok-comments',
                 PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/comments.js',
@@ -196,11 +197,11 @@ class Puna_TikTok_Assets {
             );
         }
 
-        // Explore - Load on explore page
-        if ($is_explore_page) {
+        // Taxonomy - Load on category and tag pages
+        if ($is_taxonomy_page) {
             wp_enqueue_script(
-                'puna-tiktok-explore',
-                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/explore.js',
+                'puna-tiktok-taxonomy',
+                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/taxonomy.js',
                 array('puna-tiktok-core', 'puna-tiktok-mega-video'),
                 PUNA_TIKTOK_VERSION,
                 true

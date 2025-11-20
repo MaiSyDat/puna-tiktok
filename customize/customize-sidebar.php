@@ -249,10 +249,16 @@ class Puna_TikTok_Customize_Sidebar {
                 'active' => (is_home() || is_front_page()),
             ),
             array(
-                'title' => 'Khám phá',
-                'url' => home_url('/explore'),
-                'icon' => 'fa-regular fa-compass',
-                'active' => get_query_var('puna_page') === 'explore',
+                'title' => 'Danh mục',
+                'url' => home_url('/category'),
+                'icon' => 'fa-solid fa-folder',
+                'active' => get_query_var('puna_page') === 'category',
+            ),
+            array(
+                'title' => 'Tag',
+                'url' => home_url('/tag'),
+                'icon' => 'fa-solid fa-hashtag',
+                'active' => get_query_var('puna_page') === 'tag',
             ),
         );
         
@@ -266,8 +272,9 @@ class Puna_TikTok_Customize_Sidebar {
         $icon_map = array(
             'trang chủ' => 'fa-solid fa-house',
             'home' => 'fa-solid fa-house',
-            'khám phá' => 'fa-regular fa-compass',
-            'explore' => 'fa-regular fa-compass',
+            'danh mục' => 'fa-solid fa-folder',
+            'category' => 'fa-solid fa-folder',
+            'tag' => 'fa-solid fa-hashtag',
         );
         
         $title_lower = strtolower($title);

@@ -47,7 +47,7 @@ class Puna_TikTok_AJAX_Handlers {
         add_action('wp_ajax_puna_tiktok_clear_search_history', array($this, 'clear_search_history'));
         add_action('wp_ajax_nopriv_puna_tiktok_clear_search_history', array($this, 'clear_search_history'));
         
-        // Populer searcher
+        // Popular searches
         add_action('wp_ajax_puna_tiktok_get_popular_searches', array($this, 'get_popular_searches'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_popular_searches', array($this, 'get_popular_searches'));
         
@@ -70,9 +70,9 @@ class Puna_TikTok_AJAX_Handlers {
         add_action('wp_ajax_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
         
-        // Get explore videos
-        add_action('wp_ajax_puna_tiktok_get_explore_videos', array($this, 'get_explore_videos'));
-        add_action('wp_ajax_nopriv_puna_tiktok_get_explore_videos', array($this, 'get_explore_videos'));
+        // Get taxonomy videos (category & tag)
+        add_action('wp_ajax_puna_tiktok_get_taxonomy_videos', array($this, 'get_taxonomy_videos'));
+        add_action('wp_ajax_nopriv_puna_tiktok_get_taxonomy_videos', array($this, 'get_taxonomy_videos'));
     }
 
     /**
@@ -855,12 +855,9 @@ class Puna_TikTok_AJAX_Handlers {
                 'message' => 'Đã lưu video'
             ));
         }
+        }
     }
-}
-    
 
-
-    
     /**
      * Delete video
      */
@@ -905,8 +902,6 @@ class Puna_TikTok_AJAX_Handlers {
         ));
     }
 
-
-    
     /**
      * Get popular hashtags
      */
@@ -944,7 +939,7 @@ class Puna_TikTok_AJAX_Handlers {
                     'name' => $tag->name,
                     'slug' => $tag->slug,
                     'count' => $tag->count,
-                    'url' => get_tag_link($tag->term_id)
+                    'url' => home_url('/tag/' . $tag->term_id)
                 );
             }
         }
@@ -954,8 +949,8 @@ class Puna_TikTok_AJAX_Handlers {
         ));
     }
     
-    /** *Get explore videos */
-    public function get_explore_videos() {
+    /** Get taxonomy videos (category & tag) */
+    public function get_taxonomy_videos() {
         if (isset($_POST['nonce'])) {
             if (!wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
                 wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
@@ -965,6 +960,7 @@ class Puna_TikTok_AJAX_Handlers {
         
         $tab_type = isset($_POST['tab_type']) ? sanitize_text_field($_POST['tab_type']) : 'trending';
         $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
+        $tag_id = isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0;
         
         $args = array(
             'post_type' => 'video',
@@ -978,6 +974,16 @@ class Puna_TikTok_AJAX_Handlers {
                     'taxonomy' => 'category',
                     'field' => 'term_id',
                     'terms' => $category_id,
+                ),
+            );
+            $args['orderby'] = 'date';
+            $args['order'] = 'DESC';
+        } elseif ($tab_type === 'tag' && $tag_id > 0) {
+            $args['tax_query'] = array(
+                array(
+                    'taxonomy' => 'post_tag',
+                    'field' => 'term_id',
+                    'terms' => $tag_id,
                 ),
             );
             $args['orderby'] = 'date';
@@ -1063,6 +1069,4 @@ class Puna_TikTok_AJAX_Handlers {
 
 // Initialize the class
 new Puna_TikTok_AJAX_Handlers();
-
-
 

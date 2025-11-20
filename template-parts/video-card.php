@@ -4,7 +4,7 @@
  */
 
 $post_id = isset($args['post_id']) ? $args['post_id'] : get_the_ID();
-$card_class = isset($args['card_class']) ? $args['card_class'] : 'explore-card';
+$card_class = isset($args['card_class']) ? $args['card_class'] : 'taxonomy-card';
 
 if (isset($args['video_url']) && isset($args['views'])) {
     $video_url = $args['video_url'];
@@ -24,7 +24,7 @@ if (empty($video_url)) {
 
 <a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="<?php echo esc_attr($card_class); ?>" aria-label="Video">
     <div class="media-wrapper ratio-9x16">
-        <video class="explore-video" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">
+        <video class="taxonomy-video" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">
             <!-- Mega.nz video will be loaded via JavaScript -->
         </video>
         <div class="video-overlay">	

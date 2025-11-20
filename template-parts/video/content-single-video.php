@@ -168,7 +168,7 @@ $withcomments = 1;
                         <!-- Hashtags inline -->
                         <?php if ($tags) : ?>
                             <?php foreach ($tags as $tag) : ?>
-                                <a href="<?php echo get_tag_link($tag->term_id); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
+                                <a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id)); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>

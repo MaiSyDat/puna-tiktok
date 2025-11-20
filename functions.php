@@ -399,7 +399,7 @@ function puna_tiktok_empty_state($args = array()) {
     );
     
     $args = wp_parse_args($args, $defaults);
-    $wrapper_class = 'explore-empty-state' . (!empty($args['wrapper_class']) ? ' ' . esc_attr($args['wrapper_class']) : '');
+    $wrapper_class = 'taxonomy-empty-state' . (!empty($args['wrapper_class']) ? ' ' . esc_attr($args['wrapper_class']) : '');
     ?>
     <div class="<?php echo esc_attr($wrapper_class); ?>" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
         <i class="fa-solid <?php echo esc_attr($args['icon']); ?>" style="font-size: 64px; color: #ccc; margin-bottom: 20px;"></i>

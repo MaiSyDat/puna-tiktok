@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Explore
+ * Template Name: Category
  */
 
 get_header();
@@ -9,10 +9,10 @@ get_header();
 <div class="tiktok-app">
 	<?php get_template_part('template-parts/sidebar'); ?>
 
-	<div class="main-content explore-content">
-		<div class="explore-header">
-			<h2>Khám phá</h2>
-			<div class="explore-tabs" id="explore-tabs">
+	<div class="main-content taxonomy-content">
+		<div class="taxonomy-header">
+			<h2>Danh mục</h2>
+			<div class="taxonomy-tabs" id="taxonomy-tabs">
 				<button class="tab" data-tab="foryou">Dành cho bạn</button>
 				<button class="tab active" data-tab="trending">Thịnh hành</button>
 				<?php
@@ -49,7 +49,7 @@ get_header();
 			</div>
 		</div>
 
-		<div class="explore-grid" id="explore-grid">
+		<div class="taxonomy-grid" id="taxonomy-grid">
 			<?php
 			$displayed_count = 0;
 			$target_count = 12;
@@ -167,7 +167,7 @@ get_header();
 						'post_id' => $post_data['post_id'],
 						'video_url' => $post_data['video_url'],
 						'views' => $post_data['views'],
-						'card_class' => 'explore-card'
+						'card_class' => 'taxonomy-card'
 					));
 				endforeach;
 			endif;

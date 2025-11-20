@@ -1,14 +1,14 @@
 /* ========================================
-   EXPLORE PAGE
+   TAXONOMY PAGE (Category & Tag)
    ======================================== */
 
-.explore-content {
+.taxonomy-content {
     background: var(--puna-bg);
     padding: 16px 16px 32px;
     color: var(--puna-text);
 }
 
-.explore-header {
+.taxonomy-header {
     position: sticky;
     top: 0;
     background: var(--puna-bg);
@@ -16,12 +16,12 @@
     padding-bottom: 12px;
 }
 
-.explore-header h2 {
+.taxonomy-header h2 {
     font-size: 24px;
     margin-bottom: 12px;
 }
 
-.explore-tabs {
+.taxonomy-tabs {
     display: flex;
     gap: 8px;
     overflow-x: auto;
@@ -35,15 +35,15 @@
     user-select: none;
 }
 
-.explore-tabs:active {
+.taxonomy-tabs:active {
     cursor: grabbing;
 }
 
-.explore-tabs::-webkit-scrollbar {
+.taxonomy-tabs::-webkit-scrollbar {
     display: none;
 }
 
-.explore-tabs .tab {
+.taxonomy-tabs .tab {
     flex-shrink: 0;
     white-space: nowrap;
     border: 1px solid rgba(22,24,35,0.12);
@@ -55,33 +55,33 @@
     font-weight: 600;
 }
 
-.explore-tabs .tab.active {
+.taxonomy-tabs .tab.active {
     background: var(--puna-text, #111827);
     color: var(--puna-bg);
     border-color: var(--puna-text);
 }
 
-.explore-grid {
+.taxonomy-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 8px;
 }
 
 @media (max-width: 1200px) {
-    .explore-grid {
+    .taxonomy-grid {
         grid-template-columns: repeat(5, 1fr);
     }
 }
 
 @media (max-width: 768px) {
-    .explore-grid {
+    .taxonomy-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 6px;
     }
 }
 
 
-.explore-card {
+.taxonomy-card {
     text-decoration: none;
     color: inherit;
     display: block;
@@ -110,7 +110,7 @@
     object-fit: cover;
 }
 
-.media-wrapper .explore-video {
+.media-wrapper .taxonomy-video {
     position: absolute;
     top: 0;
     left: 0;
@@ -119,7 +119,7 @@
     object-fit: cover;
 }
 
-.explore-card .video-overlay {
+.taxonomy-card .video-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -133,7 +133,7 @@
     transition: opacity 0.3s ease;
 }
 
-.explore-card:hover .video-overlay {
+.taxonomy-card:hover .video-overlay {
     opacity: 1;
 }
 
@@ -169,4 +169,5 @@
 .video-views-overlay i {
     font-size: 9px;
 }
+
 
