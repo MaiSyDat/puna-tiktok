@@ -229,7 +229,6 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data.success) {
                 const html = data.data?.html || '';
                 const isReply = data.data?.is_reply || false;
-                const commentId = data.data?.comment_id || null;
                 
                 if (!html || !html.trim()) {
                     showToast('Bình luận đã được thêm. Đang tải lại...', 'success');
@@ -291,7 +290,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     
                     // If not found, search in entire document
                     if (!parentItem) {
-                        const overlay = document.getElementById('comments-overlay-' + postId);
                         const watchComments = document.querySelector('.video-watch-comments');
                         const searchContainer = overlay || watchComments || document;
                         parentItem = searchContainer.querySelector(`.comment-item[data-comment-id="${parentId}"]`);
@@ -548,6 +546,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         const commentsList = delBtn.closest('.comments-list');
         const sidebar = delBtn.closest('.comments-sidebar');
+        const watchComments = delBtn.closest('.video-watch-comments');
         
         let commentId = delBtn.dataset.commentId;
         const isTempId = commentId && commentId.toString().startsWith('temp-');
@@ -669,9 +668,12 @@ document.addEventListener("DOMContentLoaded", function() {
         sendAjaxRequest('puna_tiktok_delete_comment', params)
         .then(res => {
             if (!res.success) {
+                const errorMsg = res.data?.message || 'Không thể xóa bình luận.';
+                showToast(errorMsg, 'error');
             }
         })
         .catch(err => {
+            showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
         });
     });
 

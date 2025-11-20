@@ -25,6 +25,7 @@ class Puna_TikTok_AJAX_Handlers {
 
         // Delete comment
         add_action('wp_ajax_puna_tiktok_delete_comment', array($this, 'delete_comment'));
+        add_action('wp_ajax_nopriv_puna_tiktok_delete_comment', array($this, 'delete_comment'));
         add_action('wp_ajax_puna_tiktok_report_comment', array($this, 'report_comment'));
 
         // Like comment
@@ -73,10 +74,6 @@ class Puna_TikTok_AJAX_Handlers {
         // Get taxonomy videos (category & tag)
         add_action('wp_ajax_puna_tiktok_get_taxonomy_videos', array($this, 'get_taxonomy_videos'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_taxonomy_videos', array($this, 'get_taxonomy_videos'));
-        
-        // Get reply input HTML
-        add_action('wp_ajax_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
-        add_action('wp_ajax_nopriv_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
         
         // Get reply input HTML
         add_action('wp_ajax_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
@@ -432,39 +429,59 @@ class Puna_TikTok_AJAX_Handlers {
      * Delete comment
      */
     public function delete_comment() {
-    if (is_user_logged_in()) {
-    check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
-    }
-    
-    $comment_id = intval($_POST['comment_id'] ?? 0);
-    if (!$comment_id) {
-        wp_send_json_error(array('message' => 'Thiếu comment_id.'));
-    }
-    $comment = get_comment($comment_id);
-    if (!$comment) {
-        wp_send_json_error(array('message' => 'Bình luận không tồn tại.'));
-    }
-    
-    $user_id = get_current_user_id();
-    $is_admin = current_user_can('moderate_comments');
-    $can_delete = false;
-    
-    if ($is_admin) {
-        $can_delete = true;
-    } elseif ($user_id > 0 && $comment->user_id == $user_id) {
-        $can_delete = true;
-    } elseif ($user_id == 0) {
-        $comment_guest_id = get_comment_meta($comment_id, '_puna_tiktok_guest_id', true);
-        $current_guest_id = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
-        
-        if (!empty($comment_guest_id) && !empty($current_guest_id) && $comment_guest_id === $current_guest_id) {
-            $can_delete = true;
+        // Check nonce for logged in users only
+        if (is_user_logged_in()) {
+            if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
+                wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+                return;
+            }
         }
-    }
-    
-    if (!$can_delete) {
-        wp_send_json_error(array('message' => 'Bạn không có quyền xóa bình luận này.'));
-    }
+        
+        $comment_id = intval($_POST['comment_id'] ?? 0);
+        if (!$comment_id) {
+            wp_send_json_error(array('message' => 'Thiếu comment_id.'));
+            return;
+        }
+        
+        $comment = get_comment($comment_id);
+        if (!$comment) {
+            wp_send_json_error(array('message' => 'Bình luận không tồn tại.'));
+            return;
+        }
+        
+        $user_id = get_current_user_id();
+        $is_admin = current_user_can('moderate_comments');
+        $can_delete = false;
+        
+        // Admin can delete any comment
+        if ($is_admin) {
+            $can_delete = true;
+        } 
+        // User can delete their own comment
+        elseif ($user_id > 0 && $comment->user_id == $user_id) {
+            $can_delete = true;
+        } 
+        // Guest can delete their own comment (by guest_id)
+        elseif ($user_id == 0) {
+            $comment_guest_id = get_comment_meta($comment_id, '_puna_tiktok_guest_id', true);
+            
+            // Try to get guest_id from POST request first (from localStorage)
+            $current_guest_id = isset($_POST['guest_id']) ? sanitize_text_field($_POST['guest_id']) : '';
+            
+            // Fallback to cookie if not in POST
+            if (empty($current_guest_id)) {
+                $current_guest_id = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
+            }
+            
+            if (!empty($comment_guest_id) && !empty($current_guest_id) && $comment_guest_id === $current_guest_id) {
+                $can_delete = true;
+            }
+        }
+        
+        if (!$can_delete) {
+            wp_send_json_error(array('message' => 'Bạn không có quyền xóa bình luận này.'));
+            return;
+        }
     
     $total_to_delete = 1;
     $count_replies = function($parent_id) use (&$count_replies) {

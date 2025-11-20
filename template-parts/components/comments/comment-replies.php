@@ -59,14 +59,24 @@ $remaining_replies_list = array_slice($replies, 3);
         // Check if current user can delete this reply
         $can_delete_reply = false;
         if (current_user_can('moderate_comments')) {
+            // Admin can delete any reply
             $can_delete_reply = true;
         } elseif ($is_reply_current_user && $reply_author_id > 0) {
+            // User can delete their own reply
             $can_delete_reply = true;
         } elseif (!$reply_author_id) {
+            // Guest reply - check if current guest can delete
             $reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
             $current_guest_id_check = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
-            if (!empty($reply_guest_id_check) && !empty($current_guest_id_check) && $reply_guest_id_check === $current_guest_id_check) {
-                $can_delete_reply = true;
+            
+            // If reply has guest_id, allow deletion (JavaScript will verify with localStorage)
+            if (!empty($reply_guest_id_check)) {
+                if (!empty($current_guest_id_check) && $reply_guest_id_check === $current_guest_id_check) {
+                    $can_delete_reply = true;
+                } elseif (empty($current_guest_id_check)) {
+                    // No cookie but reply has guest_id - show button, let AJAX verify with localStorage
+                    $can_delete_reply = true;
+                }
             }
         }
         
@@ -94,35 +104,24 @@ $remaining_replies_list = array_slice($replies, 3);
                 </div>
             </div>
             <div class="comment-right-actions">
-                <?php if ($can_delete_reply || (!current_user_can('moderate_comments') && !$can_delete_reply && is_user_logged_in())) : ?>
+                <?php if ($can_delete_reply) : ?>
                     <div class="comment-actions">
                         <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><i class="fa-solid fa-ellipsis"></i></button>
                         <div class="comment-options-dropdown">
-                            <?php if ($can_delete_reply) : ?>
-                                <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                    <i class="fa-solid fa-trash"></i> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
-                                </button>
-                            <?php else : ?>
-                                <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                    <i class="fa-solid fa-flag"></i> <?php esc_html_e('Báo cáo', 'puna-tiktok'); ?>
-                                </button>
-                            <?php endif; ?>
+                            <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                <i class="fa-solid fa-trash"></i> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
+                            </button>
                         </div>
                     </div>
-                <?php elseif (!$reply_author_id) : ?>
-                    <?php 
-                    $reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
-                    $current_guest_id_check = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
-                    if (!empty($reply_guest_id_check) && !empty($current_guest_id_check) && $reply_guest_id_check === $current_guest_id_check) : ?>
-                        <div class="comment-actions">
-                            <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><i class="fa-solid fa-ellipsis"></i></button>
-                            <div class="comment-options-dropdown">
-                                <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                    <i class="fa-solid fa-trash"></i> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
-                                </button>
-                            </div>
+                <?php elseif (is_user_logged_in() && !$can_delete_reply) : ?>
+                    <div class="comment-actions">
+                        <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><i class="fa-solid fa-ellipsis"></i></button>
+                        <div class="comment-options-dropdown">
+                            <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                <i class="fa-solid fa-flag"></i> <?php esc_html_e('Báo cáo', 'puna-tiktok'); ?>
+                            </button>
                         </div>
-                    <?php endif; ?>
+                    </div>
                 <?php endif; ?>
                 <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                     <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
@@ -148,14 +147,24 @@ $remaining_replies_list = array_slice($replies, 3);
                 // Check if current user can delete this reply
                 $can_delete_more_reply = false;
                 if (current_user_can('moderate_comments')) {
+                    // Admin can delete any reply
                     $can_delete_more_reply = true;
                 } elseif ($is_more_reply_current_user && $more_reply_author_id > 0) {
+                    // User can delete their own reply
                     $can_delete_more_reply = true;
                 } elseif (!$more_reply_author_id) {
+                    // Guest reply - check if current guest can delete
                     $more_reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
                     $current_guest_id_check_more = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
-                    if (!empty($more_reply_guest_id_check) && !empty($current_guest_id_check_more) && $more_reply_guest_id_check === $current_guest_id_check_more) {
-                        $can_delete_more_reply = true;
+                    
+                    // If reply has guest_id, allow deletion (JavaScript will verify with localStorage)
+                    if (!empty($more_reply_guest_id_check)) {
+                        if (!empty($current_guest_id_check_more) && $more_reply_guest_id_check === $current_guest_id_check_more) {
+                            $can_delete_more_reply = true;
+                        } elseif (empty($current_guest_id_check_more)) {
+                            // No cookie but reply has guest_id - show button, let AJAX verify with localStorage
+                            $can_delete_more_reply = true;
+                        }
                     }
                 }
                 
@@ -183,35 +192,24 @@ $remaining_replies_list = array_slice($replies, 3);
                         </div>
                     </div>
                     <div class="comment-right-actions">
-                        <?php if ($can_delete_more_reply || (!current_user_can('moderate_comments') && !$can_delete_more_reply && is_user_logged_in())) : ?>
+                        <?php if ($can_delete_more_reply) : ?>
                             <div class="comment-actions">
                                 <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><i class="fa-solid fa-ellipsis"></i></button>
                                 <div class="comment-options-dropdown">
-                                    <?php if ($can_delete_more_reply) : ?>
-                                        <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                            <i class="fa-solid fa-trash"></i> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
-                                        </button>
-                                    <?php else : ?>
-                                        <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                            <i class="fa-solid fa-flag"></i> <?php esc_html_e('Báo cáo', 'puna-tiktok'); ?>
-                                        </button>
-                                    <?php endif; ?>
+                                    <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                        <i class="fa-solid fa-trash"></i> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
+                                    </button>
                                 </div>
                             </div>
-                        <?php elseif (!$more_reply_author_id) : ?>
-                            <?php 
-                            $more_reply_guest_id_check = get_comment_meta($reply->comment_ID, '_puna_tiktok_guest_id', true);
-                            $current_guest_id_check_more = isset($_COOKIE['puna_tiktok_guest_id']) ? sanitize_text_field($_COOKIE['puna_tiktok_guest_id']) : '';
-                            if (!empty($more_reply_guest_id_check) && !empty($current_guest_id_check_more) && $more_reply_guest_id_check === $current_guest_id_check_more) : ?>
-                                <div class="comment-actions">
-                                    <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><i class="fa-solid fa-ellipsis"></i></button>
-                                    <div class="comment-options-dropdown">
-                                        <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                            <i class="fa-solid fa-trash"></i> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
-                                        </button>
-                                    </div>
+                        <?php elseif (is_user_logged_in() && !$can_delete_more_reply) : ?>
+                            <div class="comment-actions">
+                                <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><i class="fa-solid fa-ellipsis"></i></button>
+                                <div class="comment-options-dropdown">
+                                    <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                                        <i class="fa-solid fa-flag"></i> <?php esc_html_e('Báo cáo', 'puna-tiktok'); ?>
+                                    </button>
                                 </div>
-                            <?php endif; ?>
+                            </div>
                         <?php endif; ?>
                         <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                             <i class="<?php echo $reply_is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $reply_is_liked ? ' liked' : ''; ?>"></i>
