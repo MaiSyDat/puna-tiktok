@@ -256,16 +256,6 @@ class Puna_TikTok_Customize_Sidebar {
             ),
         );
         
-        // admin
-        if (is_user_logged_in()) {
-            $menu_items[] = array(
-                'title' => 'Hồ sơ',
-                'url' => home_url('/profile'),
-                'icon' => 'fa-regular fa-user',
-                'active' => get_query_var('puna_page') === 'profile',
-            );
-        }
-        
         return $menu_items;
     }
 
@@ -278,10 +268,6 @@ class Puna_TikTok_Customize_Sidebar {
             'home' => 'fa-solid fa-house',
             'khám phá' => 'fa-regular fa-compass',
             'explore' => 'fa-regular fa-compass',
-            'tải lên' => 'fa-solid fa-square-plus',
-            'upload' => 'fa-solid fa-square-plus',
-            'hồ sơ' => 'fa-regular fa-user',
-            'profile' => 'fa-regular fa-user',
         );
         
         $title_lower = strtolower($title);

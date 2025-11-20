@@ -88,10 +88,10 @@ $comments_count = get_comments_number($post_id);
                 <div class="comment-item" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
                     <?php 
                     $comment_author_id = $comment->user_id ? $comment->user_id : 0;
-                    $comment_author_url = $comment_author_id ? get_author_posts_url($comment_author_id) : '#';
+                    $comment_author_url = '#';
                     $is_current_user = get_current_user_id() && $comment_author_id == get_current_user_id();
                     ?>
-                    <a href="<?php echo esc_url($comment_author_url); ?>" class="comment-avatar-link">
+                    <div class="comment-avatar-wrapper">
                         <?php 
                         $guest_id = '';
                         if (!$comment_author_id) {
@@ -99,12 +99,12 @@ $comments_count = get_comments_number($post_id);
                         }
                         echo puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', $guest_id); 
                         ?>
-                    </a>
+                    </div>
                     <div class="comment-content">
                         <div class="comment-header">
-                            <a href="<?php echo esc_url($comment_author_url); ?>" class="comment-author-link">
+                            <span class="comment-author-wrapper">
                                 <strong class="comment-author"><?php echo esc_html($comment_author_id > 0 ? puna_tiktok_get_user_display_name($comment_author_id) : $comment->comment_author); ?></strong>
-                            </a>
+                            </span>
                         </div>
                         <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>
                         <div class="comment-footer">
@@ -177,10 +177,10 @@ $comments_count = get_comments_number($post_id);
                             <div class="comment-item comment-reply" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                                 <?php 
                                 $reply_author_id = $reply->user_id ? $reply->user_id : 0;
-                                $reply_author_url = $reply_author_id ? get_author_posts_url($reply_author_id) : '#';
+                                $reply_author_url = '#';
                                 $is_reply_current_user = get_current_user_id() && $reply_author_id == get_current_user_id();
                                 ?>
-                                <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-avatar-link">
+                                <div class="comment-avatar-wrapper">
                                     <?php 
                                     $reply_guest_id = '';
                                     if (!$reply_author_id) {
@@ -188,12 +188,12 @@ $comments_count = get_comments_number($post_id);
                                     }
                                     echo puna_tiktok_get_avatar_html($reply_author_id > 0 ? $reply_author_id : $reply->comment_author, 40, 'comment-avatar', $reply_guest_id); 
                                     ?>
-                                </a>
+                                </div>
                                 <div class="comment-content">
                                     <div class="comment-header">
-                                        <a href="<?php echo esc_url($reply_author_url); ?>" class="comment-author-link">
+                                        <span class="comment-author-wrapper">
                                             <strong class="comment-author"><?php echo esc_html($reply_author_id > 0 ? puna_tiktok_get_user_display_name($reply_author_id) : $reply->comment_author); ?></strong>
-                                        </a>
+                                        </span>
                                     </div>
                                     <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
                                     <div class="comment-footer">
@@ -272,10 +272,10 @@ $comments_count = get_comments_number($post_id);
                                     <div class="comment-item comment-reply" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                                         <?php 
                                         $more_reply_author_id = $reply->user_id ? $reply->user_id : 0;
-                                        $more_reply_author_url = $more_reply_author_id ? get_author_posts_url($more_reply_author_id) : '#'; 
+                                        $more_reply_author_url = '#'; 
                                         $is_more_reply_current_user = get_current_user_id() && $more_reply_author_id == get_current_user_id();
                                         ?>
-                                        <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-avatar-link">
+                                        <div class="comment-avatar-wrapper">
                                             <?php 
                                             $more_reply_guest_id = '';
                                             if (!$more_reply_author_id) {
@@ -283,12 +283,12 @@ $comments_count = get_comments_number($post_id);
                                             }
                                             echo puna_tiktok_get_avatar_html($more_reply_author_id > 0 ? $more_reply_author_id : $reply->comment_author, 40, 'comment-avatar', $more_reply_guest_id); 
                                             ?>
-                                        </a>
+                                        </div>
                                         <div class="comment-content">
                                             <div class="comment-header">
-                                                <a href="<?php echo esc_url($more_reply_author_url); ?>" class="comment-author-link">
+                                                <span class="comment-author-wrapper">
                                                     <strong class="comment-author"><?php echo esc_html($more_reply_author_id > 0 ? puna_tiktok_get_user_display_name($more_reply_author_id) : $reply->comment_author); ?></strong>
-                                                </a>
+                                                </span>
                                             </div>
                                             <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
                                             <div class="comment-footer">

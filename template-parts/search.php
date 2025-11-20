@@ -220,7 +220,7 @@ $withcomments = 1;
                             ));
                             $video_count = count($video_count);
                             ?>
-                            <a href="<?php echo esc_url(get_author_posts_url($user_id)); ?>" class="search-user-item">
+                            <div class="search-user-item">
                                 <div class="search-user-avatar">
                                     <?php echo puna_tiktok_get_avatar_html($user_id, 60, ''); ?>
                                 </div>
@@ -229,7 +229,7 @@ $withcomments = 1;
                                     <p class="search-user-username">@<?php echo esc_html($username); ?></p>
                                     <p class="search-user-stats"><?php echo number_format($video_count); ?> video</p>
                                 </div>
-                            </a>
+                            </div>
                         <?php endforeach; ?>
                     </div>
                 <?php else : ?>

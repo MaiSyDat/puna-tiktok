@@ -224,28 +224,19 @@
     color: var(--puna-text);
 }
 
-/* Comment Author Link - Hover underline */
-.comment-author-link {
-    text-decoration: none;
+/* Comment Author Wrapper */
+.comment-author-wrapper {
+    display: inline-block;
     color: inherit;
+}
+
+.comment-avatar-wrapper {
+    flex-shrink: 0;
+}
+
+/* Comment Avatar Wrapper */
+.comment-avatar-wrapper {
     display: inline-block;
-    transition: text-decoration 0.2s ease;
-}
-
-.comment-author-link:hover .comment-author {
-    text-decoration: underline;
-    text-decoration-color: var(--puna-text);
-}
-
-/* Comment Avatar Link */
-.comment-avatar-link {
-    display: inline-block;
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-}
-
-.comment-avatar-link:hover {
-    opacity: 0.8;
 }
 
 /* Comment Follow Button */

@@ -33,7 +33,7 @@ $saved_class = $is_saved ? 'saved' : '';
 $author_id = get_the_author_meta('ID');
 $author_name = puna_tiktok_get_user_display_name($author_id);
 $author_username = puna_tiktok_get_user_username($author_id);
-$author_url = get_author_posts_url($author_id);
+$author_url = '#';
 
 $is_author = is_user_logged_in() && get_current_user_id() == $author_id;
 
@@ -129,13 +129,13 @@ $withcomments = 1;
             <div class="video-info-section">
                 <!-- Author Info -->
                 <div class="video-info-author">
-                    <a href="<?php echo esc_url($author_url); ?>" class="author-link">
+                    <div class="author-info-wrapper">
                         <?php echo puna_tiktok_get_avatar_html($author_id, 60, 'author-avatar-large'); ?>
                         <div class="author-info">
                             <h3 class="author-name"><?php echo esc_html($author_name); ?></h3>
                             <span class="author-username">@<?php echo esc_html($author_username); ?></span>
                         </div>
-                    </a>
+                    </div>
                     <div class="video-info-more-menu">
                         <button class="video-info-more-btn" title="Thêm">
                             <i class="fa-solid fa-ellipsis"></i>

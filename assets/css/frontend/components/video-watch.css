@@ -250,12 +250,11 @@ body.single .tiktok-app .main-content {
     margin-bottom: 16px;
 }
 
-.author-link {
+.author-info-wrapper {
     display: flex;
     align-items: center;
     gap: 12px;
     flex: 1;
-    text-decoration: none;
     color: var(--puna-text);
 }
 

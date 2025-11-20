@@ -601,13 +601,7 @@ body.search-panel-active .search-panel {
     gap: 12px;
     padding: 12px;
     border-radius: 8px;
-    text-decoration: none;
     color: var(--puna-text);
-    transition: background-color 0.2s ease;
-}
-
-.search-user-item:hover {
-    background: var(--puna-muted);
 }
 
 .search-user-avatar {
