@@ -48,8 +48,8 @@
                     'icon' => 'fa-video',
                     'title' => 'Chưa có video nào',
                     'message' => 'Hãy thêm video đầu tiên của bạn!',
-                    'button_url' => puna_tiktok_get_upload_url(),
-                    'button_text' => 'Thêm Video'
+                    'button_url' => current_user_can('manage_options') ? admin_url('post-new.php?post_type=video') : '',
+                    'button_text' => current_user_can('manage_options') ? 'Thêm Video' : ''
                 ));
             endif;
             

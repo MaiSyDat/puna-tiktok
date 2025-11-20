@@ -26,7 +26,6 @@ class Puna_TikTok_Setup {
      */
     private function get_custom_pages() {
         return array(
-            'upload'   => 'page-upload.php',
             'explore'  => 'template-parts/pages/explore.php',
             'profile'  => 'template-parts/pages/profile.php',
         );
@@ -37,7 +36,6 @@ class Puna_TikTok_Setup {
      */
     private function get_page_titles() {
         return array(
-            'upload'   => 'Upload Video',
             'explore'  => 'Khám phá',
             'profile'  => 'Hồ sơ',
         );

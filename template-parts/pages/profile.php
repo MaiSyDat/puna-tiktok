@@ -99,7 +99,7 @@ $is_logged_in = is_user_logged_in();
 						'icon' => 'fa-video-slash',
 						'title' => 'Chưa có video nào',
 						'message' => 'Đăng video đầu tiên của bạn để bắt đầu!',
-						'button_url' => puna_tiktok_get_upload_url(),
+						'button_url' => admin_url('post-new.php?post_type=video'),
 						'button_text' => 'Tải video lên'
 					)); 
 					?>

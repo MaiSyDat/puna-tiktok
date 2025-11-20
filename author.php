@@ -101,8 +101,8 @@ wp_reset_postdata();
                     'icon' => 'fa-video-slash',
                     'title' => 'Chưa có video',
                     'message' => $is_own_profile ? 'Đăng video đầu tiên của bạn để bắt đầu!' : 'Người dùng này chưa đăng video nào.',
-                    'button_url' => $is_own_profile ? puna_tiktok_get_upload_url() : '',
-                    'button_text' => $is_own_profile ? 'Tải video lên' : ''
+                    'button_url' => ($is_own_profile && current_user_can('manage_options')) ? admin_url('post-new.php?post_type=video') : '',
+                    'button_text' => ($is_own_profile && current_user_can('manage_options')) ? 'Tải video lên' : ''
                 )); 
                 ?>
             <?php endif; ?>

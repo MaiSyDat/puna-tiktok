@@ -19,7 +19,7 @@ class Puna_TikTok_Assets {
      * Add defer attribute to non-critical scripts
      */
     public function add_defer_to_scripts($tag, $handle, $src) {
-        $defer_scripts = array('puna-tiktok-video-playback', 'puna-tiktok-video-navigation', 'puna-tiktok-video-actions', 'puna-tiktok-comments', 'puna-tiktok-search', 'puna-tiktok-profile', 'puna-tiktok-video-watch', 'puna-tiktok-upload', 'puna-tiktok-explore');
+        $defer_scripts = array('puna-tiktok-video-playback', 'puna-tiktok-video-navigation', 'puna-tiktok-video-actions', 'puna-tiktok-comments', 'puna-tiktok-search', 'puna-tiktok-profile', 'puna-tiktok-video-watch', 'puna-tiktok-explore');
         
         if (in_array($handle, $defer_scripts)) {
             return str_replace(' src', ' defer src', $tag);
@@ -43,7 +43,6 @@ class Puna_TikTok_Assets {
         $is_search_page = is_search();
         $is_tag_page = is_tag();
         $is_home = is_home() || is_front_page();
-        $is_upload_page = $puna_page === 'upload' || is_page_template('page-upload.php');
         $is_explore_page = $puna_page === 'explore';
         $is_profile_page = $puna_page === 'profile';
         
@@ -74,10 +73,6 @@ class Puna_TikTok_Assets {
         
         if ($is_profile_page || $is_author_page) {
             wp_enqueue_style('puna-tiktok-profile', $css_dir . 'profile.css', array('puna-tiktok-layout'), $version);
-        }
-        
-        if ($is_upload_page) {
-            wp_enqueue_style('puna-tiktok-upload', $css_dir . 'upload.css', array('puna-tiktok-layout'), $version);
         }
         
         // Responsive CSS - Always needed, but with conditional dependencies
@@ -218,25 +213,6 @@ class Puna_TikTok_Assets {
             );
         }
 
-        // Upload - Load on upload page
-        if ($is_upload_page && $can_upload) {
-            wp_enqueue_script(
-                'puna-tiktok-mega-uploader',
-                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/mega-uploader.js',
-                array('puna-tiktok-mega-sdk'),
-                PUNA_TIKTOK_VERSION,
-                true
-            );
-
-            wp_enqueue_script(
-                'puna-tiktok-upload',
-                PUNA_TIKTOK_THEME_URI . '/assets/js/frontend/upload.js',
-                array('puna-tiktok-core', 'puna-tiktok-mega-uploader'),
-                PUNA_TIKTOK_VERSION,
-                true
-            );
-        }
-
         // Explore - Load on explore page
         if ($is_explore_page) {
             wp_enqueue_script(
@@ -249,18 +225,7 @@ class Puna_TikTok_Assets {
         }
 
         $current_user = wp_get_current_user();
-        $mega_credentials = array();
 
-        if (current_user_can('upload_files')) {
-            $mega_credentials = Puna_TikTok_Mega_Config::get_credentials();
-        }
-
-        // Only include mega credentials if on upload page
-        $mega_data = false;
-        if ($is_upload_page && $can_upload && !empty($mega_credentials)) {
-            $mega_data = $mega_credentials;
-        }
-        
         // Localize script - attach to core.js so it's available everywhere
         wp_localize_script('puna-tiktok-core', 'puna_tiktok_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -272,7 +237,7 @@ class Puna_TikTok_Assets {
                 'user_id' => $current_user->ID,
             ),
             'avatar_url' => get_avatar_url($current_user->ID, array('size' => 40)),
-            'mega' => $mega_data,
+            'mega' => false,
         ));
     }
 

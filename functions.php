@@ -20,11 +20,10 @@ require_once get_template_directory() . '/inc/class-customizer.php';
  * Increase upload limits - only when needed
  */
 function puna_tiktok_increase_upload_limits() {
-    // Only increase limits on upload page or admin
-    $is_upload_page = get_query_var('puna_page') === 'upload' || is_page_template('page-upload.php');
+    // Only increase limits on admin video post type
     $is_admin_upload = is_admin() && (isset($_GET['post_type']) && $_GET['post_type'] === 'video');
     
-    if ($is_upload_page || $is_admin_upload) {
+    if ($is_admin_upload) {
         // Try to increase, but don't fail if server doesn't allow
         @ini_set('upload_max_filesize', '500M');
         @ini_set('post_max_size', '500M');
@@ -210,13 +209,6 @@ function puna_tiktok_get_video_query($args = array()) {
     }
     
     return new WP_Query($query_args);
-}
-
-/**
- * Get upload page URL
- */
-function puna_tiktok_get_upload_url() {
-    return home_url('/upload/');
 }
 
 /**

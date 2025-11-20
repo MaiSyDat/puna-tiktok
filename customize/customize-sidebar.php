@@ -257,16 +257,6 @@ class Puna_TikTok_Customize_Sidebar {
         );
         
         // admin
-        if (current_user_can('manage_options')) {
-            $menu_items[] = array(
-                'title' => 'Tải lên',
-                'url' => self::get_upload_page_url(),
-                'icon' => 'fa-solid fa-square-plus',
-                'active' => get_query_var('puna_page') === 'upload',
-            );
-        }
-        
-        // admin
         if (is_user_logged_in()) {
             $menu_items[] = array(
                 'title' => 'Hồ sơ',
@@ -277,14 +267,6 @@ class Puna_TikTok_Customize_Sidebar {
         }
         
         return $menu_items;
-    }
-
-    /**
-     * Get upload page URL
-     */
-    public static function get_upload_page_url() {
-        // Using rewrite rule, URL will be /upload
-        return home_url('/upload');
     }
 
     /**

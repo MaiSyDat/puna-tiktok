@@ -181,11 +181,6 @@
         max-height: 50vh;
     }
 
-    /* Upload Page */
-    .upload-form-container {
-        grid-template-columns: 1fr;
-    }
-
     .upload-preview-panel {
         position: static;
     }
@@ -520,24 +515,6 @@
     .comments-sidebar {
         width: 100%;
         max-width: 100%;
-    }
-
-    /* Upload Page */
-    .upload-guidelines {
-        grid-template-columns: 1fr;
-    }
-
-    .upload-drop-zone {
-        padding: 60px 24px;
-    }
-
-    .upload-content-wrapper {
-        padding: 16px;
-    }
-
-    .upload-form-panel,
-    .upload-preview-panel {
-        padding: 16px;
     }
 
     /* Profile Page */
