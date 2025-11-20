@@ -15,7 +15,6 @@ class Puna_TikTok_Video_Post_Type {
         add_action('init', array($this, 'register_video_post_type'));
         add_action('add_meta_boxes', array($this, 'add_video_meta_boxes'));
         add_action('save_post', array($this, 'save_video_meta'));
-        add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_filter('manage_video_posts_columns', array($this, 'add_video_columns'));
         add_action('manage_video_posts_custom_column', array($this, 'render_video_columns'), 10, 2);
         add_action('after_switch_theme', array($this, 'flush_rewrite_rules'));
@@ -257,58 +256,6 @@ class Puna_TikTok_Video_Post_Type {
         }
         
         $saving = false;
-    }
-    
-    /**
-     * Enqueue admin assets
-     */
-    public function enqueue_admin_assets($hook) {
-        global $post_type;
-        
-        if ($post_type !== 'video' || !in_array($hook, array('post.php', 'post-new.php'))) {
-            return;
-        }
-        
-        wp_enqueue_script(
-            'puna-tiktok-mega-sdk-admin',
-            get_template_directory_uri() . '/assets/js/libs/mega.browser.js',
-            array(),
-            PUNA_TIKTOK_VERSION,
-            true
-        );
-        
-        wp_enqueue_script(
-            'puna-tiktok-mega-uploader-admin',
-            get_template_directory_uri() . '/assets/js/frontend/mega-uploader.js',
-            array('puna-tiktok-mega-sdk-admin'),
-            PUNA_TIKTOK_VERSION,
-            true
-        );
-        
-        wp_enqueue_style(
-            'puna-tiktok-video-admin',
-            get_template_directory_uri() . '/assets/css/admin/video-admin.css',
-            array(),
-            PUNA_TIKTOK_VERSION
-        );
-        
-        wp_enqueue_script(
-            'puna-tiktok-video-admin',
-            get_template_directory_uri() . '/assets/js/admin/video-admin.js',
-            array('jquery', 'puna-tiktok-mega-uploader-admin'),
-            PUNA_TIKTOK_VERSION,
-            true
-        );
-        
-        wp_localize_script('puna-tiktok-video-admin', 'puna_tiktok_video_admin', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('puna_tiktok_video_upload'),
-            'mega' => array(
-                'email' => Puna_TikTok_Mega_Config::get_email(),
-                'password' => Puna_TikTok_Mega_Config::get_password(),
-                'folder' => Puna_TikTok_Mega_Config::get_upload_folder(),
-            ),
-        ));
     }
     
     /**
