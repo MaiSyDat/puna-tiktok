@@ -74,6 +74,7 @@
 
 .sidebar ul li a:hover {
     background-color: rgba(0, 0, 0, 0.05);
+    color: var(--puna-primary);
 }
 
 .sidebar ul li a.active {
@@ -86,6 +87,37 @@
     margin-right: 12px;
     font-size: 18px;
     flex-shrink: 0;
+}
+
+/* Sidebar Menu Icons */
+.sidebar-menu .icon-svg,
+.sidebar-menu .icon-img {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    margin-right: 12px;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.sidebar ul li a:hover .icon-svg,
+.sidebar ul li a.active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+/* Search Trigger Icon */
+.sidebar-search-trigger .icon-svg,
+.sidebar-search-trigger .icon-img {
+    width: 18px;
+    height: 18px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.sidebar-search-trigger:hover .icon-svg,
+.sidebar-search-trigger:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 .sidebar .menu-text {

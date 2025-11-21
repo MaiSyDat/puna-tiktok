@@ -51,7 +51,7 @@ $withcomments = 1;
 <div class="video-watch-page">
     <!-- Back Button -->
     <button class="video-watch-back-btn" id="video-watch-back" title="Quay lại">
-        <i class="fa-solid fa-xmark"></i>
+        <?php echo puna_tiktok_get_icon('close', 'Quay lại'); ?>
     </button>
     
     <div class="video-watch-container">
@@ -63,11 +63,11 @@ $withcomments = 1;
                     <!-- Options Menu -->
                     <div class="video-options-menu">
                         <button class="video-options-btn" title="Tùy chọn">
-                            <i class="fa-solid fa-ellipsis"></i>
+                            <?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?>
                         </button>
                         <div class="video-options-dropdown">
                             <div class="options-item">
-                                <i class="fa-solid fa-arrow-up-down"></i>
+                                <?php echo puna_tiktok_get_icon('home', 'Cuộn tự động'); ?>
                                 <span>Cuộn tự động</span>
                                 <label class="toggle-switch">
                                     <input type="checkbox" class="autoscroll-toggle">
@@ -76,16 +76,16 @@ $withcomments = 1;
                             </div>
                             <?php if ($is_author) : ?>
                                 <div class="options-item delete-video-item" data-post-id="<?php echo esc_attr($post_id); ?>">
-                                    <i class="fa-solid fa-trash"></i>
+                                    <?php echo puna_tiktok_get_icon('delete', 'Xóa video'); ?>
                                     <span>Xóa video</span>
                                 </div>
                             <?php else : ?>
                                 <div class="options-item">
-                                    <i class="fa-solid fa-heart-crack"></i>
+                                    <?php echo puna_tiktok_get_icon('heart', 'Không quan tâm'); ?>
                                     <span>Không quan tâm</span>
                                 </div>
                                 <div class="options-item">
-                                    <i class="fa-solid fa-flag"></i>
+                                    <?php echo puna_tiktok_get_icon('home', 'Báo cáo'); ?>
                                     <span>Báo cáo</span>
                                 </div>
                             <?php endif; ?>
@@ -98,7 +98,7 @@ $withcomments = 1;
                     <!-- Volume Control -->
                     <div class="volume-control-wrapper">
                         <button class="volume-toggle-btn" title="Âm lượng">
-                            <i class="fa-solid fa-volume-high"></i>
+                            <?php echo puna_tiktok_get_icon('volum', 'Âm lượng'); ?>
                         </button>
                         <div class="volume-slider-container">
                             <input type="range" class="volume-slider" min="0" max="100" value="100" title="Âm lượng">
@@ -135,17 +135,17 @@ $withcomments = 1;
                     </div>
                     <div class="video-info-more-menu">
                         <button class="video-info-more-btn" title="Thêm">
-                            <i class="fa-solid fa-ellipsis"></i>
+                            <?php echo puna_tiktok_get_icon('dot', 'Thêm'); ?>
                         </button>
                         <div class="video-info-more-dropdown">
                             <?php if ($is_author) : ?>
                                 <div class="options-item delete-video-item" data-post-id="<?php echo esc_attr($post_id); ?>">
-                                    <i class="fa-solid fa-trash"></i>
+                                    <?php echo puna_tiktok_get_icon('delete', 'Xóa video'); ?>
                                     <span>Xóa video</span>
                                 </div>
                             <?php else : ?>
                                 <div class="options-item">
-                                    <i class="fa-solid fa-flag"></i>
+                                    <?php echo puna_tiktok_get_icon('home', 'Báo cáo'); ?>
                                     <span>Báo cáo</span>
                                 </div>
                             <?php endif; ?>
@@ -180,19 +180,19 @@ $withcomments = 1;
             <!-- Interaction Stats -->
             <div class="video-interaction-stats">
                 <div class="interaction-item <?php echo esc_attr($liked_class); ?>" data-action="like" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <i class="fa-solid fa-heart"></i>
+                    <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($likes); ?></span>
                 </div>
                 <div class="interaction-item" data-action="comment-toggle" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <i class="fa-solid fa-comment"></i>
+                    <?php echo puna_tiktok_get_icon('comment', 'Comment'); ?>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($comments_count); ?></span>
                 </div>
                 <div class="interaction-item <?php echo esc_attr($saved_class); ?>" data-action="save" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <i class="fa-solid fa-bookmark"></i>
+                    <?php echo puna_tiktok_get_icon('save', 'Save'); ?>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($saves); ?></span>
                 </div>
                 <div class="interaction-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(puna_tiktok_get_video_description()); ?>">
-                    <i class="fa-solid fa-share"></i>
+                    <?php echo puna_tiktok_get_icon('share', 'Share'); ?>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($shares); ?></span>
                 </div>
             </div>
@@ -264,7 +264,7 @@ $withcomments = 1;
                                         <?php endif; ?>
                                         <div class="creator-video-overlay">
                                             <div class="creator-video-likes">
-                                                <i class="fa-solid fa-heart"></i>
+                                                <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
                                                 <span><?php echo puna_tiktok_format_number($other_likes); ?></span>
                                             </div>
                                         </div>
@@ -292,7 +292,7 @@ $withcomments = 1;
         <div class="share-modal-header">
             <h2 class="share-modal-title">Share to</h2>
             <button type="button" class="share-modal-close" aria-label="Đóng">
-                <i class="fa-solid fa-times"></i>
+                <?php echo puna_tiktok_get_icon('close', 'Đóng'); ?>
             </button>
         </div>
         <div class="share-modal-body">
@@ -300,7 +300,7 @@ $withcomments = 1;
                 <!-- Facebook -->
                 <button class="share-option" data-share="facebook" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <i class="fa-brands fa-facebook-f"></i>
+                        <?php echo puna_tiktok_get_icon('facebook', 'Facebook'); ?>
                     </div>
                     <span class="share-option-label">Facebook</span>
                 </button>
@@ -308,7 +308,7 @@ $withcomments = 1;
                 <!-- Zalo -->
                 <button class="share-option" data-share="zalo" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <i class="fa-solid fa-message"></i>
+                        <?php echo puna_tiktok_get_icon('home', 'Zalo'); ?>
                     </div>
                     <span class="share-option-label">Zalo</span>
                 </button>
@@ -316,7 +316,7 @@ $withcomments = 1;
                 <!-- Copy Link -->
                 <button class="share-option" data-share="copy" data-post-id="<?php echo esc_attr($post_id); ?>" data-url="<?php echo esc_url(get_permalink($post_id)); ?>">
                     <div class="share-option-icon">
-                        <i class="fa-solid fa-link"></i>
+                        <?php echo puna_tiktok_get_icon('link', 'Copy link'); ?>
                     </div>
                     <span class="share-option-label">Copy link</span>
                 </button>
@@ -324,7 +324,7 @@ $withcomments = 1;
                 <!-- Instagram -->
                 <button class="share-option" data-share="instagram" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <i class="fa-brands fa-instagram"></i>
+                        <?php echo puna_tiktok_get_icon('instagram', 'Instagram'); ?>
                     </div>
                     <span class="share-option-label">Instagram</span>
                 </button>
@@ -332,7 +332,7 @@ $withcomments = 1;
                 <!-- Email -->
                 <button class="share-option" data-share="email" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <i class="fa-solid fa-envelope"></i>
+                        <?php echo puna_tiktok_get_icon('email', 'Email'); ?>
                     </div>
                     <span class="share-option-label">Email</span>
                 </button>
@@ -340,7 +340,7 @@ $withcomments = 1;
                 <!-- X (Twitter) -->
                 <button class="share-option" data-share="x" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <i class="fa-brands fa-x-twitter"></i>
+                        <?php echo puna_tiktok_get_icon('home', 'X'); ?>
                     </div>
                     <span class="share-option-label">X</span>
                 </button>
@@ -348,7 +348,7 @@ $withcomments = 1;
                 <!-- Telegram -->
                 <button class="share-option" data-share="telegram" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <i class="fa-brands fa-telegram"></i>
+                        <?php echo puna_tiktok_get_icon('telegram', 'Telegram'); ?>
                     </div>
                     <span class="share-option-label">Telegram</span>
                 </button>

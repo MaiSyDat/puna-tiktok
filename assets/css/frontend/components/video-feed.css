@@ -7,14 +7,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 20px;
-    padding: 20px;
     width: 100%;
     height: 100vh;
     min-height: 100vh;
     position: relative;
     scroll-snap-align: start;
     scroll-snap-stop: always;
+}
+
+.video-row-inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
 }
 
 /* Video Container */
@@ -334,7 +339,7 @@
 .video-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
     flex-shrink: 0;
 }
@@ -389,7 +394,7 @@
     height: 20px;
     font-size: 8px;
     border-radius: 50%;
-    background: var(--puna-primary, #fe2c55);
+    background: var(--puna-primary, #06539f);
     color: var(--puna-bg);
     display: flex;
     align-items: center;
@@ -404,28 +409,67 @@
     user-select: none;
 }
 
-.action-item i {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--puna-text);
-    border-radius: 50%;
-    transition: 200ms ease-in-out;
+.action-icon-wrapper {
     width: 48px;
     height: 48px;
-    background-color: rgba(22, 24, 35, 0.06);
-    margin-top: 8px;
-    margin-bottom: 6px;
+    border-radius: 50%;
+    border: none;
+    background: var(--puna-muted);
+    color: var(--puna-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
 }
 
-.action-item i:hover {
+.action-item .icon-svg,
+.action-item .icon-img {
+    width: 26px;
+    height: 26px;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.action-item:hover .icon-svg,
+.action-item:hover .icon-img {
+    opacity: 1;
+}
+
+.action-item.liked .icon-svg,
+.action-item.liked .icon-img,
+.action-item.saved .icon-svg,
+.action-item.saved .icon-img {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+/* Play Icon in Video Cards */
+.play-icon .icon-svg,
+.play-icon .icon-img {
+    width: 48px;
+    height: 48px;
+    color: #fff;
+}
+
+/* Video Views Overlay Icon */
+.video-views-overlay .icon-svg,
+.video-views-overlay .icon-img {
+    width: 14px;
+    height: 14px;
+    color: #fff;
+}
+
+.action-item:hover .action-icon-wrapper {
     transform: scale(1.05);
 }
 
 /* Liked State */
-.action-item.liked i {
+    /* .action-item.liked .action-icon-wrapper {
+        background-color: rgba(var(--puna-primary), 0.15);
+    } */
+
+.action-item.liked .icon-svg,
+.action-item.liked .icon-img {
     color: var(--puna-primary);
-    background-color: rgba(254, 44, 85, 0.12);
 }
 
 .action-item.liked .count {
@@ -433,9 +477,14 @@
 }
 
 /* Saved State */
-.action-item.saved i {
+.action-item.saved .action-icon-wrapper {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+.action-item.saved .icon-svg,
+.action-item.saved .icon-img {
     color: var(--puna-primary);
-    background-color: rgba(254, 44, 85, 0.12);
 }
 
 /* Like animation */

@@ -274,38 +274,35 @@ class Puna_TikTok_AJAX_Handlers {
         $comment_likes = get_comment_meta($comment->comment_ID, '_comment_likes', true) ?: 0;
         
         $is_reply_class = $parent_id > 0 ? ' comment-reply' : '';
-        $html = sprintf(
-            '<div class="comment-item%s" data-comment-id="%d">
-                <div class="comment-avatar-wrapper">%s</div>
-                <div class="comment-content">
-                    <div class="comment-header">
-                        <span class="comment-author-wrapper">
-                            <strong class="comment-author">%s</strong>
-                        </span>
-                    </div>
-                    <p class="comment-text">%s</p>
-                    <div class="comment-footer">
-                        <span class="comment-date">%s trước</span>
-                        <a href="#" class="reply-link" data-comment-id="%d">Trả lời</a>
-                    </div>
+        $guest_id = '';
+        
+        ob_start();
+        ?>
+        <div class="comment-item<?php echo esc_attr($is_reply_class); ?>" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+            <div class="comment-avatar-wrapper">
+                <?php echo puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', $guest_id); ?>
+            </div>
+            <div class="comment-content">
+                <div class="comment-header">
+                    <span class="comment-author-wrapper">
+                        <strong class="comment-author"><?php echo esc_html($comment_author_name); ?></strong>
+                    </span>
                 </div>
-                <div class="comment-right-actions">
-                    <div class="comment-likes" data-comment-id="%d">
-                        <i class="fa-regular fa-heart"></i>
-                        <span>%d</span>
-                    </div>
+                <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>
+                <div class="comment-footer">
+                    <span class="comment-date"><?php echo esc_html($comment_date); ?> trước</span>
+                    <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">Trả lời</a>
                 </div>
-            </div>',
-            $is_reply_class,
-            $comment->comment_ID,
-            puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', ''),
-            esc_html($comment_author_name),
-            wp_kses_post($comment->comment_content),
-            esc_html($comment_date),
-            $comment->comment_ID,
-            $comment->comment_ID,
-            $comment_likes
-        );
+            </div>
+            <div class="comment-right-actions">
+                <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                    <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
+                    <span><?php echo esc_html($comment_likes); ?></span>
+                </div>
+            </div>
+        </div>
+        <?php
+        $html = ob_get_clean();
     }
     
     wp_send_json_success(array(

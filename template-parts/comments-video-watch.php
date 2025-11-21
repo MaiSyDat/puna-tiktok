@@ -133,10 +133,10 @@ $comments_count = get_comments_number($post_id);
                    data-post-id="<?php echo esc_attr($post_id); ?>">
             <div class="comment-input-actions">
                 <button class="comment-action-btn" title="<?php esc_attr_e('Gắn thẻ người dùng', 'puna-tiktok'); ?>">
-                    <i class="fa-solid fa-at"></i>
+                    <?php echo puna_tiktok_get_icon('home', 'Gắn thẻ người dùng'); ?>
                 </button>
                 <button class="comment-action-btn" title="<?php esc_attr_e('Emoji', 'puna-tiktok'); ?>">
-                    <i class="fa-regular fa-face-smile"></i>
+                    <?php echo puna_tiktok_get_icon('home', 'Emoji'); ?>
                 </button>
                 <div class="comment-submit-actions">
                     <button class="submit-comment-btn" data-post-id="<?php echo esc_attr($post_id); ?>" disabled>

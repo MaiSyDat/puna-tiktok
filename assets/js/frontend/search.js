@@ -18,6 +18,12 @@ document.addEventListener("DOMContentLoaded", function() {
     let searchDebounceTimer = null;
     let currentSearchQuery = '';
     
+    // Helper function to get icon HTML
+    function getIconHTML(iconName, alt = '') {
+        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
+        return `<img src="${themeUri}/assets/images/icons/${iconName}.svg" alt="${alt || ''}" class="icon-svg">`;
+    }
+    
     function openSearchPanel() {
         document.body.classList.add('search-panel-active');
         setTimeout(() => {
@@ -92,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         const li = document.createElement('li');
                         li.className = 'search-history-item';
                         li.innerHTML = `
-                            <i class="fa-solid fa-clock"></i>
+                            ${getIconHTML('search', 'Lịch sử')}
                             <span>${item.query}</span>
                         `;
                         li.addEventListener('click', function() {
@@ -136,17 +142,17 @@ document.addEventListener("DOMContentLoaded", function() {
                             const li = document.createElement('li');
                             li.className = 'search-suggestion-item';
                             
-                            let icon = 'fa-magnifying-glass';
+                            let iconName = 'search';
                             if (suggestion.type === 'user') {
-                                icon = 'fa-user';
+                                iconName = 'home';
                             } else if (suggestion.type === 'video') {
-                                icon = 'fa-video';
+                                iconName = 'play';
                             } else if (suggestion.type === 'history') {
-                                icon = 'fa-clock';
+                                iconName = 'search';
                             }
                             
                             li.innerHTML = `
-                                <i class="fa-solid ${icon}"></i>
+                                ${getIconHTML(iconName, suggestion.text)}
                                 <span>${suggestion.text}</span>
                             `;
                             li.addEventListener('click', function() {
@@ -262,7 +268,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         const li = document.createElement('li');
                         li.className = 'search-popular-item';
                         li.innerHTML = `
-                            <i class="fa-solid fa-fire"></i>
+                            ${getIconHTML('fire', item.query)}
                             <span>${item.query}</span>
                         `;
                         li.style.cursor = 'pointer';
@@ -276,34 +282,22 @@ document.addEventListener("DOMContentLoaded", function() {
                         popularList.appendChild(li);
                     });
                 } else {
-                    popularList.innerHTML = `
-                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Sơn Tùng M-TP</span></li>
-                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Nhạc TikTok</span></li>
-                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Video hài</span></li>
-                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Dance cover</span></li>
-                    `;
-                    const defaultItems = popularList.querySelectorAll('.search-popular-item');
-                    defaultItems.forEach(function(item) {
-                        item.style.cursor = 'pointer';
-                        item.addEventListener('click', function(e) {
-                            e.preventDefault();
-                            const searchText = item.querySelector('span')?.textContent.trim();
-                            if (searchText && realSearchInput) {
-                                realSearchInput.value = searchText;
-                                submitSearch(searchText);
-                            }
-                        });
-                    });
+                    // No data - hide the section or show empty state
+                    if (popularList) {
+                        popularList.innerHTML = '<li class="search-popular-empty">Chưa có tìm kiếm phổ biến</li>';
+                    }
+                    if (searchPopularSection) {
+                        searchPopularSection.style.display = 'none';
+                    }
                 }
             })
             .catch(error => {
+                // On error, hide the section
                 if (popularList) {
-                    popularList.innerHTML = `
-                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Sơn Tùng M-TP</span></li>
-                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Nhạc TikTok</span></li>
-                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Video hài</span></li>
-                        <li class="search-popular-item"><i class="fa-solid fa-magnifying-glass"></i><span>Dance cover</span></li>
-                    `;
+                    popularList.innerHTML = '';
+                }
+                if (searchPopularSection) {
+                    searchPopularSection.style.display = 'none';
                 }
             });
     }
@@ -330,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query);
                         li.innerHTML = `
                             <a href="${searchUrl}" class="search-suggestion-link">
-                                <i class="fa-solid fa-magnifying-glass"></i>
+                                ${getIconHTML('search', item.query)}
                                 <span>${item.query}</span>
                             </a>
                         `;
@@ -357,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function() {
                                         const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query);
                                         li.innerHTML = `
                                             <a href="${searchUrl}" class="search-suggestion-link">
-                                                <i class="fa-solid fa-fire"></i>
+                                                ${getIconHTML('fire', item.query)}
                                                 <span>${item.query}</span>
                                             </a>
                                         `;
@@ -389,7 +383,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query);
                         li.innerHTML = `
                             <a href="${searchUrl}" class="search-suggestion-link">
-                                <i class="fa-solid fa-fire"></i>
+                                ${getIconHTML('fire', item.query)}
                                 <span>${item.query}</span>
                             </a>
                         `;

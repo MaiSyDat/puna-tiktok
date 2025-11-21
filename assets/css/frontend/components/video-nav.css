@@ -41,8 +41,27 @@
     font-size: 18px; 
 }
 
+.video-nav-btn .icon-svg,
+.video-nav-btn .icon-img {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.video-nav-btn:hover .icon-svg,
+.video-nav-btn:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
 .video-nav-btn.is-disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.video-nav-btn.is-disabled .icon-svg,
+.video-nav-btn.is-disabled .icon-img {
+    opacity: 0.5;
 }
 

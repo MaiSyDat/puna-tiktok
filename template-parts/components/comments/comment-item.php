@@ -89,25 +89,25 @@ if (!$comment_author_id) {
     <div class="comment-right-actions">
         <?php if ($can_delete_comment) : ?>
             <div class="comment-actions">
-                <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><i class="fa-solid fa-ellipsis"></i></button>
+                <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?></button>
                 <div class="comment-options-dropdown">
                     <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                        <i class="fa-solid fa-trash"></i> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
+                        <?php echo puna_tiktok_get_icon('delete', 'Xóa'); ?> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
                     </button>
                 </div>
             </div>
         <?php elseif (is_user_logged_in() && !$can_delete_comment) : ?>
             <div class="comment-actions">
-                <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><i class="fa-solid fa-ellipsis"></i></button>
+                <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?></button>
                 <div class="comment-options-dropdown">
                     <button class="comment-action-report" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                        <i class="fa-solid fa-flag"></i> <?php esc_html_e('Báo cáo', 'puna-tiktok'); ?>
+                        <?php echo puna_tiktok_get_icon('home', 'Báo cáo'); ?> <?php esc_html_e('Báo cáo', 'puna-tiktok'); ?>
                     </button>
                 </div>
             </div>
         <?php endif; ?>
         <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-            <i class="<?php echo $is_liked ? 'fa-solid' : 'fa-regular'; ?> fa-heart<?php echo $is_liked ? ' liked' : ''; ?>"></i>
+            <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
             <span><?php echo esc_html($comment_likes); ?></span>
         </div>
     </div>

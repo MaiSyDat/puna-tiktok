@@ -49,6 +49,171 @@ body.single .tiktok-app .main-content {
     background: rgba(0, 0, 0, 0.8);
 }
 
+/* Video Watch Icons */
+.video-watch-back-btn .icon-svg,
+.video-watch-back-btn .icon-img {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+/* Video Options Button Icons */
+.video-options-btn .icon-svg,
+.video-options-btn .icon-img,
+.video-info-more-btn .icon-svg,
+.video-info-more-btn .icon-img {
+    width: 18px;
+    height: 18px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.video-options-btn:hover .icon-svg,
+.video-options-btn:active .icon-svg,
+.video-info-more-btn:hover .icon-svg,
+.video-info-more-btn:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+.video-watch-back-btn:hover .icon-svg,
+.video-watch-back-btn:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+/* Volume Toggle Button Icons */
+.volume-toggle-btn .icon-svg,
+.volume-toggle-btn .icon-img {
+    width: 14px;
+    height: 14px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.volume-toggle-btn:hover .icon-svg,
+.volume-toggle-btn:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+/* Interaction Item Icons */
+.video-interaction-stats .interaction-item .icon-svg,
+.video-interaction-stats .interaction-item .icon-img {
+    width: 18px;
+    height: 18px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.video-interaction-stats .interaction-item:hover .icon-svg,
+.video-interaction-stats .interaction-item:active .icon-svg {
+    opacity: 1;
+}
+
+.video-interaction-stats .interaction-item.liked .icon-svg,
+.video-interaction-stats .interaction-item.saved .icon-svg {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+/* Share Modal Icons */
+.share-modal-close .icon-svg,
+.share-modal-close .icon-img {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.share-modal-close:hover .icon-svg,
+.share-modal-close:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+.share-option-icon .icon-svg,
+.share-option-icon .icon-img {
+    width: 24px;
+    height: 24px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.share-option:hover .share-option-icon .icon-svg,
+.share-option:active .share-option-icon .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+/* Options Item Icons */
+.options-item .icon-svg,
+.options-item .icon-img {
+    width: 16px;
+    height: 16px;
+    color: inherit;
+    margin-right: 8px;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.options-item:hover .icon-svg,
+.options-item:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+.video-info-more-btn:hover {
+    color: var(--puna-primary);
+}
+
+.video-info-more-btn:hover .icon-svg,
+.video-info-more-btn:active .icon-svg {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+/* Volume Toggle Button Icons */
+.volume-toggle-btn .icon-svg,
+.volume-toggle-btn .icon-img {
+    width: 14px;
+    height: 14px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.volume-toggle-btn:hover .icon-svg,
+.volume-toggle-btn:active .icon-svg {
+    opacity: 1;
+}
+
+/* Video Navigation Buttons */
+.video-nav-btn .icon-svg,
+.video-nav-btn .icon-img {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.video-nav-btn:hover .icon-svg,
+.video-nav-btn:active .icon-svg {
+    opacity: 1;
+}
+
+/* Options Item Icons */
+.options-item .icon-svg,
+.options-item .icon-img {
+    width: 16px;
+    height: 16px;
+    color: inherit;
+    margin-right: 8px;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.options-item:hover .icon-svg,
+.options-item:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
 /* Main Container: 2 Columns */
 .video-watch-container {
     display: flex;
@@ -318,7 +483,9 @@ body.single .tiktok-app .main-content {
     transition: all 0.3s ease;
 }
 
-.video-info-more-btn i {
+.video-info-more-btn i,
+.video-info-more-btn .icon-svg,
+.video-info-more-btn .icon-img {
     color: var(--puna-text);
 }
 
@@ -488,18 +655,42 @@ body.theme-dark .video-caption-content .tag {
     transition: background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
 
-.interaction-item:hover i {
+.interaction-item .icon-svg,
+.interaction-item .icon-img {
+    width: 18px;
+    height: 18px;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.interaction-item:hover i,
+.interaction-item:hover .icon-svg,
+.interaction-item:hover .icon-img {
     background: rgba(22, 24, 35, 0.12);
+    opacity: 1;
 }
 
-.interaction-item.liked i {
+.interaction-item.liked i,
+.interaction-item.liked .icon-svg,
+.interaction-item.liked .icon-img {
     color: var(--puna-primary);
-    background: rgba(254, 44, 85, 0.12);
+    background: color-mix(in srgb, var(--puna-primary) 12%, transparent);
 }
 
-.interaction-item.saved i {
+.interaction-item.liked .icon-svg,
+.interaction-item.liked .icon-img {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+.interaction-item.saved i,
+.interaction-item.saved .icon-svg,
+.interaction-item.saved .icon-img {
     color: var(--puna-primary);
-    background: rgba(254, 44, 85, 0.12);
+    background: color-mix(in srgb, var(--puna-primary) 12%, transparent);
+}
+
+.interaction-item.saved .icon-svg,
+.interaction-item.saved .icon-img {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 .stat-count {
@@ -547,7 +738,9 @@ body.theme-dark .video-caption-content .tag {
     text-decoration: none;
 }
 
-.share-option-btn i {
+.share-option-btn i,
+.share-option-btn .icon-svg,
+.share-option-btn .icon-img {
     color: var(--puna-text);
 }
 
@@ -557,7 +750,9 @@ body.theme-dark .video-caption-content .tag {
     transform: scale(1.1);
 }
 
-.share-option-btn:hover i {
+.share-option-btn:hover i,
+.share-option-btn:hover .icon-svg,
+.share-option-btn:hover .icon-img {
     color: #fff;
 }
 
@@ -667,12 +862,18 @@ body.theme-dark .video-caption-content .tag {
     color: var(--puna-text);
 }
 
-.video-watch-comments .comment-likes i {
+.video-watch-comments .comment-likes i,
+.video-watch-comments .comment-likes .icon-svg,
+.video-watch-comments .comment-likes .icon-img {
     color: var(--puna-text);
 }
 
 .video-watch-comments .comment-likes.liked i,
-.video-watch-comments .comment-likes:hover i {
+.video-watch-comments .comment-likes.liked .icon-svg,
+.video-watch-comments .comment-likes.liked .icon-img,
+.video-watch-comments .comment-likes:hover i,
+.video-watch-comments .comment-likes:hover .icon-svg,
+.video-watch-comments .comment-likes:hover .icon-img {
     color: var(--puna-primary);
 }
 
@@ -684,11 +885,15 @@ body.theme-dark .video-caption-content .tag {
     color: var(--puna-primary);
 }
 
-.video-watch-comments .comment-action-btn i {
+.video-watch-comments .comment-action-btn i,
+.video-watch-comments .comment-action-btn .icon-svg,
+.video-watch-comments .comment-action-btn .icon-img {
     color: var(--puna-text);
 }
 
-.video-watch-comments .comment-action-btn:hover i {
+.video-watch-comments .comment-action-btn:hover i,
+.video-watch-comments .comment-action-btn:hover .icon-svg,
+.video-watch-comments .comment-action-btn:hover .icon-img {
     color: var(--puna-primary);
 }
 

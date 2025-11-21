@@ -101,15 +101,6 @@
     padding-top: calc(16 / 9 * 100%);
 }
 
-.media-wrapper img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 .media-wrapper .taxonomy-video {
     position: absolute;
     top: 0;
@@ -137,18 +128,6 @@
     opacity: 1;
 }
 
-.play-icon {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--puna-text);
-    font-size: 16px;
-}
-
 .video-views-overlay {
     position: absolute;
     bottom: 6px;
@@ -170,4 +149,19 @@
     font-size: 9px;
 }
 
+/* Taxonomy Page Icons */
+.play-icon .icon-svg,
+.play-icon .icon-img {
+    width: 48px;
+    height: 48px;
+    color: #fff;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
 
+.video-views-overlay .icon-svg,
+.video-views-overlay .icon-img {
+    width: 10px;
+    height: 10px;
+    color: #fff;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}

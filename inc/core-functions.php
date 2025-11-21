@@ -424,7 +424,22 @@ if (!function_exists('puna_tiktok_empty_state')) {
         $wrapper_class = 'taxonomy-empty-state' . (!empty($args['wrapper_class']) ? ' ' . esc_attr($args['wrapper_class']) : '');
         ?>
         <div class="<?php echo esc_attr($wrapper_class); ?>" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-            <i class="fa-solid <?php echo esc_attr($args['icon']); ?>" style="font-size: 64px; color: #ccc; margin-bottom: 20px;"></i>
+            <?php 
+            // Map Font Awesome icons to SVG icons
+            $icon_map = array(
+                'fa-video' => 'play',
+                'fa-video-slash' => 'play',
+                'fa-search' => 'search',
+                'fa-user' => 'home',
+                'fa-folder' => 'compass',
+                'fa-hashtag' => 'tag',
+                'fa-tag' => 'tag',
+                'fa-house' => 'home',
+                'fa-home' => 'home',
+            );
+            $icon_name = isset($icon_map[$args['icon']]) ? $icon_map[$args['icon']] : 'home';
+            echo puna_tiktok_get_icon($icon_name, $args['title']);
+            ?>
             <h3 style="color: #666; margin-bottom: 10px;"><?php echo esc_html($args['title']); ?></h3>
             <p style="color: #999;"><?php echo esc_html($args['message']); ?></p>
             <?php if (!empty($args['button_url']) && !empty($args['button_text']) && current_user_can('manage_options')) : ?>
@@ -469,6 +484,91 @@ if (!function_exists('puna_tiktok_get_video_description')) {
         }
         
         return apply_filters('puna_tiktok_get_video_description', $description, $post_id);
+    }
+}
+
+/**
+ * Get icon URL (supports both SVG and PNG)
+ * 
+ * @param string $icon_name Icon filename without extension (e.g., 'heart' for heart.svg or heart.png)
+ * @return string Icon URL or empty string if not found
+ */
+if (!function_exists('puna_tiktok_get_icon_url')) {
+    function puna_tiktok_get_icon_url($icon_name) {
+        // Remove extension if provided
+        $icon_name = preg_replace('/\.(svg|png)$/i', '', $icon_name);
+        
+        // Try SVG first, then PNG
+        $extensions = array('svg', 'png');
+        
+        foreach ($extensions as $ext) {
+            $icon_path = get_template_directory() . '/assets/images/icons/' . $icon_name . '.' . $ext;
+            $icon_url = get_template_directory_uri() . '/assets/images/icons/' . $icon_name . '.' . $ext;
+            
+            if (file_exists($icon_path)) {
+                return apply_filters('puna_tiktok_icon_url', $icon_url, $icon_name);
+            }
+        }
+        
+        // Return empty if not found
+        return apply_filters('puna_tiktok_icon_url', '', $icon_name);
+    }
+}
+
+/**
+ * Get icon HTML
+ * 
+ * @param string $icon_name Icon filename without extension (e.g., 'heart' for heart.svg or heart.png)
+ * @param string $alt Alt text for the icon
+ * @param string $class Additional CSS classes
+ * @return string Icon HTML img tag or empty string if not found
+ */
+if (!function_exists('puna_tiktok_get_icon')) {
+    function puna_tiktok_get_icon($icon_name, $alt = '', $class = '') {
+        $icon_url = puna_tiktok_get_icon_url($icon_name);
+        
+        if (empty($icon_url)) {
+            return '';
+        }
+        
+        // Determine if it's SVG or PNG
+        $is_svg = (substr($icon_url, -4) === '.svg');
+        $icon_class = $is_svg ? 'icon-svg' : 'icon-img';
+        
+        // Add additional classes if provided
+        if (!empty($class)) {
+            $icon_class .= ' ' . esc_attr($class);
+        }
+        
+        return '<img src="' . esc_url($icon_url) . '" alt="' . esc_attr($alt) . '" class="' . $icon_class . '">';
+    }
+}
+
+/**
+ * Get logo URL (supports both SVG and PNG)
+ */
+if (!function_exists('puna_tiktok_get_logo_url')) {
+    function puna_tiktok_get_logo_url() {
+        $logo_url = get_theme_mod('sidebar_logo', '');
+        
+        // If no custom logo, check for default logo files
+        if (empty($logo_url)) {
+            $logo_dir = get_template_directory() . '/assets/images/logos/';
+            $logo_uri = get_template_directory_uri() . '/assets/images/logos/';
+            
+            // Try PNG first, then SVG
+            $extensions = array('png', 'svg');
+            foreach ($extensions as $ext) {
+                $logo_files = glob($logo_dir . '*.' . $ext);
+                if (!empty($logo_files)) {
+                    $logo_file = basename($logo_files[0]);
+                    $logo_url = $logo_uri . $logo_file;
+                    break;
+                }
+            }
+        }
+        
+        return apply_filters('puna_tiktok_logo_url', $logo_url);
     }
 }
 

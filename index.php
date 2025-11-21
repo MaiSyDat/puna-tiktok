@@ -56,8 +56,8 @@
             wp_reset_postdata();
             ?>
 			<div class="video-nav">
-				<button class="video-nav-btn nav-prev" aria-label="Previous video"><i class="fa-solid fa-chevron-up"></i></button>
-				<button class="video-nav-btn nav-next" aria-label="Next video"><i class="fa-solid fa-chevron-down"></i></button>
+				<button class="video-nav-btn nav-prev" aria-label="Previous video"><?php echo puna_tiktok_get_icon('arrow-up', 'Video trước'); ?></button>
+				<button class="video-nav-btn nav-next" aria-label="Next video"><?php echo puna_tiktok_get_icon('arrow', 'Video tiếp'); ?></button>
 			</div>
         </div>
     </div>

@@ -10,6 +10,12 @@ document.addEventListener("DOMContentLoaded", function() {
     let globalVolume = 1;
     const viewedVideos = new Set();
     let userGestureHandled = false;
+    
+    // Helper function to get icon HTML
+    function getIconHTML(iconName, alt = '') {
+        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
+        return `<img src="${themeUri}/assets/images/icons/${iconName}.svg" alt="${alt || ''}" class="icon-svg">`;
+    }
 
     /**
      * Get current video
@@ -70,11 +76,16 @@ document.addEventListener("DOMContentLoaded", function() {
             const slider = wrapper.querySelector('.volume-slider');
             
             if (btn) {
-                btn.innerHTML = globalMuted
-                    ? '<i class="fa-solid fa-volume-xmark"></i>'
-                    : (Math.round(globalVolume * 100) < 50
-                        ? '<i class="fa-solid fa-volume-low"></i>'
-                        : '<i class="fa-solid fa-volume-high"></i>');
+                // Get icon based on volume state
+                let iconName = 'volum';
+                if (globalMuted) {
+                    iconName = 'volum-mute';
+                } else if (Math.round(globalVolume * 100) < 50) {
+                    iconName = 'volum'; // Use same icon for low volume
+                } else {
+                    iconName = 'volum'; // Use same icon for high volume
+                }
+                btn.innerHTML = getIconHTML(iconName, 'Âm lượng');
             }
             if (slider) {
                 const targetVal = globalMuted ? 0 : Math.round(globalVolume * 100);
@@ -86,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     document.addEventListener('click', function(e) {
+        // Check if clicked on volume toggle button or icon inside it
         const volumeToggleBtn = e.target.closest('.volume-toggle-btn');
         if (volumeToggleBtn) {
             e.preventDefault();

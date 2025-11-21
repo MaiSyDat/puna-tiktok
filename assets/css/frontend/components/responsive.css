@@ -116,11 +116,19 @@
         margin-bottom: 12px;
     }
 
-    .action-item i {
+    .action-item i,
+    .action-item .icon-svg,
+    .action-item .icon-img {
         width: 44px;
         height: 44px;
         font-size: 20px;
-        color: #fff
+        color: #fff;
+    }
+    
+    .action-item .icon-svg,
+    .action-item .icon-img {
+        width: 20px;
+        height: 20px;
     }
 
     .action-item .count {
@@ -389,11 +397,19 @@
         margin-bottom: 10px;
     }
 
-    .action-item i {
+    .action-item i,
+    .action-item .icon-svg,
+    .action-item .icon-img {
         width: 40px;
         height: 40px;
         font-size: 18px;
-        color: #fff
+        color: #fff;
+    }
+    
+    .action-item .icon-svg,
+    .action-item .icon-img {
+        width: 18px;
+        height: 18px;
     }
 
     .action-item .count {
@@ -445,6 +461,12 @@
         height: 56px;
         font-size: 20px;
     }
+    
+    .share-option-icon .icon-svg,
+    .share-option-icon .icon-img {
+        width: 20px;
+        height: 20px;
+    }
 
     .share-option-label {
         font-size: 11px;
@@ -480,8 +502,16 @@
         gap: 16px;
     }
     
-    .interaction-item i {
+    .interaction-item i,
+    .interaction-item .icon-svg,
+    .interaction-item .icon-img {
         font-size: 24px;
+    }
+    
+    .interaction-item .icon-svg,
+    .interaction-item .icon-img {
+        width: 24px;
+        height: 24px;
     }
     
     .video-share-options {
@@ -762,11 +792,19 @@
         justify-content: center;
     }
 
-    .action-item i {
+    .action-item i,
+    .action-item .icon-svg,
+    .action-item .icon-img {
         width: 36px;
         height: 36px;
         font-size: 16px;
-        color: #fff
+        color: #fff;
+    }
+    
+    .action-item .icon-svg,
+    .action-item .icon-img {
+        width: 16px;
+        height: 16px;
     }
 
     .action-item .count {

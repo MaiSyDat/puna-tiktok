@@ -18,3 +18,44 @@ body {
     color: var(--puna-text);
 }
 
+/* ========================================
+   BASE ICON STYLES (SVG/PNG)
+   ======================================== */
+
+/* Base icon styles */
+.icon-svg,
+.icon-img {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    object-fit: contain;
+    flex-shrink: 0;
+    color: inherit;
+    fill: currentColor;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+/* For SVG with fill attribute */
+.icon-svg[src$=".svg"] {
+    filter: none;
+}
+
+/* General rule: Icons in buttons should change color on hover/active */
+button:hover .icon-svg,
+button:active .icon-svg,
+button:hover .icon-img,
+button:active .icon-img,
+a:hover .icon-svg,
+a:active .icon-svg,
+a:hover .icon-img,
+a:active .icon-img {
+    opacity: 1;
+}
+
+/* Fix for flex containers */
+button .icon-svg,
+button .icon-img {
+    flex-shrink: 0;
+}
+

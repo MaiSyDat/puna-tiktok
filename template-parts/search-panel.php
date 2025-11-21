@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     <div class="search-panel-header">
         <h3>Tìm kiếm</h3>
         <button id="close-search" class="close-search-btn">
-            <i class="fa-solid fa-xmark"></i>
+            <?php echo puna_tiktok_get_icon('close', 'Đóng'); ?>
         </button>
     </div>
     <div class="search-panel-input-wrapper">
@@ -38,7 +38,7 @@ if (!defined('ABSPATH')) {
             <div class="search-history-header">
                 <h4>Lịch sử tìm kiếm</h4>
                 <button class="clear-history-btn" id="clear-history-btn">
-                    <i class="fa-solid fa-trash"></i> Xóa lịch sử
+                    <?php echo puna_tiktok_get_icon('delete', 'Xóa lịch sử'); ?> Xóa lịch sử
                 </button>
             </div>
             <ul class="search-history-list" id="search-history-list">

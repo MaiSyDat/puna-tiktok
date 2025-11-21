@@ -86,6 +86,20 @@
 
 .close-comments-btn:hover {
     background-color: var(--puna-muted);
+    color: var(--puna-primary);
+}
+
+.close-comments-btn .icon-svg,
+.close-comments-btn .icon-img {
+    width: 20px;
+    height: 20px;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.close-comments-btn:hover .icon-svg,
+.close-comments-btn:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 .comments-list {
@@ -325,20 +339,65 @@
     50% { transform: scale(1.2); }
 }
 
-.comment-likes i {
+.comment-likes i,
+.comment-likes .icon-svg,
+.comment-likes .icon-img {
     font-size: 14px;
+    width: 14px;
+    height: 14px;
     color: var(--puna-text);
     cursor: pointer;
-    transition: color 0.2s;
+    transition: color 0.2s, opacity 0.2s ease, filter 0.2s ease;
 }
 
-.comment-likes i:hover {
+.comment-likes i:hover,
+.comment-likes:hover .icon-svg,
+.comment-likes:hover .icon-img {
     color: var(--puna-primary);
 }
 
 .comment-likes i.fa-solid.liked,
-.comment-likes i.fa-solid {
+.comment-likes i.fa-solid,
+.comment-likes.liked .icon-svg,
+.comment-likes.liked .icon-img {
     color: var(--puna-primary);
+}
+
+.comment-likes.liked .icon-svg,
+.comment-likes.liked .icon-img {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+/* Comment Action Buttons */
+.comment-action-btn .icon-svg,
+.comment-action-btn .icon-img,
+.comment-options-btn .icon-svg,
+.comment-options-btn .icon-img {
+    width: 16px;
+    height: 16px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.comment-action-btn:hover .icon-svg,
+.comment-action-btn:active .icon-svg,
+.comment-options-btn:hover .icon-svg,
+.comment-options-btn:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+}
+
+.close-comments-btn .icon-svg {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.close-comments-btn:hover .icon-svg,
+.close-comments-btn:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 .comment-likes span {
@@ -434,7 +493,7 @@
 }
 
 .comment-action-delete:hover {
-    background-color: rgba(254, 44, 85, 0.08);
+    background-color: rgba(6, 83, 159, 0.08);
 }
 
 .comment-action-report:hover {

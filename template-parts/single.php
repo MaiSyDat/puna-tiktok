@@ -27,8 +27,8 @@ get_header(); ?>
 		<?php if ( comments_open() || get_comments_number() ) { comments_template(); } ?>
 
 		<div class="video-nav">
-			<button class="video-nav-btn nav-prev" aria-label="Previous video"><i class="fa-solid fa-chevron-up"></i></button>
-			<button class="video-nav-btn nav-next" aria-label="Next video"><i class="fa-solid fa-chevron-down"></i></button>
+			<button class="video-nav-btn nav-prev" aria-label="Previous video">			<?php echo puna_tiktok_get_icon('home', 'Previous video'); ?></button>
+			<button class="video-nav-btn nav-next" aria-label="Next video"><?php echo puna_tiktok_get_icon('home', 'Next video'); ?></button>
 		</div>
 	</div>
 </div>

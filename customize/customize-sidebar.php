@@ -121,12 +121,16 @@ class Puna_TikTok_Customize_Sidebar {
     public function enqueue_scripts() {
         // Script for mobile toggle and responsive behavior
         if (wp_script_is('puna-tiktok-main', 'enqueued')) {
+            // Get icon HTML for sidebar toggle
+            $toggle_icon = puna_tiktok_get_icon('home', 'Toggle Sidebar');
+            $toggle_icon_js = json_encode($toggle_icon);
+            
             wp_add_inline_script('puna-tiktok-main', '
                 (function() {
                     // Sidebar toggle for mobile
                     const sidebarToggle = document.createElement("button");
                     sidebarToggle.className = "sidebar-toggle-btn";
-                    sidebarToggle.innerHTML = "<i class=\"fa-solid fa-bars\"></i>";
+                    sidebarToggle.innerHTML = ' . $toggle_icon_js . ';
                     sidebarToggle.setAttribute("aria-label", "Toggle Sidebar");
                     document.body.appendChild(sidebarToggle);
                     

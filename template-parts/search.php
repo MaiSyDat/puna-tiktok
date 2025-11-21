@@ -145,7 +145,7 @@ $withcomments = 1;
                                         <?php endif; ?>
                                         <div class="search-video-overlay">
                                             <div class="search-video-likes">
-                                                <i class="fa-solid fa-heart"></i>
+                                                <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
                                                 <span><?php echo puna_tiktok_format_number($likes); ?></span>
                                             </div>
                                         </div>

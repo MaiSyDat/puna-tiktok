@@ -129,11 +129,24 @@ body.search-panel-active .search-panel {
 
 .close-search-btn:hover {
     background: var(--puna-muted);
+    color: var(--puna-primary);
 }
 
 .close-search-btn i {
     font-size: 18px;
     color: var(--puna-text);
+}
+
+.close-search-btn .icon-svg {
+    width: 20px;
+    height: 20px;
+    color: inherit;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.close-search-btn:hover .icon-svg,
+.close-search-btn:active .icon-svg {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 .search-panel-input-wrapper {
@@ -222,21 +235,32 @@ body.search-panel-active .search-panel {
     color: var(--puna-text);
     font-size: 12px;
     cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
 }
 
-.clear-history-btn:hover {
+.clear-history-btn:hover,
+.clear-history-btn:active {
     background: var(--puna-muted);
     color: var(--puna-primary);
 }
 
-.clear-history-btn i {
-    font-size: 12px;
+.clear-history-btn .icon-svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    opacity: 0.8;
+    transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.clear-history-btn:hover .icon-svg,
+.clear-history-btn:active .icon-svg {
+    opacity: 1;
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 .search-history-list {
@@ -316,14 +340,27 @@ body.search-panel-active .search-panel {
     background: var(--puna-muted);
 }
 
-.search-popular-list li i {
-    font-size: 14px;
+.search-popular-list li .icon-svg {
+    width: 14px;
+    height: 14px;
+    color: var(--puna-primary);
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);;
+    flex-shrink: 0;
+}
+
+.search-history-item .icon-svg {
+    width: 14px;
+    height: 14px;
     color: var(--puna-primary);
     flex-shrink: 0;
 }
 
-.search-popular-list li i.fa-fire {
+.search-suggestion-item .icon-svg {
+    width: 14px;
+    height: 14px;
     color: var(--puna-primary);
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+    flex-shrink: 0;
 }
 
 .search-popular-item {
@@ -337,10 +374,13 @@ body.search-panel-active .search-panel {
     transition: background-color 0.2s ease;
 }
 
-.search-popular-loading {
+.search-popular-loading,
+.search-popular-empty {
     padding: 10px 16px;
-    color: var(--puna-primary);
+    color: var(--puna-text-secondary, #999);
     font-size: 14px;
+    text-align: center;
+    cursor: default;
 }
 
 /* Related Searches Loading */
@@ -694,9 +734,10 @@ body.search-panel-active .search-panel {
     background: var(--puna-muted);
 }
 
-.search-suggestion-link i {
+.search-suggestion-link .icon-svg {
     font-size: 14px;
     color: var(--puna-primary);
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
     flex-shrink: 0;
 }
 

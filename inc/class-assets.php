@@ -80,20 +80,16 @@ if (!class_exists('Puna_TikTok_Assets')) {
             
             wp_register_style('puna-tiktok-responsive', $css_dir . 'responsive.css', $responsive_deps, $version);
             
-            // Font Awesome
-            wp_register_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css', array(), '7.0.1');
+            // Font Awesome removed - using SVG icons instead
             
             // Enqueue base styles (always needed)
             wp_enqueue_style('puna-tiktok-reset');
             wp_enqueue_style('puna-tiktok-layout');
             wp_enqueue_style('puna-tiktok-sidebar');
             wp_enqueue_style('puna-tiktok-toast');
-            wp_enqueue_style('font-awesome');
+            wp_enqueue_style('puna-tiktok-search'); // Search panel is in header, needed on all pages
             
             // Enqueue page-specific styles
-            if ($page_context['is_search_page']) {
-                wp_enqueue_style('puna-tiktok-search');
-            }
             
             if ($page_context['is_home'] || $page_context['is_single_video']) {
                 wp_enqueue_style('puna-tiktok-video-feed');
@@ -221,6 +217,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce'    => wp_create_nonce('puna_tiktok_nonce'),
                 'like_nonce' => wp_create_nonce('puna_tiktok_like_nonce'),
+                'theme_uri' => PUNA_TIKTOK_THEME_URI,
                 'is_logged_in' => is_user_logged_in(),
                 'current_user' => array(
                     'display_name' => $current_user->display_name,
