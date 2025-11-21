@@ -27,11 +27,7 @@ document.addEventListener("DOMContentLoaded", function() {
         likedComments.forEach(commentId => {
             const commentLikes = document.querySelector(`.comment-likes[data-comment-id="${commentId}"]`);
             if (commentLikes) {
-                const heartIcon = commentLikes.querySelector('i.fa-heart');
-                if (heartIcon) {
-                    heartIcon.classList.remove('fa-regular');
-                    heartIcon.classList.add('fa-solid', 'liked');
-                }
+                commentLikes.classList.add('liked');
             }
         });
     }

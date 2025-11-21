@@ -27,14 +27,14 @@ class Puna_TikTok_Customize_Footer {
         // Add Footer Section (top-level, no panel)
         $wp_customize->add_section('puna_footer_section', array(
             'title'       => __('Footer', 'puna-tiktok'),
-            'description' => __('Cấu hình Footer', 'puna-tiktok'),
+            'description' => __('Configure Footer', 'puna-tiktok'),
             'priority'    => 30,
             'capability'  => 'manage_options',
         ));
 
         // Footer Settings
         $wp_customize->add_setting('sidebar_footer_title_1', array(
-            'default'           => 'Công ty',
+            'default'           => 'Company',
             'sanitize_callback' => 'sanitize_text_field',
             'transport'         => 'postMessage',
         ));
@@ -46,7 +46,7 @@ class Puna_TikTok_Customize_Footer {
         ));
 
         $wp_customize->add_setting('sidebar_footer_title_2', array(
-            'default'           => 'Chương trình',
+            'default'           => 'Programs',
             'sanitize_callback' => 'sanitize_text_field',
             'transport'         => 'postMessage',
         ));
@@ -58,7 +58,7 @@ class Puna_TikTok_Customize_Footer {
         ));
 
         $wp_customize->add_setting('sidebar_footer_title_3', array(
-            'default'           => 'Điều khoản & Dịch vụ',
+            'default'           => 'Terms & Services',
             'sanitize_callback' => 'sanitize_text_field',
             'transport'         => 'postMessage',
         ));

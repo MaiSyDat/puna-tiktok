@@ -10,9 +10,9 @@
 
 /* Main Sidebar (bên trái) */
 .sidebar {
-    flex: 0 0 300x;
-    width: 300px;
-    max-width: 300px;
+    flex: 0 0 210px;
+    width: 210px;
+    max-width: 210px;
     background-color: var(--puna-bg);
     display: flex;
     flex-direction: column;
@@ -39,14 +39,13 @@
 }
 
 .logo {
-    padding: 20px 16px;
+    padding: 20px 0;
 }
 
 .logo img {
     display: block;
-    max-width: 220px;
-    width: auto;
-    height: 50px;
+    max-width: 170px;
+    width: 100%;
     object-fit: contain;
 }
 
@@ -127,32 +126,36 @@
 
 /* Sidebar Toggle Button (Mobile) */
 .sidebar-toggle-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 9999;
-    background: var(--puna-bg);
-    border: 1px solid var(--puna-muted);
-    border-radius: 8px;
-    padding: 8px 12px;
+    position: relative;
+    background: transparent;
+    border: none;
+    padding: 0;
     cursor: pointer;
     display: none;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
     transition: all 0.2s;
 }
 
-.sidebar-toggle-btn:hover {
-    background: var(--puna-muted);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+/* Show on tablet and mobile */
+@media (max-width: 1024px) {
+    .video-top-controls .sidebar-toggle-btn {
+        display: flex !important;
+    }
 }
 
-.sidebar-toggle-btn i {
-    font-size: 18px;
-    color: var(--puna-text);
+.sidebar-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+.sidebar-toggle-btn .icon-svg,
+.sidebar-toggle-btn .icon-img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+    color: #fff;
 }
 
 /* Mobile Sidebar */
@@ -163,7 +166,7 @@
     z-index: 9998;
     transition: left 0.3s ease;
     width: 80%;
-    max-width: 300px;
+    max-width: 210px;
     box-shadow: 2px 0 16px rgba(0, 0, 0, 0.1);
 }
 
@@ -215,7 +218,7 @@ body.sidebar-open::before {
 }
 
 .sidebar.collapsed .logo img {
-    width: 40px;
+    width: 100px;
     height: auto;
 }
 
@@ -256,7 +259,7 @@ body.search-panel-active .sidebar .logo {
 }
 
 body.search-panel-active .sidebar .logo img {
-    width: 40px;
+    width: 100px;
     height: auto;
 }
 

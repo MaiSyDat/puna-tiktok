@@ -118,7 +118,7 @@ $comments_count = get_comments_number($post_id);
         } else {
             ?>
             <div class="no-comments">
-                <p><?php esc_html_e('Chưa có bình luận nào. Hãy là người đầu tiên bình luận!', 'puna-tiktok'); ?></p>
+                <p><?php esc_html_e('No comments yet. Be the first to comment!', 'puna-tiktok'); ?></p>
             </div>
             <?php
         }
@@ -129,18 +129,18 @@ $comments_count = get_comments_number($post_id);
     <div class="comment-input-container">
             <input type="text" 
                    class="comment-input" 
-                   placeholder="<?php esc_attr_e('Thêm bình luận...', 'puna-tiktok'); ?>" 
+                   placeholder="<?php esc_attr_e('Add a comment...', 'puna-tiktok'); ?>" 
                    data-post-id="<?php echo esc_attr($post_id); ?>">
             <div class="comment-input-actions">
-                <button class="comment-action-btn" title="<?php esc_attr_e('Gắn thẻ người dùng', 'puna-tiktok'); ?>">
-                    <?php echo puna_tiktok_get_icon('home', 'Gắn thẻ người dùng'); ?>
+                <button class="comment-action-btn" title="<?php esc_attr_e('Tag user', 'puna-tiktok'); ?>">
+                    <?php echo puna_tiktok_get_icon('home', __('Tag user', 'puna-tiktok')); ?>
                 </button>
                 <button class="comment-action-btn" title="<?php esc_attr_e('Emoji', 'puna-tiktok'); ?>">
-                    <?php echo puna_tiktok_get_icon('home', 'Emoji'); ?>
+                    <?php echo puna_tiktok_get_icon('home', __('Emoji', 'puna-tiktok')); ?>
                 </button>
                 <div class="comment-submit-actions">
                     <button class="submit-comment-btn" data-post-id="<?php echo esc_attr($post_id); ?>" disabled>
-                        <?php esc_html_e('Đăng', 'puna-tiktok'); ?>
+                        <?php esc_html_e('Post', 'puna-tiktok'); ?>
                     </button>
                 </div>
             </div>

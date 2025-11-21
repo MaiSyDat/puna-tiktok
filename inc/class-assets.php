@@ -52,7 +52,8 @@ if (!class_exists('Puna_TikTok_Assets')) {
             ));
             
             // Base CSS - Register first
-            wp_register_style('puna-tiktok-reset', $css_dir . 'reset.css', array(), $version);
+            wp_register_style('puna-tiktok-fonts', $css_dir . 'fonts.css', array(), $version);
+            wp_register_style('puna-tiktok-reset', $css_dir . 'reset.css', array('puna-tiktok-fonts'), $version);
             wp_register_style('puna-tiktok-layout', $css_dir . 'layout.css', array('puna-tiktok-reset'), $version);
             wp_register_style('puna-tiktok-sidebar', $css_dir . 'sidebar.css', array('puna-tiktok-layout'), $version);
             wp_register_style('puna-tiktok-toast', $css_dir . 'toast.css', array('puna-tiktok-layout'), $version);
@@ -83,6 +84,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Font Awesome removed - using SVG icons instead
             
             // Enqueue base styles (always needed)
+            wp_enqueue_style('puna-tiktok-fonts');
             wp_enqueue_style('puna-tiktok-reset');
             wp_enqueue_style('puna-tiktok-layout');
             wp_enqueue_style('puna-tiktok-sidebar');
@@ -155,6 +157,9 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Dropdowns - Register
             wp_register_script('puna-tiktok-dropdowns', $js_dir . 'frontend/dropdowns.js', array('puna-tiktok-core'), $version, true);
             
+            // Sidebar toggle - Register
+            wp_register_script('puna-tiktok-sidebar-toggle', $js_dir . 'frontend/sidebar-toggle.js', array('puna-tiktok-core'), $version, true);
+            
             // Video playback - Register
             wp_register_script('puna-tiktok-video-playback', $js_dir . 'frontend/video-playback.js', $base_deps, $version, true);
             
@@ -182,6 +187,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_enqueue_script('puna-tiktok-mega-video');
             wp_enqueue_script('puna-tiktok-guest-state');
             wp_enqueue_script('puna-tiktok-dropdowns');
+            wp_enqueue_script('puna-tiktok-sidebar-toggle');
             wp_enqueue_script('puna-tiktok-search');
             
             // Enqueue page-specific scripts
@@ -212,6 +218,12 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Localize script - attach to core.js so it's available everywhere
             $current_user = wp_get_current_user();
             
+            // Get menu icon URL
+            $menu_icon_url = puna_tiktok_get_icon_url('menu');
+            
+            // Get toast messages
+            $toast_messages = puna_tiktok_get_toast_messages();
+            
             // Allow filtering of localized script data
             $localize_data = apply_filters('puna_tiktok_localize_script_data', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
@@ -224,7 +236,9 @@ if (!class_exists('Puna_TikTok_Assets')) {
                     'user_id' => $current_user->ID,
                 ),
                 'avatar_url' => get_avatar_url($current_user->ID, array('size' => 40)),
+                'menu_icon_url' => $menu_icon_url,
                 'mega' => false,
+                'toast_messages' => $toast_messages,
             ));
             
             wp_localize_script('puna-tiktok-core', 'puna_tiktok_ajax', $localize_data);

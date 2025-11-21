@@ -23,7 +23,7 @@ class Puna_TikTok_Customize_Colors {
 
         $wp_customize->add_section('puna_color_section', array(
             'title'       => __('Color', 'puna-tiktok'),
-            'description' => __('Cấu hình hệ thống màu toàn cục cho theme', 'puna-tiktok'),
+            'description' => __('Configure global color system for theme', 'puna-tiktok'),
             'priority'    => 20,
             'capability'  => 'manage_options',
         ));
@@ -42,7 +42,7 @@ class Puna_TikTok_Customize_Colors {
 
         $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'puna_color_primary', array(
             'label'       => __('Primary Color', 'puna-tiktok'),
-            'description' => __('Màu chính của theme', 'puna-tiktok'),
+            'description' => __('Main color of the theme', 'puna-tiktok'),
             'section'     => 'puna_color_section',
             'settings'    => 'puna_color_primary',
         )));
@@ -56,7 +56,7 @@ class Puna_TikTok_Customize_Colors {
 
         $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'puna_color_secondary', array(
             'label'       => __('Secondary Color', 'puna-tiktok'),
-            'description' => __('Màu phụ của theme', 'puna-tiktok'),
+            'description' => __('Secondary color of the theme', 'puna-tiktok'),
             'section'     => 'puna_color_section',
             'settings'    => 'puna_color_secondary',
         )));
@@ -70,7 +70,7 @@ class Puna_TikTok_Customize_Colors {
 
         $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'puna_color_bg', array(
             'label'       => __('Background Color', 'puna-tiktok'),
-            'description' => __('Màu nền toàn trang', 'puna-tiktok'),
+            'description' => __('Background color for entire page', 'puna-tiktok'),
             'section'     => 'puna_color_section',
             'settings'    => 'puna_color_bg',
         )));
@@ -84,7 +84,7 @@ class Puna_TikTok_Customize_Colors {
 
         $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'puna_color_text', array(
             'label'       => __('Text Color', 'puna-tiktok'),
-            'description' => __('Màu chữ chung cho toàn trang', 'puna-tiktok'),
+            'description' => __('Text color for entire page', 'puna-tiktok'),
             'section'     => 'puna_color_section',
             'settings'    => 'puna_color_text',
         )));
@@ -98,7 +98,7 @@ class Puna_TikTok_Customize_Colors {
 
         $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'puna_color_link', array(
             'label'       => __('Link / Accent Color', 'puna-tiktok'),
-            'description' => __('Màu liên kết và hiệu ứng hover', 'puna-tiktok'),
+            'description' => __('Link color and hover effects', 'puna-tiktok'),
             'section'     => 'puna_color_section',
             'settings'    => 'puna_color_link',
         )));
@@ -112,24 +112,10 @@ class Puna_TikTok_Customize_Colors {
 
         $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'puna_color_muted', array(
             'label'       => __('Border / Muted Color', 'puna-tiktok'),
-            'description' => __('Màu viền và các phần tử mờ', 'puna-tiktok'),
+            'description' => __('Border color and muted elements', 'puna-tiktok'),
             'section'     => 'puna_color_section',
             'settings'    => 'puna_color_muted',
         )));
-
-        // Typography - Font Family
-        $wp_customize->add_setting('puna_font_family', array(
-            'default'           => 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-            'sanitize_callback' => 'sanitize_text_field',
-            'transport'         => 'postMessage',
-        ));
-
-        $wp_customize->add_control('puna_font_family', array(
-            'label'       => __('Font Family', 'puna-tiktok'),
-            'description' => __('Font chữ cho toàn trang (có thể dùng Google Fonts)', 'puna-tiktok'),
-            'section'     => 'puna_color_section',
-            'type'        => 'text',
-        ));
 
         // Add description about reset
         $wp_customize->add_setting('puna_color_reset_info', array(
@@ -139,7 +125,7 @@ class Puna_TikTok_Customize_Colors {
 
         $wp_customize->add_control('puna_color_reset_info', array(
             'label'       => __('Reset Colors', 'puna-tiktok'),
-            'description' => __('Để đặt lại tất cả màu về mặc định, hãy xóa từng giá trị màu và nhấn Publish.', 'puna-tiktok'),
+            'description' => __('To reset all colors to default, delete each color value and click Publish.', 'puna-tiktok'),
             'section'     => 'puna_color_section',
             'type'        => 'hidden',
         ));
@@ -168,7 +154,9 @@ class Puna_TikTok_Customize_Colors {
         $text      = get_theme_mod('puna_color_text', '#111827');
         $link      = get_theme_mod('puna_color_link', '#0095f6');
         $muted     = get_theme_mod('puna_color_muted', '#e6e6e6');
-        $font_family = get_theme_mod('puna_font_family', 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif');
+        $font_family = get_theme_mod('puna_font_family', 'Roboto, sans-serif');
+        // Đảm bảo font family luôn có giá trị mặc định nếu trống
+        $font_family = !empty($font_family) ? $font_family : 'Roboto, sans-serif';
 
         ?>
         <style id="puna-tiktok-color-dynamic-css">

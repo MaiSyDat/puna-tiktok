@@ -28,15 +28,15 @@ class Puna_TikTok_Video_Post_Type {
         $category_labels = array(
             'name'              => _x('Video Categories', 'taxonomy general name', 'puna-tiktok'),
             'singular_name'     => _x('Video Category', 'taxonomy singular name', 'puna-tiktok'),
-            'search_items'      => __('Tìm kiếm danh mục', 'puna-tiktok'),
-            'all_items'         => __('Tất cả danh mục', 'puna-tiktok'),
-            'parent_item'       => __('Danh mục cha', 'puna-tiktok'),
-            'parent_item_colon' => __('Danh mục cha:', 'puna-tiktok'),
-            'edit_item'         => __('Chỉnh sửa danh mục', 'puna-tiktok'),
-            'update_item'       => __('Cập nhật danh mục', 'puna-tiktok'),
-            'add_new_item'      => __('Thêm danh mục mới', 'puna-tiktok'),
-            'new_item_name'     => __('Tên danh mục mới', 'puna-tiktok'),
-            'menu_name'         => __('Danh mục Video', 'puna-tiktok'),
+            'search_items'      => __('Search Categories', 'puna-tiktok'),
+            'all_items'         => __('All Categories', 'puna-tiktok'),
+            'parent_item'       => __('Parent Category', 'puna-tiktok'),
+            'parent_item_colon' => __('Parent Category:', 'puna-tiktok'),
+            'edit_item'         => __('Edit Category', 'puna-tiktok'),
+            'update_item'       => __('Update Category', 'puna-tiktok'),
+            'add_new_item'      => __('Add New Category', 'puna-tiktok'),
+            'new_item_name'     => __('New Category Name', 'puna-tiktok'),
+            'menu_name'         => __('Video Categories', 'puna-tiktok'),
         );
 
         $category_args = array(
@@ -55,18 +55,18 @@ class Puna_TikTok_Video_Post_Type {
         $tag_labels = array(
             'name'                       => _x('Video Tags', 'taxonomy general name', 'puna-tiktok'),
             'singular_name'              => _x('Video Tag', 'taxonomy singular name', 'puna-tiktok'),
-            'search_items'               => __('Tìm kiếm tag', 'puna-tiktok'),
-            'popular_items'              => __('Tag phổ biến', 'puna-tiktok'),
-            'all_items'                  => __('Tất cả tag', 'puna-tiktok'),
-            'edit_item'                  => __('Chỉnh sửa tag', 'puna-tiktok'),
-            'update_item'                => __('Cập nhật tag', 'puna-tiktok'),
-            'add_new_item'               => __('Thêm tag mới', 'puna-tiktok'),
-            'new_item_name'              => __('Tên tag mới', 'puna-tiktok'),
-            'separate_items_with_commas' => __('Phân cách tag bằng dấu phẩy', 'puna-tiktok'),
-            'add_or_remove_items'        => __('Thêm hoặc xóa tag', 'puna-tiktok'),
-            'choose_from_most_used'      => __('Chọn từ tag được dùng nhiều nhất', 'puna-tiktok'),
-            'not_found'                  => __('Không tìm thấy tag', 'puna-tiktok'),
-            'menu_name'                  => __('Tag Video', 'puna-tiktok'),
+            'search_items'               => __('Search Tags', 'puna-tiktok'),
+            'popular_items'              => __('Popular Tags', 'puna-tiktok'),
+            'all_items'                  => __('All Tags', 'puna-tiktok'),
+            'edit_item'                  => __('Edit Tag', 'puna-tiktok'),
+            'update_item'                => __('Update Tag', 'puna-tiktok'),
+            'add_new_item'               => __('Add New Tag', 'puna-tiktok'),
+            'new_item_name'              => __('New Tag Name', 'puna-tiktok'),
+            'separate_items_with_commas' => __('Separate tags with commas', 'puna-tiktok'),
+            'add_or_remove_items'        => __('Add or remove tags', 'puna-tiktok'),
+            'choose_from_most_used'      => __('Choose from the most used tags', 'puna-tiktok'),
+            'not_found'                  => __('No tags found', 'puna-tiktok'),
+            'menu_name'                  => __('Video Tags', 'puna-tiktok'),
         );
 
         $tag_args = array(
@@ -92,15 +92,15 @@ class Puna_TikTok_Video_Post_Type {
             'singular_name'         => _x('Video', 'Post type singular name', 'puna-tiktok'),
             'menu_name'             => _x('Videos', 'Admin Menu text', 'puna-tiktok'),
             'name_admin_bar'        => _x('Video', 'Add New on Toolbar', 'puna-tiktok'),
-            'add_new'               => __('Thêm mới', 'puna-tiktok'),
-            'add_new_item'          => __('Thêm video mới', 'puna-tiktok'),
-            'new_item'              => __('Video mới', 'puna-tiktok'),
-            'edit_item'             => __('Chỉnh sửa video', 'puna-tiktok'),
-            'view_item'             => __('Xem video', 'puna-tiktok'),
-            'all_items'             => __('Tất cả videos', 'puna-tiktok'),
-            'search_items'          => __('Tìm kiếm videos', 'puna-tiktok'),
-            'not_found'             => __('Không tìm thấy videos nào.', 'puna-tiktok'),
-            'not_found_in_trash'    => __('Không tìm thấy videos nào trong thùng rác.', 'puna-tiktok'),
+            'add_new'               => __('Add New', 'puna-tiktok'),
+            'add_new_item'          => __('Add New Video', 'puna-tiktok'),
+            'new_item'              => __('New Video', 'puna-tiktok'),
+            'edit_item'             => __('Edit Video', 'puna-tiktok'),
+            'view_item'             => __('View Video', 'puna-tiktok'),
+            'all_items'             => __('All Videos', 'puna-tiktok'),
+            'search_items'          => __('Search Videos', 'puna-tiktok'),
+            'not_found'             => __('No videos found.', 'puna-tiktok'),
+            'not_found_in_trash'    => __('No videos found in Trash.', 'puna-tiktok'),
         );
 
         $args = array(
@@ -142,7 +142,7 @@ class Puna_TikTok_Video_Post_Type {
     public function add_video_meta_boxes() {
         add_meta_box(
             'video_upload_meta_box',
-            __('Tải video lên', 'puna-tiktok'),
+            __('Upload Video', 'puna-tiktok'),
             array($this, 'render_video_upload_meta_box'),
             'video',
             'normal',
@@ -170,10 +170,10 @@ class Puna_TikTok_Video_Post_Type {
                             <i class="dashicons dashicons-video-alt3"></i>
                             <i class="dashicons dashicons-arrow-up-alt"></i>
                         </div>
-                        <h4><?php _e('Chọn video để tải lên', 'puna-tiktok'); ?></h4>
-                        <p><?php _e('Hoặc kéo thả video vào đây', 'puna-tiktok'); ?></p>
+                        <h4><?php _e('Select video to upload', 'puna-tiktok'); ?></h4>
+                        <p><?php _e('Or drag and drop video here', 'puna-tiktok'); ?></p>
                     </div>
-                    <button type="button" class="button button-primary" id="selectVideoBtn"><?php _e('Chọn video', 'puna-tiktok'); ?></button>
+                    <button type="button" class="button button-primary" id="selectVideoBtn"><?php _e('Select video', 'puna-tiktok'); ?></button>
                     <input type="file" id="videoFileInput" accept="video/*" style="display: none;">
                 </div>
                 
@@ -184,13 +184,13 @@ class Puna_TikTok_Video_Post_Type {
                 
                 <?php if ($video_url || $mega_link): ?>
                 <div class="current-video">
-                    <h4><?php _e('Video hiện tại:', 'puna-tiktok'); ?></h4>
+                    <h4><?php _e('Current Video:', 'puna-tiktok'); ?></h4>
                     <?php if ($mega_link): ?>
-                        <p><strong>MEGA Link:</strong> <a href="<?php echo esc_url($mega_link); ?>" target="_blank"><?php echo esc_html($mega_link); ?></a></p>
+                        <p><strong><?php esc_html_e('MEGA Link:', 'puna-tiktok'); ?></strong> <a href="<?php echo esc_url($mega_link); ?>" target="_blank"><?php echo esc_html($mega_link); ?></a></p>
                         <input type="hidden" name="mega_link" value="<?php echo esc_attr($mega_link); ?>">
                         <input type="hidden" name="mega_node_id" value="<?php echo esc_attr($mega_node_id); ?>">
                     <?php else: ?>
-                        <p><strong>Video URL:</strong> <a href="<?php echo esc_url($video_url); ?>" target="_blank"><?php echo esc_html($video_url); ?></a></p>
+                        <p><strong><?php esc_html_e('Video URL:', 'puna-tiktok'); ?></strong> <a href="<?php echo esc_url($video_url); ?>" target="_blank"><?php echo esc_html($video_url); ?></a></p>
                         <input type="hidden" name="video_url" value="<?php echo esc_attr($video_url); ?>">
                     <?php endif; ?>
                 </div>
@@ -265,9 +265,9 @@ class Puna_TikTok_Video_Post_Type {
         $new_columns = array();
         $new_columns['cb']          = $columns['cb'];
         $new_columns['title']       = $columns['title'];
-        $new_columns['views']       = __('Lượt xem', 'puna-tiktok');
-        $new_columns['likes']       = __('Lượt thích', 'puna-tiktok');
-        $new_columns['comments']    = __('Bình luận', 'puna-tiktok');
+        $new_columns['views']       = __('Views', 'puna-tiktok');
+        $new_columns['likes']       = __('Likes', 'puna-tiktok');
+        $new_columns['comments']    = __('Comments', 'puna-tiktok');
         $new_columns['date']        = $columns['date'];
         return $new_columns;
     }

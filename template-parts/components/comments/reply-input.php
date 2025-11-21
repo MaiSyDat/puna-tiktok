@@ -33,22 +33,22 @@ $padding_left = isset($is_reply) && $is_reply ? '52px' : '28px';
     <div class="comment-input-container reply-input">
         <input type="text" 
                class="comment-input reply-input-field" 
-               placeholder="<?php esc_attr_e('Viết phản hồi...', 'puna-tiktok'); ?>" 
+               placeholder="<?php esc_attr_e('Write a reply...', 'puna-tiktok'); ?>" 
                data-post-id="<?php echo esc_attr($post_id); ?>"
                data-parent-id="<?php echo esc_attr($parent_id); ?>">
         <div class="comment-input-actions">
-            <button class="comment-action-btn" title="<?php esc_attr_e('Gắn thẻ người dùng', 'puna-tiktok'); ?>">
-                <?php echo puna_tiktok_get_icon('home', 'Gắn thẻ người dùng'); ?>
+            <button class="comment-action-btn" title="<?php esc_attr_e('Tag user', 'puna-tiktok'); ?>">
+                <?php echo puna_tiktok_get_icon('home', __('Tag user', 'puna-tiktok')); ?>
             </button>
             <button class="comment-action-btn" title="<?php esc_attr_e('Emoji', 'puna-tiktok'); ?>">
-                <?php echo puna_tiktok_get_icon('home', 'Emoji'); ?>
+                <?php echo puna_tiktok_get_icon('home', __('Emoji', 'puna-tiktok')); ?>
             </button>
             <div class="comment-submit-actions">
                 <button class="submit-comment-btn" 
                         data-post-id="<?php echo esc_attr($post_id); ?>" 
                         data-parent-id="<?php echo esc_attr($parent_id); ?>"
-                        disabled><?php esc_html_e('Đăng', 'puna-tiktok'); ?></button>
-                <button class="cancel-reply-btn" title="<?php esc_attr_e('Hủy', 'puna-tiktok'); ?>"><?php esc_html_e('Hủy', 'puna-tiktok'); ?></button>
+                        disabled><?php esc_html_e('Post', 'puna-tiktok'); ?></button>
+                <button class="cancel-reply-btn" title="<?php esc_attr_e('Cancel', 'puna-tiktok'); ?>"><?php esc_html_e('Cancel', 'puna-tiktok'); ?></button>
             </div>
         </div>
     </div>

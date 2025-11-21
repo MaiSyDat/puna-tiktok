@@ -23,10 +23,10 @@ if ($tag_id > 0) {
 
 	<div class="main-content taxonomy-content">
 		<div class="taxonomy-header">
-			<h2>Tag</h2>
+			<h2><?php esc_html_e('Tag', 'puna-tiktok'); ?></h2>
 			<div class="taxonomy-tabs" id="taxonomy-tabs">
-				<button class="tab" data-tab="foryou">Dành cho bạn</button>
-				<button class="tab<?php echo (!$tag) ? ' active' : ''; ?>" data-tab="trending">Thịnh hành</button>
+				<button class="tab" data-tab="foryou"><?php esc_html_e('For You', 'puna-tiktok'); ?></button>
+				<button class="tab<?php echo (!$tag) ? ' active' : ''; ?>" data-tab="trending"><?php esc_html_e('Trending', 'puna-tiktok'); ?></button>
 				<?php
 				// Lấy danh sách tags có video, sắp xếp theo popularity
 				$all_tags = get_terms(array(

@@ -12,9 +12,9 @@ $menu_items = Puna_TikTok_Customize_Sidebar::get_menu_items();
 $logo_url = get_theme_mod('sidebar_logo', '');
 $logo_link = get_theme_mod('sidebar_logo_link', home_url('/'));
 
-$footer_title_1 = get_theme_mod('sidebar_footer_title_1', 'Công ty');
-$footer_title_2 = get_theme_mod('sidebar_footer_title_2', 'Chương trình');
-$footer_title_3 = get_theme_mod('sidebar_footer_title_3', 'Điều khoản & Dịch vụ');
+$footer_title_1 = get_theme_mod('sidebar_footer_title_1', 'Company');
+$footer_title_2 = get_theme_mod('sidebar_footer_title_2', 'Programs');
+$footer_title_3 = get_theme_mod('sidebar_footer_title_3', 'Terms & Services');
 $footer_copyright = get_theme_mod('sidebar_footer_copyright', 'Puna TikTok');
 $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
 ?>
@@ -42,10 +42,10 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
     <!-- Search Trigger Button -->
     <?php 
     $current_search_query = get_search_query();
-    $search_display_text = $current_search_query ? esc_html($current_search_query) : 'Tìm kiếm';
+    $search_display_text = $current_search_query ? esc_html($current_search_query) : __('Search', 'puna-tiktok');
     ?>
     <div class="sidebar-search-trigger" id="search-trigger">
-        <?php echo puna_tiktok_get_icon('search', 'Tìm kiếm'); ?>
+        <?php echo puna_tiktok_get_icon('search', __('Search', 'puna-tiktok')); ?>
         <span class="search-text"><?php echo $search_display_text; ?></span>
     </div>
     

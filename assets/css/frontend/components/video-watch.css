@@ -40,13 +40,12 @@ body.single .tiktok-app .main-content {
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    background: rgba(0, 0, 0, 0.6);
+    background: transparent;
 }
 
 .video-watch-back-btn:hover {
     transform: scale(1.1);
-    background: rgba(0, 0, 0, 0.8);
+    background: transparent;
 }
 
 /* Video Watch Icons */
@@ -54,7 +53,8 @@ body.single .tiktok-app .main-content {
 .video-watch-back-btn .icon-img {
     width: 20px;
     height: 20px;
-    color: inherit;
+    color: #fff;
+    filter: brightness(0) invert(1);
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
@@ -80,7 +80,7 @@ body.single .tiktok-app .main-content {
 .video-watch-back-btn:hover .icon-svg,
 .video-watch-back-btn:active .icon-svg {
     opacity: 1;
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+    filter: brightness(0) invert(1);
 }
 
 /* Volume Toggle Button Icons */
@@ -88,14 +88,15 @@ body.single .tiktok-app .main-content {
 .volume-toggle-btn .icon-img {
     width: 14px;
     height: 14px;
-    color: inherit;
+    color: #fff;
+    filter: brightness(0) invert(1);
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
 .volume-toggle-btn:hover .icon-svg,
 .volume-toggle-btn:active .icon-svg {
     opacity: 1;
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+    filter: brightness(0) invert(1);
 }
 
 /* Interaction Item Icons */
@@ -175,13 +176,15 @@ body.single .tiktok-app .main-content {
 .volume-toggle-btn .icon-img {
     width: 14px;
     height: 14px;
-    color: inherit;
+    color: #fff;
+    filter: brightness(0) invert(1);
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
 .volume-toggle-btn:hover .icon-svg,
 .volume-toggle-btn:active .icon-svg {
     opacity: 1;
+    filter: brightness(0) invert(1);
 }
 
 /* Video Navigation Buttons */
@@ -339,6 +342,14 @@ body.single .tiktok-app .main-content {
 .video-watch-player .video-player-bottom-actions .volume-control-wrapper:not(.muted):hover .volume-slider-container {
     width: 80px;
     opacity: 1;
+}
+
+/* Trên màn hình cảm ứng, luôn hiển thị slider khi không muted */
+@media (hover: none) and (pointer: coarse) {
+    .video-watch-player .video-player-bottom-actions .volume-control-wrapper:not(.muted) .volume-slider-container {
+        width: 80px !important;
+        opacity: 1 !important;
+    }
 }
 
 .video-watch-player .video-player-bottom-actions .volume-toggle-btn {

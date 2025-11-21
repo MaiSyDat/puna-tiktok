@@ -28,7 +28,7 @@ class Puna_TikTok_Customize_Sidebar {
         // Add Sidebar Section (top-level, no panel)
         $wp_customize->add_section('puna_sidebar_section', array(
             'title'       => __('Sidebar', 'puna-tiktok'),
-            'description' => __('Cấu hình Sidebar (Logo, Menu)', 'puna-tiktok'),
+            'description' => __('Configure Sidebar (Logo, Menu)', 'puna-tiktok'),
             'priority'    => 25,
             'capability'  => 'manage_options',
         ));
@@ -57,29 +57,6 @@ class Puna_TikTok_Customize_Sidebar {
             'type'     => 'url',
         ));
 
-        $wp_customize->add_setting('sidebar_logo_width', array(
-            'default'           => 118,
-            'sanitize_callback' => 'absint',
-            'transport'         => 'postMessage',
-        ));
-
-        $wp_customize->add_control('sidebar_logo_width', array(
-            'label'    => __('Logo Width (px)', 'puna-tiktok'),
-            'section'  => 'puna_sidebar_section',
-            'type'     => 'number',
-        ));
-
-        $wp_customize->add_setting('sidebar_logo_height', array(
-            'default'           => 42,
-            'sanitize_callback' => 'absint',
-            'transport'         => 'postMessage',
-        ));
-
-        $wp_customize->add_control('sidebar_logo_height', array(
-            'label'    => __('Logo Height (px)', 'puna-tiktok'),
-            'section'  => 'puna_sidebar_section',
-            'type'     => 'number',
-        ));
     }
 
     /**
@@ -99,84 +76,16 @@ class Puna_TikTok_Customize_Sidebar {
      * Output dynamic CSS for logo dimensions
      */
     public function output_dynamic_css() {
-        $logo_w = absint(get_theme_mod('sidebar_logo_width', 220));
-        $logo_h = absint(get_theme_mod('sidebar_logo_height', 0)); // 0 = auto
-        ?>
-        <style id="puna-tiktok-sidebar-dynamic-css">
-            .sidebar .logo img {
-                max-width: <?php echo $logo_w ? $logo_w : 220; ?>px;
-                height: <?php echo $logo_h ? $logo_h . 'px' : 'auto'; ?>;
-            }
-            .sidebar.collapsed .logo img {
-                max-width: 40px;
-                height: auto;
-            }
-        </style>
-        <?php
+        // Logo dimensions are now handled by static CSS
+        // No dynamic CSS needed
     }
 
     /**
      * Enqueue sidebar scripts
      */
     public function enqueue_scripts() {
-        // Script for mobile toggle and responsive behavior
-        if (wp_script_is('puna-tiktok-main', 'enqueued')) {
-            // Get icon HTML for sidebar toggle
-            $toggle_icon = puna_tiktok_get_icon('home', 'Toggle Sidebar');
-            $toggle_icon_js = json_encode($toggle_icon);
-            
-            wp_add_inline_script('puna-tiktok-main', '
-                (function() {
-                    // Sidebar toggle for mobile
-                    const sidebarToggle = document.createElement("button");
-                    sidebarToggle.className = "sidebar-toggle-btn";
-                    sidebarToggle.innerHTML = ' . $toggle_icon_js . ';
-                    sidebarToggle.setAttribute("aria-label", "Toggle Sidebar");
-                    document.body.appendChild(sidebarToggle);
-                    
-                    // Toggle sidebar
-                    sidebarToggle.addEventListener("click", function() {
-                        const sidebar = document.querySelector(".sidebar");
-                        if (sidebar) {
-                            sidebar.classList.toggle("collapsed");
-                            document.body.classList.toggle("sidebar-open");
-                        }
-                    });
-                    
-                    // Close sidebar when clicking outside on mobile
-                    document.addEventListener("click", function(e) {
-                        const sidebar = document.querySelector(".sidebar");
-                        if (sidebar && !sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-                            if (window.innerWidth < 768 && sidebar.classList.contains("collapsed")) {
-                                sidebar.classList.remove("collapsed");
-                                document.body.classList.remove("sidebar-open");
-                            }
-                        }
-                    });
-                    
-                    // Responsive check
-                    function checkResponsive() {
-                        if (window.innerWidth < 768) {
-                            sidebarToggle.style.display = "block";
-                            const sidebar = document.querySelector(".sidebar");
-                            if (sidebar) {
-                                sidebar.classList.add("mobile-sidebar");
-                            }
-                        } else {
-                            sidebarToggle.style.display = "none";
-                            const sidebar = document.querySelector(".sidebar");
-                            if (sidebar) {
-                                sidebar.classList.remove("mobile-sidebar", "collapsed");
-                            }
-                            document.body.classList.remove("sidebar-open");
-                        }
-                    }
-                    
-                    window.addEventListener("resize", checkResponsive);
-                    checkResponsive();
-                })();
-            ');
-        }
+        // Sidebar toggle is now handled by assets/js/frontend/sidebar-toggle.js
+        // No inline scripts needed here
     }
 
     /**
@@ -247,19 +156,19 @@ class Puna_TikTok_Customize_Sidebar {
         // Default menu items
         $menu_items = array(
             array(
-                'title' => 'Trang chủ',
+                'title' => __('Home', 'puna-tiktok'),
                 'url' => home_url('/'),
                 'icon' => 'fa-solid fa-house',
                 'active' => (is_home() || is_front_page()),
             ),
             array(
-                'title' => 'Danh mục',
+                'title' => __('Categories', 'puna-tiktok'),
                 'url' => home_url('/category'),
                 'icon' => 'fa-solid fa-folder',
                 'active' => get_query_var('puna_page') === 'category',
             ),
             array(
-                'title' => 'Tag',
+                'title' => __('Tags', 'puna-tiktok'),
                 'url' => home_url('/tag'),
                 'icon' => 'fa-solid fa-hashtag',
                 'active' => get_query_var('puna_page') === 'tag',
@@ -274,9 +183,8 @@ class Puna_TikTok_Customize_Sidebar {
      */
     private static function get_default_icon($title) {
         $icon_map = array(
-            'trang chủ' => 'fa-solid fa-house',
             'home' => 'fa-solid fa-house',
-            'danh mục' => 'fa-solid fa-folder',
+            'categories' => 'fa-solid fa-folder',
             'category' => 'fa-solid fa-folder',
             'tag' => 'fa-solid fa-hashtag',
         );

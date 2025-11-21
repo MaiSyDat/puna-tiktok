@@ -155,10 +155,54 @@ function sendAjaxRequest(action, params = {}) {
 }
 
 // Show toast notification
+// Usage: 
+//   showToast('Custom message', 'success')
+//   showToast('success.comment_added') - uses localized message
+//   showToast('error.invalid_video') - uses localized message
 function showToast(message, type = 'info', duration = 3000) {
+    // Check if message is a key (e.g., 'success.comment_added' or 'error.invalid_video')
+    let finalMessage = message;
+    let finalType = type;
+    
+    // Get toast messages from localized data
+    const toastMessages = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.toast_messages) 
+        ? puna_tiktok_ajax.toast_messages 
+        : {};
+    
+    // If message contains a dot and type is default 'info', treat it as a key
+    // This allows: showToast('success.comment_added') to work
+    // But also: showToast('Custom message', 'success') to work
+    if (message && typeof message === 'string' && message.includes('.') && type === 'info') {
+        const parts = message.split('.');
+        if (parts.length === 2) {
+            const msgType = parts[0];
+            const msgKey = parts[1];
+            
+            if (toastMessages[msgType] && toastMessages[msgType][msgKey]) {
+                finalMessage = toastMessages[msgType][msgKey];
+                finalType = msgType;
+            } else {
+                // If key not found, use the message as-is but keep default type
+                console.warn('Toast message key not found:', message);
+            }
+        }
+    }
+    
+    // Ensure we have a valid message
+    if (!finalMessage || (typeof finalMessage === 'string' && finalMessage.trim() === '')) {
+        console.warn('showToast: Empty or invalid message');
+        return;
+    }
+    
+    // Ensure body exists
+    if (!document.body) {
+        console.warn('showToast: document.body not available');
+        return;
+    }
+    
     const toast = document.createElement('div');
-    toast.className = `toast-notification toast-${type}`;
-    toast.textContent = message;
+    toast.className = `toast-notification toast-${finalType}`;
+    toast.textContent = String(finalMessage);
     
     const iconMap = {
         success: '✓',
@@ -167,14 +211,17 @@ function showToast(message, type = 'info', duration = 3000) {
         info: 'ℹ'
     };
     
-    if (iconMap[type]) {
+    if (iconMap[finalType]) {
         const icon = document.createElement('span');
         icon.className = 'toast-icon';
-        icon.textContent = iconMap[type];
+        icon.textContent = iconMap[finalType];
         toast.insertBefore(icon, toast.firstChild);
     }
     
     document.body.appendChild(toast);
+    
+    // Force reflow to ensure transition works
+    void toast.offsetHeight;
     
     setTimeout(() => {
         toast.classList.add('show');
@@ -189,4 +236,29 @@ function showToast(message, type = 'info', duration = 3000) {
         }, 300);
     }, duration);
 }
+
+// Global error handler để bắt lỗi từ các script bên ngoài
+window.addEventListener('error', function(event) {
+    // Bắt lỗi từ các script bên ngoài (như imgdata.js)
+    if (event.filename && event.filename.includes('imgdata.js')) {
+        console.warn('Lỗi từ script bên ngoài đã được bắt:', event.message);
+        event.preventDefault(); // Ngăn lỗi hiển thị trong console
+        return true;
+    }
+    
+    // Bắt lỗi insertBefore null
+    if (event.message && event.message.includes('insertBefore')) {
+        console.warn('Lỗi insertBefore đã được bắt:', event.message);
+        event.preventDefault();
+        return true;
+    }
+}, true);
+
+// Bắt lỗi từ unhandled promise rejections
+window.addEventListener('unhandledrejection', function(event) {
+    if (event.reason && event.reason.message && event.reason.message.includes('insertBefore')) {
+        console.warn('Lỗi promise rejection đã được bắt:', event.reason.message);
+        event.preventDefault();
+    }
+});
 

@@ -32,13 +32,13 @@ if (!class_exists('Admin_AJAX')) {
         public function video_upload() {
             // Check nonce
             if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_video_upload')) {
-                wp_send_json_error(array('message' => __('Nonce không hợp lệ.', 'puna-tiktok')));
+                wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
                 return;
             }
             
             // Check user capabilities
             if (!current_user_can('edit_posts')) {
-                wp_send_json_error(array('message' => __('Bạn không có quyền thực hiện hành động này.', 'puna-tiktok')));
+                wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'puna-tiktok')));
                 return;
             }
             
@@ -52,7 +52,7 @@ if (!class_exists('Admin_AJAX')) {
             
             // Handle file upload
             if (!isset($_FILES['video_file']) || $_FILES['video_file']['error'] !== UPLOAD_ERR_OK) {
-                wp_send_json_error(array('message' => __('Không có file được tải lên hoặc có lỗi xảy ra.', 'puna-tiktok')));
+                wp_send_json_error(array('message' => __('No file uploaded or an error occurred.', 'puna-tiktok')));
                 return;
             }
             
@@ -67,7 +67,7 @@ if (!class_exists('Admin_AJAX')) {
                 'data' => array(
                     'file_name' => $file_name,
                     'file_size' => $file_size,
-                    'message' => __('Video đã được tải lên thành công.', 'puna-tiktok'),
+                    'message' => __('Video uploaded successfully.', 'puna-tiktok'),
                 ),
             ), $_FILES);
             

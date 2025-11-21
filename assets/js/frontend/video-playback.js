@@ -11,11 +11,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const viewedVideos = new Set();
     let userGestureHandled = false;
     
-    // Helper function to get icon HTML
-    function getIconHTML(iconName, alt = '') {
-        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-        return `<img src="${themeUri}/assets/images/icons/${iconName}.svg" alt="${alt || ''}" class="icon-svg">`;
-    }
 
     /**
      * Get current video
@@ -85,7 +80,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 } else {
                     iconName = 'volum'; // Use same icon for high volume
                 }
-                btn.innerHTML = getIconHTML(iconName, 'Âm lượng');
+                
+                // Clear and create icon element safely
+                btn.innerHTML = '';
+                const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
+                const iconImg = document.createElement('img');
+                iconImg.src = `${themeUri}/assets/images/icons/${iconName}.svg`;
+                iconImg.alt = 'Volume';
+                iconImg.className = 'icon-svg';
+                btn.appendChild(iconImg);
             }
             if (slider) {
                 const targetVal = globalMuted ? 0 : Math.round(globalVolume * 100);
@@ -102,6 +105,13 @@ document.addEventListener("DOMContentLoaded", function() {
         if (volumeToggleBtn) {
             e.preventDefault();
             e.stopPropagation();
+            
+            const wrapper = volumeToggleBtn.closest('.volume-control-wrapper');
+            if (wrapper) {
+                // Toggle active class for touch devices
+                wrapper.classList.toggle('volume-active');
+            }
+            
             globalMuted = !globalMuted;
             if (!globalMuted && globalVolume === 0) {
                 globalVolume = 1;
@@ -110,13 +120,23 @@ document.addEventListener("DOMContentLoaded", function() {
             updateGlobalVolumeUI();
         }
     });
+    
+    // Close volume slider when clicking outside on touch devices
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.volume-control-wrapper')) {
+            document.querySelectorAll('.volume-control-wrapper').forEach(function(wrapper) {
+                wrapper.classList.remove('volume-active');
+            });
+        }
+    });
 
     document.addEventListener('input', function(e) {
         if (e.target.classList.contains('volume-slider')) {
             const slider = e.target;
             const value = Math.max(0, Math.min(100, parseInt(slider.value, 10) || 0));
             globalVolume = value / 100;
-            globalMuted = value === 0;
+            // Không tự động mute khi volume = 0, chỉ mute khi user click nút mute
+            // globalMuted = value === 0; // Removed - không tự động mute
             applyVolumeToAllVideos();
             updateGlobalVolumeUI();
         }
@@ -283,13 +303,10 @@ document.addEventListener("DOMContentLoaded", function() {
         
         video.addEventListener('click', function() {
             if (this.paused) {
-                // Reset to the beginning when user clicks to play
-                this.currentTime = 0;
-                
+                // Continue playing from current position, don't reset
                 // All videos are Mega videos
                 if (!this.dataset.megaLoaded && typeof ensureMegaVideoSource !== 'undefined') {
                     ensureMegaVideoSource(this).then(() => {
-                        this.currentTime = 0;
                         const playPromise = this.play();
                         if (playPromise !== undefined) {
                             playPromise.catch(e => {
@@ -299,7 +316,6 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     });
                 } else {
-                    this.currentTime = 0;
                     const playPromise = this.play();
                     if (playPromise !== undefined) {
                         playPromise.catch(e => {

@@ -119,13 +119,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('comment-input')) {
-            handleCommentInput(e.target);
-        }
-    });
-
-    document.addEventListener('input', function(e) {
-        if (e.target.classList.contains('reply-input-field')) {
+        if (e.target.classList.contains('comment-input') || e.target.classList.contains('reply-input-field')) {
             handleCommentInput(e.target);
         }
     });
@@ -155,52 +149,41 @@ document.addEventListener("DOMContentLoaded", function() {
         let postId = findPostId(submitBtn) || findPostId(input);
         
         if (!postId || postId === 0 || isNaN(postId)) {
-            showToast('Không tìm thấy video. Vui lòng thử lại.', 'error');
+            showToast('error.invalid_video', 'error');
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Đăng';
+            submitBtn.textContent = 'Post';
             return;
         }
         
         // Get parentId from submitBtn or input field
         let parentId = 0;
         
-        // Check if this is a reply input (has reply-input-field class or is inside reply-input-container)
+        // Check if this is a reply input
         const isReplyInput = isReplyContainer || 
                             container?.classList.contains('reply-input') || 
-                            input?.classList.contains('reply-input-field') ||
-                            submitBtn.closest('.reply-input-container') !== null;
+                            input?.classList.contains('reply-input-field');
         
         if (isReplyInput) {
-            // For reply, parentId is required
+            // For reply, get parentId from dataset or find from closest comment item
             if (submitBtn.dataset.parentId) {
                 parentId = parseInt(submitBtn.dataset.parentId, 10);
-            } else if (input && input.dataset.parentId) {
+            } else if (input?.dataset.parentId) {
                 parentId = parseInt(input.dataset.parentId, 10);
-            }
-            
-            // If still no parentId, try to find from the closest comment item
-            if (!parentId || parentId === 0) {
-                const replyContainer = submitBtn.closest('.reply-input-container');
-                if (replyContainer) {
-                    // Find the comment item that this reply is for
-                    let prevSibling = replyContainer.previousElementSibling;
-                    while (prevSibling) {
-                        if (prevSibling.classList?.contains('comment-item')) {
-                            parentId = parseInt(prevSibling.dataset.commentId, 10);
-                            break;
-                        }
-                        prevSibling = prevSibling.previousElementSibling;
+            } else if (replyContainer) {
+                // Find the comment item that this reply is for
+                let prevSibling = replyContainer.previousElementSibling;
+                while (prevSibling) {
+                    if (prevSibling.classList?.contains('comment-item')) {
+                        parentId = parseInt(prevSibling.dataset.commentId, 10);
+                        break;
                     }
+                    prevSibling = prevSibling.previousElementSibling;
                 }
             }
-            
-        } else {
-            // For top-level comment, check if parentId exists (should be 0)
-            if (submitBtn.dataset.parentId) {
-                parentId = parseInt(submitBtn.dataset.parentId, 10);
-            } else if (input && input.dataset.parentId) {
-                parentId = parseInt(input.dataset.parentId, 10);
-            }
+        } else if (submitBtn.dataset.parentId) {
+            parentId = parseInt(submitBtn.dataset.parentId, 10);
+        } else if (input?.dataset.parentId) {
+            parentId = parseInt(input.dataset.parentId, 10);
         }
         
         const commentText = input?.value.trim();
@@ -208,8 +191,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!commentText) return;
         
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Đang đăng...';
-        
+        submitBtn.textContent = 'Posting...';
         
         const params = {
             post_id: postId,
@@ -221,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (!isLoggedIn()) {
             params.guest_id = GuestStorage.getGuestId();
-            params.guest_name = 'Khách';
+            params.guest_name = 'Guest';
         }
         
         sendAjaxRequest('puna_tiktok_add_comment', params)
@@ -231,7 +213,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const isReply = data.data?.is_reply || false;
                 
                 if (!html || !html.trim()) {
-                    showToast('Bình luận đã được thêm. Đang tải lại...', 'success');
+                    showToast('info.comment_adding', 'info');
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -250,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 
                 if (!commentsList) {
-                    showToast('Bình luận đã được thêm. Đang tải lại...', 'success');
+                    showToast('info.comment_adding', 'info');
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -273,7 +255,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 
                 if (!commentElement) {
-                    showToast('Bình luận đã được thêm. Đang tải lại...', 'success');
+                    showToast('info.comment_adding', 'info');
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -296,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                     
                     if (!parentItem) {
-                        showToast('Không tìm thấy bình luận gốc. Đang tải lại...', 'error');
+                        showToast('error.comment_not_found', 'error');
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -340,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function() {
                             showMoreBtn.dataset.loaded = newLoaded;
                             
                             if (newRemaining > 0) {
-                                showMoreBtn.textContent = `Xem thêm phản hồi (${newRemaining})`;
+                                showMoreBtn.textContent = `View more replies (${newRemaining})`;
                             } else {
                                 const remainingReplies = moreContainer.querySelectorAll('.comment-item');
                                 remainingReplies.forEach(r => repliesSection.insertBefore(r, showMoreBtn));
@@ -356,13 +338,21 @@ document.addEventListener("DOMContentLoaded", function() {
                         repliesSection.className = 'comment-replies';
                         repliesSection.setAttribute('data-parent-id', parentId);
                         repliesSection.appendChild(commentElement);
-                        parentItem.parentElement.insertBefore(repliesSection, parentItem.nextSibling);
+                        if (parentItem.parentElement) {
+                            parentItem.parentElement.insertBefore(repliesSection, parentItem.nextSibling);
+                        } else {
+                            parentItem.parentNode?.appendChild(repliesSection);
+                        }
                     }
                     
                     commentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 } else {
                     // Top-level comment - insert at the beginning
-                    commentsList.insertBefore(commentElement, commentsList.firstChild);
+                    if (commentsList && commentsList.firstChild) {
+                        commentsList.insertBefore(commentElement, commentsList.firstChild);
+                    } else if (commentsList) {
+                        commentsList.appendChild(commentElement);
+                    }
                     commentsList.scrollTop = 0;
                 }
                 
@@ -380,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 
                 // Reset submit button
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Đăng';
+                submitBtn.textContent = 'Post';
                 if (submitBtn.hasAttribute('data-parent-id')) {
                     submitBtn.removeAttribute('data-parent-id');
                 }
@@ -388,19 +378,18 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Update comment count
                 updateCommentCount(postId);
             } else {
-                const errorMsg = data.data?.message || 'Có lỗi xảy ra khi đăng bình luận.';
+                const errorMsg = data.data?.message || 'error.cannot_add_comment';
                 showToast(errorMsg, 'error');
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Đăng';
+                submitBtn.textContent = 'Post';
             }
         })
         .catch(() => {
-            showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
+            showToast('error.connection_error', 'error');
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Đăng';
+            submitBtn.textContent = 'Post';
         });
     });
-
 
     function updateCommentCount(postId) {
         const videoSidebar = document.querySelector(`.action-item[data-action="comment"][data-post-id="${postId}"] .count, .interaction-item[data-action="comment-toggle"][data-post-id="${postId}"] .stat-count`);
@@ -412,13 +401,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const commentsHeader = document.querySelector(`#comments-overlay-${postId} .comments-header h3`);
         if (commentsHeader) {
             const currentCount = parseInt(commentsHeader.textContent.match(/\d+/)?.[0]) || 0;
-            commentsHeader.textContent = `Bình luận (${formatNumber(currentCount + 1)})`;
+            commentsHeader.textContent = `Comments (${formatNumber(currentCount + 1)})`;
         }
         
         const commentsTab = document.querySelector(`.comments-tab[data-tab="comments"]`);
         if (commentsTab) {
             const currentCount = parseInt(commentsTab.textContent.match(/\d+/)?.[0]) || 0;
-            commentsTab.textContent = `Bình luận (${formatNumber(currentCount + 1)})`;
+            commentsTab.textContent = `Comments (${formatNumber(currentCount + 1)})`;
         }
     }
 
@@ -475,8 +464,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     
                     if (repliesSection) {
                         repliesSection.insertBefore(replyContainer, repliesSection.firstChild);
-                    } else {
+                    } else if (commentItem.parentElement) {
                         commentItem.parentElement.insertBefore(replyContainer, commentItem.nextSibling);
+                    } else {
+                        // Fallback: append to comment item if parent doesn't exist
+                        commentItem.parentNode?.appendChild(replyContainer);
                     }
                     
                     const input = replyContainer.querySelector('.reply-input-field');
@@ -591,7 +583,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const m = header.textContent.match(/\d+/);
                 if (m) {
                     const newCount = Math.max(0, parseInt(m[0], 10) - totalCountToSubtract);
-                    header.textContent = `Bình luận (${formatNumber(newCount)})`;
+                    header.textContent = `Comments (${formatNumber(newCount)})`;
                 }
             }
         }
@@ -611,7 +603,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const m = commentsTab.textContent.match(/\d+/);
                 if (m) {
                     const newCount = Math.max(0, parseInt(m[0], 10) - totalCountToSubtract);
-                    commentsTab.textContent = `Bình luận (${formatNumber(newCount)})`;
+                    commentsTab.textContent = `Comments (${formatNumber(newCount)})`;
                 }
             }
         }
@@ -623,15 +615,19 @@ document.addEventListener("DOMContentLoaded", function() {
                 const showMoreBtn = repliesSection.querySelector('.show-more-replies-btn');
                 const moreContainer = repliesSection.querySelector('.more-replies-container');
                 
-                if (showMoreBtn && remainingReplies.length < 3 && moreContainer) {
-                    const hiddenReplies = moreContainer.querySelectorAll('.comment-item');
-                    if (hiddenReplies.length > 0) {
-                        const nextReply = hiddenReplies[0];
-                        repliesSection.insertBefore(nextReply, showMoreBtn);
+                        if (showMoreBtn && remainingReplies.length < 3 && moreContainer) {
+                            const hiddenReplies = moreContainer.querySelectorAll('.comment-item');
+                            if (hiddenReplies.length > 0 && repliesSection) {
+                                const nextReply = hiddenReplies[0];
+                                if (showMoreBtn.parentNode === repliesSection) {
+                                    repliesSection.insertBefore(nextReply, showMoreBtn);
+                                } else {
+                                    repliesSection.appendChild(nextReply);
+                                }
                         
                         const remaining = hiddenReplies.length - 1;
                         if (remaining > 0) {
-                            showMoreBtn.textContent = `Xem thêm phản hồi (${remaining})`;
+                            showMoreBtn.textContent = `View more replies (${remaining})`;
                             showMoreBtn.dataset.loaded = parseInt(showMoreBtn.dataset.loaded, 10) - 1;
                         } else {
                             showMoreBtn.style.display = 'none';
@@ -648,7 +644,9 @@ document.addEventListener("DOMContentLoaded", function() {
             if (commentsList && commentsList.querySelectorAll('.comment-item:not(.comment-reply)').length === 0) {
                 const noCommentsMsg = document.createElement('div');
                 noCommentsMsg.className = 'no-comments';
-                noCommentsMsg.innerHTML = '<p>Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>';
+                const p = document.createElement('p');
+                p.textContent = 'No comments yet. Be the first to comment!';
+                noCommentsMsg.appendChild(p);
                 commentsList.appendChild(noCommentsMsg);
             }
         }
@@ -668,12 +666,12 @@ document.addEventListener("DOMContentLoaded", function() {
         sendAjaxRequest('puna_tiktok_delete_comment', params)
         .then(res => {
             if (!res.success) {
-                const errorMsg = res.data?.message || 'Không thể xóa bình luận.';
+                const errorMsg = res.data?.message || 'error.cannot_delete_comment';
                 showToast(errorMsg, 'error');
             }
         })
-        .catch(err => {
-            showToast('Lỗi kết nối. Vui lòng thử lại.', 'error');
+        .catch(() => {
+            showToast('error.connection_error', 'error');
         });
     });
 
@@ -682,61 +680,65 @@ document.addEventListener("DOMContentLoaded", function() {
         const likesElement = e.target.closest('.comment-likes');
         if (!likesElement || !likesElement.dataset.commentId) return;
         
-        const heartIcon = likesElement.querySelector('i.fa-heart');
-        const span = likesElement.querySelector('span');
-        if (!heartIcon || (e.target !== heartIcon && e.target !== span && !heartIcon.contains(e.target))) {
-            return;
-        }
+        // Prevent double click
+        if (likesElement.dataset.processing === 'true') return;
+        
+        e.preventDefault();
+        e.stopPropagation();
         
         const commentId = parseInt(likesElement.dataset.commentId, 10);
         if (!commentId) return;
         
-        const isLiked = heartIcon.classList.contains('fa-solid');
+        const span = likesElement.querySelector('span');
+        if (!span) return;
+        
+        const isLiked = likesElement.classList.contains('liked');
         const currentLikes = parseInt(span.textContent.replace(/[^\d]/g, ''), 10) || 0;
         
-        if (!isLoggedIn()) {
-            GuestStorage.toggleLikeComment(commentId);
-        }
+        // Mark as processing
+        likesElement.dataset.processing = 'true';
         
+        // Optimistic update
         if (isLiked) {
-            heartIcon.classList.remove('fa-solid', 'liked');
-            heartIcon.classList.add('fa-regular');
+            likesElement.classList.remove('liked');
             span.textContent = formatNumber(Math.max(0, currentLikes - 1));
         } else {
-            heartIcon.classList.remove('fa-regular');
-            heartIcon.classList.add('fa-solid', 'liked');
+            likesElement.classList.add('liked');
             span.textContent = formatNumber(currentLikes + 1);
         }
         
         likesElement.classList.add('liking');
         setTimeout(() => likesElement.classList.remove('liking'), 300);
         
+        if (!isLoggedIn()) {
+            GuestStorage.toggleLikeComment(commentId);
+        }
+        
         sendAjaxRequest('puna_tiktok_toggle_comment_like', { 
             comment_id: commentId,
             action_type: isLiked ? 'unlike' : 'like'
         })
         .then(data => {
+            // Remove processing flag
+            likesElement.dataset.processing = 'false';
+            
             if (data.success) {
                 const isLikedNow = data.data.is_liked;
                 const likes = data.data.likes;
                 
+                // Update class based on server response
                 if (isLikedNow) {
-                    heartIcon.classList.remove('fa-regular');
-                    heartIcon.classList.add('fa-solid', 'liked');
+                    likesElement.classList.add('liked');
                 } else {
-                    heartIcon.classList.remove('fa-solid', 'liked');
-                    heartIcon.classList.add('fa-regular');
+                    likesElement.classList.remove('liked');
                 }
                 
                 if (!isLoggedIn()) {
-                    if (isLikedNow) {
-                        const liked = GuestStorage.getLikedComments();
-                        if (liked.indexOf(commentId) === -1) {
-                            liked.push(commentId);
-                            GuestStorage.setLikedComments(liked);
-                        }
-                    } else {
-                        const liked = GuestStorage.getLikedComments();
+                    const liked = GuestStorage.getLikedComments();
+                    if (isLikedNow && liked.indexOf(commentId) === -1) {
+                        liked.push(commentId);
+                        GuestStorage.setLikedComments(liked);
+                    } else if (!isLikedNow) {
                         const index = liked.indexOf(commentId);
                         if (index > -1) {
                             liked.splice(index, 1);
@@ -745,14 +747,14 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                 }
                 
+                // Update count from server
                 span.textContent = formatNumber(likes);
             } else {
+                // Revert optimistic update
                 if (isLiked) {
-                    heartIcon.classList.remove('fa-regular');
-                    heartIcon.classList.add('fa-solid', 'liked');
+                    likesElement.classList.add('liked');
                 } else {
-                    heartIcon.classList.remove('fa-solid', 'liked');
-                    heartIcon.classList.add('fa-regular');
+                    likesElement.classList.remove('liked');
                 }
                 span.textContent = formatNumber(currentLikes);
                 if (!isLoggedIn()) {
@@ -760,13 +762,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         })
-        .catch(error => {
+        .catch(() => {
+            // Remove processing flag
+            likesElement.dataset.processing = 'false';
+            
+            // Revert optimistic update
             if (isLiked) {
-                heartIcon.classList.remove('fa-regular');
-                heartIcon.classList.add('fa-solid', 'liked');
+                likesElement.classList.add('liked');
             } else {
-                heartIcon.classList.remove('fa-solid', 'liked');
-                heartIcon.classList.add('fa-regular');
+                likesElement.classList.remove('liked');
             }
             span.textContent = formatNumber(currentLikes);
             if (!isLoggedIn()) {
@@ -787,12 +791,12 @@ document.addEventListener("DOMContentLoaded", function() {
         sendAjaxRequest('puna_tiktok_report_comment', { comment_id: commentId })
         .then(res => {
             if (res.success) {
-                showToast('Đã báo cáo bình luận.', 'success');
+                showToast('success.comment_reported', 'success');
             } else {
-                showToast(res.data && res.data.message ? res.data.message : 'Không thể báo cáo.', 'error');
+                showToast(res.data && res.data.message ? res.data.message : 'error.cannot_report', 'error');
             }
         })
-        .catch(() => showToast('Lỗi kết nối.', 'error'));
+        .catch(() => showToast('error.connection_error', 'error'));
     });
 
     // Comment options menu

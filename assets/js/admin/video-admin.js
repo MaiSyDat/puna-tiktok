@@ -66,7 +66,7 @@
 
         function handleFileSelect(file) {
             if (!file || !file.type.startsWith('video/')) {
-                alert('Vui lòng chọn file video hợp lệ');
+                alert('Please select a valid video file');
                 return;
             }
 
@@ -82,10 +82,10 @@
             const fileDuration = 'N/A'; // Can be extracted if needed
             
             videoInfo.html(`
-                <strong>Thông tin file:</strong>
-                <div>Tên: ${file.name}</div>
-                <div>Kích thước: ${fileSize}</div>
-                <div>Loại: ${file.type}</div>
+                <strong>File Information:</strong>
+                <div>Name: ${file.name}</div>
+                <div>Size: ${fileSize}</div>
+                <div>Type: ${file.type}</div>
             `);
             
             // Auto upload to MEGA if available
@@ -93,7 +93,7 @@
                 uploadToMega(file);
             } else {
                 // Show message that upload will happen on save
-                videoInfo.append('<div style="margin-top: 10px; color: #d63638;"><strong>Lưu ý:</strong> Video sẽ được tải lên khi bạn lưu bài viết.</div>');
+                videoInfo.append('<div style="margin-top: 10px; color: #d63638;"><strong>Note:</strong> Video will be uploaded when you save the post.</div>');
             }
         }
 
@@ -133,7 +133,7 @@
                     
                     videoInfo.append(`
                         <div style="margin-top: 10px; color: #00a32a;">
-                            <strong>✓ Đã tải lên MEGA thành công!</strong><br>
+                            <strong>✓ Uploaded to MEGA successfully!</strong><br>
                             <a href="${megaResult.link}" target="_blank">${megaResult.link}</a>
                         </div>
                     `);
@@ -142,7 +142,7 @@
                 uploadProgress.hide();
             } catch (error) {
                 uploadProgress.hide();
-                alert('Lỗi khi tải video lên MEGA: ' + (error.message || 'Unknown error'));
+                alert('Error uploading video to MEGA: ' + (error.message || 'Unknown error'));
             }
         }
 
@@ -157,7 +157,7 @@
         // Handle form submit - ensure video is uploaded
         $('#post').on('submit', function(e) {
             if (selectedFile && !$('input[name="mega_link"]').val() && !$('input[name="video_url"]').val()) {
-                if (!confirm('Video chưa được tải lên. Bạn có muốn tiếp tục lưu bài viết không? Video sẽ không hiển thị cho đến khi được tải lên.')) {
+                if (!confirm('Video has not been uploaded. Do you want to continue saving the post? Video will not be displayed until it is uploaded.')) {
                     e.preventDefault();
                     return false;
                 }

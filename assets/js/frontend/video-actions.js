@@ -129,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     countEl.textContent = formatNumber(saves);
                 }
             } else {
-                showToast(data.data?.message || 'Có lỗi xảy ra', 'error');
+                showToast(data.data?.message || 'error.generic_error', 'error');
                 if (!isLoggedIn()) {
                     GuestStorage.toggleSaveVideo(postId);
                     actionItem.classList.toggle('saved');
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            showToast('Có lỗi xảy ra khi lưu video', 'error');
+            showToast('error.save_video_error', 'error');
             if (!isLoggedIn()) {
                 GuestStorage.toggleSaveVideo(postId);
                 actionItem.classList.toggle('saved');
@@ -223,14 +223,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 break;
             case 'copy':
                 copyToClipboard(url);
-                showToast('Đã sao chép liên kết!');
+                showToast('success.link_copied', 'success');
                 updateShareCount(postId);
                 break;
             case 'instagram':
                 if (navigator.userAgent.match(/Instagram/i)) {
                     window.open(`https://www.instagram.com/`, '_blank');
                 } else {
-                    showToast('Vui lòng mở Instagram app để chia sẻ');
+                    showToast('warning.instagram_share', 'warning');
                 }
                 break;
             case 'email':
@@ -298,11 +298,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const postId = deleteBtn.dataset.postId;
         if (!postId) return;
         
-        if (!confirm('Bạn có chắc chắn muốn xóa video này? Hành động này không thể hoàn tác.')) {
+        if (!confirm('Are you sure you want to delete this video? This action cannot be undone.')) {
             return;
         }
         
-        const dropdown = deleteBtn.closest('.video-options-dropdown, .video-info-more-dropdown');
+        const dropdown = deleteBtn.closest('.video-info-more-dropdown');
         if (dropdown) {
             dropdown.classList.remove('show');
         }
@@ -321,12 +321,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     window.location.href = redirectUrl;
                 }, 1000);
             } else {
-                const errorMsg = data.data?.message || 'Có lỗi xảy ra khi xóa video.';
+                const errorMsg = data.data?.message || 'error.delete_video_error';
                 showToast(errorMsg, 'error');
             }
         })
         .catch(error => {
-            showToast('Có lỗi xảy ra khi xóa video. Vui lòng thử lại.', 'error');
+            showToast('error.delete_video_error', 'error');
         });
     });
 

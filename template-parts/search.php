@@ -27,17 +27,17 @@ $withcomments = 1;
             <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'top'), home_url('/'))); ?>" 
                class="search-tab <?php echo $active_tab === 'top' ? 'active' : ''; ?>" 
                data-tab="top">
-                Top
+                <?php esc_html_e('Top', 'puna-tiktok'); ?>
             </a>
             <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'users'), home_url('/'))); ?>" 
                class="search-tab <?php echo $active_tab === 'users' ? 'active' : ''; ?>" 
                data-tab="users">
-                Người dùng
+                <?php esc_html_e('Users', 'puna-tiktok'); ?>
             </a>
             <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'videos'), home_url('/'))); ?>" 
                class="search-tab <?php echo $active_tab === 'videos' ? 'active' : ''; ?>" 
                data-tab="videos">
-                Video
+                <?php esc_html_e('Video', 'puna-tiktok'); ?>
             </a>
         </div>
         
@@ -154,7 +154,7 @@ $withcomments = 1;
                                         <h3 class="search-video-title"><?php echo esc_html(puna_tiktok_get_video_description($post_id)); ?></h3>
                                         <div class="search-video-meta">
                                             <span class="search-video-author"><?php echo esc_html(puna_tiktok_get_user_display_name($post_obj->post_author)); ?></span>
-                                            <span class="search-video-time"><?php echo human_time_diff(get_the_time('U', $post_id), current_time('timestamp')) . ' trước'; ?></span>
+                                            <span class="search-video-time"><?php printf(esc_html__('%s ago', 'puna-tiktok'), human_time_diff(get_the_time('U', $post_id), current_time('timestamp'))); ?></span>
                                         </div>
                                     </div>
                                 </a>
@@ -167,8 +167,8 @@ $withcomments = 1;
                         <?php 
                         puna_tiktok_empty_state(array(
                             'icon' => 'fa-search',
-                            'title' => 'Không tìm thấy video',
-                            'message' => 'Không tìm thấy video nào cho "' . esc_html($search_query) . '"'
+                            'title' => __('No videos found', 'puna-tiktok'),
+                            'message' => sprintf(__('No videos found for "%s"', 'puna-tiktok'), esc_html($search_query))
                         )); 
                         ?>
                     <?php endif; ?>
@@ -176,8 +176,8 @@ $withcomments = 1;
                     <?php 
                     puna_tiktok_empty_state(array(
                         'icon' => 'fa-search',
-                        'title' => 'Không tìm thấy video',
-                        'message' => 'Không tìm thấy video nào cho "' . esc_html($search_query) . '"'
+                        'title' => __('No videos found', 'puna-tiktok'),
+                        'message' => sprintf(__('No videos found for "%s"', 'puna-tiktok'), esc_html($search_query))
                     )); 
                     ?>
                 <?php endif; ?>
@@ -232,7 +232,7 @@ $withcomments = 1;
                                 <div class="search-user-info">
                                     <h3 class="search-user-name"><?php echo esc_html($display_name); ?></h3>
                                     <p class="search-user-username">@<?php echo esc_html($username); ?></p>
-                                    <p class="search-user-stats"><?php echo number_format($video_count); ?> video</p>
+                                    <p class="search-user-stats"><?php printf(esc_html__('%s videos', 'puna-tiktok'), number_format($video_count)); ?></p>
                                 </div>
                             </div>
                         <?php endforeach; ?>
@@ -241,8 +241,8 @@ $withcomments = 1;
                     <?php 
                     puna_tiktok_empty_state(array(
                         'icon' => 'fa-user',
-                        'title' => 'Không tìm thấy người dùng',
-                        'message' => 'Không tìm thấy người dùng nào cho "' . esc_html($search_query) . '"'
+                        'title' => __('No users found', 'puna-tiktok'),
+                        'message' => sprintf(__('No users found for "%s"', 'puna-tiktok'), esc_html($search_query))
                     )); 
                     ?>
                 <?php endif; ?>
@@ -251,9 +251,9 @@ $withcomments = 1;
         
         <!-- Right Sidebar: Suggested Searches -->
         <aside class="search-suggestions-sidebar">
-            <h3>Những tìm kiếm khác</h3>
+            <h3><?php esc_html_e('Related searches', 'puna-tiktok'); ?></h3>
             <ul class="search-suggestions-list" id="related-searches-list">
-                <li class="related-searches-loading">Đang tải...</li>
+                <li class="related-searches-loading"><?php esc_html_e('Loading...', 'puna-tiktok'); ?></li>
             </ul>
         </aside>
     </div>

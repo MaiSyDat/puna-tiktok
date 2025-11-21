@@ -62,16 +62,24 @@ document.addEventListener("DOMContentLoaded", function() {
             e.preventDefault();
             const link = this.getAttribute('data-link') || window.location.href;
             
+            const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
+            const originalContent = Array.from(this.childNodes);
+            
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(link).then(() => {
-                    const originalHTML = this.innerHTML;
-                    this.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    this.innerHTML = '';
+                    const checkIcon = document.createElement('img');
+                    checkIcon.src = `${themeUri}/assets/images/icons/check.svg`;
+                    checkIcon.alt = 'Copied';
+                    checkIcon.className = 'icon-svg';
+                    this.appendChild(checkIcon);
                     this.style.background = 'var(--puna-primary)';
                     setTimeout(() => {
-                        this.innerHTML = originalHTML;
+                        this.innerHTML = '';
+                        originalContent.forEach(node => this.appendChild(node.cloneNode(true)));
                         this.style.background = '';
                     }, 2000);
-                }).catch(err => {});
+                }).catch(() => {});
             } else {
                 const textArea = document.createElement('textarea');
                 textArea.value = link;
@@ -81,10 +89,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 textArea.select();
                 try {
                     document.execCommand('copy');
-                    const originalHTML = this.innerHTML;
-                    this.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    this.innerHTML = '';
+                    const checkIcon = document.createElement('img');
+                    checkIcon.src = `${themeUri}/assets/images/icons/check.svg`;
+                    checkIcon.alt = 'Copied';
+                    checkIcon.className = 'icon-svg';
+                    this.appendChild(checkIcon);
                     setTimeout(() => {
-                        this.innerHTML = originalHTML;
+                        this.innerHTML = '';
+                        originalContent.forEach(node => this.appendChild(node.cloneNode(true)));
                     }, 2000);
                 } catch (err) {}
                 document.body.removeChild(textArea);

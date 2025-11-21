@@ -411,8 +411,8 @@ if (!function_exists('puna_tiktok_empty_state')) {
     function puna_tiktok_empty_state($args = array()) {
         $defaults = array(
             'icon' => 'fa-video',
-            'title' => 'Chưa có video nào',
-            'message' => 'Hãy đăng video đầu tiên của bạn để bắt đầu!',
+            'title' => __('No videos yet', 'puna-tiktok'),
+            'message' => __('Upload your first video to get started!', 'puna-tiktok'),
             'button_url' => '',
             'button_text' => '',
             'wrapper_class' => ''
@@ -484,6 +484,61 @@ if (!function_exists('puna_tiktok_get_video_description')) {
         }
         
         return apply_filters('puna_tiktok_get_video_description', $description, $post_id);
+    }
+}
+
+/**
+ * Get toast messages
+ * 
+ * @return array Array of toast messages with textdomain
+ */
+if (!function_exists('puna_tiktok_get_toast_messages')) {
+    function puna_tiktok_get_toast_messages() {
+        return (array) apply_filters('puna_tiktok_get_toast_messages', array(
+            // Success messages
+            'success' => array(
+                'comment_added' => esc_html__('Comment added.', 'puna-tiktok'),
+                'comment_deleted' => esc_html__('Comment deleted.', 'puna-tiktok'),
+                'comment_reported' => esc_html__('Comment reported.', 'puna-tiktok'),
+                'link_copied' => esc_html__('Link copied!', 'puna-tiktok'),
+                'video_saved' => esc_html__('Video saved', 'puna-tiktok'),
+                'video_unsaved' => esc_html__('Video unsaved', 'puna-tiktok'),
+                'video_deleted' => esc_html__('Video deleted successfully.', 'puna-tiktok'),
+                'search_history_saved' => esc_html__('Search history saved.', 'puna-tiktok'),
+                'search_history_cleared' => esc_html__('Search history cleared.', 'puna-tiktok'),
+            ),
+            // Error messages
+            'error' => array(
+                'invalid_video' => esc_html__('Invalid video.', 'puna-tiktok'),
+                'invalid_comment' => esc_html__('Comment cannot be empty.', 'puna-tiktok'),
+                'comment_not_found' => esc_html__('Parent comment not found. Reloading...', 'puna-tiktok'),
+                'cannot_add_comment' => esc_html__('Cannot add comment.', 'puna-tiktok'),
+                'cannot_get_comment' => esc_html__('Cannot get comment information.', 'puna-tiktok'),
+                'comment_not_exists' => esc_html__('Comment does not exist.', 'puna-tiktok'),
+                'no_permission_delete' => esc_html__('You do not have permission to delete this comment.', 'puna-tiktok'),
+                'cannot_report' => esc_html__('Cannot report.', 'puna-tiktok'),
+                'connection_error' => esc_html__('Connection error. Please try again.', 'puna-tiktok'),
+                'save_video_error' => esc_html__('Error saving video', 'puna-tiktok'),
+                'delete_video_error' => esc_html__('Error deleting video. Please try again.', 'puna-tiktok'),
+                'no_permission_delete_video' => esc_html__('You do not have permission to delete this video.', 'puna-tiktok'),
+                'login_required' => esc_html__('You need to login to perform this action.', 'puna-tiktok'),
+                'invalid_nonce' => esc_html__('Invalid nonce.', 'puna-tiktok'),
+                'missing_comment_id' => esc_html__('Missing comment_id.', 'puna-tiktok'),
+                'missing_video_info' => esc_html__('Missing video information.', 'puna-tiktok'),
+                'missing_comment_info' => esc_html__('Missing parent comment information.', 'puna-tiktok'),
+                'empty_query' => esc_html__('Query cannot be empty.', 'puna-tiktok'),
+                'mega_load_error' => esc_html__('Cannot load video from Mega.nz', 'puna-tiktok'),
+                'generic_error' => esc_html__('An error occurred', 'puna-tiktok'),
+            ),
+            // Warning messages
+            'warning' => array(
+                'instagram_share' => esc_html__('Please open Instagram app to share', 'puna-tiktok'),
+            ),
+            // Info messages
+            'info' => array(
+                'comment_adding' => esc_html__('Comment added. Reloading...', 'puna-tiktok'),
+            ),
+        ));
     }
 }
 

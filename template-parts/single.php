@@ -20,7 +20,7 @@ get_header(); ?>
 				echo '</div></article>';
 			}
 		endwhile; else :
-			echo '<p>' . esc_html__('Không có nội dung.', 'puna-tiktok') . '</p>';
+			echo '<p>' . esc_html__('No content.', 'puna-tiktok') . '</p>';
 		endif;
 		?>
 

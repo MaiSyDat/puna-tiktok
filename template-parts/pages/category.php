@@ -15,10 +15,10 @@ get_header();
 
 	<div class="main-content taxonomy-content">
 		<div class="taxonomy-header">
-			<h2>Danh mục</h2>
+			<h2><?php esc_html_e('Categories', 'puna-tiktok'); ?></h2>
 			<div class="taxonomy-tabs" id="taxonomy-tabs">
-				<button class="tab" data-tab="foryou">Dành cho bạn</button>
-				<button class="tab active" data-tab="trending">Thịnh hành</button>
+				<button class="tab" data-tab="foryou"><?php esc_html_e('For You', 'puna-tiktok'); ?></button>
+				<button class="tab active" data-tab="trending"><?php esc_html_e('Trending', 'puna-tiktok'); ?></button>
 				<?php
 				// Lấy danh sách categories có video
 				$all_categories = get_terms(array(

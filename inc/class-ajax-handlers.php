@@ -89,7 +89,7 @@ class Puna_TikTok_AJAX_Handlers {
     $post_id = intval($_POST['post_id']);
     
     if (!$post_id || get_post_type($post_id) !== 'video') {
-        wp_send_json_error(array('message' => 'Video không hợp lệ.'));
+        wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
     }
     
     $current_likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
@@ -113,7 +113,7 @@ class Puna_TikTok_AJAX_Handlers {
         wp_send_json_success(array(
             'is_liked' => false,
             'likes' => $new_likes,
-            'message' => 'Đã bỏ thích video'
+            'message' => __('Video unliked', 'puna-tiktok')
         ));
     } else {
         $liked_posts[] = $post_id;
@@ -124,7 +124,7 @@ class Puna_TikTok_AJAX_Handlers {
         wp_send_json_success(array(
             'is_liked' => true,
             'likes' => $new_likes,
-            'message' => 'Đã thích video'
+            'message' => __('Video liked', 'puna-tiktok')
         ));
         }
     } else {
@@ -136,7 +136,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array(
                 'is_liked' => false,
                 'likes' => $new_likes,
-                'message' => 'Đã bỏ thích video'
+                'message' => __('Video unliked', 'puna-tiktok')
             ));
         } else {
             $new_likes = $current_likes + 1;
@@ -144,7 +144,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array(
                 'is_liked' => true,
                 'likes' => $new_likes,
-                'message' => 'Đã thích video'
+                'message' => __('Video liked', 'puna-tiktok')
             ));
         }
     }
@@ -160,11 +160,11 @@ class Puna_TikTok_AJAX_Handlers {
     $comment_text = sanitize_text_field($_POST['comment_text']);
     
     if (!$post_id || get_post_type($post_id) !== 'video') {
-        wp_send_json_error(array('message' => 'Video không hợp lệ.'));
+        wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
     }
     
     if (empty($comment_text)) {
-        wp_send_json_error(array('message' => 'Bình luận không được để trống.'));
+        wp_send_json_error(array('message' => __('Comment cannot be empty.', 'puna-tiktok')));
     }
     
     $is_logged_in = is_user_logged_in();
@@ -186,7 +186,7 @@ class Puna_TikTok_AJAX_Handlers {
             $guest_id = $_COOKIE['puna_tiktok_guest_id'];
         }
         
-        $guest_name = isset($_POST['guest_name']) ? sanitize_text_field($_POST['guest_name']) : 'Khách';
+        $guest_name = isset($_POST['guest_name']) ? sanitize_text_field($_POST['guest_name']) : __('Guest', 'puna-tiktok');
         $comment_author = $guest_name . ' #' . substr($guest_id, 6, 8);
         $comment_email = isset($_POST['guest_email']) ? sanitize_email($_POST['guest_email']) : '';
         if (empty($comment_email)) {
@@ -210,7 +210,7 @@ class Puna_TikTok_AJAX_Handlers {
     $comment_id = wp_insert_comment($comment_data);
     
     if (!$comment_id) {
-        wp_send_json_error(array('message' => 'Không thể thêm bình luận.'));
+        wp_send_json_error(array('message' => __('Cannot add comment.', 'puna-tiktok')));
     }
     
     if (!$is_logged_in && !empty($guest_id)) {
@@ -220,7 +220,7 @@ class Puna_TikTok_AJAX_Handlers {
     // Get the comment object
     $comment = get_comment($comment_id);
     if (!$comment) {
-        wp_send_json_error(array('message' => 'Không thể lấy thông tin bình luận.'));
+        wp_send_json_error(array('message' => __('Cannot get comment information.', 'puna-tiktok')));
     }
     
     // Refresh comment object to ensure all data is up to date
@@ -290,8 +290,8 @@ class Puna_TikTok_AJAX_Handlers {
                 </div>
                 <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>
                 <div class="comment-footer">
-                    <span class="comment-date"><?php echo esc_html($comment_date); ?> trước</span>
-                    <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">Trả lời</a>
+                    <span class="comment-date"><?php printf(esc_html__('%s ago', 'puna-tiktok'), esc_html($comment_date)); ?></span>
+                    <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>"><?php esc_html_e('Reply', 'puna-tiktok'); ?></a>
                 </div>
             </div>
             <div class="comment-right-actions">
@@ -306,7 +306,7 @@ class Puna_TikTok_AJAX_Handlers {
     }
     
     wp_send_json_success(array(
-        'message' => 'Bình luận đã được thêm.',
+        'message' => __('Comment added.', 'puna-tiktok'),
         'comment_id' => $comment_id,
         'guest_id' => isset($guest_id) ? $guest_id : '',
         'html' => $html,
@@ -323,7 +323,7 @@ class Puna_TikTok_AJAX_Handlers {
     $post_id = intval($_POST['post_id']);
     
     if (!$post_id || get_post_type($post_id) !== 'video') {
-        wp_send_json_error(array('message' => 'Video không hợp lệ.'));
+        wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
     }
     $new_views = puna_tiktok_increment_video_views($post_id);
     wp_send_json_success(array(
@@ -340,12 +340,12 @@ class Puna_TikTok_AJAX_Handlers {
         
         $comment_id = intval($_POST['comment_id'] ?? 0);
         if (!$comment_id) {
-            wp_send_json_error(array('message' => 'Thiếu comment_id.'));
+            wp_send_json_error(array('message' => __('Missing comment_id.', 'puna-tiktok')));
         }
         
         $comment = get_comment($comment_id);
         if (!$comment) {
-            wp_send_json_error(array('message' => 'Bình luận không tồn tại.'));
+            wp_send_json_error(array('message' => __('Comment does not exist.', 'puna-tiktok')));
         }
         
         $current_likes = get_comment_meta($comment_id, '_comment_likes', true) ?: 0;
@@ -369,7 +369,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array(
                 'is_liked' => false,
                 'likes' => $new_likes,
-                'message' => 'Đã bỏ thích bình luận'
+                'message' => __('Comment unliked', 'puna-tiktok')
             ));
         } else {
             $liked_comments[] = $comment_id;
@@ -380,7 +380,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array(
                 'is_liked' => true,
                 'likes' => $new_likes,
-                'message' => 'Đã thích bình luận'
+                'message' => __('Comment liked', 'puna-tiktok')
             ));
             }
         } else {
@@ -392,7 +392,7 @@ class Puna_TikTok_AJAX_Handlers {
                 wp_send_json_success(array(
                     'is_liked' => false,
                     'likes' => $new_likes,
-                    'message' => 'Đã bỏ thích bình luận'
+                    'message' => __('Comment unliked', 'puna-tiktok')
                 ));
             } else {
                 $new_likes = $current_likes + 1;
@@ -400,7 +400,7 @@ class Puna_TikTok_AJAX_Handlers {
                 wp_send_json_success(array(
                     'is_liked' => true,
                     'likes' => $new_likes,
-                    'message' => 'Đã thích bình luận'
+                    'message' => __('Comment liked', 'puna-tiktok')
                 ));
             }
         }
@@ -429,20 +429,20 @@ class Puna_TikTok_AJAX_Handlers {
         // Check nonce for logged in users only
         if (is_user_logged_in()) {
             if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-                wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+                wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
                 return;
             }
         }
         
         $comment_id = intval($_POST['comment_id'] ?? 0);
         if (!$comment_id) {
-            wp_send_json_error(array('message' => 'Thiếu comment_id.'));
+            wp_send_json_error(array('message' => __('Missing comment_id.', 'puna-tiktok')));
             return;
         }
         
         $comment = get_comment($comment_id);
         if (!$comment) {
-            wp_send_json_error(array('message' => 'Bình luận không tồn tại.'));
+            wp_send_json_error(array('message' => __('Comment does not exist.', 'puna-tiktok')));
             return;
         }
         
@@ -476,7 +476,7 @@ class Puna_TikTok_AJAX_Handlers {
         }
         
         if (!$can_delete) {
-            wp_send_json_error(array('message' => 'Bạn không có quyền xóa bình luận này.'));
+            wp_send_json_error(array('message' => __('You do not have permission to delete this comment.', 'puna-tiktok')));
             return;
         }
     
@@ -498,7 +498,7 @@ class Puna_TikTok_AJAX_Handlers {
     $this->delete_comment_recursive($comment_id);
     
     wp_send_json_success(array(
-        'message' => 'Đã xóa bình luận.',
+        'message' => __('Comment deleted.', 'puna-tiktok'),
         'deleted_count' => $total_to_delete
     ));
     }
@@ -508,15 +508,15 @@ class Puna_TikTok_AJAX_Handlers {
      */
     public function report_comment() {
     if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-        wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+        wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
     }
     $comment_id = intval($_POST['comment_id'] ?? 0);
     if (!$comment_id) {
-        wp_send_json_error(array('message' => 'Thiếu comment_id.'));
+        wp_send_json_error(array('message' => __('Missing comment_id.', 'puna-tiktok')));
     }
     $reports = (int) get_comment_meta($comment_id, '_comment_reports', true);
     update_comment_meta($comment_id, '_comment_reports', $reports + 1);
-    wp_send_json_success(array('message' => 'Đã báo cáo bình luận.'));
+    wp_send_json_success(array('message' => __('Comment reported.', 'puna-tiktok')));
     }
 
     /**
@@ -524,7 +524,7 @@ class Puna_TikTok_AJAX_Handlers {
      */
     public function get_search_suggestions() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
             return;
         }
         
@@ -599,14 +599,14 @@ class Puna_TikTok_AJAX_Handlers {
      */
     public function save_search_history() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
             return;
         }
         
         $query = isset($_POST['query']) ? sanitize_text_field($_POST['query']) : '';
         
         if (empty($query)) {
-            wp_send_json_error(array('message' => 'Query không được để trống.'));
+            wp_send_json_error(array('message' => __('Query cannot be empty.', 'puna-tiktok')));
         }
         
         $user_id = is_user_logged_in() ? get_current_user_id() : 0;
@@ -644,7 +644,7 @@ class Puna_TikTok_AJAX_Handlers {
         
         update_option($option_key, $all_history);
         
-        wp_send_json_success(array('message' => 'Đã lưu lịch sử tìm kiếm.'));
+        wp_send_json_success(array('message' => __('Search history saved.', 'puna-tiktok')));
     }
 
     /**
@@ -652,7 +652,7 @@ class Puna_TikTok_AJAX_Handlers {
      */
     public function get_search_history() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
             return;
         }
         
@@ -713,7 +713,7 @@ class Puna_TikTok_AJAX_Handlers {
      */
     public function clear_search_history() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
             return;
         }
         
@@ -728,7 +728,7 @@ class Puna_TikTok_AJAX_Handlers {
             update_option($option_key, $all_history);
         }
         
-        wp_send_json_success(array('message' => 'Đã xóa lịch sử tìm kiếm.'));
+        wp_send_json_success(array('message' => __('Search history cleared.', 'puna-tiktok')));
     }
 
     /**
@@ -736,7 +736,7 @@ class Puna_TikTok_AJAX_Handlers {
      */
     public function get_popular_searches() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
             return;
         }
         
@@ -789,7 +789,7 @@ class Puna_TikTok_AJAX_Handlers {
      */
     public function get_related_searches() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
             return;
         }
         
@@ -891,7 +891,7 @@ class Puna_TikTok_AJAX_Handlers {
         $post_id = intval($_POST['post_id']);
         
         if (!$post_id || get_post_type($post_id) !== 'video') {
-            wp_send_json_error(array('message' => 'Video không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
         }
         
         $current_shares = get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0;
@@ -912,7 +912,7 @@ class Puna_TikTok_AJAX_Handlers {
         $post_id = intval($_POST['post_id']);
         
         if (!$post_id || get_post_type($post_id) !== 'video') {
-            wp_send_json_error(array('message' => 'Video không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
         }
         
         $current_saves = get_post_meta($post_id, '_puna_tiktok_video_saves', true) ?: 0;
@@ -938,7 +938,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array(
                 'is_saved' => false,
                 'saves' => $new_saves,
-                'message' => 'Đã bỏ lưu video'
+                'message' => __('Video unsaved', 'puna-tiktok')
             ));
         } else {
             $saved_posts[] = $post_id;
@@ -950,7 +950,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array(
                 'is_saved' => true,
                 'saves' => $new_saves,
-                'message' => 'Đã lưu video'
+                'message' => __('Video saved', 'puna-tiktok')
             ));
         }
     } else {
@@ -962,7 +962,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array(
                 'is_saved' => false,
                 'saves' => $new_saves,
-                'message' => 'Đã bỏ lưu video'
+                'message' => __('Video unsaved', 'puna-tiktok')
             ));
         } else {
             $new_saves = $current_saves + 1;
@@ -970,7 +970,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array(
                 'is_saved' => true,
                 'saves' => $new_saves,
-                'message' => 'Đã lưu video'
+                'message' => __('Video saved', 'puna-tiktok')
             ));
         }
         }
@@ -983,18 +983,18 @@ class Puna_TikTok_AJAX_Handlers {
         check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
         
         if (!is_user_logged_in()) {
-            wp_send_json_error(array('message' => 'Bạn cần đăng nhập để thực hiện thao tác này.'));
+            wp_send_json_error(array('message' => __('You need to login to perform this action.', 'puna-tiktok')));
         }
         
         $post_id = intval($_POST['post_id']);
         
         if (!$post_id || get_post_type($post_id) !== 'video') {
-            wp_send_json_error(array('message' => 'Video không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
         }
         
         $post = get_post($post_id);
         if (!$post || $post->post_author != get_current_user_id()) {
-            wp_send_json_error(array('message' => 'Bạn không có quyền xóa video này.'));
+            wp_send_json_error(array('message' => __('You do not have permission to delete this video.', 'puna-tiktok')));
         }
         
         $video_file_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
@@ -1007,7 +1007,7 @@ class Puna_TikTok_AJAX_Handlers {
         $deleted = wp_delete_post($post_id, true);
         
         if (!$deleted) {
-            wp_send_json_error(array('message' => 'Không thể xóa video. Vui lòng thử lại.'));
+            wp_send_json_error(array('message' => __('Cannot delete video. Please try again.', 'puna-tiktok')));
         }
         
         if ($cover_image_id && is_numeric($cover_image_id)) {
@@ -1015,7 +1015,7 @@ class Puna_TikTok_AJAX_Handlers {
         }
         
         wp_send_json_success(array(
-            'message' => 'Đã xóa video thành công.',
+            'message' => __('Video deleted successfully.', 'puna-tiktok'),
             'redirect_url' => home_url('/')
         ));
     }
@@ -1071,7 +1071,7 @@ class Puna_TikTok_AJAX_Handlers {
     public function get_taxonomy_videos() {
         if (isset($_POST['nonce'])) {
             if (!wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-                wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+                wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
                 return;
             }
         }
@@ -1194,7 +1194,7 @@ class Puna_TikTok_AJAX_Handlers {
      */
     public function get_reply_input() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => 'Nonce không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
             return;
         }
         
@@ -1210,20 +1210,20 @@ class Puna_TikTok_AJAX_Handlers {
             }
             
             if (!$post_id || $post_id <= 0) {
-                wp_send_json_error(array('message' => 'Thiếu thông tin video.'));
+                wp_send_json_error(array('message' => __('Missing video information.', 'puna-tiktok')));
                 return;
             }
         }
         
         // Validate parent_id
         if (!$parent_id || $parent_id <= 0) {
-            wp_send_json_error(array('message' => 'Thiếu thông tin bình luận gốc.'));
+            wp_send_json_error(array('message' => __('Missing parent comment information.', 'puna-tiktok')));
             return;
         }
         
         // Validate post type
         if (get_post_type($post_id) !== 'video') {
-            wp_send_json_error(array('message' => 'Video không hợp lệ.'));
+            wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
             return;
         }
         

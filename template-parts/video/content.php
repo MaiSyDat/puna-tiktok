@@ -34,44 +34,19 @@ $saved_class = $is_saved ? 'saved' : '';
 			<div class="video-top-controls">
 				<!-- Volume Control -->
 				<div class="volume-control-wrapper">
-					<button class="volume-toggle-btn" title="Âm lượng">
-						<?php echo puna_tiktok_get_icon('volum', 'Âm lượng'); ?>
-					</button>
-					<div class="volume-slider-container">
-						<input type="range" class="volume-slider" min="0" max="100" value="100" title="Âm lượng">
-					</div>
-				</div>
-				
-				<!-- Options Menu -->
-				<div class="video-options-menu">
-					<button class="video-options-btn" title="Tùy chọn">
-						<?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?>
-					</button>
-					<div class="video-options-dropdown">
-						<div class="options-item">
-							<?php echo puna_tiktok_get_icon('home', 'Cuộn tự động'); ?>
-							<span>Cuộn tự động</span>
-							<label class="toggle-switch">
-								<input type="checkbox" class="autoscroll-toggle">
-								<span class="slider"></span>
-							</label>
-						</div>
-						<div class="options-item">
-							<?php echo puna_tiktok_get_icon('heart', 'Không quan tâm'); ?>
-							<span>Không quan tâm</span>
-						</div>
-						<div class="options-item">
-							<?php echo puna_tiktok_get_icon('home', 'Báo cáo'); ?>
-							<span>Báo cáo</span>
-						</div>
-					</div>
-				</div>
+			<button class="volume-toggle-btn" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
+				<?php echo puna_tiktok_get_icon('volum', __('Volume', 'puna-tiktok')); ?>
+			</button>
+			<div class="volume-slider-container">
+				<input type="range" class="volume-slider" min="0" max="100" value="100" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
 			</div>
-			
-				<video class="tiktok-video" preload="metadata" playsinline loop muted data-post-id="<?php echo esc_attr($post_id); ?>" data-mega-link="<?php echo esc_url($video_url); ?>">
-					<!-- Mega.nz video will be loaded via JavaScript -->
-					Trình duyệt của bạn không hỗ trợ video.
-				</video>
+			</div>
+		</div>
+		
+			<video class="tiktok-video" preload="metadata" playsinline loop muted data-post-id="<?php echo esc_attr($post_id); ?>" data-mega-link="<?php echo esc_url($video_url); ?>">
+				<!-- Mega.nz video will be loaded via JavaScript -->
+				<?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
+			</video>
 
 			<div class="video-overlay">
 				<div class="video-details">
@@ -136,8 +111,8 @@ $saved_class = $is_saved ? 'saved' : '';
     <div class="share-modal-content">
         <div class="share-modal-header">
             <h2 class="share-modal-title">Share to</h2>
-            <button type="button" class="share-modal-close" aria-label="Đóng">
-                <?php echo puna_tiktok_get_icon('close', 'Đóng'); ?>
+            <button type="button" class="share-modal-close" aria-label="<?php esc_attr_e('Close', 'puna-tiktok'); ?>">
+                <?php echo puna_tiktok_get_icon('close', __('Close', 'puna-tiktok')); ?>
             </button>
         </div>
         <div class="share-modal-body">

@@ -36,7 +36,7 @@ class Puna_TikTok_Setup {
      */
     private function get_page_titles() {
         return array(
-            'category' => 'Danh mục',
+            'category' => 'Categories',
             'tag'      => 'Tag',
         );
     }

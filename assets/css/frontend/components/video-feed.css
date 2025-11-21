@@ -19,7 +19,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    gap: 10px;
+    gap: 20px;
 }
 
 /* Video Container */
@@ -28,10 +28,11 @@
     background-color: #000;
     border-radius: 12px;
     overflow: hidden;
-    max-height: 85vh;
+    max-height: 98vh;
     max-width: 600px;
     width: auto;
     height: auto;
+    min-height: 98vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -127,10 +128,18 @@
     opacity: 1;
 }
 
+/* Trên màn hình cảm ứng, luôn hiển thị slider khi không muted */
+@media (hover: none) and (pointer: coarse) {
+    .volume-control-wrapper:not(.muted) .volume-slider-container {
+        width: 80px !important;
+        opacity: 1 !important;
+    }
+}
+
 .volume-toggle-btn {
     background: none;
     border: none;
-    color: var(--puna-bg);
+    color: #fff;
     font-size: 14px;
     cursor: pointer;
     transition: transform 0.2s;
@@ -138,6 +147,14 @@
 
 .volume-toggle-btn:hover {
     transform: scale(1.1);
+}
+
+.volume-toggle-btn .icon-svg,
+.volume-toggle-btn .icon-img {
+    width: 30px;
+    height: 30px;
+    filter: brightness(0) invert(1);
+    color: #fff;
 }
 
 .volume-slider-container {
@@ -175,46 +192,19 @@
 
 /* Video Options Menu */
 .video-options-menu {
-    position: relative;
+    display: none !important;
 }
 
 .video-options-btn {
-    background: none;
-    backdrop-filter: blur(10px);
-    border: none;
-    color: var(--puna-bg);
-    font-size: 16px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-}
-
-.video-options-btn:hover {
-    background: rgba(0, 0, 0, 0.3);
-    transform: scale(1.05);
+    display: none !important;
 }
 
 .video-options-dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    background: var(--puna-bg);
-    border-radius: 8px;
-    min-width: 280px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    display: none;
-    overflow: hidden;
-    z-index: 1000;
+    display: none !important;
 }
 
 .video-options-dropdown.show {
-    display: block;
+    display: none !important;
 }
 
 .options-item {
@@ -316,7 +306,8 @@
 .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
     aspect-ratio: 9 / 16;
     max-width: 500px;
-    max-height: 85vh;
+    max-height: 98vh;
+    min-height: 98vh;
 }
 
 /* Video ngang (landscape) - 16:9 */

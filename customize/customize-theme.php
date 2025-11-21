@@ -19,7 +19,7 @@ class Puna_TikTok_Customize_Theme_Mode {
     public function register_settings($wp_customize) {
         $wp_customize->add_section('puna_theme_section', array(
             'title'       => __('Theme Mode', 'puna-tiktok'),
-            'description' => __('Thiết lập chế độ sáng/tối cho theme', 'puna-tiktok'),
+            'description' => __('Configure light/dark mode for theme', 'puna-tiktok'),
             'priority'    => 19,
             'capability'  => 'manage_options',
         ));
@@ -35,7 +35,7 @@ class Puna_TikTok_Customize_Theme_Mode {
             'type'        => 'select',
             'section'     => 'puna_theme_section',
             'label'       => __('Default Theme', 'puna-tiktok'),
-            'description' => __('Chọn chế độ mặc định cho giao diện người dùng.', 'puna-tiktok'),
+            'description' => __('Choose default mode for user interface.', 'puna-tiktok'),
             'choices'     => array(
                 'system' => __('System', 'puna-tiktok'),
                 'light'  => __('Light', 'puna-tiktok'),

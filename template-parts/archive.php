@@ -24,18 +24,18 @@ get_header(); ?>
         else :
             puna_tiktok_empty_state(array(
                 'icon' => 'fa-video',
-                'title' => 'Chưa có video nào',
-                'message' => 'Hãy thêm video đầu tiên của bạn!',
+                'title' => __('No videos yet', 'puna-tiktok'),
+                'message' => __('Add your first video!', 'puna-tiktok'),
                 'button_url' => current_user_can('manage_options') ? admin_url('post-new.php?post_type=video') : '',
-                'button_text' => current_user_can('manage_options') ? 'Thêm Video' : ''
+                'button_text' => current_user_can('manage_options') ? __('Add Video', 'puna-tiktok') : ''
             ));
         endif;
         
         wp_reset_postdata();
         ?>
 		<div class="video-nav">
-			<button class="video-nav-btn nav-prev" aria-label="Previous video"><?php echo puna_tiktok_get_icon('arrow-up', 'Video trước'); ?></button>
-			<button class="video-nav-btn nav-next" aria-label="Next video"><?php echo puna_tiktok_get_icon('arrow', 'Video tiếp'); ?></button>
+			<button class="video-nav-btn nav-prev" aria-label="<?php esc_attr_e('Previous video', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('arrow-up', __('Previous video', 'puna-tiktok')); ?></button>
+			<button class="video-nav-btn nav-next" aria-label="<?php esc_attr_e('Next video', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('arrow', __('Next video', 'puna-tiktok')); ?></button>
 		</div>
     </div>
 

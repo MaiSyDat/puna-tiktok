@@ -97,43 +97,43 @@ $remaining_replies_list = array_slice($replies, 3);
                 </div>
                 <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
                 <div class="comment-footer">
-                    <span class="comment-date"><?php printf(esc_html__('%s trước', 'puna-tiktok'), esc_html($reply_date)); ?></span>
+                    <span class="comment-date"><?php printf(esc_html__('%s ago', 'puna-tiktok'), esc_html($reply_date)); ?></span>
                     <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                        <?php esc_html_e('Trả lời', 'puna-tiktok'); ?>
+                        <?php esc_html_e('Reply', 'puna-tiktok'); ?>
                     </a>
                 </div>
             </div>
             <div class="comment-right-actions">
                 <?php if ($can_delete_reply) : ?>
                     <div class="comment-actions">
-                        <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?></button>
+                        <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok')); ?></button>
                         <div class="comment-options-dropdown">
                             <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                <?php echo puna_tiktok_get_icon('delete', 'Xóa'); ?> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
+                                <?php echo puna_tiktok_get_icon('delete', __('Delete', 'puna-tiktok')); ?> <?php esc_html_e('Delete', 'puna-tiktok'); ?>
                             </button>
                         </div>
                     </div>
                 <?php elseif (is_user_logged_in() && !$can_delete_reply) : ?>
                     <div class="comment-actions">
-                        <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?></button>
+                        <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok')); ?></button>
                         <div class="comment-options-dropdown">
                             <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                <?php echo puna_tiktok_get_icon('home', 'Báo cáo'); ?> <?php esc_html_e('Báo cáo', 'puna-tiktok'); ?>
+                                <?php echo puna_tiktok_get_icon('home', __('Report', 'puna-tiktok')); ?> <?php esc_html_e('Report', 'puna-tiktok'); ?>
                             </button>
                         </div>
                     </div>
                 <?php endif; ?>
-                        <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                        <div class="comment-likes<?php echo $reply_is_liked ? ' liked' : ''; ?>" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                             <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
                             <span><?php echo esc_html($reply_likes); ?></span>
                         </div>
-            </div>
-        </div>
+                    </div>
+                </div>
     <?php endforeach; ?>
     
     <?php if ($remaining_replies > 0) : ?>
         <button class="show-more-replies-btn" data-parent-id="<?php echo esc_attr($parent_id); ?>" data-loaded="3" data-total="<?php echo esc_attr($replies_count); ?>">
-            <?php printf(esc_html__('Xem thêm phản hồi (%s)', 'puna-tiktok'), esc_html($remaining_replies)); ?>
+            <?php printf(esc_html__('View more replies (%s)', 'puna-tiktok'), esc_html($remaining_replies)); ?>
         </button>
         <div class="more-replies-container" data-parent-id="<?php echo esc_attr($parent_id); ?>" style="display: none;">
             <?php foreach ($remaining_replies_list as $reply) : 
@@ -185,33 +185,33 @@ $remaining_replies_list = array_slice($replies, 3);
                         </div>
                         <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
                         <div class="comment-footer">
-                            <span class="comment-date"><?php printf(esc_html__('%s trước', 'puna-tiktok'), esc_html($reply_date)); ?></span>
+                            <span class="comment-date"><?php printf(esc_html__('%s ago', 'puna-tiktok'), esc_html($reply_date)); ?></span>
                             <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                <?php esc_html_e('Trả lời', 'puna-tiktok'); ?>
+                                <?php esc_html_e('Reply', 'puna-tiktok'); ?>
                             </a>
                         </div>
                     </div>
                     <div class="comment-right-actions">
                         <?php if ($can_delete_more_reply) : ?>
                             <div class="comment-actions">
-                                <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?></button>
+                                <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok')); ?></button>
                                 <div class="comment-options-dropdown">
                                     <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                        <?php echo puna_tiktok_get_icon('delete', 'Xóa'); ?> <?php esc_html_e('Xóa', 'puna-tiktok'); ?>
+                                        <?php echo puna_tiktok_get_icon('delete', __('Delete', 'puna-tiktok')); ?> <?php esc_html_e('Delete', 'puna-tiktok'); ?>
                                     </button>
                                 </div>
                             </div>
                         <?php elseif (is_user_logged_in() && !$can_delete_more_reply) : ?>
                             <div class="comment-actions">
-                                <button class="comment-options-btn" title="<?php esc_attr_e('Tùy chọn', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?></button>
+                                <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok')); ?></button>
                                 <div class="comment-options-dropdown">
                                     <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                        <?php echo puna_tiktok_get_icon('home', 'Báo cáo'); ?> <?php esc_html_e('Báo cáo', 'puna-tiktok'); ?>
+                                        <?php echo puna_tiktok_get_icon('home', __('Report', 'puna-tiktok')); ?> <?php esc_html_e('Report', 'puna-tiktok'); ?>
                                     </button>
                                 </div>
                             </div>
                         <?php endif; ?>
-                        <div class="comment-likes" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
+                        <div class="comment-likes<?php echo $reply_is_liked ? ' liked' : ''; ?>" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                             <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
                             <span><?php echo esc_html($reply_likes); ?></span>
                         </div>

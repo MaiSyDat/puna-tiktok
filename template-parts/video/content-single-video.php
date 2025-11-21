@@ -50,8 +50,8 @@ $withcomments = 1;
 
 <div class="video-watch-page">
     <!-- Back Button -->
-    <button class="video-watch-back-btn" id="video-watch-back" title="Quay lại">
-        <?php echo puna_tiktok_get_icon('close', 'Quay lại'); ?>
+    <button class="video-watch-back-btn" id="video-watch-back" title="<?php esc_attr_e('Back', 'puna-tiktok'); ?>">
+        <?php echo puna_tiktok_get_icon('close', __('Back', 'puna-tiktok')); ?>
     </button>
     
     <div class="video-watch-container">
@@ -60,48 +60,17 @@ $withcomments = 1;
             <div class="video-player-wrapper">
                 <!-- Video Controls Overlay -->
                 <div class="video-top-controls">
-                    <!-- Options Menu -->
-                    <div class="video-options-menu">
-                        <button class="video-options-btn" title="Tùy chọn">
-                            <?php echo puna_tiktok_get_icon('dot', 'Tùy chọn'); ?>
-                        </button>
-                        <div class="video-options-dropdown">
-                            <div class="options-item">
-                                <?php echo puna_tiktok_get_icon('home', 'Cuộn tự động'); ?>
-                                <span>Cuộn tự động</span>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" class="autoscroll-toggle">
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <?php if ($is_author) : ?>
-                                <div class="options-item delete-video-item" data-post-id="<?php echo esc_attr($post_id); ?>">
-                                    <?php echo puna_tiktok_get_icon('delete', 'Xóa video'); ?>
-                                    <span>Xóa video</span>
-                                </div>
-                            <?php else : ?>
-                                <div class="options-item">
-                                    <?php echo puna_tiktok_get_icon('heart', 'Không quan tâm'); ?>
-                                    <span>Không quan tâm</span>
-                                </div>
-                                <div class="options-item">
-                                    <?php echo puna_tiktok_get_icon('home', 'Báo cáo'); ?>
-                                    <span>Báo cáo</span>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
                 </div>
                 
                 <!-- Bottom Controls -->
                 <div class="video-player-bottom-actions">
                     <!-- Volume Control -->
                     <div class="volume-control-wrapper">
-                        <button class="volume-toggle-btn" title="Âm lượng">
-                            <?php echo puna_tiktok_get_icon('volum', 'Âm lượng'); ?>
+                        <button class="volume-toggle-btn" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
+                            <?php echo puna_tiktok_get_icon('volum', __('Volume', 'puna-tiktok')); ?>
                         </button>
                         <div class="volume-slider-container">
-                            <input type="range" class="volume-slider" min="0" max="100" value="100" title="Âm lượng">
+                            <input type="range" class="volume-slider" min="0" max="100" value="100" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
                         </div>
                     </div>
                 </div>
@@ -115,7 +84,7 @@ $withcomments = 1;
                        data-post-id="<?php echo esc_attr($post_id); ?>"
                        data-mega-link="<?php echo esc_url($video_url); ?>">
                     <!-- Mega.nz video will be loaded via JavaScript -->
-                    Trình duyệt của bạn không hỗ trợ video.
+                    <?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
                 </video>
             </div>
         </div>
@@ -134,19 +103,19 @@ $withcomments = 1;
                         </div>
                     </div>
                     <div class="video-info-more-menu">
-                        <button class="video-info-more-btn" title="Thêm">
-                            <?php echo puna_tiktok_get_icon('dot', 'Thêm'); ?>
+                        <button class="video-info-more-btn" title="<?php esc_attr_e('More', 'puna-tiktok'); ?>">
+                            <?php echo puna_tiktok_get_icon('dot', __('More', 'puna-tiktok')); ?>
                         </button>
                         <div class="video-info-more-dropdown">
                             <?php if ($is_author) : ?>
                                 <div class="options-item delete-video-item" data-post-id="<?php echo esc_attr($post_id); ?>">
-                                    <?php echo puna_tiktok_get_icon('delete', 'Xóa video'); ?>
-                                    <span>Xóa video</span>
+                                    <?php echo puna_tiktok_get_icon('delete', __('Delete video', 'puna-tiktok')); ?>
+                                    <span><?php esc_html_e('Delete video', 'puna-tiktok'); ?></span>
                                 </div>
                             <?php else : ?>
                                 <div class="options-item">
-                                    <?php echo puna_tiktok_get_icon('home', 'Báo cáo'); ?>
-                                    <span>Báo cáo</span>
+                                    <?php echo puna_tiktok_get_icon('home', __('Report', 'puna-tiktok')); ?>
+                                    <span><?php esc_html_e('Report', 'puna-tiktok'); ?></span>
                                 </div>
                             <?php endif; ?>
                         </div>
@@ -172,7 +141,7 @@ $withcomments = 1;
                     
                     <!-- Post Date -->
                     <div class="video-post-date">
-                        <?php echo esc_html(human_time_diff(get_the_time('U'), current_time('timestamp')) . ' trước'); ?>
+                        <?php printf(esc_html__('%s ago', 'puna-tiktok'), esc_html(human_time_diff(get_the_time('U'), current_time('timestamp')))); ?>
                     </div>
                 </div>
             </div>
@@ -203,10 +172,10 @@ $withcomments = 1;
                 <!-- Tabs -->
                 <div class="video-comments-tabs">
                     <button class="comments-tab active" data-tab="comments">
-                        Bình luận (<?php echo number_format($comments_count); ?>)
+                        <?php printf(esc_html__('Comments (%s)', 'puna-tiktok'), number_format($comments_count)); ?>
                     </button>
                     <button class="comments-tab" data-tab="creator-videos">
-                        Video của tác giả
+                        <?php esc_html_e('Author videos', 'puna-tiktok'); ?>
                     </button>
                 </div>
                 
@@ -278,7 +247,7 @@ $withcomments = 1;
                         </div>
                     <?php else : ?>
                         <div class="no-creator-videos">
-                            <p>Tác giả chưa có video nào khác</p>
+                            <p><?php esc_html_e('Author has no other videos', 'puna-tiktok'); ?></p>
                         </div>
             <?php endif; ?>
         </div>
@@ -291,8 +260,8 @@ $withcomments = 1;
     <div class="share-modal-content">
         <div class="share-modal-header">
             <h2 class="share-modal-title">Share to</h2>
-            <button type="button" class="share-modal-close" aria-label="Đóng">
-                <?php echo puna_tiktok_get_icon('close', 'Đóng'); ?>
+            <button type="button" class="share-modal-close" aria-label="<?php esc_attr_e('Close', 'puna-tiktok'); ?>">
+                <?php echo puna_tiktok_get_icon('close', __('Close', 'puna-tiktok')); ?>
             </button>
         </div>
         <div class="share-modal-body">
