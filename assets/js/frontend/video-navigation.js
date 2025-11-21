@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     /**
-     * Cập nhật trạng thái disable của navigation buttons
+     * Update disabled state of navigation buttons
      */
     function updateNavDisabledState() {
         const videoList = document.querySelectorAll('.tiktok-video');
@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (navNextBtn) navNextBtn.classList.toggle('is-disabled', atBottom);
     }
 
-    // Event listener cho navigation buttons
+    // Event listener for navigation buttons
     document.addEventListener('click', function(e) {
         const target = e.target.closest('.video-nav-btn');
         if (!target) return;

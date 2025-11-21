@@ -23,7 +23,7 @@ body.single .tiktok-app .main-content {
     flex-direction: column;
 }
 
-/* Back Button - Giảm z-index để không che controls */
+/* Back Button - Reduce z-index to not cover controls */
 .video-watch-back-btn {
     position: fixed;
     top: 20px;
@@ -993,6 +993,7 @@ body.theme-dark .video-caption-content .tag {
     line-height: 1.4;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

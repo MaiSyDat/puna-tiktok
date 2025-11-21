@@ -237,27 +237,20 @@ function showToast(message, type = 'info', duration = 3000) {
     }, duration);
 }
 
-// Global error handler để bắt lỗi từ các script bên ngoài
+// Global error handler to catch errors from external scripts
 window.addEventListener('error', function(event) {
-    // Bắt lỗi từ các script bên ngoài (như imgdata.js)
-    if (event.filename && event.filename.includes('imgdata.js')) {
-        console.warn('Lỗi từ script bên ngoài đã được bắt:', event.message);
-        event.preventDefault(); // Ngăn lỗi hiển thị trong console
-        return true;
-    }
-    
-    // Bắt lỗi insertBefore null
+    // Catch insertBefore null errors
     if (event.message && event.message.includes('insertBefore')) {
-        console.warn('Lỗi insertBefore đã được bắt:', event.message);
+        console.warn('insertBefore error caught:', event.message);
         event.preventDefault();
         return true;
     }
 }, true);
 
-// Bắt lỗi từ unhandled promise rejections
+// Catch errors from unhandled promise rejections
 window.addEventListener('unhandledrejection', function(event) {
     if (event.reason && event.reason.message && event.reason.message.includes('insertBefore')) {
-        console.warn('Lỗi promise rejection đã được bắt:', event.reason.message);
+        console.warn('Promise rejection error caught:', event.reason.message);
         event.preventDefault();
     }
 });

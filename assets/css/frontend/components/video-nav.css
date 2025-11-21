@@ -37,9 +37,7 @@
     background-color: var(--puna-muted);
 }
 
-.video-nav-btn i { 
-    font-size: 18px; 
-}
+/* Font Awesome icon removed - using SVG icons instead */
 
 .video-nav-btn .icon-svg,
 .video-nav-btn .icon-img {

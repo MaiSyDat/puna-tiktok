@@ -26,8 +26,8 @@ class Puna_TikTok_Setup {
      */
     private function get_custom_pages() {
         return array(
-            'category' => 'template-parts/pages/category.php',
-            'tag'      => 'template-parts/pages/tag.php',
+            'category' => 'index.php',
+            'tag'      => 'index.php',
         );
     }
     
@@ -56,6 +56,9 @@ class Puna_TikTok_Setup {
      */
     public function setup()
     {
+        // Load theme textdomain for translations
+        load_theme_textdomain('puna-tiktok', get_template_directory() . '/languages');
+        
         add_theme_support('post-thumbnails');
         add_theme_support('title-tag');
         add_theme_support('html5', array(
@@ -124,11 +127,21 @@ class Puna_TikTok_Setup {
                 $page_titles = $this->get_page_titles();
                 $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
                 
+                // Set query flags for custom pages
                 $wp_query->is_page = true;
                 $wp_query->is_singular = true;
                 $wp_query->is_404 = false;
                 $wp_query->is_home = false;
                 $wp_query->is_front_page = false;
+                
+                // For category/tag pages, set appropriate flags
+                if ($puna_page === 'category') {
+                    $wp_query->is_category = true;
+                    $wp_query->is_archive = true;
+                } elseif ($puna_page === 'tag') {
+                    $wp_query->is_tag = true;
+                    $wp_query->is_archive = true;
+                }
                 
                 $fake_post = new stdClass();
                 $fake_post->ID = 0;

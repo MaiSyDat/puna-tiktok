@@ -323,7 +323,6 @@
 .video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
     aspect-ratio: 1 / 1;
     max-width: 550px;
-    max-height: 85vh;
 }
 
 /* Video Sidebar - Desktop: nằm cạnh video */

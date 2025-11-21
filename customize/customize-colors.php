@@ -155,7 +155,7 @@ class Puna_TikTok_Customize_Colors {
         $link      = get_theme_mod('puna_color_link', '#0095f6');
         $muted     = get_theme_mod('puna_color_muted', '#e6e6e6');
         $font_family = get_theme_mod('puna_font_family', 'Roboto, sans-serif');
-        // Đảm bảo font family luôn có giá trị mặc định nếu trống
+        // Ensure font family always has default value if empty
         $font_family = !empty($font_family) ? $font_family : 'Roboto, sans-serif';
 
         ?>

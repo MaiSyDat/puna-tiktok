@@ -28,13 +28,11 @@ if (!class_exists('Puna_TikTok_Assets')) {
         }
 
         /**
-         * Enqueue styles
+         * Get page context
+         * 
+         * @return array
          */
-        public function frontend_styles() {
-            $css_dir = PUNA_TIKTOK_THEME_URI . '/assets/css/frontend/components/';
-            $version = PUNA_TIKTOK_VERSION;
-            
-            // Detect page type
+        private function get_page_context() {
             $puna_page = get_query_var('puna_page');
             $is_single_video = is_singular('video');
             $is_search_page = is_search();
@@ -43,13 +41,23 @@ if (!class_exists('Puna_TikTok_Assets')) {
             $is_tag_page = $puna_page === 'tag';
             $is_taxonomy_page = $is_category_page || $is_tag_page;
             
-            // Allow filtering of page detection
-            $page_context = apply_filters('puna_tiktok_page_context', array(
+            return apply_filters('puna_tiktok_page_context', array(
                 'is_single_video' => $is_single_video,
                 'is_search_page' => $is_search_page,
                 'is_home' => $is_home,
                 'is_taxonomy_page' => $is_taxonomy_page,
             ));
+        }
+
+        /**
+         * Enqueue styles
+         */
+        public function frontend_styles() {
+            $css_dir = PUNA_TIKTOK_THEME_URI . '/assets/css/frontend/components/';
+            $version = PUNA_TIKTOK_VERSION;
+            
+            // Get page context
+            $page_context = $this->get_page_context();
             
             // Base CSS - Register first
             wp_register_style('puna-tiktok-fonts', $css_dir . 'fonts.css', array(), $version);
@@ -121,22 +129,8 @@ if (!class_exists('Puna_TikTok_Assets')) {
             $js_dir = PUNA_TIKTOK_THEME_URI . '/assets/js/';
             $version = PUNA_TIKTOK_VERSION;
             
-            // Detect page type
-            $puna_page = get_query_var('puna_page');
-            $is_single_video = is_singular('video');
-            $is_search_page = is_search();
-            $is_home = is_home() || is_front_page();
-            $is_category_page = $puna_page === 'category';
-            $is_tag_page = $puna_page === 'tag';
-            $is_taxonomy_page = $is_category_page || $is_tag_page;
-            
-            // Allow filtering of page detection
-            $page_context = apply_filters('puna_tiktok_page_context', array(
-                'is_single_video' => $is_single_video,
-                'is_search_page' => $is_search_page,
-                'is_home' => $is_home,
-                'is_taxonomy_page' => $is_taxonomy_page,
-            ));
+            // Get page context
+            $page_context = $this->get_page_context();
             
             // Mega SDK - Register (needed for video playback from Mega.nz)
             wp_register_script('puna-tiktok-mega-sdk', PUNA_TIKTOK_THEME_URI . '/assets/js/libs/mega.browser.js', array(), $version, true);

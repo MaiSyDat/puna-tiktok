@@ -634,7 +634,8 @@
         height: 40px;
     }
 
-    .video-nav-btn i {
+    /* Font Awesome icon removed - using SVG icons instead */
+    /* .video-nav-btn i { */
         font-size: 16px;
     }
 }

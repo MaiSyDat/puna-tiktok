@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const searchHistorySection = document.getElementById('search-history-section');
     const searchHistoryList = document.getElementById('search-history-list');
     const searchPopularSection = document.getElementById('search-popular-section');
-    const searchLoading = document.getElementById('search-loading');
+    // search-loading element removed - not used in template
     const clearHistoryBtn = document.getElementById('clear-history-btn');
     
     let searchDebounceTimer = null;
@@ -130,14 +130,14 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         
-        if (searchLoading) searchLoading.style.display = 'block';
+        // Loading indicator removed - not used in template
         if (searchSuggestionsList) searchSuggestionsList.style.display = 'none';
         if (searchHistorySection) searchHistorySection.style.display = 'none';
         if (searchPopularSection) searchPopularSection.style.display = 'none';
         
         sendAjaxRequest('puna_tiktok_search_suggestions', { query: query })
             .then(data => {
-                if (searchLoading) searchLoading.style.display = 'none';
+                // Loading indicator removed - not used in template
                 
                 if (data.success && data.data.suggestions && data.data.suggestions.length > 0) {
                     if (searchSuggestionsList) {
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             })
             .catch(error => {
-                if (searchLoading) searchLoading.style.display = 'none';
+                // Loading indicator removed - not used in template
             });
     }
     

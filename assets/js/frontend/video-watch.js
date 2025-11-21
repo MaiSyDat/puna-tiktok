@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const backBtn = document.getElementById('video-watch-back');
     const commentTabs = document.querySelectorAll('.comments-tab');
     const commentTabContents = document.querySelectorAll('.comments-tab-content');
-    const copyLinkBtn = document.querySelector('.copy-link-btn');
+    // Copy link button removed - not used in template
     
     const watchVideo = videoWatchPage.querySelector('.tiktok-video');
     if (watchVideo) {
@@ -57,61 +57,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
     
-    if (copyLinkBtn) {
-        copyLinkBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            const link = this.getAttribute('data-link') || window.location.href;
-            
-            const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-            const originalContent = Array.from(this.childNodes);
-            
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(link).then(() => {
-                    this.innerHTML = '';
-                    const checkIcon = document.createElement('img');
-                    checkIcon.src = `${themeUri}/assets/images/icons/check.svg`;
-                    checkIcon.alt = 'Copied';
-                    checkIcon.className = 'icon-svg';
-                    this.appendChild(checkIcon);
-                    this.style.background = 'var(--puna-primary)';
-                    setTimeout(() => {
-                        this.innerHTML = '';
-                        originalContent.forEach(node => this.appendChild(node.cloneNode(true)));
-                        this.style.background = '';
-                    }, 2000);
-                }).catch(() => {});
-            } else {
-                const textArea = document.createElement('textarea');
-                textArea.value = link;
-                textArea.style.position = 'fixed';
-                textArea.style.opacity = '0';
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    this.innerHTML = '';
-                    const checkIcon = document.createElement('img');
-                    checkIcon.src = `${themeUri}/assets/images/icons/check.svg`;
-                    checkIcon.alt = 'Copied';
-                    checkIcon.className = 'icon-svg';
-                    this.appendChild(checkIcon);
-                    setTimeout(() => {
-                        this.innerHTML = '';
-                        originalContent.forEach(node => this.appendChild(node.cloneNode(true)));
-                    }, 2000);
-                } catch (err) {}
-                document.body.removeChild(textArea);
-            }
-        });
-    }
-    
-    const shareBtn = document.querySelector('.interaction-item[data-action="share"]');
-    const shareOptions = document.getElementById('video-share-options');
-    
-    if (shareBtn && shareOptions) {
-        shareBtn.addEventListener('click', function() {
-            shareOptions.style.display = shareOptions.style.display === 'none' ? 'flex' : 'none';
-        });
-    }
+    // Copy link and share options handlers removed - not used in template
 });
 

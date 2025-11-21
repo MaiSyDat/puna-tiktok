@@ -15,7 +15,8 @@ the_post();
 $post_id = get_the_ID();
 
 if (get_post_type($post_id) !== 'video') {
-    get_template_part('template-parts/single');
+    // This should not happen, but if it does, redirect to single view
+    // The SingleController will handle non-video posts
     return;
 }
 

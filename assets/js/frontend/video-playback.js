@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     /**
-     * Áp dụng volume state cho tất cả video
+     * Apply volume state to all videos
      */
     function applyVolumeToAllVideos() {
         const videoList = document.querySelectorAll('.tiktok-video');
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     /**
-     * Cập nhật UI của volume controls
+     * Update volume controls UI
      */
     function updateGlobalVolumeUI() {
         const wrappers = document.querySelectorAll('.volume-control-wrapper');
@@ -135,8 +135,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const slider = e.target;
             const value = Math.max(0, Math.min(100, parseInt(slider.value, 10) || 0));
             globalVolume = value / 100;
-            // Không tự động mute khi volume = 0, chỉ mute khi user click nút mute
-            // globalMuted = value === 0; // Removed - không tự động mute
+            // Don't auto-mute when volume = 0, only mute when user clicks mute button
+            // globalMuted = value === 0; // Removed - no auto-mute
             applyVolumeToAllVideos();
             updateGlobalVolumeUI();
         }
@@ -267,8 +267,8 @@ document.addEventListener("DOMContentLoaded", function() {
         
         // All videos are Mega videos - always load via Mega
         if (typeof ensureMegaVideoSource !== 'undefined' && video.dataset.megaLink) {
-            // For taxonomy-video, search-video-preview and profile cards, load preview (first frame)
-            if (video.classList.contains('taxonomy-video') || video.classList.contains('search-video-preview') || video.closest('.profile-video-card')) {
+            // For taxonomy-video and search-video-preview, load preview (first frame)
+            if (video.classList.contains('taxonomy-video') || video.classList.contains('search-video-preview')) {
                 ensureMegaVideoSource(video).then(() => {
                     // Set to first frame for thumbnail preview
                     if (video.readyState >= 2) {

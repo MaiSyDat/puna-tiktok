@@ -61,6 +61,7 @@ body.search-panel-active .main-content {
     cursor: pointer;
     margin-bottom: 4px;
     background-color: var(--puna-muted);
+    overflow: hidden;
 }
 
 .sidebar-search-trigger i {

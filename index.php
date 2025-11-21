@@ -1,67 +1,36 @@
-<?php get_header(); ?>
+<?php
+/**
+ * Main template file
+ * 
+ * This file handles all page types and delegates to controllers via action hooks
+ */
 
-<?php if ( is_singular() ) : ?>
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
+}
 
-    <?php if ( is_page() ) : ?>
-        <?php get_template_part('template-parts/page'); ?>
-    <?php else : ?>
-        <?php 
-        if (have_posts()) {
-            the_post();
-            $is_video = get_post_type(get_the_ID()) === 'video';
-            rewind_posts();
-            
-            if ($is_video) {
-                get_template_part('template-parts/video/content', 'single-video');
-            } else {
-                get_template_part('template-parts/single');
-            }
-        } else {
-            get_template_part('template-parts/single');
-        }
-        ?>
-    <?php endif; ?>
+get_header();
 
-<?php elseif ( is_search() ) : ?>
+// Check for custom pages first (puna_page query var)
+$puna_page = get_query_var('puna_page');
+if ($puna_page === 'category') {
+    do_action('puna_tiktok_category');
+} elseif ($puna_page === 'tag') {
+    do_action('puna_tiktok_tag');
+} elseif (is_404()) {
+    do_action('puna_tiktok_404');
+} elseif (is_singular()) {
+    do_action('puna_tiktok_single');
+} elseif (is_search()) {
+    do_action('puna_tiktok_search');
+} elseif (is_category()) {
+    do_action('puna_tiktok_category');
+} elseif (is_tag()) {
+    do_action('puna_tiktok_tag');
+} elseif (is_archive()) {
+    do_action('puna_tiktok_archive');
+} else {
+    do_action('puna_tiktok_index');
+}
 
-    <?php get_template_part('template-parts/search'); ?>
-
-<?php else : ?>
-
-    <div class="tiktok-app">
-        <?php get_template_part('template-parts/sidebar'); ?>
-        
-        <div class="main-content">
-            <?php
-            global $withcomments;
-            $withcomments = 1;
-            
-            $video_query = puna_tiktok_get_video_query();
-            
-            if ( $video_query->have_posts() ) :
-                while ( $video_query->have_posts() ) : $video_query->the_post();
-                    get_template_part('template-parts/video/content');
-                    comments_template();
-                endwhile;
-            else :
-                puna_tiktok_empty_state(array(
-                    'icon' => 'fa-video',
-                    'title' => __('No videos yet', 'puna-tiktok'),
-                    'message' => __('Add your first video!', 'puna-tiktok'),
-                    'button_url' => current_user_can('manage_options') ? admin_url('post-new.php?post_type=video') : '',
-                    'button_text' => current_user_can('manage_options') ? __('Add Video', 'puna-tiktok') : ''
-                ));
-            endif;
-            
-            wp_reset_postdata();
-            ?>
-			<div class="video-nav">
-				<button class="video-nav-btn nav-prev" aria-label="<?php esc_attr_e('Previous video', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('arrow-up', __('Previous video', 'puna-tiktok')); ?></button>
-				<button class="video-nav-btn nav-next" aria-label="<?php esc_attr_e('Next video', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('arrow', __('Next video', 'puna-tiktok')); ?></button>
-			</div>
-        </div>
-    </div>
-
-<?php endif; ?>
-
-<?php get_footer(); ?>
+get_footer();

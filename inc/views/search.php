@@ -1,6 +1,7 @@
 <?php
 /**
- * Search Results Template
+ * Search View
+ * Search results template
  */
 
 if (!defined('ABSPATH')) {
@@ -85,7 +86,7 @@ $withcomments = 1;
                     $content = mb_strtolower(get_post_field('post_content', $post_id));
                     $excerpt = mb_strtolower(get_post_field('post_excerpt', $post_id));
                     
-                    // Kiểm tra keyword trong content, excerpt (không dùng title)
+                    // Check keyword in content, excerpt (not using title)
                     if (strpos($content, $search_lower) !== false || 
                         strpos($excerpt, $search_lower) !== false) {
                         $matched_posts[] = $post_id;
@@ -203,7 +204,7 @@ $withcomments = 1;
                             $display_name = puna_tiktok_get_user_display_name($user_id);
                             $username = puna_tiktok_get_user_username($user_id);
                             
-                            // Đếm số video của user
+                            // Count user's videos
                             $video_count = get_posts(array(
                                 'post_type'      => 'post',
                                 'author'         => $user_id,
@@ -258,3 +259,4 @@ $withcomments = 1;
         </aside>
     </div>
 </div>
+
