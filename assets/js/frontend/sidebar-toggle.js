@@ -12,21 +12,17 @@ document.addEventListener("DOMContentLoaded", function() {
             // Create sidebar toggle button
             sidebarToggle = document.createElement("button");
             sidebarToggle.className = "sidebar-toggle-btn";
-            sidebarToggle.setAttribute("aria-label", "Toggle Sidebar");
+            sidebarToggle.setAttribute('title', 'Menu');
+            sidebarToggle.setAttribute('aria-label', 'Toggle Sidebar');
             
-            // Get menu icon URL
-            const menuIconUrl = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.menu_icon_url) 
-                ? puna_tiktok_ajax.menu_icon_url 
-                : (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.theme_uri)
-                    ? puna_tiktok_ajax.theme_uri + '/assets/images/icons/menu.svg'
-                    : window.location.origin + '/wp-content/themes/puna-tiktok/assets/images/icons/menu.svg';
-            
-            // Get menu icon
-            const menuIcon = document.createElement("img");
-            menuIcon.src = menuIconUrl;
-            menuIcon.alt = "Toggle Sidebar";
-            menuIcon.className = "icon-svg";
-            sidebarToggle.appendChild(menuIcon);
+            // Add menu icon
+            const themeUri = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.theme_uri) ? puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
+            const iconUrl = themeUri + '/assets/images/icons/menu.svg';
+            const icon = document.createElement('img');
+            icon.src = iconUrl;
+            icon.className = 'icon-svg';
+            icon.alt = 'Menu';
+            sidebarToggle.appendChild(icon);
             
             // Insert before volume control
             const volumeControl = videoTopControls.querySelector('.volume-control-wrapper');
@@ -57,21 +53,26 @@ document.addEventListener("DOMContentLoaded", function() {
     if (!sidebarToggle) {
         sidebarToggle = document.createElement("button");
         sidebarToggle.className = "sidebar-toggle-btn";
-        sidebarToggle.setAttribute("aria-label", "Toggle Sidebar");
+        sidebarToggle.setAttribute('title', 'Menu');
+        sidebarToggle.setAttribute('aria-label', 'Toggle Sidebar');
         
-        const menuIconUrl = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.menu_icon_url) 
-            ? puna_tiktok_ajax.menu_icon_url 
-            : (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.theme_uri)
-                ? puna_tiktok_ajax.theme_uri + '/assets/images/icons/menu.svg'
-                : window.location.origin + '/wp-content/themes/puna-tiktok/assets/images/icons/menu.svg';
+        // Add menu icon
+        const themeUri = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.theme_uri) ? puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
+        const iconUrl = themeUri + '/assets/images/icons/menu.svg';
+        const icon = document.createElement('img');
+        icon.src = iconUrl;
+        icon.className = 'icon-svg';
+        icon.alt = 'Menu';
+        sidebarToggle.appendChild(icon);
         
-        const menuIcon = document.createElement("img");
-        menuIcon.src = menuIconUrl;
-        menuIcon.alt = "Toggle Sidebar";
-        menuIcon.className = "icon-svg";
-        sidebarToggle.appendChild(menuIcon);
-        
+        // Try to add to taxonomy header first, otherwise add to body
+        const taxonomyHeader = document.querySelector('.taxonomy-header');
+        if (taxonomyHeader) {
+            // Insert at the beginning of taxonomy header
+            taxonomyHeader.insertBefore(sidebarToggle, taxonomyHeader.firstChild);
+        } else {
         document.body.appendChild(sidebarToggle);
+        }
     }
     
     // Use event delegation for all sidebar toggle buttons

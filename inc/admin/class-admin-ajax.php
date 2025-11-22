@@ -67,7 +67,6 @@ if (!class_exists('Admin_AJAX')) {
                 'data' => array(
                     'file_name' => $file_name,
                     'file_size' => $file_size,
-                    'message' => __('Video uploaded successfully.', 'puna-tiktok'),
                 ),
             ), $_FILES);
             

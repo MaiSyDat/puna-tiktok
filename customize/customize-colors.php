@@ -206,7 +206,6 @@ class Puna_TikTok_Customize_Colors {
             body.theme-dark .reply-link,
             body.theme-dark .comment-likes span,
             body.theme-dark .comment-options-btn,
-            body.theme-dark .comment-action-btn,
             body.theme-dark .comment-author-link,
             body.theme-dark .search-suggestion-item,
             body.theme-dark .search-suggestions-list li span,

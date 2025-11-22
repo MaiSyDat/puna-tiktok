@@ -37,12 +37,6 @@ $padding_left = isset($is_reply) && $is_reply ? '52px' : '28px';
                data-post-id="<?php echo esc_attr($post_id); ?>"
                data-parent-id="<?php echo esc_attr($parent_id); ?>">
         <div class="comment-input-actions">
-            <button class="comment-action-btn" title="<?php esc_attr_e('Tag user', 'puna-tiktok'); ?>">
-                <?php echo puna_tiktok_get_icon('home', __('Tag user', 'puna-tiktok')); ?>
-            </button>
-            <button class="comment-action-btn" title="<?php esc_attr_e('Emoji', 'puna-tiktok'); ?>">
-                <?php echo puna_tiktok_get_icon('home', __('Emoji', 'puna-tiktok')); ?>
-            </button>
             <div class="comment-submit-actions">
                 <button class="submit-comment-btn" 
                         data-post-id="<?php echo esc_attr($post_id); ?>" 

@@ -39,9 +39,7 @@ async function ensureMegaVideoSource(video) {
             video.classList.add('loaded');
         });
     } catch (error) {
-        if (typeof showToast !== 'undefined') {
-            showToast('Cannot load video from Mega.nz', 'error');
-        }
+        // Error loading video silently
     } finally {
         video.dataset.megaLoading = '0';
     }

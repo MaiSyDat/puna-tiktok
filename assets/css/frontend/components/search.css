@@ -96,6 +96,26 @@ body.search-panel-active .search-panel {
     transform: translateX(0);
 }
 
+/* Mobile - Search Panel full width */
+@media (max-width: 768px) {
+    .search-panel {
+        left: 0 !important;
+        width: 100% !important;
+        z-index: 10001 !important;
+        border-right: none;
+    }
+    
+    /* Đóng sidebar khi search panel mở trên mobile */
+    body.search-panel-active .sidebar {
+        left: -100% !important;
+    }
+    
+    /* Đóng overlay khi search panel mở */
+    body.search-panel-active.sidebar-open::before {
+        display: none !important;
+    }
+}
+
 .search-panel-header {
     display: flex;
     align-items: center;
@@ -651,13 +671,18 @@ body.search-panel-active .search-panel {
     height: 60px;
     border-radius: 50%;
     overflow: hidden;
-    background: var(--puna-muted);
+    background: var(--puna-bg);
+    border: 2px solid var(--puna-primary);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .search-user-avatar img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .search-user-info {

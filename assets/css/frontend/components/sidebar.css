@@ -144,6 +144,36 @@
     .video-top-controls .sidebar-toggle-btn {
         display: flex !important;
     }
+    
+    /* Global sidebar toggle button cho các trang không có video (taxonomy, search, etc) */
+    body > .sidebar-toggle-btn,
+    .tiktok-app > .sidebar-toggle-btn,
+    .taxonomy-header .sidebar-toggle-btn {
+        display: flex !important;
+        position: fixed !important;
+        top: 16px !important;
+        left: 16px !important;
+        z-index: 10000 !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(10px) !important;
+        border-radius: 8px !important;
+        width: 40px !important;
+        height: 40px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    body > .sidebar-toggle-btn .icon-svg,
+    .tiktok-app > .sidebar-toggle-btn .icon-svg,
+    .taxonomy-header .sidebar-toggle-btn .icon-svg,
+    body > .sidebar-toggle-btn .icon-img,
+    .tiktok-app > .sidebar-toggle-btn .icon-img,
+    .taxonomy-header .sidebar-toggle-btn .icon-img {
+        filter: none !important;
+        color: var(--puna-text) !important;
+        width: 20px !important;
+        height: 20px !important;
+    }
 }
 
 .sidebar-toggle-btn:hover {

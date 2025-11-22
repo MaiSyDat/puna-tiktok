@@ -91,20 +91,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     data.data.history.forEach(function(item) {
                         const li = document.createElement('li');
                         li.className = 'search-history-item';
-                        
-                        // Create icon element safely
-                        const iconImg = document.createElement('img');
-                        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-                        iconImg.src = `${themeUri}/assets/images/icons/search.svg`;
-                        iconImg.alt = 'History';
-                        iconImg.className = 'icon-svg';
-                        li.appendChild(iconImg);
-                        
-                        // Create span element safely
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
                         li.appendChild(span);
-                        
                         li.addEventListener('click', function() {
                             if (realSearchInput) {
                                 realSearchInput.value = item.query || '';
@@ -115,7 +104,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     });
                     if (clearHistoryBtn) clearHistoryBtn.style.display = 'block';
                 } else {
-                    searchHistoryList.innerHTML = '<li class="search-history-empty">No search history</li>';
+                    searchHistoryList.innerHTML = '';
                     if (clearHistoryBtn) clearHistoryBtn.style.display = 'none';
                 }
             })
@@ -145,29 +134,9 @@ document.addEventListener("DOMContentLoaded", function() {
                         data.data.suggestions.forEach(function(suggestion) {
                             const li = document.createElement('li');
                             li.className = 'search-suggestion-item';
-                            
-                            let iconName = 'search';
-                            if (suggestion.type === 'user') {
-                                iconName = 'home';
-                            } else if (suggestion.type === 'video') {
-                                iconName = 'play';
-                            } else if (suggestion.type === 'history') {
-                                iconName = 'search';
-                            }
-                            
-                            // Create icon element safely
-                            const iconImg = document.createElement('img');
-                            const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-                            iconImg.src = `${themeUri}/assets/images/icons/${iconName}.svg`;
-                            iconImg.alt = suggestion.text || '';
-                            iconImg.className = 'icon-svg';
-                            li.appendChild(iconImg);
-                            
-                            // Create span element safely
                             const span = document.createElement('span');
                             span.textContent = suggestion.text || '';
                             li.appendChild(span);
-                            
                             li.addEventListener('click', function() {
                                 if (realSearchInput) {
                                     realSearchInput.value = suggestion.text || '';
@@ -218,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 sendAjaxRequest('puna_tiktok_clear_search_history', {})
                     .then(data => {
                         if (data.success) {
-                            if (searchHistoryList) searchHistoryList.innerHTML = '<li class="search-history-empty">No search history</li>';
+                            if (searchHistoryList) searchHistoryList.innerHTML = '';
                             if (clearHistoryBtn) clearHistoryBtn.style.display = 'none';
                         }
                     })
@@ -280,21 +249,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     data.data.popular.forEach(function(item) {
                         const li = document.createElement('li');
                         li.className = 'search-popular-item';
-                        
-                        // Create icon element safely
-                        const iconImg = document.createElement('img');
-                        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-                        iconImg.src = `${themeUri}/assets/images/icons/fire.svg`;
-                        iconImg.alt = item.query || '';
-                        iconImg.className = 'icon-svg';
-                        li.appendChild(iconImg);
-                        
-                        // Create span element safely
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
                         li.appendChild(span);
-                        
-                        li.style.cursor = 'pointer';
                         li.addEventListener('click', function(e) {
                             e.preventDefault();
                             if (realSearchInput) {
@@ -305,9 +262,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         popularList.appendChild(li);
                     });
                 } else {
-                    // No data - hide the section or show empty state
                     if (popularList) {
-                        popularList.innerHTML = '<li class="search-popular-empty">No popular searches</li>';
+                        popularList.innerHTML = '';
                     }
                     if (searchPopularSection) {
                         searchPopularSection.style.display = 'none';
@@ -344,78 +300,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     relatedItems = data.data.related;
                     relatedItems.forEach(function(item) {
                         const li = document.createElement('li');
-                        const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query || '');
-                        
-                        // Create anchor element safely
                         const link = document.createElement('a');
-                        link.href = searchUrl;
+                        link.href = window.location.pathname + '?s=' + encodeURIComponent(item.query || '');
                         link.className = 'search-suggestion-link';
-                        
-                        // Create icon element safely
-                        const iconImg = document.createElement('img');
-                        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-                        iconImg.src = `${themeUri}/assets/images/icons/search.svg`;
-                        iconImg.alt = item.query || '';
-                        iconImg.className = 'icon-svg';
-                        link.appendChild(iconImg);
-                        
-                        // Create span element safely
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
                         link.appendChild(span);
-                        
                         li.appendChild(link);
                         relatedList.appendChild(li);
                     });
-                }
-                
-                // If we have less than 5 items, load popular searches to fill up
-                if (relatedItems.length < 5) {
-                    sendAjaxRequest('puna_tiktok_get_popular_searches', {})
-                        .then(popularData => {
-                            if (popularData.success && popularData.data.popular && popularData.data.popular.length > 0) {
-                                const existingQueries = new Set(relatedItems.map(item => item.query.toLowerCase()));
-                                const currentQueryLower = currentQuery.trim().toLowerCase();
-                                let addedCount = 0;
-                                
-                                popularData.data.popular.forEach(function(item) {
-                                    if (addedCount >= (5 - relatedItems.length)) return;
-                                    const itemQueryLower = (item.query || '').toLowerCase();
-                                    
-                                    // Skip if already in related searches or matches current query
-                                    if (!existingQueries.has(itemQueryLower) && itemQueryLower !== currentQueryLower) {
-                                        const li = document.createElement('li');
-                                        const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query || '');
-                                        
-                                        // Create anchor element safely
-                                        const link = document.createElement('a');
-                                        link.href = searchUrl;
-                                        link.className = 'search-suggestion-link';
-                                        
-                                        // Create icon element safely
-                                        const iconImg = document.createElement('img');
-                                        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-                                        iconImg.src = `${themeUri}/assets/images/icons/fire.svg`;
-                                        iconImg.alt = item.query || '';
-                                        iconImg.className = 'icon-svg';
-                                        link.appendChild(iconImg);
-                                        
-                                        // Create span element safely
-                                        const span = document.createElement('span');
-                                        span.textContent = item.query || '';
-                                        link.appendChild(span);
-                                        
-                                        li.appendChild(link);
-                                        relatedList.appendChild(li);
-                                        existingQueries.add(itemQueryLower);
-                                        addedCount++;
-                                    }
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            // Do nothing, keep what we have
-                        });
                 }
             })
             .catch(error => {
@@ -431,36 +324,20 @@ document.addEventListener("DOMContentLoaded", function() {
                     container.innerHTML = '';
                     data.data.popular.forEach(function(item) {
                         const li = document.createElement('li');
-                        const searchUrl = window.location.pathname + '?s=' + encodeURIComponent(item.query || '');
-                        
-                        // Create anchor element safely
                         const link = document.createElement('a');
-                        link.href = searchUrl;
+                        link.href = window.location.pathname + '?s=' + encodeURIComponent(item.query || '');
                         link.className = 'search-suggestion-link';
-                        
-                        // Create icon element safely
-                        const iconImg = document.createElement('img');
-                        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-                        iconImg.src = `${themeUri}/assets/images/icons/fire.svg`;
-                        iconImg.alt = item.query || '';
-                        iconImg.className = 'icon-svg';
-                        link.appendChild(iconImg);
-                        
-                        // Create span element safely
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
                         link.appendChild(span);
-                        
                         li.appendChild(link);
                         container.appendChild(li);
                     });
                 } else {
-                    // No data, keep empty
                     container.innerHTML = '';
                 }
             })
             .catch(error => {
-                // On error, keep empty
                 container.innerHTML = '';
             });
     }

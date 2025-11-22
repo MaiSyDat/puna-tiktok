@@ -218,6 +218,10 @@
     height: 40px;
     border-radius: 50%;
     flex-shrink: 0;
+    border: 2px solid var(--puna-primary);
+    object-fit: contain !important;
+    background: var(--puna-bg);
+    padding: 3px;
 }
 
 .comment-content {
@@ -369,8 +373,6 @@
 }
 
 /* Comment Action Buttons */
-.comment-action-btn .icon-svg,
-.comment-action-btn .icon-img,
 .comment-options-btn .icon-svg,
 .comment-options-btn .icon-img {
     width: 16px;
@@ -379,8 +381,6 @@
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
-.comment-action-btn:hover .icon-svg,
-.comment-action-btn:active .icon-svg,
 .comment-options-btn:hover .icon-svg,
 .comment-options-btn:active .icon-svg {
     opacity: 1;
@@ -533,7 +533,7 @@
 .comment-input-actions {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     margin-top: 12px;
     gap: 8px;
 }
@@ -544,19 +544,6 @@
     gap: 8px;
 }
 
-.comment-action-btn {
-    background: none;
-    border: none;
-    font-size: 18px;
-    color: var(--puna-text);
-    cursor: pointer;
-    padding: 8px;
-    transition: color 0.2s;
-}
-
-.comment-action-btn:hover {
-    color: var(--puna-primary);
-}
 
 .submit-comment-btn {
     padding: 8px 20px;

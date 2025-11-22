@@ -129,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     countEl.textContent = formatNumber(saves);
                 }
             } else {
-                showToast(data.data?.message || 'error.generic_error', 'error');
                 if (!isLoggedIn()) {
                     GuestStorage.toggleSaveVideo(postId);
                     actionItem.classList.toggle('saved');
@@ -137,7 +136,6 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         })
         .catch(error => {
-            showToast('error.save_video_error', 'error');
             if (!isLoggedIn()) {
                 GuestStorage.toggleSaveVideo(postId);
                 actionItem.classList.toggle('saved');
@@ -223,14 +221,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 break;
             case 'copy':
                 copyToClipboard(url);
-                showToast('success.link_copied', 'success');
                 updateShareCount(postId);
                 break;
             case 'instagram':
                 if (navigator.userAgent.match(/Instagram/i)) {
                     window.open(`https://www.instagram.com/`, '_blank');
-                } else {
-                    showToast('warning.instagram_share', 'warning');
                 }
                 break;
             case 'email':
@@ -312,21 +307,14 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(data => {
             if (data.success) {
-                if (data.data?.message) {
-                    showToast(data.data.message);
-                }
-                
                 const redirectUrl = data.data?.redirect_url || (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.home_url) || window.location.origin;
                 setTimeout(() => {
                     window.location.href = redirectUrl;
                 }, 1000);
-            } else {
-                const errorMsg = data.data?.message || 'error.delete_video_error';
-                showToast(errorMsg, 'error');
             }
         })
         .catch(error => {
-            showToast('error.delete_video_error', 'error');
+            // Error handling silently
         });
     });
 

@@ -66,7 +66,6 @@
 
         function handleFileSelect(file) {
             if (!file || !file.type.startsWith('video/')) {
-                alert('Please select a valid video file');
                 return;
             }
 
@@ -142,7 +141,7 @@
                 uploadProgress.hide();
             } catch (error) {
                 uploadProgress.hide();
-                alert('Error uploading video to MEGA: ' + (error.message || 'Unknown error'));
+                // Error handling silently
             }
         }
 

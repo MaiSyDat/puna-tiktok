@@ -243,139 +243,20 @@ document.addEventListener("DOMContentLoaded", function() {
     
     function renderLoadingState(container) {
         container.innerHTML = '';
-        const loadingDiv = document.createElement('div');
-        loadingDiv.className = 'taxonomy-loading-state';
-        loadingDiv.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 60px 20px;';
-        
-        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-        const iconImg = document.createElement('img');
-        iconImg.src = `${themeUri}/assets/images/icons/play.svg`;
-        iconImg.alt = 'Loading';
-        iconImg.className = 'icon-svg taxonomy-loading-icon';
-        
-        loadingDiv.appendChild(iconImg);
-        container.appendChild(loadingDiv);
     }
     
     function renderEmptyState(container, message) {
         container.innerHTML = '';
-        const emptyDiv = document.createElement('div');
-        emptyDiv.className = 'taxonomy-empty-state';
-        emptyDiv.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 60px 20px;';
-        
-        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-        const iconImg = document.createElement('img');
-        iconImg.src = `${themeUri}/assets/images/icons/play.svg`;
-        iconImg.alt = 'No videos';
-        iconImg.className = 'icon-svg';
-        iconImg.style.cssText = 'width: 64px; height: 64px; color: #ccc; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;';
-        
-        const h3 = document.createElement('h3');
-        h3.textContent = 'No videos';
-        h3.style.cssText = 'color: #666; margin-bottom: 10px;';
-        
-        const p = document.createElement('p');
-        p.textContent = message || 'No videos yet.';
-        p.style.cssText = 'color: #999;';
-        
-        emptyDiv.appendChild(iconImg);
-        emptyDiv.appendChild(h3);
-        emptyDiv.appendChild(p);
-        container.appendChild(emptyDiv);
     }
     
     function renderErrorState(container) {
         container.innerHTML = '';
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'taxonomy-empty-state';
-        errorDiv.style.cssText = 'grid-column: 1 / -1; text-align: center; padding: 60px 20px;';
-        
-        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-        const iconImg = document.createElement('img');
-        iconImg.src = `${themeUri}/assets/images/icons/home.svg`;
-        iconImg.alt = 'Error';
-        iconImg.className = 'icon-svg';
-        iconImg.style.cssText = 'width: 64px; height: 64px; color: #ccc; margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;';
-        
-        const h3 = document.createElement('h3');
-        h3.textContent = 'An error occurred';
-        h3.style.cssText = 'color: #666; margin-bottom: 10px;';
-        
-        const p = document.createElement('p');
-        p.textContent = 'Please try again later.';
-        p.style.cssText = 'color: #999;';
-        
-        errorDiv.appendChild(iconImg);
-        errorDiv.appendChild(h3);
-        errorDiv.appendChild(p);
-        container.appendChild(errorDiv);
     }
     
     function createTaxonomyVideoCard(video) {
         const card = document.createElement('a');
         card.href = video.permalink || '#';
         card.className = 'taxonomy-card';
-        card.setAttribute('aria-label', 'Video');
-        
-        const videoUrl = video.video_url || '';
-        const views = (typeof formatNumber !== 'undefined') ? formatNumber(video.views || 0) : (video.views || 0);
-        const featuredImageUrl = video.featured_image_url || '';
-        
-        const mediaWrapper = document.createElement('div');
-        mediaWrapper.className = 'media-wrapper ratio-9x16';
-        
-        // Use featured image if available, otherwise use video
-        let mediaElement;
-        if (featuredImageUrl) {
-            mediaElement = document.createElement('img');
-            mediaElement.src = featuredImageUrl;
-            mediaElement.alt = '';
-            mediaElement.className = 'taxonomy-video';
-            mediaElement.loading = 'lazy';
-        } else {
-            mediaElement = document.createElement('video');
-            mediaElement.className = 'taxonomy-video';
-            mediaElement.muted = true;
-            mediaElement.setAttribute('muted', '');
-            mediaElement.playsInline = true;
-            mediaElement.setAttribute('playsinline', '');
-            mediaElement.loading = 'lazy';
-            if (videoUrl) {
-                mediaElement.setAttribute('data-mega-link', videoUrl);
-            }
-        }
-        
-        const videoOverlay = document.createElement('div');
-        videoOverlay.className = 'video-overlay';
-        
-        const playIcon = document.createElement('div');
-        playIcon.className = 'play-icon';
-        
-        const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-        const playIconImg = document.createElement('img');
-        playIconImg.src = `${themeUri}/assets/images/icons/play.svg`;
-        playIconImg.alt = 'Play';
-        playIconImg.className = 'icon-svg';
-        playIcon.appendChild(playIconImg);
-        videoOverlay.appendChild(playIcon);
-        
-        const videoViewsOverlay = document.createElement('div');
-        videoViewsOverlay.className = 'video-views-overlay';
-        
-        const viewsIconImg = document.createElement('img');
-        viewsIconImg.src = `${themeUri}/assets/images/icons/play.svg`;
-        viewsIconImg.alt = 'Views';
-        viewsIconImg.className = 'icon-svg';
-        videoViewsOverlay.appendChild(viewsIconImg);
-        
-        const viewsSpan = document.createElement('span');
-        viewsSpan.textContent = views;
-        videoViewsOverlay.appendChild(viewsSpan);
-        
-        mediaWrapper.appendChild(mediaElement);
-        mediaWrapper.appendChild(videoOverlay);
-        mediaWrapper.appendChild(videoViewsOverlay);
-        card.appendChild(mediaWrapper);
         
         return card;
     }

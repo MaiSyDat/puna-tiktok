@@ -125,8 +125,8 @@
     
     .action-item .icon-svg,
     .action-item .icon-img {
-        width: 20px;
-        height: 20px;
+        width: 26px;
+        height: 26px;
     }
 
     .action-item .count {
@@ -134,7 +134,39 @@
     }
     .video-sidebar .action-item .count {
         color: #fff;
+        text-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.8),
+            0 0 4px rgba(0, 0, 0, 0.6),
+            -1px -1px 0 rgba(0, 0, 0, 0.8),
+            1px -1px 0 rgba(0, 0, 0, 0.8),
+            -1px 1px 0 rgba(0, 0, 0, 0.8),
+            1px 1px 0 rgba(0, 0, 0, 0.8);
     }
+    
+    /* Bỏ background của action-icon-wrapper trong video sidebar trên tablet */
+    .video-sidebar .action-icon-wrapper {
+        background: transparent !important;
+        width: auto;
+        height: auto;
+        border-radius: 0;
+    }
+    
+    /* Icon màu trắng với shadow cho rõ trên video trắng */
+    .video-sidebar .action-item .icon-svg,
+    .video-sidebar .action-item .icon-img {
+        filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+        color: #fff;
+    }
+    
+    /* Icon liked/saved màu primary trên tablet */
+    .video-sidebar .action-item.liked .icon-svg,
+    .video-sidebar .action-item.liked .icon-img,
+    .video-sidebar .action-item.saved .icon-svg,
+    .video-sidebar .action-item.saved .icon-img {
+        filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+        color: var(--puna-primary);
+    }
+    
 
     .video-top-controls {
         top: 12px;
@@ -411,8 +443,8 @@
     
     .action-item .icon-svg,
     .action-item .icon-img {
-        width: 18px;
-        height: 18px;
+        width: 26px;
+        height: 26px;
     }
 
     .action-item .count {
@@ -420,7 +452,39 @@
     }
     .video-sidebar .action-item .count {
         color: #fff;
+        text-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.8),
+            0 0 4px rgba(0, 0, 0, 0.6),
+            -1px -1px 0 rgba(0, 0, 0, 0.8),
+            1px -1px 0 rgba(0, 0, 0, 0.8),
+            -1px 1px 0 rgba(0, 0, 0, 0.8),
+            1px 1px 0 rgba(0, 0, 0, 0.8);
     }
+    
+    /* Bỏ background của action-icon-wrapper trong video sidebar trên mobile */
+    .video-sidebar .action-icon-wrapper {
+        background: transparent !important;
+        width: auto;
+        height: auto;
+        border-radius: 0;
+    }
+    
+    /* Icon màu trắng với shadow cho rõ trên video trắng */
+    .video-sidebar .action-item .icon-svg,
+    .video-sidebar .action-item .icon-img {
+        filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+        color: #fff;
+    }
+    
+    /* Icon liked/saved màu primary trên mobile */
+    .video-sidebar .action-item.liked .icon-svg,
+    .video-sidebar .action-item.liked .icon-img,
+    .video-sidebar .action-item.saved .icon-svg,
+    .video-sidebar .action-item.saved .icon-img {
+        filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+        color: var(--puna-primary);
+    }
+    
 
     .video-top-controls {
         top: 12px;
@@ -569,8 +633,20 @@
 
     /* Search Page */
     .search-panel {
-        left: 0;
-        width: 100%;
+        left: 0 !important;
+        width: 100% !important;
+        z-index: 10001 !important;
+        border-right: none;
+    }
+    
+    /* Đóng sidebar khi search panel mở trên mobile */
+    body.search-panel-active .sidebar {
+        left: -100% !important;
+    }
+    
+    /* Đóng overlay khi search panel mở */
+    body.search-panel-active.sidebar-open::before {
+        display: none !important;
     }
     
     .search-results-page {
@@ -620,7 +696,27 @@
 
     /* Taxonomy Page */
     .taxonomy-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+    
+    /* Taxonomy header improvements on mobile */
+    .taxonomy-header {
+        padding: 16px 0 12px;
+    }
+    
+    .taxonomy-header h2 {
+        font-size: 22px;
+        margin-bottom: 12px;
+    }
+    
+    .taxonomy-tabs {
+        gap: 8px;
+    }
+    
+    .taxonomy-tabs .tab {
+        padding: 8px 14px;
+        font-size: 13px;
     }
 
     /* Video Navigation */
@@ -632,11 +728,6 @@
     .video-nav-btn {
         width: 40px;
         height: 40px;
-    }
-
-    /* Font Awesome icon removed - using SVG icons instead */
-    /* .video-nav-btn i { */
-        font-size: 16px;
     }
 }
 
@@ -811,8 +902,8 @@
     
     .action-item .icon-svg,
     .action-item .icon-img {
-        width: 16px;
-        height: 16px;
+        width: 26px;
+        height: 26px;
     }
 
     .action-item .count {
@@ -820,7 +911,39 @@
     }
     .video-sidebar .action-item .count {
         color: #fff;
+        text-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.8),
+            0 0 4px rgba(0, 0, 0, 0.6),
+            -1px -1px 0 rgba(0, 0, 0, 0.8),
+            1px -1px 0 rgba(0, 0, 0, 0.8),
+            -1px 1px 0 rgba(0, 0, 0, 0.8),
+            1px 1px 0 rgba(0, 0, 0, 0.8);
     }
+    
+    /* Bỏ background của action-icon-wrapper trong video sidebar trên small mobile */
+    .video-sidebar .action-icon-wrapper {
+        background: transparent !important;
+        width: auto;
+        height: auto;
+        border-radius: 0;
+    }
+    
+    /* Icon màu trắng với shadow cho rõ trên video trắng */
+    .video-sidebar .action-item .icon-svg,
+    .video-sidebar .action-item .icon-img {
+        filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+        color: #fff;
+    }
+    
+    /* Icon liked/saved màu primary trên small mobile */
+    .video-sidebar .action-item.liked .icon-svg,
+    .video-sidebar .action-item.liked .icon-img,
+    .video-sidebar .action-item.saved .icon-svg,
+    .video-sidebar .action-item.saved .icon-img {
+        filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+        color: var(--puna-primary);
+    }
+    
 
     .author-avatar {
         width: 36px;

@@ -149,12 +149,6 @@ $comments_count = get_comments_number($post_id);
                    placeholder="<?php esc_attr_e('Add a comment...', 'puna-tiktok'); ?>" 
                    data-post-id="<?php echo esc_attr($post_id); ?>">
             <div class="comment-input-actions">
-                <button class="comment-action-btn" title="<?php esc_attr_e('Tag user', 'puna-tiktok'); ?>">
-                    <?php echo puna_tiktok_get_icon('home', __('Tag user', 'puna-tiktok')); ?>
-                </button>
-                <button class="comment-action-btn" title="<?php esc_attr_e('Emoji', 'puna-tiktok'); ?>">
-                    <?php echo puna_tiktok_get_icon('heart', __('Emoji', 'puna-tiktok')); ?>
-                </button>
                 <div class="comment-submit-actions">
                     <button class="submit-comment-btn" data-post-id="<?php echo esc_attr($post_id); ?>" disabled>
                         <?php esc_html_e('Post', 'puna-tiktok'); ?>

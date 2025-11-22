@@ -64,7 +64,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_register_style('puna-tiktok-reset', $css_dir . 'reset.css', array('puna-tiktok-fonts'), $version);
             wp_register_style('puna-tiktok-layout', $css_dir . 'layout.css', array('puna-tiktok-reset'), $version);
             wp_register_style('puna-tiktok-sidebar', $css_dir . 'sidebar.css', array('puna-tiktok-layout'), $version);
-            wp_register_style('puna-tiktok-toast', $css_dir . 'toast.css', array('puna-tiktok-layout'), $version);
             
             // Page-specific CSS - Register
             wp_register_style('puna-tiktok-search', $css_dir . 'search.css', array('puna-tiktok-layout'), $version);
@@ -96,7 +95,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_enqueue_style('puna-tiktok-reset');
             wp_enqueue_style('puna-tiktok-layout');
             wp_enqueue_style('puna-tiktok-sidebar');
-            wp_enqueue_style('puna-tiktok-toast');
             wp_enqueue_style('puna-tiktok-search'); // Search panel is in header, needed on all pages
             
             // Enqueue page-specific styles
@@ -215,9 +213,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Get menu icon URL
             $menu_icon_url = puna_tiktok_get_icon_url('menu');
             
-            // Get toast messages
-            $toast_messages = puna_tiktok_get_toast_messages();
-            
             // Allow filtering of localized script data
             $localize_data = apply_filters('puna_tiktok_localize_script_data', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
@@ -232,7 +227,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
                 'avatar_url' => get_avatar_url($current_user->ID, array('size' => 40)),
                 'menu_icon_url' => $menu_icon_url,
                 'mega' => false,
-                'toast_messages' => $toast_messages,
             ));
             
             wp_localize_script('puna-tiktok-core', 'puna_tiktok_ajax', $localize_data);

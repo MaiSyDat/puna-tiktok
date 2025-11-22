@@ -2,9 +2,15 @@
    VIDEO WATCH PAGE - 2 COLUMN LAYOUT
    ============================================ */
 
-/* Hide sidebar on video watch page */
+/* Hide sidebar on video watch page - but allow it on mobile/tablet when toggled */
 body.single .tiktok-app .sidebar {
     display: none;
+}
+
+@media (max-width: 1024px) {
+    body.single .tiktok-app .sidebar.mobile-sidebar {
+        display: block !important;
+    }
 }
 
 body.single .tiktok-app .main-content {
@@ -91,6 +97,8 @@ body.single .tiktok-app .main-content {
     color: #fff;
     filter: brightness(0) invert(1);
     transition: opacity 0.2s ease, filter 0.2s ease;
+    display: block;
+    opacity: 1;
 }
 
 .volume-toggle-btn:hover .icon-svg,
@@ -179,6 +187,8 @@ body.single .tiktok-app .main-content {
     color: #fff;
     filter: brightness(0) invert(1);
     transition: opacity 0.2s ease, filter 0.2s ease;
+    display: block;
+    opacity: 1;
 }
 
 .volume-toggle-btn:hover .icon-svg,
@@ -438,7 +448,10 @@ body.single .tiktok-app .main-content {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    object-fit: cover;
+    object-fit: contain !important;
+    border: 2px solid var(--puna-primary);
+    background: var(--puna-bg);
+    padding: 4px;
 }
 
 .author-info {
@@ -896,17 +909,6 @@ body.theme-dark .video-caption-content .tag {
     color: var(--puna-primary);
 }
 
-.video-watch-comments .comment-action-btn i,
-.video-watch-comments .comment-action-btn .icon-svg,
-.video-watch-comments .comment-action-btn .icon-img {
-    color: var(--puna-text);
-}
-
-.video-watch-comments .comment-action-btn:hover i,
-.video-watch-comments .comment-action-btn:hover .icon-svg,
-.video-watch-comments .comment-action-btn:hover .icon-img {
-    color: var(--puna-primary);
-}
 
 /* Comment input container cho video watch */
 .video-watch-comments .comment-input-container {

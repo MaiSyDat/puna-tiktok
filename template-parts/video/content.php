@@ -30,16 +30,16 @@ $saved_class = $is_saved ? 'saved' : '';
 <div class="video-row">
 	<div class="video-row-inner">
 		<section class="video-container">
-			<!-- Video Controls -->
-			<div class="video-top-controls">
-				<!-- Volume Control -->
-				<div class="volume-control-wrapper">
-			<button class="volume-toggle-btn" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
-				<?php echo puna_tiktok_get_icon('volum', __('Volume', 'puna-tiktok')); ?>
-			</button>
-			<div class="volume-slider-container">
-				<input type="range" class="volume-slider" min="0" max="100" value="100" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
-			</div>
+		<!-- Video Controls -->
+		<div class="video-top-controls">
+			<!-- Volume Control -->
+			<div class="volume-control-wrapper">
+				<button class="volume-toggle-btn" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
+					<?php echo puna_tiktok_get_icon('volum', __('Volume', 'puna-tiktok')); ?>
+				</button>
+				<div class="volume-slider-container">
+					<input type="range" class="volume-slider" min="0" max="100" value="100" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
+				</div>
 			</div>
 		</div>
 		

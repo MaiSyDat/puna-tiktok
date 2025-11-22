@@ -149,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function() {
         let postId = findPostId(submitBtn) || findPostId(input);
         
         if (!postId || postId === 0 || isNaN(postId)) {
-            showToast('error.invalid_video', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Post';
             return;
@@ -213,7 +212,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 const isReply = data.data?.is_reply || false;
                 
                 if (!html || !html.trim()) {
-                    showToast('info.comment_adding', 'info');
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -232,7 +230,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 
                 if (!commentsList) {
-                    showToast('info.comment_adding', 'info');
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -255,7 +252,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 
                 if (!commentElement) {
-                    showToast('info.comment_adding', 'info');
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -278,7 +274,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     }
                     
                     if (!parentItem) {
-                        showToast('error.comment_not_found', 'error');
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -378,14 +373,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Update comment count
                 updateCommentCount(postId);
             } else {
-                const errorMsg = data.data?.message || 'error.cannot_add_comment';
-                showToast(errorMsg, 'error');
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Post';
             }
         })
         .catch(() => {
-            showToast('error.connection_error', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Post';
         });
@@ -640,15 +632,6 @@ document.addEventListener("DOMContentLoaded", function() {
                     repliesSection.remove();
                 }
             }
-        } else {
-            if (commentsList && commentsList.querySelectorAll('.comment-item:not(.comment-reply)').length === 0) {
-                const noCommentsMsg = document.createElement('div');
-                noCommentsMsg.className = 'no-comments';
-                const p = document.createElement('p');
-                p.textContent = 'No comments yet. Be the first to comment!';
-                noCommentsMsg.appendChild(p);
-                commentsList.appendChild(noCommentsMsg);
-            }
         }
         
         if (isTempId) return;
@@ -665,13 +648,10 @@ document.addEventListener("DOMContentLoaded", function() {
         
         sendAjaxRequest('puna_tiktok_delete_comment', params)
         .then(res => {
-            if (!res.success) {
-                const errorMsg = res.data?.message || 'error.cannot_delete_comment';
-                showToast(errorMsg, 'error');
-            }
+            // Comment deleted successfully
         })
         .catch(() => {
-            showToast('error.connection_error', 'error');
+            // Error handling silently
         });
     });
 
@@ -790,13 +770,11 @@ document.addEventListener("DOMContentLoaded", function() {
         const commentId = repBtn.dataset.commentId;
         sendAjaxRequest('puna_tiktok_report_comment', { comment_id: commentId })
         .then(res => {
-            if (res.success) {
-                showToast('success.comment_reported', 'success');
-            } else {
-                showToast(res.data && res.data.message ? res.data.message : 'error.cannot_report', 'error');
-            }
+            // Comment reported successfully
         })
-        .catch(() => showToast('error.connection_error', 'error'));
+        .catch(() => {
+            // Error handling silently
+        });
     });
 
     // Comment options menu

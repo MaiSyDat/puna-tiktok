@@ -155,6 +155,8 @@
     height: 30px;
     filter: brightness(0) invert(1);
     color: #fff;
+    display: block;
+    opacity: 1;
 }
 
 .volume-slider-container {
@@ -314,8 +316,6 @@
 .tiktok-video[data-aspect-ratio="landscape"],
 .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
     aspect-ratio: 16 / 9;
-    max-width: 80vw;
-    max-height: 70vh;
 }
 
 /* Video vuông (square) - 1:1 */
@@ -373,7 +373,10 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    border: 2px solid var(--puna-bg);
+    border: 2px solid var(--puna-primary);
+    object-fit: contain !important;
+    background: var(--puna-bg);
+    padding: 4px;
 }
 .follow-icon {
     position: absolute;

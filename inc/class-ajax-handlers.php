@@ -112,8 +112,7 @@ class Puna_TikTok_AJAX_Handlers {
         
         wp_send_json_success(array(
             'is_liked' => false,
-            'likes' => $new_likes,
-            'message' => __('Video unliked', 'puna-tiktok')
+            'likes' => $new_likes
         ));
     } else {
         $liked_posts[] = $post_id;
@@ -123,8 +122,7 @@ class Puna_TikTok_AJAX_Handlers {
         
         wp_send_json_success(array(
             'is_liked' => true,
-            'likes' => $new_likes,
-            'message' => __('Video liked', 'puna-tiktok')
+            'likes' => $new_likes
         ));
         }
     } else {
@@ -135,16 +133,14 @@ class Puna_TikTok_AJAX_Handlers {
             update_post_meta($post_id, '_puna_tiktok_video_likes', $new_likes);
             wp_send_json_success(array(
                 'is_liked' => false,
-                'likes' => $new_likes,
-                'message' => __('Video unliked', 'puna-tiktok')
+                'likes' => $new_likes
             ));
         } else {
             $new_likes = $current_likes + 1;
             update_post_meta($post_id, '_puna_tiktok_video_likes', $new_likes);
             wp_send_json_success(array(
                 'is_liked' => true,
-                'likes' => $new_likes,
-                'message' => __('Video liked', 'puna-tiktok')
+                'likes' => $new_likes
             ));
         }
     }
@@ -306,7 +302,6 @@ class Puna_TikTok_AJAX_Handlers {
     }
     
     wp_send_json_success(array(
-        'message' => __('Comment added.', 'puna-tiktok'),
         'comment_id' => $comment_id,
         'guest_id' => isset($guest_id) ? $guest_id : '',
         'html' => $html,
@@ -368,8 +363,7 @@ class Puna_TikTok_AJAX_Handlers {
             
             wp_send_json_success(array(
                 'is_liked' => false,
-                'likes' => $new_likes,
-                'message' => __('Comment unliked', 'puna-tiktok')
+                'likes' => $new_likes
             ));
         } else {
             $liked_comments[] = $comment_id;
@@ -379,8 +373,7 @@ class Puna_TikTok_AJAX_Handlers {
             
             wp_send_json_success(array(
                 'is_liked' => true,
-                'likes' => $new_likes,
-                'message' => __('Comment liked', 'puna-tiktok')
+                'likes' => $new_likes
             ));
             }
         } else {
@@ -391,16 +384,14 @@ class Puna_TikTok_AJAX_Handlers {
                 update_comment_meta($comment_id, '_comment_likes', $new_likes);
                 wp_send_json_success(array(
                     'is_liked' => false,
-                    'likes' => $new_likes,
-                    'message' => __('Comment unliked', 'puna-tiktok')
+                    'likes' => $new_likes
                 ));
             } else {
                 $new_likes = $current_likes + 1;
                 update_comment_meta($comment_id, '_comment_likes', $new_likes);
                 wp_send_json_success(array(
                     'is_liked' => true,
-                    'likes' => $new_likes,
-                    'message' => __('Comment liked', 'puna-tiktok')
+                    'likes' => $new_likes
                 ));
             }
         }
@@ -498,7 +489,6 @@ class Puna_TikTok_AJAX_Handlers {
     $this->delete_comment_recursive($comment_id);
     
     wp_send_json_success(array(
-        'message' => __('Comment deleted.', 'puna-tiktok'),
         'deleted_count' => $total_to_delete
     ));
     }
@@ -516,7 +506,7 @@ class Puna_TikTok_AJAX_Handlers {
     }
     $reports = (int) get_comment_meta($comment_id, '_comment_reports', true);
     update_comment_meta($comment_id, '_comment_reports', $reports + 1);
-    wp_send_json_success(array('message' => __('Comment reported.', 'puna-tiktok')));
+    wp_send_json_success(array());
     }
 
     /**
@@ -644,7 +634,7 @@ class Puna_TikTok_AJAX_Handlers {
         
         update_option($option_key, $all_history);
         
-        wp_send_json_success(array('message' => __('Search history saved.', 'puna-tiktok')));
+        wp_send_json_success(array());
     }
 
     /**
@@ -728,7 +718,7 @@ class Puna_TikTok_AJAX_Handlers {
             update_option($option_key, $all_history);
         }
         
-        wp_send_json_success(array('message' => __('Search history cleared.', 'puna-tiktok')));
+        wp_send_json_success(array());
     }
 
     /**
@@ -937,8 +927,7 @@ class Puna_TikTok_AJAX_Handlers {
             
             wp_send_json_success(array(
                 'is_saved' => false,
-                'saves' => $new_saves,
-                'message' => __('Video unsaved', 'puna-tiktok')
+                'saves' => $new_saves
             ));
         } else {
             $saved_posts[] = $post_id;
@@ -949,8 +938,7 @@ class Puna_TikTok_AJAX_Handlers {
             
             wp_send_json_success(array(
                 'is_saved' => true,
-                'saves' => $new_saves,
-                'message' => __('Video saved', 'puna-tiktok')
+                'saves' => $new_saves
             ));
         }
     } else {
@@ -961,16 +949,14 @@ class Puna_TikTok_AJAX_Handlers {
             update_post_meta($post_id, '_puna_tiktok_video_saves', $new_saves);
             wp_send_json_success(array(
                 'is_saved' => false,
-                'saves' => $new_saves,
-                'message' => __('Video unsaved', 'puna-tiktok')
+                'saves' => $new_saves
             ));
         } else {
             $new_saves = $current_saves + 1;
             update_post_meta($post_id, '_puna_tiktok_video_saves', $new_saves);
             wp_send_json_success(array(
                 'is_saved' => true,
-                'saves' => $new_saves,
-                'message' => __('Video saved', 'puna-tiktok')
+                'saves' => $new_saves
             ));
         }
         }
@@ -1015,7 +1001,6 @@ class Puna_TikTok_AJAX_Handlers {
         }
         
         wp_send_json_success(array(
-            'message' => __('Video deleted successfully.', 'puna-tiktok'),
             'redirect_url' => home_url('/')
         ));
     }

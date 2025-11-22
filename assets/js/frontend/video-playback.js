@@ -81,14 +81,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     iconName = 'volum'; // Use same icon for high volume
                 }
                 
-                // Clear and create icon element safely
-                btn.innerHTML = '';
-                const themeUri = (window.puna_tiktok_ajax && window.puna_tiktok_ajax.theme_uri) ? window.puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-                const iconImg = document.createElement('img');
-                iconImg.src = `${themeUri}/assets/images/icons/${iconName}.svg`;
-                iconImg.alt = 'Volume';
-                iconImg.className = 'icon-svg';
-                btn.appendChild(iconImg);
+                // Get theme URI for icon path
+                const themeUri = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.theme_uri) ? puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
+                const iconUrl = themeUri + '/assets/images/icons/' + iconName + '.svg';
+                
+                // Update button content with icon
+                btn.innerHTML = '<img src="' + iconUrl + '" alt="Volume" class="icon-svg">';
             }
             if (slider) {
                 const targetVal = globalMuted ? 0 : Math.round(globalVolume * 100);
