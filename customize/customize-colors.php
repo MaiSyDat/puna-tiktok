@@ -176,7 +176,7 @@ class Puna_TikTok_Customize_Colors {
                 --puna-text: #e5e7eb;
                 --puna-link: #7cc4ff;
                 --puna-muted: rgba(255,255,255,0.12);
-                color: var(--puna-text, #e5e7eb);
+                color: var(--puna-text);
             }
 
             body.theme-dark,
@@ -209,16 +209,44 @@ class Puna_TikTok_Customize_Colors {
             body.theme-dark .comment-author-link,
             body.theme-dark .search-suggestion-item,
             body.theme-dark .search-suggestions-list li span,
-            body.theme-dark .search-tabs .search-tab {
-                color: var(--puna-text, #e5e7eb);
-            }
-
-            body.theme-dark a {
-                color: var(--puna-link, #7cc4ff);
+            body.theme-dark .search-tabs .search-tab,
+            body.theme-dark .taxonomy-header,
+            body.theme-dark .taxonomy-header h2,
+            body.theme-dark .taxonomy-header .tab {
+                color: var(--puna-text);
             }
 
             body.theme-dark a:hover {
-                color: var(--puna-primary, #25F4EE);
+                color: var(--puna-primary);
+            }
+
+            /* Taxonomy header in dark mode */
+            body.theme-dark .taxonomy-header {
+                background: rgba(var(--puna-bg-rgb), 0.98);
+                border-bottom-color: rgba(255, 255, 255, 0.12);
+            }
+
+            body.theme-dark .taxonomy-tabs .tab {
+                border-color: rgba(255, 255, 255, 0.15);
+                color: var(--puna-text);
+            }
+
+            body.theme-dark .taxonomy-tabs .tab:hover {
+                border-color: rgba(255, 255, 255, 0.25);
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            body.theme-dark .taxonomy-tabs .tab.active {
+                color: var(--puna-bg);
+            }
+
+            /* Change all icons to white in dark mode */
+            body.theme-dark .icon-svg,
+            body.theme-dark .icon-img,
+            body.theme-dark img.icon-svg,
+            body.theme-dark img.icon-img {
+                filter: brightness(0) invert(1);
+                color: #fff;
             }
 
             @media (prefers-color-scheme: dark) {
@@ -227,6 +255,15 @@ class Puna_TikTok_Customize_Colors {
                     --puna-text: #e5e7eb;
                     --puna-link: #7cc4ff;
                     --puna-muted: rgba(255,255,255,0.12);
+                }
+
+                /* Change all icons to white in system dark mode */
+                body:not(.theme-light):not(.theme-dark) .icon-svg,
+                body:not(.theme-light):not(.theme-dark) .icon-img,
+                body:not(.theme-light):not(.theme-dark) img.icon-svg,
+                body:not(.theme-light):not(.theme-dark) img.icon-img {
+                    filter: brightness(0) invert(1);
+                    color: #fff;
                 }
             }
             
@@ -240,11 +277,6 @@ class Puna_TikTok_Customize_Colors {
             .tiktok-app {
                 background-color: var(--puna-bg);
                 color: var(--puna-text);
-            }
-            
-            /* Apply link colors */
-            a {
-                color: var(--puna-link);
             }
             
             a:hover {

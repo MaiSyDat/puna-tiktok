@@ -228,7 +228,7 @@ body.single .tiktok-app .main-content {
     pointer-events: none;
 }
 
-/* Video dùng chung class với trang index */
+/* Video shares class with index page */
 .video-watch-player .tiktok-video {
     width: 100%;
     height: 100%;
@@ -237,7 +237,7 @@ body.single .tiktok-app .main-content {
     max-height: 100vh;
 }
 
-/* Video Player Controls - Sửa z-index để không bị che */
+/* Video Player Controls - Fix z-index to prevent overlap */
 .video-watch-player .video-top-controls {
     position: absolute;
     top: 20px;
@@ -249,12 +249,12 @@ body.single .tiktok-app .main-content {
     align-items: flex-end;
 }
 
-/* Chỉ hiển thị nút options menu ở góc trên phải */
+/* Only show options menu button at top right */
 .video-watch-player .video-top-controls .video-options-menu {
     display: flex;
 }
 
-/* Ẩn volume control ở top controls */
+/* Hide volume control in top controls */
 .video-watch-player .video-top-controls .volume-control-wrapper {
     display: none;
 }
@@ -270,7 +270,7 @@ body.single .tiktok-app .main-content {
     align-items: flex-end;
 }
 
-/* Volume control ở góc dưới phải */
+/* Volume control at bottom right */
 .video-watch-player .video-player-bottom-actions .volume-control-wrapper {
     display: flex;
     align-items: center;
@@ -411,7 +411,7 @@ body.single .tiktok-app .main-content {
 
 .follow-btn {
     padding: 8px 20px;
-    background: var(--puna-primary);
+    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
     color: #fff;
     border: none;
     border-radius: 20px;
@@ -710,7 +710,7 @@ body.theme-dark .video-caption-content .tag {
 }
 
 .share-option-btn:hover {
-    background: var(--puna-primary);
+    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
     color: #fff;
     transform: scale(1.1);
 }
@@ -812,7 +812,7 @@ body.theme-dark .video-caption-content .tag {
     margin-bottom: 4px;
 }
 
-/* Override cho video watch page để đảm bảo màu text đúng và hiển thị đúng */
+/* Override for video watch page to ensure correct text color and display */
 .video-watch-comments .comments-list {
     flex: 1;
     overflow-y: auto;

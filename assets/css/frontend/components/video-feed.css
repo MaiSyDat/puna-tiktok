@@ -2,7 +2,7 @@
    VIDEO DISPLAY
    ======================================== */
 
-/* Video Row Layout - Bọc video và sidebar */
+/* Video Row Layout - Wraps video and sidebar */
 .video-row {
     display: flex;
     align-items: center;
@@ -37,7 +37,7 @@
     align-items: center;
     justify-content: center;
     scroll-snap-align: start;
-    aspect-ratio: 9 / 16; /* Default cho video dọc */
+    aspect-ratio: 9 / 16; /* Default for vertical video */
 }
 
 /* Video loading placeholder */
@@ -82,7 +82,7 @@
     }
 }
 
-/* Khi video đã load, ẩn placeholder */
+/* Hide placeholder when video is loaded */
 .video-container:has(.tiktok-video.loaded)::before,
 .video-container:has(.tiktok-video.loaded)::after {
     opacity: 0;
@@ -297,7 +297,7 @@
 }
 
 
-/* Video Sidebar - Desktop: nằm cạnh video */
+/* Video Sidebar - Desktop: positioned next to video */
 .video-sidebar {
     display: flex;
     flex-direction: column;
@@ -359,7 +359,7 @@
     height: 20px;
     font-size: 8px;
     border-radius: 50%;
-    background: var(--puna-primary, #06539f);
+    background: var(--puna-primary);
     color: var(--puna-bg);
     display: flex;
     align-items: center;

@@ -70,7 +70,7 @@ body.search-panel-active .main-content {
     transition: opacity 0.3s ease, width 0.3s ease;
 }
 
-/* Search Panel - Panel tìm kiếm trượt ra */
+/* Search Panel - Sliding search panel */
 .search-panel {
     position: fixed;
     left: 72px;
@@ -372,7 +372,7 @@ body.search-panel-active .search-panel {
 .search-popular-loading,
 .search-popular-empty {
     padding: 10px 16px;
-    color: var(--puna-text-secondary, #999);
+    color: var(--puna-text-secondary);
     font-size: 14px;
     text-align: center;
     cursor: default;
@@ -480,7 +480,7 @@ body.search-panel-active .search-panel {
     min-height: 100vh;
 }
 
-/* Container wrapper cho search page với sidebar */
+/* Container wrapper for search page with sidebar */
 .main-content.search-results-page-wrapper {
     position: relative;
 }
@@ -689,7 +689,7 @@ body.search-panel-active .search-panel {
     white-space: nowrap;
 }
 
-/* Main content khi có sidebar suggestions */
+/* Main content when sidebar suggestions are present */
 .main-content.search-results-page {
     padding-right: 0;
 }

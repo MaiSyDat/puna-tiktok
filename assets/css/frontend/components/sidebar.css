@@ -2,13 +2,13 @@
    SIDEBAR - Main Navigation
    ======================================== */
 
-/* Video Sidebar - CSS được định nghĩa trong video-feed.css */
+/* Video Sidebar - CSS is defined in video-feed.css */
 
 .author-avatar-wrapper {
     position: relative;
 }
 
-/* Main Sidebar (bên trái) */
+/* Main Sidebar (left side) */
 .sidebar {
     flex: 0 0 210px;
     width: 210px;
@@ -232,7 +232,7 @@ body.search-panel-active .main-content {
     padding: 0 8px;
 }
 
-/* Bỏ gap khi search panel active */
+/* Remove gap when search panel is active */
 body.search-panel-active .sidebar .sidebar-buy-now {
     display: none;
 }
@@ -242,21 +242,20 @@ body.search-panel-active .sidebar .sidebar-buy-now {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 14px 16px;
-    background: var(--puna-primary);
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
     color: #ffffff;
     text-decoration: none;
     border-radius: 12px;
     font-size: 15px;
     font-weight: 600;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--puna-primary);
 }
 
 .buy-now-button:hover {
-    background: color-mix(in srgb, var(--puna-primary) 80%, white);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    color: #ffffff;
+    background: #fff;
+    color: #000;
 }
 
 .buy-now-button:active {

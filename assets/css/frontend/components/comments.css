@@ -256,7 +256,7 @@
 .comment-follow-btn {
     margin-left: 8px;
     padding: 4px 12px;
-    background: var(--puna-primary);
+    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
     color: #fff;
     border: none;
     border-radius: 16px;
@@ -545,7 +545,7 @@
 
 .submit-comment-btn {
     padding: 8px 20px;
-    background: var(--puna-primary);
+    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
     color: var(--puna-bg);
     border: none;
     border-radius: 4px;
@@ -556,7 +556,7 @@
 }
 
 .submit-comment-btn:hover:not(:disabled) {
-    background: var(--puna-primary);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--puna-primary) 90%, black) 0%, var(--puna-primary) 100%);
 }
 
 .submit-comment-btn:disabled {

@@ -4,6 +4,11 @@
 @media (max-width: 1024px) {
     .main-content {
         padding: 0;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        overscroll-behavior-x: none;
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
     }
 
     /* ===== TOP HEADER ===== */
@@ -24,6 +29,7 @@
         width: 100%;
         height: 100vh;
         min-height: 100vh;
+        flex-shrink: 0;
     }
 
     .video-row-inner {
@@ -58,18 +64,18 @@
         object-fit: contain;
     }
 
-    /* Video dọc trên iPad */
+    /* Vertical video on iPad */
     .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
         aspect-ratio: 9 / 16;
     }
 
-    /* Video ngang trên iPad */
+    /* Landscape video on iPad */
     .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
         aspect-ratio: 16 / 9;
         max-height: 100vh;
     }
 
-    /* Video vuông trên iPad */
+    /* Square video on iPad */
     .video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
         aspect-ratio: 1 / 1;
         max-width: 100%;
@@ -81,7 +87,7 @@
         width: 100%;
     }
 
-    /* Di chuyển video-sidebar vào trong video container */
+    /* Move video-sidebar inside video container */
     .video-sidebar {
         position: absolute;
         right: 10px;
@@ -94,7 +100,7 @@
         z-index: 100;
     }
 
-    /* Đảm bảo layout item theo cột và căn giữa (iPad) */
+    /* Ensure layout items are in column and centered (iPad) */
     .video-sidebar .action-item {
         display: flex;
         flex-direction: column;
@@ -142,7 +148,7 @@
             1px 1px 0 rgba(0, 0, 0, 0.8);
     }
 
-    /* Bỏ background của action-icon-wrapper trong video sidebar trên iPad */
+    /* Remove background of action-icon-wrapper in video sidebar on iPad */
     .video-sidebar .action-icon-wrapper {
         background: transparent;
         width: auto;
@@ -150,14 +156,14 @@
         border-radius: 0;
     }
 
-    /* Icon màu trắng với shadow cho rõ trên video trắng */
+    /* White icon with shadow for visibility on white video */
     .video-sidebar .action-item .icon-svg,
     .video-sidebar .action-item .icon-img {
         filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
         color: #fff;
     }
 
-    /* Icon liked/saved màu primary trên iPad */
+    /* Liked/saved icon primary color on iPad */
     .video-sidebar .action-item.liked .icon-svg,
     .video-sidebar .action-item.liked .icon-img {
         filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
@@ -197,11 +203,11 @@
     }
 
     .video-container .video-overlay {
-        padding-right: 70px; /* Tạo không gian cho sidebar */
+        padding-right: 70px; /* Create space for sidebar */
     }
 
     /* ===== VIDEO NAVIGATION ===== */
-    /* Ẩn nút lên xuống trên iPad */
+    /* Hide up/down navigation buttons on iPad */
     .video-nav {
         display: none !important;
     }
@@ -270,6 +276,15 @@
    ======================================== */
 
 @media (max-width: 768px) {
+    /* ===== MAIN CONTENT ===== */
+    .main-content {
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        overscroll-behavior-x: none;
+        scroll-snap-type: y mandatory;
+        scroll-behavior: smooth;
+    }
+
     /* ===== SIDEBAR ===== */
     .sidebar {
         position: fixed;
@@ -320,7 +335,7 @@
         margin: 0 8px;
     }
 
-    /* Hiển thị text trên mobile */
+    /* Show text on mobile */
     .sidebar .menu-text {
         opacity: 1;
         width: auto;
@@ -356,6 +371,7 @@
         scroll-snap-align: start;
         scroll-snap-stop: always;
         background-color: #000;
+        flex-shrink: 0;
     }
 
     .video-container {
@@ -382,18 +398,18 @@
         object-fit: contain;
     }
     
-    /* Video dọc trên mobile */
+    /* Vertical video on mobile */
     .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
         aspect-ratio: 9 / 16;
     }
     
-    /* Video ngang trên mobile */
+    /* Landscape video on mobile */
     .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
         aspect-ratio: 16 / 9;
         max-height: 100vh;
     }
     
-    /* Video vuông trên mobile */
+    /* Square video on mobile */
     .video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
         aspect-ratio: 1 / 1;
         max-width: 100vw;
@@ -404,7 +420,7 @@
         max-width: 60%;
     }
 
-    /* Di chuyển video-sidebar vào trong video container */
+    /* Move video-sidebar inside video container */
     .video-sidebar {
         position: absolute;
         right: 10px;
@@ -417,7 +433,7 @@
         z-index: 100;
     }
 
-    /* Đảm bảo layout item theo cột và căn giữa (Mobile) */
+    /* Ensure layout items are in column and centered (Mobile) */
     .video-sidebar .action-item {
         display: flex;
         flex-direction: column;
@@ -464,7 +480,7 @@
             1px 1px 0 rgba(0, 0, 0, 0.8);
     }
     
-    /* Bỏ background của action-icon-wrapper trong video sidebar trên mobile */
+    /* Remove background of action-icon-wrapper in video sidebar on mobile */
     .video-sidebar .action-icon-wrapper {
         background: transparent;
         width: auto;
@@ -472,14 +488,14 @@
         border-radius: 0;
     }
     
-    /* Icon màu trắng với shadow cho rõ trên video trắng */
+    /* White icon with shadow for visibility on white video */
     .video-sidebar .action-item .icon-svg,
     .video-sidebar .action-item .icon-img {
         filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
         color: #fff;
     }
     
-    /* Icon liked/saved màu primary trên mobile */
+    /* Liked/saved icon primary color on mobile */
     .video-sidebar .action-item.liked .icon-svg,
     .video-sidebar .action-item.liked .icon-img {
         filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
@@ -499,11 +515,11 @@
     }
 
     .video-container .video-overlay {
-        padding-right: 70px; /* Tạo không gian cho sidebar */
+        padding-right: 70px; /* Create space for sidebar */
     }
 
     /* ===== VIDEO NAVIGATION ===== */
-    /* Ẩn trên mobile vì dùng trượt */
+    /* Hide on mobile because using swipe */
     .video-nav {
         display: none;
     }
@@ -696,12 +712,12 @@
         border-right: none;
     }
     
-    /* Đóng sidebar khi search panel mở trên mobile */
+    /* Close sidebar when search panel opens on mobile */
     body.search-panel-active .sidebar {
         left: -100%;
     }
     
-    /* Đóng overlay khi search panel mở */
+    /* Close overlay when search panel opens */
     body.search-panel-active.sidebar-open::before {
         display: none;
     }
@@ -788,7 +804,7 @@
         height: 40px;
     }
     
-    /* Small mobile - Ẩn trên small mobile vì dùng trượt */
+    /* Small mobile - Hide on small mobile because using swipe */
     .video-nav {
         display: none;
     }
@@ -861,7 +877,7 @@
 
 @media (hover: none) and (pointer: coarse) {
     /* ===== VIDEO NAVIGATION ===== */
-    /* Tăng kích thước touch targets */
+    /* Increase touch target size */
     .video-nav-btn {
         width: 48px;
         height: 48px;
@@ -873,7 +889,7 @@
         min-height: 48px;
     }
     
-    /* Trên màn hình cảm ứng, luôn hiển thị volume slider khi không muted */
+    /* On touch screens, always show volume slider when not muted */
     .volume-control-wrapper:not(.muted) .volume-slider-container {
         width: 80px;
         opacity: 1;
@@ -885,7 +901,7 @@
         min-height: 60px;
     }
 
-    /* Loại bỏ hover effects */
+    /* Remove hover effects */
     .video-nav-btn:hover {
         background: var(--puna-muted);
     }
@@ -895,7 +911,7 @@
     }
     
     /* ===== VIDEO WATCH ===== */
-    /* Trên màn hình cảm ứng, luôn hiển thị slider khi không muted */
+    /* On touch screens, always show slider when not muted */
     .video-watch-player .video-player-bottom-actions .volume-control-wrapper:not(.muted) .volume-slider-container {
         width: 80px;
         opacity: 1;
