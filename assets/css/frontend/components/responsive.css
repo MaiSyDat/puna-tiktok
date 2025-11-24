@@ -1,45 +1,43 @@
 /* ========================================
-   TABLET & BELOW (max-width: 1024px)
+   RESPONSIVE CSS
    ======================================== */
-
 @media (max-width: 1024px) {
-    /* Sidebar Toggle Button - Hiển thị trên iPad */
-    .video-top-controls .sidebar-toggle-btn {
-        display: flex !important;
-        position: relative;
-        background: transparent;
-        border: none;
+    .main-content {
         padding: 0;
-        cursor: pointer;
-        align-items: center;
-        justify-content: center;
-        width: 36px;
-        height: 36px;
-        transition: all 0.2s;
+    }
+
+    /* ===== TOP HEADER ===== */
+    .fixed-top-container {
+        display: none;
+    }
+
+    .sidebar-toggle-btn {
+        display: none !important;
     }
     
-    .video-top-controls .sidebar-toggle-btn .icon-svg,
-    .video-top-controls .sidebar-toggle-btn .icon-img {
-        width: 30px;
-        height: 30px;
-        filter: brightness(0) invert(1);
-        color: #fff;
-    }
-
-    /* Video Feed - Tablet */
+    /* ===== VIDEO FEED ===== */
     .video-row {
         position: relative;
         scroll-snap-align: start;
         scroll-snap-stop: always;
         background-color: #000;
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
+    }
+
+    .video-row-inner {
+        width: 100%;
+        height: 100%;
+        position: relative;
     }
 
     .video-container {
-        width: 100vw;
+        width: 100%;
         height: 100vh;
         max-height: 100vh;
         min-height: 100vh;
-        max-width: 100vw;
+        max-width: 100%;
         border-radius: 0;
         margin: 0;
         padding: 0;
@@ -59,22 +57,22 @@
         max-height: 100%;
         object-fit: contain;
     }
-    
-    /* Video dọc trên tablet */
+
+    /* Video dọc trên iPad */
     .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
         aspect-ratio: 9 / 16;
     }
-    
-    /* Video ngang trên tablet */
+
+    /* Video ngang trên iPad */
     .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
         aspect-ratio: 16 / 9;
         max-height: 100vh;
     }
-    
-    /* Video vuông trên tablet */
+
+    /* Video vuông trên iPad */
     .video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
         aspect-ratio: 1 / 1;
-        max-width: 100vw;
+        max-width: 100%;
         max-height: 100vh;
     }
 
@@ -99,8 +97,8 @@
     /* Đảm bảo layout item theo cột và căn giữa (iPad) */
     .video-sidebar .action-item {
         display: flex;
-        flex-direction: column !important;
-        align-items: center !important;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
     }
 
@@ -122,7 +120,7 @@
         font-size: 20px;
         color: #fff;
     }
-    
+
     .action-item .icon-svg,
     .action-item .icon-img {
         width: 26px;
@@ -132,6 +130,7 @@
     .action-item .count {
         font-size: 11px;
     }
+
     .video-sidebar .action-item .count {
         color: #fff;
         text-shadow: 
@@ -142,31 +141,34 @@
             -1px 1px 0 rgba(0, 0, 0, 0.8),
             1px 1px 0 rgba(0, 0, 0, 0.8);
     }
-    
-    /* Bỏ background của action-icon-wrapper trong video sidebar trên tablet */
+
+    /* Bỏ background của action-icon-wrapper trong video sidebar trên iPad */
     .video-sidebar .action-icon-wrapper {
-        background: transparent !important;
+        background: transparent;
         width: auto;
         height: auto;
         border-radius: 0;
     }
-    
+
     /* Icon màu trắng với shadow cho rõ trên video trắng */
     .video-sidebar .action-item .icon-svg,
     .video-sidebar .action-item .icon-img {
         filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
         color: #fff;
     }
-    
-    /* Icon liked/saved màu primary trên tablet */
+
+    /* Icon liked/saved màu primary trên iPad */
     .video-sidebar .action-item.liked .icon-svg,
-    .video-sidebar .action-item.liked .icon-img,
-    .video-sidebar .action-item.saved .icon-svg,
-    .video-sidebar .action-item.saved .icon-img {
+    .video-sidebar .action-item.liked .icon-img {
         filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
         color: var(--puna-primary);
     }
-    
+
+    .video-sidebar .action-item.saved .icon-svg,
+    .video-sidebar .action-item.saved .icon-img {
+        filter: brightness(0) saturate(100%) invert(77%) sepia(100%) saturate(1352%) hue-rotate(1deg) brightness(103%) contrast(101%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+        color: var(--puna-secondary);
+    }
 
     .video-top-controls {
         top: 12px;
@@ -190,29 +192,35 @@
     }
 
     .author-avatar {
-        width: 44px;
-        height: 44px;
+        width: 50px;
+        height: 50px;
     }
 
     .video-container .video-overlay {
         padding-right: 70px; /* Tạo không gian cho sidebar */
     }
 
-    /* Video Watch Page */
+    /* ===== VIDEO NAVIGATION ===== */
+    /* Ẩn nút lên xuống trên iPad */
+    .video-nav {
+        display: none !important;
+    }
+
+    /* ===== VIDEO WATCH ===== */
     .video-watch-container {
         flex-direction: column;
     }
-    
+
     .video-watch-player {
         flex: 0 0 100%;
         width: 100%;
         min-height: 50vh;
     }
-    
+
     .video-player-wrapper {
         height: 50vh;
     }
-    
+
     .video-watch-info {
         flex: 0 0 100%;
         width: 100%;
@@ -223,68 +231,64 @@
         position: static;
     }
 
-    /* Search Page */
+    body.single .tiktok-app .sidebar.mobile-sidebar {
+        display: block;
+    }
+
+    /* ===== SEARCH ===== */
+    .search-panel {
+        left: 72px;
+        width: 300px;
+    }
+
     .search-suggestions-sidebar {
         display: none;
     }
-    
+
     .main-content.search-results-page,
     .main-content.search-results-page:has(.search-suggestions-sidebar) {
         padding-right: 0;
     }
-    
+
     .search-videos-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 12px;
     }
 
-    /* Taxonomy Page */
+    /* ===== TAXONOMY ===== */
     .taxonomy-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    /* Video Navigation - Ẩn trên iPad vì dùng trượt */
-    .video-nav {
-        display: none !important;
-    }
-
-    /* Main Content */
-    .main-content {
-        padding-left: 0;
-        padding-right: 0; /* Bỏ padding cho video-nav trên tablet */
+    .taxonomy-header {
+        padding-top: 64px;
     }
 }
 
 /* ========================================
-   MOBILE & TABLET (max-width: 768px)
+   MOBILE (max-width: 768px)
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Layout */
-    .main-content {
-        padding-left: 0;
-        padding-right: 0; /* Bỏ padding cho video-nav trên mobile */
-    }
-
-    /* Sidebar - Mobile */
+    /* ===== SIDEBAR ===== */
     .sidebar {
-        position: fixed !important;
-        left: -100% !important;
-        top: 0 !important;
-        z-index: 9998 !important;
-        transition: left 0.3s ease !important;
-        width: 70% !important;
-        max-width: 400px !important;
-        flex: none !important;
-        height: 100vh !important;
-        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.1) !important;
+        position: fixed;
+        left: -100%;
+        top: 0;
+        z-index: 9998;
+        transition: left 0.3s ease;
+        width: 70%;
+        max-width: 400px;
+        flex: none;
+        height: 100vh;
+        box-shadow: 2px 0 16px rgba(0, 0, 0, 0.1);
     }
     
     .sidebar.collapsed {
-        left: 0 !important;
-        width: 70% !important;
-        max-width: 400px !important;
-        flex: none !important;
+        left: 0;
+        width: 70%;
+        max-width: 400px;
+        flex: none;
     }
     
     .video-top-controls .sidebar-toggle-btn {
@@ -293,11 +297,11 @@
     
     .sidebar ul li a {
         padding: 12px 16px;
-        justify-content: flex-start !important;
+        justify-content: flex-start;
     }
 
     .sidebar ul li a i {
-        margin-right: 12px !important;
+        margin-right: 12px;
     }
 
     .sidebar .logo {
@@ -307,7 +311,7 @@
     }
 
     .sidebar .sidebar-footer {
-        display: block !important;
+        display: block;
         padding: 20px 16px;
     }
 
@@ -318,27 +322,26 @@
 
     /* Hiển thị text trên mobile */
     .sidebar .menu-text {
-        opacity: 1 !important;
-        width: auto !important;
-        overflow: visible !important;
-        display: block !important;
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+        display: block;
     }
 
     .sidebar.collapsed .menu-text {
-        opacity: 1 !important;
-        width: auto !important;
-        overflow: visible !important;
-        display: block !important;
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+        display: block;
     }
-
     .sidebar .search-text {
-        opacity: 1 !important;
-        width: auto !important;
-        overflow: visible !important;
-        display: inline !important;
+        opacity: 1;
+        width: auto;
+        overflow: visible;
+        display: inline;
     }
 
-    /* Video Feed - Mobile */
+    /* ===== VIDEO FEED ===== */
     .video-row {
         position: relative;
         flex-direction: column;
@@ -417,8 +420,8 @@
     /* Đảm bảo layout item theo cột và căn giữa (Mobile) */
     .video-sidebar .action-item {
         display: flex;
-        flex-direction: column !important;
-        align-items: center !important;
+        flex-direction: column;
+        align-items: center;
         justify-content: center;
     }
 
@@ -463,7 +466,7 @@
     
     /* Bỏ background của action-icon-wrapper trong video sidebar trên mobile */
     .video-sidebar .action-icon-wrapper {
-        background: transparent !important;
+        background: transparent;
         width: auto;
         height: auto;
         border-radius: 0;
@@ -478,13 +481,16 @@
     
     /* Icon liked/saved màu primary trên mobile */
     .video-sidebar .action-item.liked .icon-svg,
-    .video-sidebar .action-item.liked .icon-img,
-    .video-sidebar .action-item.saved .icon-svg,
-    .video-sidebar .action-item.saved .icon-img {
+    .video-sidebar .action-item.liked .icon-img {
         filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
         color: var(--puna-primary);
     }
     
+    .video-sidebar .action-item.saved .icon-svg,
+    .video-sidebar .action-item.saved .icon-img {
+        filter: brightness(0) saturate(100%) invert(77%) sepia(100%) saturate(1352%) hue-rotate(1deg) brightness(103%) contrast(101%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
+        color: var(--puna-secondary);
+    }
 
     .video-top-controls {
         top: 12px;
@@ -496,12 +502,13 @@
         padding-right: 70px; /* Tạo không gian cho sidebar */
     }
 
-    /* Video Navigation - Ẩn trên mobile vì dùng trượt */
+    /* ===== VIDEO NAVIGATION ===== */
+    /* Ẩn trên mobile vì dùng trượt */
     .video-nav {
-        display: none !important;
+        display: none;
     }
 
-    /* Share Modal */
+    /* ===== SHARE MODAL ===== */
     .share-modal {
         padding: 10px;
     }
@@ -526,6 +533,7 @@
     .share-option-icon {
         width: 56px;
         height: 56px;
+        border-radius: 24px;
         font-size: 20px;
     }
     
@@ -533,13 +541,14 @@
     .share-option-icon .icon-img {
         width: 20px;
         height: 20px;
+        filter: brightness(0) invert(1);
     }
 
     .share-option-label {
         font-size: 11px;
     }
 
-    /* Video Watch Page */
+    /* ===== VIDEO WATCH ===== */
     .video-watch-back-btn {
         top: 10px;
         left: 10px;
@@ -575,6 +584,11 @@
         font-size: 24px;
     }
     
+    .interaction-icon-wrapper {
+        width: 48px;
+        height: 48px;
+    }
+    
     .interaction-item .icon-svg,
     .interaction-item .icon-img {
         width: 24px;
@@ -607,14 +621,31 @@
         gap: 8px;
         padding: 12px 16px;
     }
+    
+    /* Small mobile adjustments */
+    .video-watch-player {
+        min-height: 40vh;
+    }
+    
+    .video-player-wrapper {
+        height: 40vh;
+    }
+    
+    .video-watch-info {
+        max-height: 60vh;
+    }
+    
+    .creator-videos-grid {
+        grid-template-columns: 1fr;
+    }
 
-    /* Comments */
+    /* ===== COMMENTS ===== */
     .comments-sidebar {
         width: 100%;
         max-width: 100%;
     }
 
-    /* Profile Page */
+    /* ===== PROFILE ===== */
     .profile-header {
         flex-direction: column;
         align-items: center;
@@ -630,23 +661,49 @@
     .profile-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    
+    .profile-content {
+        padding: 16px;
+    }
 
-    /* Search Page */
+    .profile-header {
+        padding: 20px 0;
+    }
+
+    .profile-avatar {
+        width: 88px;
+        height: 88px;
+    }
+
+    .profile-username {
+        font-size: 24px;
+    }
+
+    .profile-usernicename {
+        font-size: 16px;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* ===== SEARCH ===== */
     .search-panel {
-        left: 0 !important;
-        width: 100% !important;
-        z-index: 10001 !important;
+        left: 0;
+        width: 100%;
+        z-index: 10001;
         border-right: none;
     }
     
     /* Đóng sidebar khi search panel mở trên mobile */
     body.search-panel-active .sidebar {
-        left: -100% !important;
+        left: -100%;
     }
     
     /* Đóng overlay khi search panel mở */
     body.search-panel-active.sidebar-open::before {
-        display: none !important;
+        display: none;
     }
     
     .search-results-page {
@@ -681,20 +738,21 @@
         gap: 8px;
     }
     
-    .search-users-list {
-        gap: 4px;
+    .search-video-info {
+        padding: 8px 0 0;
     }
     
-    .search-user-item {
-        padding: 10px;
+    .search-video-title {
+        font-size: 12px;
+        -webkit-line-clamp: 1;
+        line-clamp: 1;
     }
     
-    .search-user-avatar {
-        width: 50px;
-        height: 50px;
+    .search-video-meta {
+        font-size: 11px;
     }
 
-    /* Taxonomy Page */
+    /* ===== TAXONOMY ===== */
     .taxonomy-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 6px;
@@ -702,7 +760,7 @@
     
     /* Taxonomy header improvements on mobile */
     .taxonomy-header {
-        padding: 16px 0 12px;
+        padding: 16px 20px;
     }
     
     .taxonomy-header h2 {
@@ -719,7 +777,7 @@
         font-size: 13px;
     }
 
-    /* Video Navigation */
+    /* ===== VIDEO NAVIGATION ===== */
     .video-nav {
         right: 12px;
         gap: 8px;
@@ -729,166 +787,16 @@
         width: 40px;
         height: 40px;
     }
-}
-
-/* ========================================
-   SMALL MOBILE (max-width: 480px)
-   ======================================== */
-
-@media (max-width: 480px) {
-    /* Video Watch Page */
-    .video-watch-player {
-        min-height: 40vh;
+    
+    /* Small mobile - Ẩn trên small mobile vì dùng trượt */
+    .video-nav {
+        display: none;
     }
     
-    .video-player-wrapper {
-        height: 40vh;
-    }
-    
-    .video-watch-info {
-        max-height: 60vh;
-    }
-    
-    .creator-videos-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .modal-content {
-        width: 95%;
-        margin: 20px;
-    }
-    
-    .modal-header {
-        padding: 16px 20px 12px;
-    }
-    
-    .modal-footer {
-        padding: 0 20px 20px;
-    }
-    
-    .contact-btn {
-        border-left: none;
-        border-top: 1px solid #e0e0e0;
-    }
-
-    /* Profile Page */
-    .profile-content {
-        padding: 16px;
-    }
-
-    .profile-header {
-        padding: 20px 0;
-    }
-
-    .profile-avatar {
-        width: 88px;
-        height: 88px;
-    }
-
-    .profile-username {
-        font-size: 24px;
-    }
-
-    .profile-usernicename {
-        font-size: 16px;
-    }
-
-    .profile-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-    }
-
-    /* Search Page */
-    .search-videos-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
-    }
-    
-    .search-video-info {
-        padding: 8px 0 0;
-    }
-    
-    .search-video-title {
-        font-size: 12px;
-        -webkit-line-clamp: 1;
-        line-clamp: 1;
-    }
-    
-    .search-video-meta {
-        font-size: 11px;
-    }
-
-    /* Video Feed - Small Mobile */
-    .video-row {
-        position: relative;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 0;
-        padding: 0;
-        margin: 0;
-        width: 100vw;
-        height: 100vh;
-        min-height: 100vh;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-        background-color: #000;
-    }
-
-    .video-container {
-        width: 100vw;
-        height: 100vh;
-        max-height: 100vh;
-        min-height: 100vh;
-        max-width: 100vw;
-        border-radius: 0;
-        margin: 0;
-        padding: 0;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        aspect-ratio: 9 / 16;
-        overflow: hidden;
-        background-color: #000;
-    }
-    
-    .tiktok-video {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-    
-    /* Video dọc trên small mobile */
-    .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
-        aspect-ratio: 9 / 16;
-    }
-    
-    /* Video ngang trên small mobile */
-    .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
-        aspect-ratio: 16 / 9;
-        max-height: 100vh;
-    }
-    
-    /* Video vuông trên small mobile */
-    .video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
-        aspect-ratio: 1 / 1;
-        max-width: 100vw;
-        max-height: 100vh;
-    }
-
     .video-sidebar {
         right: 10px;
         bottom: 70px;
         gap: 10px;
-    }
-
-    /* Đảm bảo layout item theo cột và căn giữa (Small Mobile) */
-    .video-sidebar .action-item {
-        display: flex;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center;
     }
 
     .action-item i,
@@ -909,45 +817,10 @@
     .action-item .count {
         font-size: 9px;
     }
-    .video-sidebar .action-item .count {
-        color: #fff;
-        text-shadow: 
-            0 1px 2px rgba(0, 0, 0, 0.8),
-            0 0 4px rgba(0, 0, 0, 0.6),
-            -1px -1px 0 rgba(0, 0, 0, 0.8),
-            1px -1px 0 rgba(0, 0, 0, 0.8),
-            -1px 1px 0 rgba(0, 0, 0, 0.8),
-            1px 1px 0 rgba(0, 0, 0, 0.8);
-    }
-    
-    /* Bỏ background của action-icon-wrapper trong video sidebar trên small mobile */
-    .video-sidebar .action-icon-wrapper {
-        background: transparent !important;
-        width: auto;
-        height: auto;
-        border-radius: 0;
-    }
-    
-    /* Icon màu trắng với shadow cho rõ trên video trắng */
-    .video-sidebar .action-item .icon-svg,
-    .video-sidebar .action-item .icon-img {
-        filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
-        color: #fff;
-    }
-    
-    /* Icon liked/saved màu primary trên small mobile */
-    .video-sidebar .action-item.liked .icon-svg,
-    .video-sidebar .action-item.liked .icon-img,
-    .video-sidebar .action-item.saved .icon-svg,
-    .video-sidebar .action-item.saved .icon-img {
-        filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px rgba(0, 0, 0, 0.6));
-        color: var(--puna-primary);
-    }
-    
 
     .author-avatar {
-        width: 36px;
-        height: 36px;
+        width: 40px !important;
+        height: 40px !important;
     }
 
     .video-container .video-overlay {
@@ -962,49 +835,23 @@
         font-size: 12px;
     }
 
-    /* Video Navigation - Ẩn trên small mobile vì dùng trượt */
-    .video-nav {
-        display: none !important;
+    /* ===== MODAL ===== */
+    .modal-content {
+        width: 95%;
+        margin: 20px;
     }
-}
-
-/* ========================================
-   DESKTOP & ABOVE (min-width: 768px)
-   ======================================== */
-
-@media (min-width: 768px) {
-    /* Profile Page */
-    .profile-grid {
-        grid-template-columns: repeat(4, 1fr);
+    
+    .modal-header {
+        padding: 16px 20px 12px;
     }
-}
-
-/* ========================================
-   LARGE DESKTOP (min-width: 1200px)
-   ======================================== */
-
-@media (min-width: 1200px) {
-    /* Profile Page */
-    .profile-grid {
-            grid-template-columns: repeat(6, 1fr);
+    
+    .modal-footer {
+        padding: 0 20px 20px;
     }
-}
-
-/* ========================================
-   LANDSCAPE ORIENTATION
-   ======================================== */
-
-@media (orientation: landscape) and (max-height: 600px) {
-    .video-container {
-        height: 100vh;
-    }
-
-    .video-watch-player {
-        min-height: 100vh;
-    }
-
-    .video-player-wrapper {
-        height: 100vh;
+    
+    .contact-btn {
+        border-left: none;
+        border-top: 1px solid #e0e0e0;
     }
 }
 
@@ -1013,17 +860,26 @@
    ======================================== */
 
 @media (hover: none) and (pointer: coarse) {
+    /* ===== VIDEO NAVIGATION ===== */
     /* Tăng kích thước touch targets */
     .video-nav-btn {
         width: 48px;
         height: 48px;
     }
 
+    /* ===== VIDEO FEED ===== */
     .action-item {
         min-width: 48px;
         min-height: 48px;
     }
+    
+    /* Trên màn hình cảm ứng, luôn hiển thị volume slider khi không muted */
+    .volume-control-wrapper:not(.muted) .volume-slider-container {
+        width: 80px;
+        opacity: 1;
+    }
 
+    /* ===== SHARE MODAL ===== */
     .share-option {
         min-width: 60px;
         min-height: 60px;
@@ -1037,5 +893,31 @@
     .action-item:hover {
         background: transparent;
     }
+    
+    /* ===== VIDEO WATCH ===== */
+    /* Trên màn hình cảm ứng, luôn hiển thị slider khi không muted */
+    .video-watch-player .video-player-bottom-actions .volume-control-wrapper:not(.muted) .volume-slider-container {
+        width: 80px;
+        opacity: 1;
+    }
 }
 
+/* ========================================
+   LANDSCAPE ORIENTATION
+   ======================================== */
+
+@media (orientation: landscape) and (max-height: 600px) {
+    /* ===== VIDEO FEED ===== */
+    .video-container {
+        height: 100vh;
+    }
+
+    /* ===== VIDEO WATCH ===== */
+    .video-watch-player {
+        min-height: 100vh;
+    }
+    
+    .video-player-wrapper {
+        height: 100vh;
+    }
+}

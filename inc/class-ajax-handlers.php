@@ -71,10 +71,6 @@ class Puna_TikTok_AJAX_Handlers {
         add_action('wp_ajax_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
         
-        // Get taxonomy videos (category & tag)
-        add_action('wp_ajax_puna_tiktok_get_taxonomy_videos', array($this, 'get_taxonomy_videos'));
-        add_action('wp_ajax_nopriv_puna_tiktok_get_taxonomy_videos', array($this, 'get_taxonomy_videos'));
-        
         // Get reply input HTML
         add_action('wp_ajax_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_reply_input', array($this, 'get_reply_input'));
@@ -292,7 +288,7 @@ class Puna_TikTok_AJAX_Handlers {
             </div>
             <div class="comment-right-actions">
                 <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                    <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
+                    <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
                     <span><?php echo esc_html($comment_likes); ?></span>
                 </div>
             </div>
@@ -545,19 +541,6 @@ class Puna_TikTok_AJAX_Handlers {
                     );
                 }
             }
-        }
-        
-        $users = get_users(array(
-            'search' => '*' . $query . '*',
-            'search_columns' => array('user_login', 'display_name', 'user_nicename'),
-            'number' => 3
-        ));
-        
-        foreach ($users as $user) {
-            $suggestions[] = array(
-                'text' => $user->display_name,
-                'type' => 'user'
-            );
         }
         
         $history = $this->get_all_search_history();
@@ -1049,128 +1032,6 @@ class Puna_TikTok_AJAX_Handlers {
         
         wp_send_json_success(array(
             'hashtags' => $hashtags
-        ));
-    }
-    
-    /** Get taxonomy videos (category & tag) */
-    public function get_taxonomy_videos() {
-        if (isset($_POST['nonce'])) {
-            if (!wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-                wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-                return;
-            }
-        }
-        
-        $tab_type = isset($_POST['tab_type']) ? sanitize_text_field($_POST['tab_type']) : 'trending';
-        $category_id = isset($_POST['category_id']) ? intval($_POST['category_id']) : 0;
-        $tag_id = isset($_POST['tag_id']) ? intval($_POST['tag_id']) : 0;
-        
-        $args = array(
-            'post_type' => 'video',
-            'post_status' => 'publish',
-            'posts_per_page' => 50,
-        );
-        
-        if ($tab_type === 'category' && $category_id > 0) {
-            $args['tax_query'] = array(
-                array(
-                    'taxonomy' => 'video_category',
-                    'field' => 'term_id',
-                    'terms' => $category_id,
-                ),
-            );
-            $args['orderby'] = 'date';
-            $args['order'] = 'DESC';
-        } elseif ($tab_type === 'tag' && $tag_id > 0) {
-            $args['tax_query'] = array(
-                array(
-                    'taxonomy' => 'video_tag',
-                    'field' => 'term_id',
-                    'terms' => $tag_id,
-                ),
-            );
-            $args['orderby'] = 'date';
-            $args['order'] = 'DESC';
-        } elseif ($tab_type === 'trending') {
-            $args['orderby'] = 'meta_value_num';
-            $args['meta_key'] = '_puna_tiktok_video_views';
-            $args['order'] = 'DESC';
-            $args['date_query'] = array(
-                array(
-                    'after' => '7 days ago',
-                ),
-            );
-            $args['meta_query'] = array(
-                array(
-                    'key' => '_puna_tiktok_video_views',
-                    'compare' => 'EXISTS'
-                ),
-                array(
-                    'key' => '_puna_tiktok_video_views',
-                    'value' => 0,
-                    'compare' => '>',
-                    'type' => 'NUMERIC'
-                )
-            );
-        } elseif ($tab_type === 'foryou') {
-            $args['orderby'] = 'date';
-            $args['order'] = 'DESC';
-        }
-        
-        $query = new WP_Query($args);
-        
-        if (!$query->have_posts() && $tab_type === 'trending') {
-            $args = array(
-                'post_type' => 'video',
-                'post_status' => 'publish',
-                'posts_per_page' => 50,
-                'orderby' => 'date',
-                'order' => 'DESC',
-            );
-            $query = new WP_Query($args);
-        }
-        
-        $videos = array();
-        if ($query->have_posts()) {
-            $posts_with_views = array();
-            while ($query->have_posts()) {
-                $query->the_post();
-                $metadata = puna_tiktok_get_video_metadata();
-                if (empty($metadata['video_url'])) { continue; }
-                
-                $posts_with_views[] = array(
-                    'post_id' => get_the_ID(),
-                    'views' => $metadata['views'],
-                    'video_url' => $metadata['video_url']
-                );
-            }
-            wp_reset_postdata();
-            
-            if ($tab_type === 'trending') {
-                usort($posts_with_views, function($a, $b) {
-                    return $b['views'] - $a['views'];
-                });
-            }
-            
-            foreach ($posts_with_views as $post_data) {
-                $featured_image_url = '';
-                if (has_post_thumbnail($post_data['post_id'])) {
-                    $featured_image_url = get_the_post_thumbnail_url($post_data['post_id'], 'medium');
-                }
-                
-                $videos[] = array(
-                    'post_id' => $post_data['post_id'],
-                    'video_url' => $post_data['video_url'],
-                    'views' => $post_data['views'],
-                    'permalink' => get_permalink($post_data['post_id']),
-                    'featured_image_url' => $featured_image_url,
-                );
-            }
-        }
-        
-        wp_send_json_success(array(
-            'videos' => $videos,
-            'count' => count($videos)
         ));
     }
     

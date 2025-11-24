@@ -139,42 +139,6 @@
     transition: all 0.2s;
 }
 
-/* Show on tablet and mobile */
-@media (max-width: 1024px) {
-    .video-top-controls .sidebar-toggle-btn {
-        display: flex !important;
-    }
-    
-    /* Global sidebar toggle button cho các trang không có video (taxonomy, search, etc) */
-    body > .sidebar-toggle-btn,
-    .tiktok-app > .sidebar-toggle-btn,
-    .taxonomy-header .sidebar-toggle-btn {
-        display: flex !important;
-        position: fixed !important;
-        top: 16px !important;
-        left: 16px !important;
-        z-index: 10000 !important;
-        background: rgba(255, 255, 255, 0.95) !important;
-        backdrop-filter: blur(10px) !important;
-        border-radius: 8px !important;
-        width: 40px !important;
-        height: 40px !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-        border: 1px solid rgba(0, 0, 0, 0.1) !important;
-    }
-    
-    body > .sidebar-toggle-btn .icon-svg,
-    .tiktok-app > .sidebar-toggle-btn .icon-svg,
-    .taxonomy-header .sidebar-toggle-btn .icon-svg,
-    body > .sidebar-toggle-btn .icon-img,
-    .tiktok-app > .sidebar-toggle-btn .icon-img,
-    .taxonomy-header .sidebar-toggle-btn .icon-img {
-        filter: none !important;
-        color: var(--puna-text) !important;
-        width: 20px !important;
-        height: 20px !important;
-    }
-}
 
 .sidebar-toggle-btn:hover {
     transform: scale(1.1);
@@ -186,74 +150,6 @@
     height: 20px;
     filter: brightness(0) invert(1);
     color: #fff;
-}
-
-/* Mobile Sidebar */
-.sidebar.mobile-sidebar {
-    position: fixed;
-    left: -100%;
-    top: 0;
-    z-index: 9998;
-    transition: left 0.3s ease;
-    width: 80%;
-    max-width: 210px;
-    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar.mobile-sidebar.collapsed {
-    left: 0;
-}
-
-body.sidebar-open::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 9997;
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Collapsed Sidebar (Desktop) */
-.sidebar.collapsed .menu-text {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
-}
-
-.sidebar.collapsed {
-    max-width: 80px;
-    flex: 0 0 80px;
-}
-
-.sidebar.collapsed ul li a {
-    justify-content: center;
-    padding: 12px;
-}
-
-.sidebar.collapsed ul li a i {
-    margin-right: 0;
-}
-
-.sidebar.collapsed .logo {
-    padding: 20px 8px;
-    text-align: center;
-}
-
-.sidebar.collapsed .logo img {
-    width: 100px;
-    height: auto;
-}
-
-.sidebar.collapsed .sidebar-footer {
-    display: none;
 }
 
 /* ========================================
@@ -284,7 +180,6 @@ body.search-panel-active .sidebar ul li a i {
 }
 
 body.search-panel-active .sidebar .logo {
-    padding: 20px 8px;
     text-align: center;
 }
 
@@ -332,350 +227,63 @@ body.search-panel-active .main-content {
     transition: opacity 0.3s ease, width 0.3s ease;
 }
 
-/* Search Panel - Panel tìm kiếm trượt ra */
-.search-panel {
-    position: fixed;
-    left: 72px;
-    top: 0;
-    width: 365px;
-    height: 100vh;
-    background: var(--puna-bg);
-    border-right: 1px solid var(--puna-muted);
-    transform: translateX(-130%);
-    transition: transform 0.3s ease;
-    z-index: 9998;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+/* Buy Now Button */
+.sidebar-buy-now {
+    padding: 0 8px;
 }
 
-body.search-panel-active .search-panel {
-    transform: translateX(0);
+/* Bỏ gap khi search panel active */
+body.search-panel-active .sidebar .sidebar-buy-now {
+    display: none;
 }
 
-.search-panel-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 24px;
-    position: sticky;
-    top: 0;
-    background: var(--puna-bg);
-    z-index: 10;
-}
-
-.search-panel-header h3 {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--puna-text);
-    margin: 0;
-}
-
-.close-search-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: var(--puna-muted);
-    cursor: pointer;
+.buy-now-button {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s;
-    padding: 0;
-}
-
-.close-search-btn:hover {
-    background: var(--puna-muted);
-}
-
-.close-search-btn i {
-    font-size: 18px;
-    color: var(--puna-text);
-}
-
-.search-panel-input-wrapper {
-    padding: 16px 24px;
-}
-
-.search-panel-input-wrapper input {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 16px;
-    background: var(--puna-muted);
-    color: var(--puna-text);
-    outline: none;
-    transition: background-color 0.2s;
-    border-radius: 25px;
-    border: none;
-}
-
-.search-panel-input-wrapper input:focus {
-    background: var(--puna-muted);
-    outline: none;  
-}
-
-.search-panel-input-wrapper input::placeholder {
-    color: rgba(17, 24, 35, 0.5);
-}
-
-/* Search Suggestions Container */
-.search-suggestions-container {
-    max-height: calc(100vh - 200px);
-    overflow-y: auto;
-}
-
-/* Search Loading Indicator */
-.search-loading {
-    padding: 20px;
-    text-align: center;
-    color: var(--puna-primary);
-}
-
-.search-loading p {
-    font-size: 14px;
-}
-
-/* Search History Section */
-.search-history-section {
-    padding: 16px 0;
-}
-
-.search-history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 16px 12px;
-    border-bottom: 1px solid var(--puna-muted);
-    margin-bottom: 12px;
-}
-
-.search-history-header h4 {
-    font-size: 14px;
+    gap: 8px;
+    padding: 14px 16px;
+    background: var(--puna-primary);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 15px;
     font-weight: 600;
-    color: var(--puna-text);
-    margin: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.clear-history-btn {
-    background: transparent;
-    border: none;
-    color: var(--puna-text);
-    font-size: 12px;
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 4px;
+.buy-now-button:hover {
+    background: color-mix(in srgb, var(--puna-primary) 80%, white);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    color: #ffffff;
 }
 
-.clear-history-btn:hover {
-    background: var(--puna-muted);
-    color: var(--puna-primary);
+.buy-now-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.clear-history-btn i {
-    font-size: 12px;
-}
-
-.search-history-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.search-history-item,
-.search-history-loading,
-.search-history-empty {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    color: var(--puna-text);
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.search-history-item:hover {
-    background: var(--puna-muted);
-}
-
-.search-history-item i {
-    font-size: 14px;
-    color: var(--puna-primary);
-    flex-shrink: 0;
-}
-
-.search-history-item span {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
+.buy-now-text {
     white-space: nowrap;
-}
-
-.search-history-loading,
-.search-history-empty {
-    color: var(--puna-primary);
-    cursor: default;
-}
-
-/* Search Popular Section */
-.search-popular-section {
-    padding: 16px 0;
-    border-top: 1px solid var(--puna-muted);
-    margin-top: 16px;
-}
-
-.search-popular-section h4 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--puna-text);
-    margin: 0 0 12px 16px;
-}
-
-.search-popular-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.search-popular-list li {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    color: var(--puna-text);
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.search-popular-list li:hover {
-    background: var(--puna-muted);
-}
-
-.search-popular-list li i {
-    font-size: 14px;
-    color: var(--puna-primary);
-    flex-shrink: 0;
-}
-
-.search-popular-list li i.fa-fire {
-    color: var(--puna-primary);
-}
-
-.search-popular-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    color: var(--puna-text);
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.search-popular-loading {
-    padding: 10px 16px;
-    color: var(--puna-primary);
-    font-size: 14px;
-}
-
-/* Related Searches Loading */
-.related-searches-loading {
-    padding: 10px 16px;
-    color: var(--puna-primary);
-    font-size: 14px;
-    text-align: center;
-}
-
-.search-popular-list li span {
-    flex: 1;
-}
-
-/* Suggestion Item Styles */
-.search-suggestion-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    color: var(--puna-text);
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.search-suggestion-item:hover {
-    background: var(--puna-muted);
-}
-
-.search-suggestion-item i {
-    font-size: 14px;
-    color: var(--puna-primary);
-    flex-shrink: 0;
-}
-
-.search-suggestion-item i.fa-user {
-    color: var(--puna-primary);
-}
-
-.search-suggestion-item i.fa-video {
-    color: var(--puna-primary);
-}
-
-.search-suggestion-item i.fa-clock {
-    color: var(--puna-primary);
-}
-
-.search-suggestion-item span {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Original search suggestions (keep for backward compatibility) */
-.search-suggestions {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
-    flex: 1;
-}
-
-.search-suggestions li {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 24px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    border-radius: 0;
-}
-
-.search-suggestions li:hover {
-    background: var(--puna-muted);
-}
-
-.search-suggestions li i {
-    font-size: 16px;
-    color: rgba(17, 24, 35, 0.5);
-    flex-shrink: 0;
-}
-
-.search-suggestions li span {
-    font-size: 14px;
-    color: var(--puna-text);
-    flex: 1;
+    transition: opacity 0.3s ease, width 0.3s ease;
 }
 
 /* Sidebar Footer */
 .sidebar-footer {
-    font-size: 12px;
     margin: auto 0 20px 0;
     color: rgba(17, 24, 35, 0.5);
+    line-height: 1.4;
+}
+
+.sidebar-footer h3 {
+    line-height: 1.4;
+    font-size: 15px;
+    margin: 0 0 4px 0;
+}
+
+.sidebar-footer p {
+    font-size: 12px;
+    line-height: 1.4;
 }
 

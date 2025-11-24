@@ -29,9 +29,9 @@
     border-radius: 12px;
     overflow: hidden;
     max-height: 98vh;
-    max-width: 600px;
-    width: auto;
-    height: auto;
+    max-width: 400px;
+    width: 100%;
+    height: 98vh;
     min-height: 98vh;
     display: flex;
     align-items: center;
@@ -128,13 +128,6 @@
     opacity: 1;
 }
 
-/* Trên màn hình cảm ứng, luôn hiển thị slider khi không muted */
-@media (hover: none) and (pointer: coarse) {
-    .volume-control-wrapper:not(.muted) .volume-slider-container {
-        width: 80px !important;
-        opacity: 1 !important;
-    }
-}
 
 .volume-toggle-btn {
     background: none;
@@ -151,8 +144,8 @@
 
 .volume-toggle-btn .icon-svg,
 .volume-toggle-btn .icon-img {
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     filter: brightness(0) invert(1);
     color: #fff;
     display: block;
@@ -303,33 +296,12 @@
     border-radius: 12px;
 }
 
-/* Video dọc (portrait) - 9:16 */
-.tiktok-video[data-aspect-ratio="portrait"],
-.video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
-    aspect-ratio: 9 / 16;
-    max-width: 500px;
-    max-height: 98vh;
-    min-height: 98vh;
-}
-
-/* Video ngang (landscape) - 16:9 */
-.tiktok-video[data-aspect-ratio="landscape"],
-.video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
-    aspect-ratio: 16 / 9;
-}
-
-/* Video vuông (square) - 1:1 */
-.tiktok-video[data-aspect-ratio="square"],
-.video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
-    aspect-ratio: 1 / 1;
-    max-width: 550px;
-}
 
 /* Video Sidebar - Desktop: nằm cạnh video */
 .video-sidebar {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
     align-items: center;
     flex-shrink: 0;
 }
@@ -374,7 +346,7 @@
     height: 50px;
     border-radius: 50%;
     border: 2px solid var(--puna-primary);
-    object-fit: contain !important;
+    object-fit: contain;
     background: var(--puna-bg);
     padding: 4px;
 }
@@ -418,8 +390,8 @@
 
 .action-item .icon-svg,
 .action-item .icon-img {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
@@ -428,12 +400,7 @@
     opacity: 1;
 }
 
-.action-item.liked .icon-svg,
-.action-item.liked .icon-img,
-.action-item.saved .icon-svg,
-.action-item.saved .icon-img {
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
-}
+/* Filter rules moved to Liked/Saved State sections below - no duplication */
 
 /* Play Icon in Video Cards */
 .play-icon .icon-svg,
@@ -456,28 +423,32 @@
 }
 
 /* Liked State */
-    /* .action-item.liked .action-icon-wrapper {
-        background-color: rgba(var(--puna-primary), 0.15);
-    } */
+.action-item.liked .action-icon-wrapper {
+    background: color-mix(in srgb, var(--puna-primary) 12%, transparent);
+}
 
 .action-item.liked .icon-svg,
 .action-item.liked .icon-img {
     color: var(--puna-primary);
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 .action-item.liked .count {
     color: var(--puna-primary);
 }
 
-/* Saved State */
 .action-item.saved .action-icon-wrapper {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--puna-secondary) 12%, transparent);
+}
+
+.action-item.saved .count {
+    color: var(--puna-secondary);
 }
 
 .action-item.saved .icon-svg,
 .action-item.saved .icon-img {
-    color: var(--puna-primary);
+    color: var(--puna-secondary);
+    filter: brightness(0) saturate(100%) invert(77%) sepia(100%) saturate(1352%) hue-rotate(1deg) brightness(103%) contrast(101%);
 }
 
 /* Like animation */
@@ -550,7 +521,7 @@
     background: var(--puna-bg);
     border-radius: 16px;
     width: 100%;
-    max-width: 420px;
+    max-width: 350px;
     max-height: 90vh;
     overflow: hidden;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -576,21 +547,22 @@
     background: none;
     border: none;
     color: var(--puna-text);
-    font-size: 24px;
     cursor: pointer;
-    padding: 4px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: opacity 0.2s;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
 }
 
 .share-modal-close:hover {
-    background: rgba(22, 24, 35, 0.06);
-    opacity: 0.8;
+    opacity: 0.7;
+}
+
+.share-modal-close .icon-svg,
+.share-modal-close .icon-img {
+    width: 18px;
+    height: 18px;
 }
 
 .share-modal-body {
@@ -628,8 +600,8 @@
 }
 
 .share-option-icon {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -638,6 +610,14 @@
     font-size: 24px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transition: transform 0.2s;
+}
+
+.share-option-icon .icon-svg,
+.share-option-icon img {
+    width: 22px;
+    height: 22px;
+    filter: brightness(0) invert(1);
+    transition: filter 0.2s ease;
 }
 
 /* Share option icon colors */
@@ -659,10 +639,6 @@
 
 .share-option[data-share="email"] .share-option-icon {
     background: #EA4335;
-}
-
-.share-option[data-share="x"] .share-option-icon {
-    background: #000000;
 }
 
 .share-option[data-share="telegram"] .share-option-icon {

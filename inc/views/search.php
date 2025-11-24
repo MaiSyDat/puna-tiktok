@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) {
 
 $search_query = get_search_query();
 $active_tab = isset($_GET['tab']) ? sanitize_text_field($_GET['tab']) : 'top';
-$valid_tabs = array('top', 'users', 'videos');
+$valid_tabs = array('top', 'videos');
 if (!in_array($active_tab, $valid_tabs)) {
     $active_tab = 'top';
 }
@@ -29,11 +29,6 @@ $withcomments = 1;
                class="search-tab <?php echo $active_tab === 'top' ? 'active' : ''; ?>" 
                data-tab="top">
                 <?php esc_html_e('Top', 'puna-tiktok'); ?>
-            </a>
-            <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'users'), home_url('/'))); ?>" 
-               class="search-tab <?php echo $active_tab === 'users' ? 'active' : ''; ?>" 
-               data-tab="users">
-                <?php esc_html_e('Users', 'puna-tiktok'); ?>
             </a>
             <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'videos'), home_url('/'))); ?>" 
                class="search-tab <?php echo $active_tab === 'videos' ? 'active' : ''; ?>" 
@@ -145,9 +140,9 @@ $withcomments = 1;
                                             </video>
                                         <?php endif; ?>
                                         <div class="search-video-overlay">
-                                            <div class="search-video-likes">
-                                                <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
-                                                <span><?php echo puna_tiktok_format_number($likes); ?></span>
+                                            <div class="search-video-views">
+                                                <?php echo puna_tiktok_get_icon('play', 'Views'); ?>
+                                                <span><?php echo puna_tiktok_format_number($metadata['views']); ?></span>
                                             </div>
                                         </div>
                                     </div>
@@ -183,70 +178,6 @@ $withcomments = 1;
                     ?>
                 <?php endif; ?>
                 
-            <?php elseif ($active_tab === 'users') : ?>
-                <?php
-                // Find users whose name or username contains the keyword
-                $users_query = new WP_User_Query(array(
-                    'search' => '*' . esc_attr($search_query) . '*',
-                    'search_columns' => array('user_login', 'user_nicename', 'display_name'),
-                    'number' => 24,
-                    'orderby' => 'registered',
-                    'order' => 'DESC'
-                ));
-                
-                $users = $users_query->get_results();
-                
-                if (!empty($users)) :
-                ?>
-                    <div class="search-users-list">
-                        <?php foreach ($users as $user) : 
-                            $user_id = $user->ID;
-                            $display_name = puna_tiktok_get_user_display_name($user_id);
-                            $username = puna_tiktok_get_user_username($user_id);
-                            
-                            // Count user's videos
-                            $video_count = get_posts(array(
-                                'post_type'      => 'post',
-                                'author'         => $user_id,
-                                'posts_per_page' => -1,
-                                'post_status'    => 'publish',
-                                'meta_query'     => array(
-                                    'relation' => 'OR',
-                                    array(
-                                        'key'     => '_puna_tiktok_video_url',
-                                        'value'   => '',
-                                        'compare' => '!=',
-                                    ),
-                                    array(
-                                        'key'     => '_puna_tiktok_video_file_id',
-                                        'compare' => 'EXISTS',
-                                    ),
-                                ),
-                                'fields' => 'ids'
-                            ));
-                            $video_count = count($video_count);
-                            ?>
-                            <div class="search-user-item">
-                                <div class="search-user-avatar">
-                                    <?php echo puna_tiktok_get_avatar_html($user_id, 60, ''); ?>
-                                </div>
-                                <div class="search-user-info">
-                                    <h3 class="search-user-name"><?php echo esc_html($display_name); ?></h3>
-                                    <p class="search-user-username">@<?php echo esc_html($username); ?></p>
-                                    <p class="search-user-stats"><?php printf(esc_html__('%s videos', 'puna-tiktok'), number_format($video_count)); ?></p>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else : ?>
-                    <?php 
-                    puna_tiktok_empty_state(array(
-                        'icon' => 'fa-user',
-                        'title' => __('No users found', 'puna-tiktok'),
-                        'message' => sprintf(__('No users found for "%s"', 'puna-tiktok'), esc_html($search_query))
-                    )); 
-                    ?>
-                <?php endif; ?>
             <?php endif; ?>
         </div>
         

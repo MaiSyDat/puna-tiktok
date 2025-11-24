@@ -97,7 +97,7 @@ $withcomments = 1;
                 <!-- Author Info -->
                 <div class="video-info-author">
                     <div class="author-info-wrapper">
-                        <?php echo puna_tiktok_get_avatar_html($author_id, 60, 'author-avatar-large'); ?>
+                        <?php echo puna_tiktok_get_avatar_html($author_id, 50, 'author-avatar-large'); ?>
                         <div class="author-info">
                             <h3 class="author-name"><?php echo esc_html($author_name); ?></h3>
                             <span class="author-username">@<?php echo esc_html($author_username); ?></span>
@@ -115,7 +115,7 @@ $withcomments = 1;
                                 </div>
                             <?php else : ?>
                                 <div class="options-item">
-                                    <?php echo puna_tiktok_get_icon('home', __('Report', 'puna-tiktok')); ?>
+                                    <?php echo puna_tiktok_get_icon('report', __('Report', 'puna-tiktok')); ?>
                                     <span><?php esc_html_e('Report', 'puna-tiktok'); ?></span>
                                 </div>
                             <?php endif; ?>
@@ -135,7 +135,7 @@ $withcomments = 1;
                         <!-- Hashtags inline -->
                         <?php if ($tags) : ?>
                             <?php foreach ($tags as $tag) : ?>
-                                <a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id)); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
+                                <a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id . '/')); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
@@ -150,19 +150,27 @@ $withcomments = 1;
             <!-- Interaction Stats -->
             <div class="video-interaction-stats">
                 <div class="interaction-item <?php echo esc_attr($liked_class); ?>" data-action="like" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
+                    <div class="interaction-icon-wrapper">
+                        <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
+                    </div>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($likes); ?></span>
                 </div>
                 <div class="interaction-item" data-action="comment-toggle" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <?php echo puna_tiktok_get_icon('comment', 'Comment'); ?>
+                    <div class="interaction-icon-wrapper">
+                        <?php echo puna_tiktok_get_icon('comment', 'Comment'); ?>
+                    </div>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($comments_count); ?></span>
                 </div>
                 <div class="interaction-item <?php echo esc_attr($saved_class); ?>" data-action="save" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <?php echo puna_tiktok_get_icon('save', 'Save'); ?>
+                    <div class="interaction-icon-wrapper">
+                        <?php echo puna_tiktok_get_icon('save', 'Save'); ?>
+                    </div>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($saves); ?></span>
                 </div>
                 <div class="interaction-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(puna_tiktok_get_video_description()); ?>">
-                    <?php echo puna_tiktok_get_icon('share', 'Share'); ?>
+                    <div class="interaction-icon-wrapper">
+                        <?php echo puna_tiktok_get_icon('share', 'Share'); ?>
+                    </div>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($shares); ?></span>
                 </div>
             </div>
@@ -215,7 +223,7 @@ $withcomments = 1;
                                 setup_postdata($video_post);
                                 $other_metadata = puna_tiktok_get_video_metadata($video_post->ID);
                                 $other_video_url = $other_metadata['video_url'];
-                                $other_likes = $other_metadata['likes'];
+                                $other_views = $other_metadata['views'];
                                 
                                 // Check for featured image
                                 $featured_image_url = '';
@@ -233,13 +241,12 @@ $withcomments = 1;
                                             </video>
                                         <?php endif; ?>
                                         <div class="creator-video-overlay">
-                                            <div class="creator-video-likes">
-                                                <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
-                                                <span><?php echo puna_tiktok_format_number($other_likes); ?></span>
+                                            <div class="creator-video-views">
+                                                <?php echo puna_tiktok_get_icon('play', 'Views'); ?>
+                                                <span><?php echo puna_tiktok_format_number($other_views); ?></span>
                                             </div>
                                         </div>
                                     </div>
-                                    <h4 class="creator-video-title"><?php echo esc_html(puna_tiktok_get_video_description($video_post->ID)); ?></h4>
                                 </a>
                             <?php 
                             endforeach;
@@ -305,14 +312,6 @@ $withcomments = 1;
                         <?php echo puna_tiktok_get_icon('email', 'Email'); ?>
                     </div>
                     <span class="share-option-label">Email</span>
-                </button>
-                
-                <!-- X (Twitter) -->
-                <button class="share-option" data-share="x" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('home', 'X'); ?>
-                    </div>
-                    <span class="share-option-label">X</span>
                 </button>
                 
                 <!-- Telegram -->

@@ -134,7 +134,6 @@ document.addEventListener("DOMContentLoaded", function() {
             const value = Math.max(0, Math.min(100, parseInt(slider.value, 10) || 0));
             globalVolume = value / 100;
             // Don't auto-mute when volume = 0, only mute when user clicks mute button
-            // globalMuted = value === 0; // Removed - no auto-mute
             applyVolumeToAllVideos();
             updateGlobalVolumeUI();
         }

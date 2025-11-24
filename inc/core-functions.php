@@ -252,6 +252,19 @@ if (!function_exists('puna_tiktok_get_user_username')) {
 }
 
 /**
+ * Disable WordPress user registration
+ */
+if (!function_exists('puna_tiktok_disable_registration')) {
+    add_filter('option_users_can_register', '__return_false');
+    add_action('login_init', function() {
+        if (isset($_GET['action']) && $_GET['action'] === 'register') {
+            wp_redirect(wp_login_url());
+            exit;
+        }
+    });
+}
+
+/**
  * Get avatar HTML
  * Users/Admin: Always use logo
  * Guests: Use initials with colored background

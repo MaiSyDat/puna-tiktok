@@ -61,7 +61,7 @@ $saved_class = $is_saved ? 'saved' : '';
 					if ($tags) : ?>
 						<div class="video-tags">
 							<?php foreach ($tags as $tag) : ?>
-								<a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id)); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
+								<a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id . '/')); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
 							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>
@@ -155,14 +155,6 @@ $saved_class = $is_saved ? 'saved' : '';
                         <?php echo puna_tiktok_get_icon('email', 'Email'); ?>
                     </div>
                     <span class="share-option-label">Email</span>
-                </button>
-                
-                <!-- X (Twitter) -->
-                <button class="share-option" data-share="x" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('home', 'X'); ?>
-                    </div>
-                    <span class="share-option-label">X</span>
                 </button>
                 
                 <!-- Telegram -->

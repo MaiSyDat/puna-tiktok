@@ -25,7 +25,7 @@
             try {
                 megaUploader = new window.PunaTikTokMegaUploader(puna_tiktok_video_admin.mega);
             } catch (e) {
-                console.error('Failed to initialize Mega uploader:', e);
+                // Failed to initialize Mega uploader
             }
         }
 

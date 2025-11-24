@@ -7,11 +7,6 @@ body.single .tiktok-app .sidebar {
     display: none;
 }
 
-@media (max-width: 1024px) {
-    body.single .tiktok-app .sidebar.mobile-sidebar {
-        display: block !important;
-    }
-}
 
 body.single .tiktok-app .main-content {
     width: 100%;
@@ -89,48 +84,11 @@ body.single .tiktok-app .main-content {
     filter: brightness(0) invert(1);
 }
 
-/* Volume Toggle Button Icons */
-.volume-toggle-btn .icon-svg,
-.volume-toggle-btn .icon-img {
-    width: 14px;
-    height: 14px;
-    color: #fff;
-    filter: brightness(0) invert(1);
-    transition: opacity 0.2s ease, filter 0.2s ease;
-    display: block;
-    opacity: 1;
-}
-
-.volume-toggle-btn:hover .icon-svg,
-.volume-toggle-btn:active .icon-svg {
-    opacity: 1;
-    filter: brightness(0) invert(1);
-}
-
-/* Interaction Item Icons */
-.video-interaction-stats .interaction-item .icon-svg,
-.video-interaction-stats .interaction-item .icon-img {
-    width: 18px;
-    height: 18px;
-    color: inherit;
-    transition: opacity 0.2s ease, filter 0.2s ease;
-}
-
-.video-interaction-stats .interaction-item:hover .icon-svg,
-.video-interaction-stats .interaction-item:active .icon-svg {
-    opacity: 1;
-}
-
-.video-interaction-stats .interaction-item.liked .icon-svg,
-.video-interaction-stats .interaction-item.saved .icon-svg {
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
-}
-
 /* Share Modal Icons */
 .share-modal-close .icon-svg,
 .share-modal-close .icon-img {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     color: inherit;
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
@@ -147,12 +105,13 @@ body.single .tiktok-app .main-content {
     height: 24px;
     color: inherit;
     transition: opacity 0.2s ease, filter 0.2s ease;
+    filter: brightness(0) invert(1);
 }
 
 .share-option:hover .share-option-icon .icon-svg,
 .share-option:active .share-option-icon .icon-svg {
     opacity: 1;
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+    filter: brightness(0) invert(1);
 }
 
 /* Options Item Icons */
@@ -182,8 +141,8 @@ body.single .tiktok-app .main-content {
 /* Volume Toggle Button Icons */
 .volume-toggle-btn .icon-svg,
 .volume-toggle-btn .icon-img {
-    width: 14px;
-    height: 14px;
+    width: 24px;
+    height: 24px;
     color: #fff;
     filter: brightness(0) invert(1);
     transition: opacity 0.2s ease, filter 0.2s ease;
@@ -209,22 +168,6 @@ body.single .tiktok-app .main-content {
 .video-nav-btn:hover .icon-svg,
 .video-nav-btn:active .icon-svg {
     opacity: 1;
-}
-
-/* Options Item Icons */
-.options-item .icon-svg,
-.options-item .icon-img {
-    width: 16px;
-    height: 16px;
-    color: inherit;
-    margin-right: 8px;
-    transition: opacity 0.2s ease, filter 0.2s ease;
-}
-
-.options-item:hover .icon-svg,
-.options-item:active .icon-svg {
-    opacity: 1;
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 /* Main Container: 2 Columns */
@@ -330,6 +273,7 @@ body.single .tiktok-app .main-content {
 /* Volume control ở góc dưới phải */
 .video-watch-player .video-player-bottom-actions .volume-control-wrapper {
     display: flex;
+    align-items: center;
     gap: 8px;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(10px);
@@ -354,13 +298,6 @@ body.single .tiktok-app .main-content {
     opacity: 1;
 }
 
-/* Trên màn hình cảm ứng, luôn hiển thị slider khi không muted */
-@media (hover: none) and (pointer: coarse) {
-    .video-watch-player .video-player-bottom-actions .volume-control-wrapper:not(.muted) .volume-slider-container {
-        width: 80px !important;
-        opacity: 1 !important;
-    }
-}
 
 .video-watch-player .video-player-bottom-actions .volume-toggle-btn {
     background: none;
@@ -448,7 +385,7 @@ body.single .tiktok-app .main-content {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    object-fit: contain !important;
+    object-fit: contain;
     border: 2px solid var(--puna-primary);
     background: var(--puna-bg);
     padding: 4px;
@@ -548,17 +485,8 @@ body.single .tiktok-app .main-content {
 }
 
 .video-info-more-dropdown .options-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    color: var(--puna-text);
-}
-
-.video-info-more-dropdown .options-item:hover {
-    background: var(--puna-muted);
+    padding: 12px 16px; /* Override padding from base .options-item (12px 20px) */
+    color: var(--puna-text); /* Explicit color for clarity */
 }
 
 .video-info-more-dropdown .options-item i {
@@ -679,17 +607,30 @@ body.theme-dark .video-caption-content .tag {
     transition: background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
 
+.interaction-icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(22, 24, 35, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
 .interaction-item .icon-svg,
 .interaction-item .icon-img {
-    width: 18px;
-    height: 18px;
+    width: 24px;
+    height: 24px;
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
-.interaction-item:hover i,
+.interaction-item:hover .interaction-icon-wrapper {
+    background: rgba(22, 24, 35, 0.15);
+}
+
 .interaction-item:hover .icon-svg,
 .interaction-item:hover .icon-img {
-    background: rgba(22, 24, 35, 0.12);
     opacity: 1;
 }
 
@@ -697,24 +638,21 @@ body.theme-dark .video-caption-content .tag {
 .interaction-item.liked .icon-svg,
 .interaction-item.liked .icon-img {
     color: var(--puna-primary);
-    background: color-mix(in srgb, var(--puna-primary) 12%, transparent);
-}
-
-.interaction-item.liked .icon-svg,
-.interaction-item.liked .icon-img {
     filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
-.interaction-item.saved i,
-.interaction-item.saved .icon-svg,
-.interaction-item.saved .icon-img {
-    color: var(--puna-primary);
+.interaction-item.liked .interaction-icon-wrapper {
     background: color-mix(in srgb, var(--puna-primary) 12%, transparent);
+}
+
+.interaction-item.saved .interaction-icon-wrapper {
+    background: color-mix(in srgb, var(--puna-secondary) 12%, transparent);
 }
 
 .interaction-item.saved .icon-svg,
 .interaction-item.saved .icon-img {
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+    color: var(--puna-secondary);
+    filter: brightness(0) saturate(100%) invert(77%) sepia(100%) saturate(1352%) hue-rotate(1deg) brightness(103%) contrast(101%);
 }
 
 .stat-count {
@@ -723,9 +661,12 @@ body.theme-dark .video-caption-content .tag {
     font-weight: 600;
 }
 
-.interaction-item.liked .stat-count,
-.interaction-item.saved .stat-count {
+.interaction-item.liked .stat-count {
     color: var(--puna-primary);
+}
+
+.interaction-item.saved .stat-count {
+    color: var(--puna-secondary);
 }
 
 .interaction-item:active i {
@@ -886,20 +827,7 @@ body.theme-dark .video-caption-content .tag {
     color: var(--puna-text);
 }
 
-.video-watch-comments .comment-likes i,
-.video-watch-comments .comment-likes .icon-svg,
-.video-watch-comments .comment-likes .icon-img {
-    color: var(--puna-text);
-}
-
-.video-watch-comments .comment-likes.liked i,
-.video-watch-comments .comment-likes.liked .icon-svg,
-.video-watch-comments .comment-likes.liked .icon-img,
-.video-watch-comments .comment-likes:hover i,
-.video-watch-comments .comment-likes:hover .icon-svg,
-.video-watch-comments .comment-likes:hover .icon-img {
-    color: var(--puna-primary);
-}
+/* .video-watch-comments .comment-likes rules removed - using base .comment-likes rules from comments.css */
 
 .video-watch-comments .comment-input {
     color: var(--puna-text);
@@ -988,17 +916,25 @@ body.theme-dark .video-caption-content .tag {
     font-size: 12px;
 }
 
-.creator-video-title {
-    font-size: 12px;
-    margin: 8px 0 0 0;
-    color: var(--puna-text);
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+.creator-video-views {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #fff;
 }
+
+.creator-video-views .icon-svg,
+.creator-video-views .icon-img {
+    width: 12px;
+    height: 12px;
+    filter: brightness(0) invert(1);
+}
+
+.creator-video-views span {
+    font-size: 12px;
+    color: #fff;
+}
+
 
 .no-creator-videos {
     padding: 40px 24px;

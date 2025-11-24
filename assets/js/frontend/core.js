@@ -158,7 +158,6 @@ function sendAjaxRequest(action, params = {}) {
 window.addEventListener('error', function(event) {
     // Catch insertBefore null errors
     if (event.message && event.message.includes('insertBefore')) {
-        console.warn('insertBefore error caught:', event.message);
         event.preventDefault();
         return true;
     }
@@ -167,7 +166,6 @@ window.addEventListener('error', function(event) {
 // Catch errors from unhandled promise rejections
 window.addEventListener('unhandledrejection', function(event) {
     if (event.reason && event.reason.message && event.reason.message.includes('insertBefore')) {
-        console.warn('Promise rejection error caught:', event.reason.message);
         event.preventDefault();
     }
 });

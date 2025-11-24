@@ -351,6 +351,12 @@ document.addEventListener("DOMContentLoaded", function() {
                     commentsList.scrollTop = 0;
                 }
                 
+                // Initialize icon for newly added comment if it's liked
+                const newCommentLikes = commentElement.querySelector('.comment-likes.liked');
+                if (newCommentLikes) {
+                    updateCommentLikeIcon(newCommentLikes, true);
+                }
+                
                 // Remove reply input if exists (must be done after inserting comment)
                 if (isReply && parentId > 0) {
                     const replyInput = document.querySelector('.reply-input-container');
@@ -655,6 +661,39 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    /**
+     * Update comment like icon (heart-alt to heart when liked)
+     */
+    function updateCommentLikeIcon(likesElement, isLiked) {
+        const icon = likesElement.querySelector('.icon-svg, .icon-img');
+        if (!icon) return;
+        
+        const themeUri = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.theme_uri) 
+            ? puna_tiktok_ajax.theme_uri 
+            : '/wp-content/themes/puna-tiktok';
+        
+        if (isLiked) {
+            // Change to filled heart (heart.svg)
+            icon.src = themeUri + '/assets/images/icons/heart.svg';
+        } else {
+            // Change back to outline heart (heart-alt.svg)
+            icon.src = themeUri + '/assets/images/icons/heart-alt.svg';
+        }
+    }
+
+    /**
+     * Initialize comment like icons on page load
+     */
+    function initializeCommentLikeIcons() {
+        const likedComments = document.querySelectorAll('.comment-likes.liked');
+        likedComments.forEach(function(likesElement) {
+            updateCommentLikeIcon(likesElement, true);
+        });
+    }
+
+    // Initialize icons on page load
+    initializeCommentLikeIcons();
+
     // Like/Unlike comment
     document.addEventListener('click', function(e) {
         const likesElement = e.target.closest('.comment-likes');
@@ -682,9 +721,11 @@ document.addEventListener("DOMContentLoaded", function() {
         if (isLiked) {
             likesElement.classList.remove('liked');
             span.textContent = formatNumber(Math.max(0, currentLikes - 1));
+            updateCommentLikeIcon(likesElement, false);
         } else {
             likesElement.classList.add('liked');
             span.textContent = formatNumber(currentLikes + 1);
+            updateCommentLikeIcon(likesElement, true);
         }
         
         likesElement.classList.add('liking');
@@ -709,8 +750,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Update class based on server response
                 if (isLikedNow) {
                     likesElement.classList.add('liked');
+                    updateCommentLikeIcon(likesElement, true);
                 } else {
                     likesElement.classList.remove('liked');
+                    updateCommentLikeIcon(likesElement, false);
                 }
                 
                 if (!isLoggedIn()) {
@@ -733,8 +776,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Revert optimistic update
                 if (isLiked) {
                     likesElement.classList.add('liked');
+                    updateCommentLikeIcon(likesElement, true);
                 } else {
                     likesElement.classList.remove('liked');
+                    updateCommentLikeIcon(likesElement, false);
                 }
                 span.textContent = formatNumber(currentLikes);
                 if (!isLoggedIn()) {
@@ -746,16 +791,18 @@ document.addEventListener("DOMContentLoaded", function() {
             // Remove processing flag
             likesElement.dataset.processing = 'false';
             
-            // Revert optimistic update
-            if (isLiked) {
-                likesElement.classList.add('liked');
-            } else {
-                likesElement.classList.remove('liked');
-            }
-            span.textContent = formatNumber(currentLikes);
-            if (!isLoggedIn()) {
-                GuestStorage.toggleLikeComment(commentId);
-            }
+        // Revert optimistic update
+        if (isLiked) {
+            likesElement.classList.add('liked');
+            updateCommentLikeIcon(likesElement, true);
+        } else {
+            likesElement.classList.remove('liked');
+            updateCommentLikeIcon(likesElement, false);
+        }
+        span.textContent = formatNumber(currentLikes);
+        if (!isLoggedIn()) {
+            GuestStorage.toggleLikeComment(commentId);
+        }
         });
     });
 

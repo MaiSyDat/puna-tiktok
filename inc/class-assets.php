@@ -72,6 +72,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_register_style('puna-tiktok-comments', $css_dir . 'comments.css', array('puna-tiktok-layout'), $version);
             wp_register_style('puna-tiktok-video-watch', $css_dir . 'video-watch.css', array('puna-tiktok-layout'), $version);
             wp_register_style('puna-tiktok-taxonomy', $css_dir . 'taxonomy.css', array('puna-tiktok-layout'), $version);
+            wp_register_style('puna-tiktok-top-header', $css_dir . 'top-header.css', array('puna-tiktok-layout'), $version);
             
             // Responsive CSS dependencies
             $responsive_deps = array('puna-tiktok-layout', 'puna-tiktok-sidebar');
@@ -84,6 +85,9 @@ if (!class_exists('Puna_TikTok_Assets')) {
             if ($page_context['is_taxonomy_page']) {
                 $responsive_deps[] = 'puna-tiktok-taxonomy';
             }
+            if ($page_context['is_search_page']) {
+                $responsive_deps[] = 'puna-tiktok-search';
+            }
             $responsive_deps = apply_filters('puna_tiktok_responsive_css_deps', $responsive_deps, $page_context);
             
             wp_register_style('puna-tiktok-responsive', $css_dir . 'responsive.css', $responsive_deps, $version);
@@ -95,6 +99,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_enqueue_style('puna-tiktok-reset');
             wp_enqueue_style('puna-tiktok-layout');
             wp_enqueue_style('puna-tiktok-sidebar');
+            wp_enqueue_style('puna-tiktok-top-header'); // Top header, needed on all pages
             wp_enqueue_style('puna-tiktok-search'); // Search panel is in header, needed on all pages
             
             // Enqueue page-specific styles
@@ -152,6 +157,9 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Sidebar toggle - Register
             wp_register_script('puna-tiktok-sidebar-toggle', $js_dir . 'frontend/sidebar-toggle.js', array('puna-tiktok-core'), $version, true);
             
+            // Top header - Register
+            wp_register_script('puna-tiktok-top-header', $js_dir . 'frontend/top-header.js', array('puna-tiktok-core'), $version, true);
+            
             // Video playback - Register
             wp_register_script('puna-tiktok-video-playback', $js_dir . 'frontend/video-playback.js', $base_deps, $version, true);
             
@@ -170,9 +178,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Video watch - Register
             wp_register_script('puna-tiktok-video-watch', $js_dir . 'frontend/video-watch.js', array('puna-tiktok-core', 'puna-tiktok-mega-video'), $version, true);
             
-            // Taxonomy - Register
-            wp_register_script('puna-tiktok-taxonomy', $js_dir . 'frontend/taxonomy.js', array('puna-tiktok-core', 'puna-tiktok-mega-video'), $version, true);
-            
             // Enqueue base scripts (always needed)
             wp_enqueue_script('puna-tiktok-mega-sdk');
             wp_enqueue_script('puna-tiktok-core');
@@ -180,6 +185,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_enqueue_script('puna-tiktok-guest-state');
             wp_enqueue_script('puna-tiktok-dropdowns');
             wp_enqueue_script('puna-tiktok-sidebar-toggle');
+            wp_enqueue_script('puna-tiktok-top-header');
             wp_enqueue_script('puna-tiktok-search');
             
             // Enqueue page-specific scripts
@@ -201,10 +207,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
             
             if ($page_context['is_single_video']) {
                 wp_enqueue_script('puna-tiktok-video-watch');
-            }
-            
-            if ($page_context['is_taxonomy_page']) {
-                wp_enqueue_script('puna-tiktok-taxonomy');
             }
             
             // Localize script - attach to core.js so it's available everywhere
@@ -239,7 +241,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
          * Add defer attribute to non-critical scripts
          */
         public function add_defer_to_scripts($tag, $handle, $src) {
-            $defer_scripts = array('puna-tiktok-video-playback', 'puna-tiktok-video-navigation', 'puna-tiktok-video-actions', 'puna-tiktok-comments', 'puna-tiktok-search', 'puna-tiktok-video-watch', 'puna-tiktok-taxonomy');
+            $defer_scripts = array('puna-tiktok-video-playback', 'puna-tiktok-video-navigation', 'puna-tiktok-video-actions', 'puna-tiktok-comments', 'puna-tiktok-search', 'puna-tiktok-video-watch');
             
             // Allow filtering of defer scripts
             $defer_scripts = apply_filters('puna_tiktok_defer_scripts', $defer_scripts, $handle, $src);

@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const searchHistorySection = document.getElementById('search-history-section');
     const searchHistoryList = document.getElementById('search-history-list');
     const searchPopularSection = document.getElementById('search-popular-section');
-    // search-loading element removed - not used in template
     const clearHistoryBtn = document.getElementById('clear-history-btn');
     
     let searchDebounceTimer = null;
@@ -119,15 +118,12 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
         
-        // Loading indicator removed - not used in template
         if (searchSuggestionsList) searchSuggestionsList.style.display = 'none';
         if (searchHistorySection) searchHistorySection.style.display = 'none';
         if (searchPopularSection) searchPopularSection.style.display = 'none';
         
         sendAjaxRequest('puna_tiktok_search_suggestions', { query: query })
             .then(data => {
-                // Loading indicator removed - not used in template
-                
                 if (data.success && data.data.suggestions && data.data.suggestions.length > 0) {
                     if (searchSuggestionsList) {
                         searchSuggestionsList.innerHTML = '';
@@ -156,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             })
             .catch(error => {
-                // Loading indicator removed - not used in template
+                // Error handling
             });
     }
     

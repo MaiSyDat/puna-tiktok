@@ -118,13 +118,13 @@ $remaining_replies_list = array_slice($replies, 3);
                         <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok')); ?></button>
                         <div class="comment-options-dropdown">
                             <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                <?php echo puna_tiktok_get_icon('home', __('Report', 'puna-tiktok')); ?> <?php esc_html_e('Report', 'puna-tiktok'); ?>
+                                <?php echo puna_tiktok_get_icon('report', __('Report', 'puna-tiktok')); ?> <?php esc_html_e('Report', 'puna-tiktok'); ?>
                             </button>
                         </div>
                     </div>
                 <?php endif; ?>
                         <div class="comment-likes<?php echo $reply_is_liked ? ' liked' : ''; ?>" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                            <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
+                            <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
                             <span><?php echo esc_html($reply_likes); ?></span>
                         </div>
                     </div>
@@ -206,13 +206,13 @@ $remaining_replies_list = array_slice($replies, 3);
                                 <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok')); ?></button>
                                 <div class="comment-options-dropdown">
                                     <button class="comment-action-report" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                                        <?php echo puna_tiktok_get_icon('home', __('Report', 'puna-tiktok')); ?> <?php esc_html_e('Report', 'puna-tiktok'); ?>
+                                        <?php echo puna_tiktok_get_icon('report', __('Report', 'puna-tiktok')); ?> <?php esc_html_e('Report', 'puna-tiktok'); ?>
                                     </button>
                                 </div>
                             </div>
                         <?php endif; ?>
                         <div class="comment-likes<?php echo $reply_is_liked ? ' liked' : ''; ?>" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                            <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
+                            <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
                             <span><?php echo esc_html($reply_likes); ?></span>
                         </div>
                     </div>

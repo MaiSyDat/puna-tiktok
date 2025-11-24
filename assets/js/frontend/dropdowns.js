@@ -3,8 +3,6 @@
  */
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Video options menu - Removed
-    
     // Video Info More Button (single video page)
     document.addEventListener('click', function(e) {
         const moreBtn = e.target.closest('.video-info-more-btn');

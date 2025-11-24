@@ -71,28 +71,23 @@
 .close-comments-btn {
     background: none;
     border: none;
-    font-size: 20px;
     color: var(--puna-text);
     cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-    width: 36px;
-    height: 36px;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: opacity 0.2s;
 }
 
 .close-comments-btn:hover {
-    background-color: var(--puna-muted);
-    color: var(--puna-primary);
+    opacity: 0.7;
 }
 
 .close-comments-btn .icon-svg,
 .close-comments-btn .icon-img {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
@@ -105,6 +100,7 @@
 .comments-list {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 8px 0;
 }
 
@@ -218,7 +214,6 @@
     height: 40px;
     border-radius: 50%;
     flex-shrink: 0;
-    border: 2px solid var(--puna-primary);
     object-fit: contain !important;
     background: var(--puna-bg);
     padding: 3px;
@@ -332,6 +327,8 @@
     gap: 4px;
     cursor: pointer;
     user-select: none;
+    overflow: hidden;
+    contain: layout style paint;
 }
 
 .comment-likes.liking {
@@ -365,10 +362,6 @@
 .comment-likes.liked .icon-svg,
 .comment-likes.liked .icon-img {
     color: var(--puna-primary);
-}
-
-.comment-likes.liked .icon-svg,
-.comment-likes.liked .icon-img {
     filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
@@ -388,8 +381,8 @@
 }
 
 .close-comments-btn .icon-svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     color: inherit;
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
@@ -405,6 +398,11 @@
     color: rgba(22, 24, 35, 0.5);
     font-weight: 600;
     cursor: pointer;
+    transition: color 0.2s;
+}
+
+.comment-likes.liked span {
+    color: var(--puna-primary);
 }
 
 .comment-right-actions {

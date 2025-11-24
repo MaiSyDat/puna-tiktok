@@ -8,12 +8,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Get tag from query var
-$tag_id = get_query_var('tag_id') ? intval(get_query_var('tag_id')) : 0;
-$tag = null;
-if ($tag_id > 0) {
-    $tag = get_term($tag_id, 'video_tag');
-}
 ?>
 
 <div class="tiktok-app">
@@ -23,8 +17,24 @@ if ($tag_id > 0) {
         <div class="taxonomy-header">
             <h2><?php esc_html_e('Tag', 'puna-tiktok'); ?></h2>
             <div class="taxonomy-tabs" id="taxonomy-tabs">
-                <button class="tab" data-tab="foryou"><?php esc_html_e('For You', 'puna-tiktok'); ?></button>
-                <button class="tab<?php echo (!$tag) ? ' active' : ''; ?>" data-tab="trending"><?php esc_html_e('Trending', 'puna-tiktok'); ?></button>
+                <?php
+                // Get current tab type and tag
+                $current_tab = isset($_GET['tab_type']) ? sanitize_text_field($_GET['tab_type']) : 'trending';
+                $current_tag_id = get_query_var('tag_id') ? intval(get_query_var('tag_id')) : 0;
+                
+                // For You tab
+                $foryou_url = add_query_arg('tab_type', 'foryou', home_url('/tag'));
+                $is_foryou_active = ($current_tab === 'foryou' && !$current_tag_id);
+                ?>
+                <a href="<?php echo esc_url($foryou_url); ?>" class="tab<?php echo $is_foryou_active ? ' active' : ''; ?>">For You</a>
+                
+                <?php
+                // Trending tab
+                $trending_url = add_query_arg('tab_type', 'trending', home_url('/tag'));
+                $is_trending_active = ($current_tab === 'trending' && !$current_tag_id) || (!$current_tab && !$current_tag_id);
+                ?>
+                <a href="<?php echo esc_url($trending_url); ?>" class="tab<?php echo $is_trending_active ? ' active' : ''; ?>">Trending</a>
+                
                 <?php
                 // Get list of tags that have videos, sorted by popularity
                 $all_tags = get_terms(array(
@@ -53,9 +63,9 @@ if ($tag_id > 0) {
                         ));
                         
                         if ($video_count_query->found_posts > 0) {
-                            $is_active = ($tag && $tag->term_id == $tag_item->term_id);
-                            $active_class = $is_active ? ' active' : '';
-                            echo '<button class="tab' . $active_class . '" data-tab="tag-' . esc_attr($tag_item->term_id) . '" data-tag-id="' . esc_attr($tag_item->term_id) . '">#' . esc_html($tag_item->name) . '</button>';
+                            $tag_url = home_url('/tag/' . $tag_item->term_id . '/');
+                            $is_tag_active = ($current_tag_id == $tag_item->term_id);
+                            echo '<a href="' . esc_url($tag_url) . '" class="tab' . ($is_tag_active ? ' active' : '') . '">#' . esc_html($tag_item->name) . '</a>';
                         }
                         wp_reset_postdata();
                     }
@@ -69,25 +79,59 @@ if ($tag_id > 0) {
             $displayed_count = 0;
             $target_count = 12;
             
+            // Get current tab type and tag
+            $current_tab = isset($_GET['tab_type']) ? sanitize_text_field($_GET['tab_type']) : 'trending';
+            $current_tag_id = get_query_var('tag_id') ? intval(get_query_var('tag_id')) : 0;
+            
             // If a specific tag is selected, show videos for that tag
-            if ($tag && !is_wp_error($tag)) {
-                $tag_query = new WP_Query(array(
+            if ($current_tag_id > 0) {
+                $tag = get_term($current_tag_id, 'video_tag');
+                if ($tag && !is_wp_error($tag)) {
+                    $tag_query = new WP_Query(array(
+                        'post_type' => 'video',
+                        'posts_per_page' => 50,
+                        'post_status' => 'publish',
+                        'orderby' => 'date',
+                        'order' => 'DESC',
+                        'tax_query' => array(
+                            array(
+                                'taxonomy' => 'video_tag',
+                                'field' => 'term_id',
+                                'terms' => $tag->term_id,
+                            ),
+                        ),
+                    ));
+                    
+                    if ($tag_query->have_posts()) :
+                        while ($tag_query->have_posts()) : $tag_query->the_post();
+                            if ($displayed_count >= $target_count) { break; }
+                            
+                            $metadata = puna_tiktok_get_video_metadata();
+                            if (empty($metadata['video_url'])) { continue; }
+                            
+                            $displayed_count++;
+                            get_template_part('template-parts/video-card', null, array(
+                                'post_id' => get_the_ID(),
+                                'video_url' => $metadata['video_url'],
+                                'views' => $metadata['views'],
+                                'card_class' => 'taxonomy-card'
+                            ));
+                        endwhile;
+                        wp_reset_postdata();
+                    endif;
+                }
+            } elseif ($current_tab === 'foryou') {
+                // For You: Latest videos
+                $foryou_query = new WP_Query(array(
                     'post_type' => 'video',
                     'posts_per_page' => 50,
                     'post_status' => 'publish',
                     'orderby' => 'date',
-                    'order' => 'DESC',
-                    'tax_query' => array(
-                        array(
-                            'taxonomy' => 'video_tag',
-                            'field' => 'term_id',
-                            'terms' => $tag->term_id,
-                        ),
-                    ),
+                    'order' => 'DESC'
                 ));
                 
-                if ($tag_query->have_posts()) :
-                    while ($tag_query->have_posts()) : $tag_query->the_post();
+                if ($foryou_query->have_posts()) :
+                    while ($foryou_query->have_posts()) : $foryou_query->the_post();
                         if ($displayed_count >= $target_count) { break; }
                         
                         $metadata = puna_tiktok_get_video_metadata();
@@ -104,7 +148,7 @@ if ($tag_id > 0) {
                     wp_reset_postdata();
                 endif;
             } else {
-                // Default: Query trending videos in 7 days (same as category page)
+                // Trending: Query trending videos in 7 days
                 $trending_query = new WP_Query(array(
                     'post_type' => 'video',
                     'posts_per_page' => 50,
@@ -188,40 +232,40 @@ if ($tag_id > 0) {
                     ));
                 }
                 
-                if ($trending_query->have_posts()) :
-                    // Collect posts with views for sorting
-                    $posts_with_views = array();
-                    while ($trending_query->have_posts()) : $trending_query->the_post();
-                        $metadata = puna_tiktok_get_video_metadata();
-                        if (empty($metadata['video_url'])) { continue; }
+                    if ($trending_query->have_posts()) :
+                        // Collect posts with views for sorting
+                        $posts_with_views = array();
+                        while ($trending_query->have_posts()) : $trending_query->the_post();
+                            $metadata = puna_tiktok_get_video_metadata();
+                            if (empty($metadata['video_url'])) { continue; }
+                            
+                            $posts_with_views[] = array(
+                                'post_id' => get_the_ID(),
+                                'views' => $metadata['views'],
+                                'video_url' => $metadata['video_url']
+                            );
+                        endwhile;
+                        wp_reset_postdata();
                         
-                        $posts_with_views[] = array(
-                            'post_id' => get_the_ID(),
-                            'views' => $metadata['views'],
-                            'video_url' => $metadata['video_url']
-                        );
-                    endwhile;
-                    wp_reset_postdata();
-                    
-                    // Sort by views (highest to lowest)
-                    usort($posts_with_views, function($a, $b) {
-                        return $b['views'] - $a['views'];
-                    });
-                    
-                    // Display sorted posts
-                    foreach ($posts_with_views as $post_data) :
-                        if ($displayed_count >= $target_count) { break; }
+                        // Sort by views (highest to lowest)
+                        usort($posts_with_views, function($a, $b) {
+                            return $b['views'] - $a['views'];
+                        });
                         
-                        $displayed_count++;
-                        get_template_part('template-parts/video-card', null, array(
-                            'post_id' => $post_data['post_id'],
-                            'video_url' => $post_data['video_url'],
-                            'views' => $post_data['views'],
-                            'card_class' => 'taxonomy-card'
-                        ));
-                    endforeach;
-                endif;
-            }
+                        // Display sorted posts
+                        foreach ($posts_with_views as $post_data) :
+                            if ($displayed_count >= $target_count) { break; }
+                            
+                            $displayed_count++;
+                            get_template_part('template-parts/video-card', null, array(
+                                'post_id' => $post_data['post_id'],
+                                'video_url' => $post_data['video_url'],
+                                'views' => $post_data['views'],
+                                'card_class' => 'taxonomy-card'
+                            ));
+                        endforeach;
+                    endif;
+                }
             
             // Show empty state if no video was displayed
             if ($displayed_count == 0) :

@@ -9,7 +9,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const backBtn = document.getElementById('video-watch-back');
     const commentTabs = document.querySelectorAll('.comments-tab');
     const commentTabContents = document.querySelectorAll('.comments-tab-content');
-    // Copy link button removed - not used in template
     
     const watchVideo = videoWatchPage.querySelector('.tiktok-video');
     if (watchVideo) {
@@ -56,7 +55,5 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         });
     });
-    
-    // Copy link and share options handlers removed - not used in template
 });
 

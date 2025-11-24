@@ -45,6 +45,7 @@ class Puna_TikTok_Setup {
         add_action('after_setup_theme', array($this, 'setup'));
         add_action('init', array($this, 'add_rewrite_rules'));
         add_filter('query_vars', array($this, 'register_query_vars'));
+        add_action('template_redirect', array($this, 'handle_template_redirect'), 1);
         add_filter('template_include', array($this, 'handle_custom_pages'));
         add_filter('pre_get_document_title', array($this, 'custom_page_title'));
         add_action('after_switch_theme', array($this, 'flush_rewrite_rules_on_activation'));
@@ -78,6 +79,22 @@ class Puna_TikTok_Setup {
      * Add rewrite rules
      */
     public function add_rewrite_rules() {
+        // Add specific rules first (with IDs) - must be before general rules
+        // Add rewrite rule for category with ID: /category/123
+        add_rewrite_rule(
+            '^category/([0-9]+)/?$',
+            'index.php?puna_page=category&category_id=$matches[1]',
+            'top'
+        );
+        
+        // Add rewrite rule for tag with ID: /tag/123
+        add_rewrite_rule(
+            '^tag/([0-9]+)/?$',
+            'index.php?puna_page=tag&tag_id=$matches[1]',
+            'top'
+        );
+        
+        // Then add general rules (without IDs)
         $custom_pages = $this->get_custom_pages();
         
         foreach ($custom_pages as $slug => $template) {
@@ -87,13 +104,6 @@ class Puna_TikTok_Setup {
                 'top'
             );
         }
-        
-        // Add rewrite rule for tag with ID: /tag/123
-        add_rewrite_rule(
-            '^tag/([0-9]+)/?$',
-            'index.php?puna_page=tag&tag_id=$matches[1]',
-            'top'
-        );
     }
 
     /**
@@ -102,9 +112,45 @@ class Puna_TikTok_Setup {
     public function register_query_vars($vars) {
         $vars[] = 'puna_page';
         $vars[] = 'tag_id';
+        $vars[] = 'category_id';
+        $vars[] = 'tab_type';
         return $vars;
     }
 
+    /**
+     * Handle template redirect - fix 404 status early
+     */
+    public function handle_template_redirect() {
+        global $wp_query;
+        
+        $puna_page = get_query_var('puna_page');
+        
+        if ($puna_page) {
+            $page_templates = $this->get_custom_pages();
+            
+            if (isset($page_templates[$puna_page])) {
+                // Fix 404 status early
+                $wp_query->is_404 = false;
+                status_header(200);
+                
+                // Set query flags for custom pages
+                $wp_query->is_page = true;
+                $wp_query->is_singular = true;
+                $wp_query->is_home = false;
+                $wp_query->is_front_page = false;
+                
+                // For category/tag pages, set appropriate flags
+                if ($puna_page === 'category') {
+                    $wp_query->is_category = true;
+                    $wp_query->is_archive = true;
+                } elseif ($puna_page === 'tag') {
+                    $wp_query->is_tag = true;
+                    $wp_query->is_archive = true;
+                }
+            }
+        }
+    }
+    
     /**
      * Handle custom pages
      */
@@ -127,10 +173,12 @@ class Puna_TikTok_Setup {
                 $page_titles = $this->get_page_titles();
                 $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
                 
+                // Ensure 404 is false (already set in template_redirect, but double-check)
+                $wp_query->is_404 = false;
+                
                 // Set query flags for custom pages
                 $wp_query->is_page = true;
                 $wp_query->is_singular = true;
-                $wp_query->is_404 = false;
                 $wp_query->is_home = false;
                 $wp_query->is_front_page = false;
                 
@@ -221,11 +269,22 @@ class Puna_TikTok_Setup {
         $custom_pages = $this->get_custom_pages();
         $all_rules_exist = true;
         
+        // Check general rules
         foreach (array_keys($custom_pages) as $slug) {
             if (!isset($rules['^' . $slug . '/?$'])) {
                 $all_rules_exist = false;
                 break;
             }
+        }
+        
+        // Check category with ID rule
+        if ($all_rules_exist && !isset($rules['^category/([0-9]+)/?$'])) {
+            $all_rules_exist = false;
+        }
+        
+        // Check tag with ID rule
+        if ($all_rules_exist && !isset($rules['^tag/([0-9]+)/?$'])) {
+            $all_rules_exist = false;
         }
         
         if (!$all_rules_exist) {

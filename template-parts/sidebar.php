@@ -80,6 +80,13 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
         <?php endforeach; ?>
     </ul>
     
+    <!-- Buy Now Button -->
+    <div class="sidebar-buy-now">
+        <a href="https://hupuna.com/hop-carton/" target="_blank" rel="noopener noreferrer" class="buy-now-button">
+            <span class="buy-now-text"><?php echo __('Buy Now', 'puna-tiktok'); ?></span>
+        </a>
+    </div>
+    
     <div class="sidebar-footer">
         <?php if ($footer_title_1) : ?><h3><?php echo esc_html($footer_title_1); ?></h3><?php endif; ?>
         <?php if ($footer_title_2) : ?><h3><?php echo esc_html($footer_title_2); ?></h3><?php endif; ?>
