@@ -10,19 +10,18 @@
 
 /* Main Sidebar (left side) */
 .sidebar {
-    flex: 0 0 210px;
-    width: 210px;
-    max-width: 210px;
+    flex: 0 0 230px;
+    width: 230px;
+    max-width: 230px;
     background-color: var(--puna-bg);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     height: 100vh;
-    padding: 0 20px 0;
     transition: width 0.3s ease, max-width 0.3s ease, flex 0.3s ease;
     position: relative;
     z-index: 10000;
-    border-right: 1px solid var(--puna-muted);
+    box-shadow: 4px 2px 14px 0px #00000021;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -39,12 +38,12 @@
 }
 
 .logo {
-    padding: 20px 0;
+    margin: 20px auto;
+    max-width: 170px;
 }
 
 .logo img {
     display: block;
-    max-width: 170px;
     width: 100%;
     object-fit: contain;
 }
@@ -62,12 +61,12 @@
 .sidebar ul li a {
     display: flex;
     align-items: center;
-    padding: 12px 0;
+    padding: 10px 20px;
     color: var(--puna-text);
     text-decoration: none;
     border-radius: 8px;
     transition: background-color 0.2s;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
 }
 
@@ -80,13 +79,6 @@
     color: var(--puna-primary);
 }
 
-.sidebar ul li a i {
-    width: 20px;
-    height: 20px;
-    margin-right: 12px;
-    font-size: 18px;
-    flex-shrink: 0;
-}
 
 /* Sidebar Menu Icons */
 .sidebar-menu .icon-svg,
@@ -152,60 +144,13 @@
     color: #fff;
 }
 
-/* ========================================
-   SEARCH PANEL - Collapsed Sidebar State
-   ======================================== */
-
-/* Search Panel Active State */
-body.search-panel-active .sidebar {
-    width: 72px;
-    max-width: 72px;
-    flex: 0 0 72px;
-}
-
-body.search-panel-active .sidebar .menu-text,
-body.search-panel-active .sidebar .search-text {
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
-}
-
-body.search-panel-active .sidebar ul li a {
-    justify-content: center;
-    padding: 12px;
-}
-
-body.search-panel-active .sidebar ul li a i {
-    margin-right: 0;
-}
-
-body.search-panel-active .sidebar .logo {
-    text-align: center;
-}
-
-body.search-panel-active .sidebar .logo img {
-    width: 100px;
-    height: auto;
-}
-
-body.search-panel-active .sidebar .sidebar-footer {
-    display: none;
-}
-
-body.search-panel-active .tiktok-app {
-    gap: 0;
-}
-
-body.search-panel-active .main-content {
-    margin-left: 0;
-}
-
 /* Search Trigger Button trong Sidebar */
 .sidebar-search-trigger {
     display: flex;
     gap: 4px;
     align-items: center;
     padding: 12px 8px;
+    margin: 0 20px;
     color: rgba(17, 24, 35, 0.65);
     text-decoration: none;
     border-radius: 25px;
@@ -216,11 +161,6 @@ body.search-panel-active .main-content {
     background-color: var(--puna-muted);
 }
 
-.sidebar-search-trigger i {
-    font-size: 16px;
-    flex-shrink: 0;
-    display: flex;
-}
 
 .sidebar-search-trigger .search-text {
     white-space: nowrap;
@@ -230,23 +170,21 @@ body.search-panel-active .main-content {
 /* Buy Now Button */
 .sidebar-buy-now {
     padding: 0 8px;
+    margin: 0 20px;
 }
 
-/* Remove gap when search panel is active */
-body.search-panel-active .sidebar .sidebar-buy-now {
-    display: none;
-}
+/* Buy Now Button */
 
 .buy-now-button {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 14px 20px;
-    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
-    color: #ffffff;
+    padding: 10px 20px;
+    background: #ffffff;
+    color: var(--puna-primary);
     text-decoration: none;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 15px;
     font-weight: 600;
     transition: all 0.3s ease;
@@ -254,8 +192,8 @@ body.search-panel-active .sidebar .sidebar-buy-now {
 }
 
 .buy-now-button:hover {
-    background: #fff;
-    color: #000;
+    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
+    color: #ffffff;
 }
 
 .buy-now-button:active {
@@ -268,21 +206,127 @@ body.search-panel-active .sidebar .sidebar-buy-now {
     transition: opacity 0.3s ease, width 0.3s ease;
 }
 
+/* Social Media Links */
+.sidebar-social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 8px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+/* Social Media Links */
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--puna-text);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.social-link .icon-svg,
+.social-link .icon-img {
+    width: 22px;
+    height: 22px;
+    filter: brightness(0) saturate(100%) invert(20%);
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    transform: translateY(-3px) scale(1.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+/* Default social colors (show hover color by default) */
+.social-link.facebook {
+    background: #1877F2;
+}
+.social-link.facebook .icon-svg,
+.social-link.facebook .icon-img {
+    filter: brightness(0) invert(1);
+    color: #fff;
+}
+
+.social-link.instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+.social-link.instagram .icon-svg,
+.social-link.instagram .icon-img {
+    filter: brightness(0) invert(1);
+    color: #fff;
+}
+
+.social-link.youtube {
+    background: #FF0000;
+}
+.social-link.youtube .icon-svg,
+.social-link.youtube .icon-img {
+    filter: brightness(0) invert(1);
+    color: #fff;
+}
+
+.social-link.facebook:hover {
+    background: #1877F2;
+}
+
+.social-link.facebook:hover .icon-svg,
+.social-link.facebook:hover .icon-img {
+    filter: brightness(0) invert(1);
+}
+
+.social-link.instagram:hover {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-link.instagram:hover .icon-svg,
+.social-link.instagram:hover .icon-img {
+    filter: brightness(0) invert(1);
+}
+
+.social-link.youtube:hover {
+    background: #FF0000;
+}
+
+.social-link.youtube:hover .icon-svg,
+.social-link.youtube:hover .icon-img {
+    filter: brightness(0) invert(1);
+}
+
+.social-link.shopee:hover {
+    background: #EE3131;
+}
+
+.social-link.shopee:hover .icon-svg,
+.social-link.shopee:hover .icon-img {
+    filter: brightness(0) invert(1);
+}
+
 /* Sidebar Footer */
 .sidebar-footer {
     margin: auto 0 20px 0;
+    padding: 0 20px;
     color: rgba(17, 24, 35, 0.5);
     line-height: 1.4;
 }
 
 .sidebar-footer h3 {
     line-height: 1.4;
-    font-size: 15px;
+    font-size: 13px;
     margin: 0 0 4px 0;
 }
 
 .sidebar-footer p {
-    font-size: 12px;
+    font-size: 11px;
     line-height: 1.4;
 }
 

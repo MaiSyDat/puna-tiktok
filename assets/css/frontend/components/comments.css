@@ -62,7 +62,7 @@
 }
 
 .comments-header h3 {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--puna-text);
     margin: 0;
@@ -198,7 +198,7 @@
     color: rgba(22, 24, 35, 0.5);
     border: none;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
@@ -232,7 +232,7 @@
 }
 
 .comment-author {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--puna-text);
 }
@@ -275,21 +275,14 @@
     transform: scale(1.05);
 }
 
-.comment-follow-btn i {
-    font-size: 10px;
-}
-
 .comment-follow-btn.following {
     background: var(--puna-muted);
     color: var(--puna-text);
 }
 
-.comment-follow-btn.following i::before {
-    content: "\f00c"; /* fa-check */
-}
 
 .comment-text {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--puna-text);
     margin: 4px 0;
     line-height: 1.5;
@@ -309,7 +302,7 @@
 }
 
 .reply-link {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     color: var(--puna-text);
     text-decoration: none;
@@ -340,7 +333,6 @@
     50% { transform: scale(1.2); }
 }
 
-.comment-likes i,
 .comment-likes .icon-svg,
 .comment-likes .icon-img {
     font-size: 14px;
@@ -351,14 +343,11 @@
     transition: color 0.2s, opacity 0.2s ease, filter 0.2s ease;
 }
 
-.comment-likes i:hover,
 .comment-likes:hover .icon-svg,
 .comment-likes:hover .icon-img {
     color: var(--puna-primary);
 }
 
-.comment-likes i.fa-solid.liked,
-.comment-likes i.fa-solid,
 .comment-likes.liked .icon-svg,
 .comment-likes.liked .icon-img {
     color: var(--puna-primary);
@@ -469,8 +458,8 @@
     color: var(--puna-text);
     display: flex;
     align-items: center;
-    gap: 12px;
-    transition: background-color 0.2s;
+    gap: 8px;
+    transition: all 0.2s;
     font-family: inherit;
 }
 
@@ -479,23 +468,42 @@
     background-color: var(--puna-muted);
 }
 
-.comment-action-delete i,
-.comment-action-report i {
-    font-size: 16px;
-    width: 18px;
-    text-align: center;
-}
 
 .comment-action-delete {
     color: var(--puna-primary);
 }
 
+.comment-action-delete .icon-svg,
+.comment-action-delete .icon-img {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+    color: var(--puna-primary);
+}
+
 .comment-action-delete:hover {
     background-color: rgba(6, 83, 159, 0.08);
+    color: var(--puna-primary);
 }
 
 .comment-action-report:hover {
     background-color: var(--puna-muted);
+    color: var(--puna-text);
+}
+
+.comment-action-report .icon-svg,
+.comment-action-report .icon-img {
+    filter: none;
+    color: currentColor;
+    transition: filter 0.2s ease, color 0.2s ease;
+}
+
+.comment-action-report:hover .icon-svg,
+.comment-action-report:hover .icon-img {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+    color: var(--puna-primary);
+}
+
+.comment-action-report:hover {
+    color: var(--puna-primary);
 }
 
 .no-comments {
@@ -519,7 +527,7 @@
     border: none;
     border-radius: 8px;
     background: var(--puna-muted);
-    font-size: 16px;
+    font-size: 14px;
     outline: none;
     transition: background-color 0.2s;
 }
@@ -545,22 +553,21 @@
 
 .submit-comment-btn {
     padding: 8px 20px;
-    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
-    color: var(--puna-bg);
-    border: none;
+    background: #ffffff;
+    color: var(--puna-primary);
+    border: 1px solid var(--puna-primary);
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .submit-comment-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, color-mix(in srgb, var(--puna-primary) 90%, black) 0%, var(--puna-primary) 100%);
+    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
+    color: #ffffff;
 }
 
 .submit-comment-btn:disabled {
-    background: var(--puna-muted);
-    color: rgba(22, 24, 35, 0.34);
     cursor: not-allowed;
 }

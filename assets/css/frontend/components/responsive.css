@@ -118,7 +118,6 @@
         margin-bottom: 12px;
     }
 
-    .action-item i,
     .action-item .icon-svg,
     .action-item .icon-img {
         width: 44px;
@@ -315,9 +314,6 @@
         justify-content: flex-start;
     }
 
-    .sidebar ul li a i {
-        margin-right: 12px;
-    }
 
     .sidebar .logo {
         display: flex;
@@ -401,12 +397,14 @@
     /* Vertical video on mobile */
     .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
         aspect-ratio: 9 / 16;
+        max-width: 100vh;
     }
     
     /* Landscape video on mobile */
     .video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
         aspect-ratio: 16 / 9;
         max-height: 100vh;
+        max-width: 100vh;
     }
     
     /* Square video on mobile */
@@ -451,7 +449,6 @@
         margin-bottom: 10px;
     }
 
-    .action-item i,
     .action-item .icon-svg,
     .action-item .icon-img {
         width: 40px;
@@ -594,7 +591,6 @@
         gap: 16px;
     }
     
-    .interaction-item i,
     .interaction-item .icon-svg,
     .interaction-item .icon-img {
         font-size: 24px;
@@ -712,15 +708,7 @@
         border-right: none;
     }
     
-    /* Close sidebar when search panel opens on mobile */
-    body.search-panel-active .sidebar {
-        left: -100%;
-    }
-    
-    /* Close overlay when search panel opens */
-    body.search-panel-active.sidebar-open::before {
-        display: none;
-    }
+    /* Mobile adjustments for search panel moved to search.css */
     
     .search-results-page {
         padding: 16px 0;
@@ -815,7 +803,6 @@
         gap: 10px;
     }
 
-    .action-item i,
     .action-item .icon-svg,
     .action-item .icon-img {
         width: 36px;

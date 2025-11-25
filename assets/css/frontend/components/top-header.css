@@ -38,11 +38,11 @@
     align-items: center;
     gap: 6px;
     padding: 6px 16px;
-    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
+    background: #ffffff;
     border-radius: 24px;
     cursor: pointer;
     text-decoration: none;
-    color: #fff;
+    color: var(--puna-primary);
     font-size: 12px;
     font-weight: 500;
     transition: all 0.2s ease;
@@ -52,15 +52,15 @@
 }
 
 .action-bar-button:hover {
-    background: transparent;
-    color: var(--puna-text);
+    background: linear-gradient(135deg, var(--puna-primary) 0%, color-mix(in srgb, var(--puna-primary) 80%, white) 100%);
+    color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .action-bar-button:hover .icon-svg,
 .action-bar-button:hover .icon-img {
-    filter: none;
-    color: var(--puna-text);
+    filter: brightness(0) invert(1);
+    color: #ffffff;
 }
 
 .action-bar-icon {
@@ -76,8 +76,8 @@
 .action-bar-icon .icon-img {
     width: 20px;
     height: 20px;
-    color: currentColor;
-    filter: brightness(0) invert(1);
+    color: var(--puna-primary);
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
     transition: filter 0.2s ease, color 0.2s ease;
 }
 

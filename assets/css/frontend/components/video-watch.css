@@ -129,6 +129,10 @@ body.single .tiktok-app .main-content {
     opacity: 1;
     filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
+
+.options-item:hover span {
+    color: var(--puna-primary);
+}
 .video-info-more-btn:hover {
     color: var(--puna-primary);
 }
@@ -444,7 +448,6 @@ body.single .tiktok-app .main-content {
     transition: all 0.3s ease;
 }
 
-.video-info-more-btn i,
 .video-info-more-btn .icon-svg,
 .video-info-more-btn .icon-img {
     color: var(--puna-text);
@@ -489,11 +492,6 @@ body.single .tiktok-app .main-content {
     color: var(--puna-text); /* Explicit color for clarity */
 }
 
-.video-info-more-dropdown .options-item i {
-    font-size: 16px;
-    width: 20px;
-    text-align: center;
-}
 
 .video-info-more-dropdown .options-item.delete-video-item {
     color: #ff3040;
@@ -594,22 +592,9 @@ body.theme-dark .video-caption-content .tag {
     transform: translateY(-1px);
 }
 
-.interaction-item i {
-    font-size: 18px;
-    color: var(--puna-text);
-    width: 44px;
-    height: 44px;
-    border-radius: 999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(22, 24, 35, 0.06);
-    transition: background-color 0.2s ease, transform 0.2s ease, color 0.2s ease;
-}
-
 .interaction-icon-wrapper {
-    width: 44px;
-    height: 44px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     background: rgba(22, 24, 35, 0.08);
     display: flex;
@@ -634,7 +619,6 @@ body.theme-dark .video-caption-content .tag {
     opacity: 1;
 }
 
-.interaction-item.liked i,
 .interaction-item.liked .icon-svg,
 .interaction-item.liked .icon-img {
     color: var(--puna-primary);
@@ -669,14 +653,6 @@ body.theme-dark .video-caption-content .tag {
     color: var(--puna-secondary);
 }
 
-.interaction-item:active i {
-    transform: scale(0.95);
-}
-
-.interaction-item:focus-visible i {
-    outline: 2px solid var(--puna-text);
-    outline-offset: 2px;
-}
 
 /* Share Options */
 .video-share-options {
@@ -703,7 +679,6 @@ body.theme-dark .video-caption-content .tag {
     text-decoration: none;
 }
 
-.share-option-btn i,
 .share-option-btn .icon-svg,
 .share-option-btn .icon-img {
     color: var(--puna-text);
@@ -715,7 +690,6 @@ body.theme-dark .video-caption-content .tag {
     transform: scale(1.1);
 }
 
-.share-option-btn:hover i,
 .share-option-btn:hover .icon-svg,
 .share-option-btn:hover .icon-img {
     color: #fff;

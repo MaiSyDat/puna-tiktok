@@ -128,7 +128,7 @@ $saved_class = $is_saved ? 'saved' : '';
                 <!-- Zalo -->
                 <button class="share-option" data-share="zalo" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('home', 'Zalo'); ?>
+                        <?php echo puna_tiktok_get_icon('zalo', 'Zalo'); ?>
                     </div>
                     <span class="share-option-label">Zalo</span>
                 </button>

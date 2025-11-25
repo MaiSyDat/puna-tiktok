@@ -28,16 +28,34 @@
     background-color: #000;
     border-radius: 12px;
     overflow: hidden;
-    max-height: 98vh;
-    max-width: 400px;
     width: 100%;
-    height: 98vh;
-    min-height: 98vh;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     scroll-snap-align: start;
     aspect-ratio: 9 / 16; /* Default for vertical video */
+}
+
+/* Vertical video (portrait) */
+.video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
+    aspect-ratio: 9 / 16;
+    max-height: 98vh;
+    max-width: 100vw;
+}
+
+/* Landscape video - adjusted for better viewing */
+.video-container:has(.tiktok-video[data-aspect-ratio="landscape"]) {
+    aspect-ratio: 16 / 9;
+    max-width: 60vw;
+    max-height: 98vh;
+}
+
+/* Square video - balanced dimensions */
+.video-container:has(.tiktok-video[data-aspect-ratio="square"]) {
+    aspect-ratio: 1 / 1;
+    max-width: 100vw;
+    max-height: 98vh;
 }
 
 /* Video loading placeholder */
@@ -205,10 +223,9 @@
 .options-item {
     display: flex;
     align-items: center;
-    gap: 12px;
     padding: 12px 20px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
     font-size: 16px;
 }
 
@@ -216,26 +233,35 @@
     background-color: var(--puna-muted);
 }
 
-.options-item i {
-    font-size: 18px;
-    color: var(--puna-text);
-    width: 20px;
-    text-align: center;
+
+.options-item .icon-svg,
+.options-item .icon-img {
+    filter: none;
+    color: currentColor;
+    transition: filter 0.2s ease, color 0.2s ease;
 }
 
 .options-item span {
     flex: 1;
     color: var(--puna-text);
     font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.options-item:hover .icon-svg,
+.options-item:hover .icon-img {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
+    color: var(--puna-primary);
+}
+
+.options-item:hover span {
+    color: var(--puna-primary);
 }
 
 .options-item.delete-video-item {
     color: #ff3040;
 }
 
-.options-item.delete-video-item i {
-    color: #ff3040;
-}
 
 .options-item.delete-video-item:hover {
     background-color: rgba(255, 48, 64, 0.1);
@@ -375,8 +401,8 @@
 }
 
 .action-icon-wrapper {
-    width: 48px;
-    height: 48px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     border: none;
     background: var(--puna-muted);
@@ -478,9 +504,6 @@
     font-size: 16px;
 }
 
-.action-item i {
-    font-size: 22px;
-}
 .action-item .count {
     font-size: 12px;
     font-weight: 600;

@@ -35,7 +35,7 @@ class Puna_TikTok_Customize_Colors {
 
         // Primary Color
         $wp_customize->add_setting('puna_color_primary', array(
-            'default'           => '#06539f',
+            'default'           => '#3165FF',
             'sanitize_callback' => 'sanitize_hex_color',
             'transport'         => 'postMessage',
         ));
@@ -148,7 +148,7 @@ class Puna_TikTok_Customize_Colors {
      * Output dynamic CSS with CSS variables
      */
     public function output_dynamic_css() {
-        $primary   = get_theme_mod('puna_color_primary', '#06539f');
+        $primary   = get_theme_mod('puna_color_primary', '#3165FF');
         $secondary = get_theme_mod('puna_color_secondary', '#ffc107');
         $bg        = get_theme_mod('puna_color_bg', '#ffffff');
         $text      = get_theme_mod('puna_color_text', '#111827');

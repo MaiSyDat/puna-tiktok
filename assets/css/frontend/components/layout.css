@@ -30,6 +30,4 @@
     display: none;
 }
 
-body.search-panel-active .main-content {
-    cursor: pointer;
-}
+/* search-active main-content rule moved to search.css */

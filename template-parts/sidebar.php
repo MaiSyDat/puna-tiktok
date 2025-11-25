@@ -87,6 +87,19 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
         </a>
     </div>
     
+    <!-- Social Media Links -->
+    <div class="sidebar-social">
+        <a href="https://www.facebook.com/hupuna" target="_blank" rel="noopener noreferrer" class="social-link facebook" title="Facebook">
+            <?php echo puna_tiktok_get_icon('facebook', 'Facebook'); ?>
+        </a>
+        <a href="https://www.instagram.com/hupunagroup/" target="_blank" rel="noopener noreferrer" class="social-link instagram" title="Instagram">
+            <?php echo puna_tiktok_get_icon('instagram', 'Instagram'); ?>
+        </a>
+        <a href="https://www.youtube.com/@congtycophanhupunagroup" target="_blank" rel="noopener noreferrer" class="social-link youtube" title="YouTube">
+            <?php echo puna_tiktok_get_icon('play', 'YouTube'); ?>
+        </a>
+    </div>
+    
     <div class="sidebar-footer">
         <?php if ($footer_title_1) : ?><h3><?php echo esc_html($footer_title_1); ?></h3><?php endif; ?>
         <?php if ($footer_title_2) : ?><h3><?php echo esc_html($footer_title_2); ?></h3><?php endif; ?>
