@@ -36,8 +36,8 @@ class Puna_TikTok_Setup {
      */
     private function get_page_titles() {
         return array(
-            'category' => 'Categories',
-            'tag'      => 'Tag',
+            'category' => __('Categories', 'puna-tiktok'),
+            'tag'      => __('Tag', 'puna-tiktok'),
         );
     }
     

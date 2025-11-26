@@ -52,7 +52,7 @@ $withcomments = 1;
 <div class="video-watch-page">
     <!-- Back Button -->
     <button class="video-watch-back-btn" id="video-watch-back" title="<?php esc_attr_e('Back', 'puna-tiktok'); ?>">
-        <?php echo puna_tiktok_get_icon('close', __('Back', 'puna-tiktok')); ?>
+        <?php echo puna_tiktok_get_icon('close', 'Back'); ?>
     </button>
     
     <div class="video-watch-container">
@@ -68,7 +68,7 @@ $withcomments = 1;
                     <!-- Volume Control -->
                     <div class="volume-control-wrapper">
                         <button class="volume-toggle-btn" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
-                            <?php echo puna_tiktok_get_icon('volum', __('Volume', 'puna-tiktok')); ?>
+                            <?php echo puna_tiktok_get_icon('volum', 'Volume'); ?>
                         </button>
                         <div class="volume-slider-container">
                             <input type="range" class="volume-slider" min="0" max="100" value="100" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
@@ -150,7 +150,7 @@ $withcomments = 1;
             <!-- Interaction Stats -->
             <div class="video-interaction-stats">
                 <div class="interaction-item <?php echo esc_attr($liked_class); ?>" data-action="like" data-post-id="<?php echo esc_attr($post_id); ?>">
-                    <div class="interaction-icon-wrapper">
+                        <div class="interaction-icon-wrapper">
                         <?php echo puna_tiktok_get_icon('heart', 'Like'); ?>
                     </div>
                     <span class="stat-count"><?php echo puna_tiktok_format_number($likes); ?></span>

@@ -109,10 +109,10 @@ $saved_class = $is_saved ? 'saved' : '';
 <div class="share-modal" id="shareModal-<?php echo esc_attr($post_id); ?>">
     <div class="share-modal-overlay"></div>
     <div class="share-modal-content">
-        <div class="share-modal-header">
-            <h2 class="share-modal-title">Share to</h2>
+		<div class="share-modal-header">
+			<h2 class="share-modal-title"><?php esc_html_e('Share to', 'puna-tiktok'); ?></h2>
             <button type="button" class="share-modal-close" aria-label="<?php esc_attr_e('Close', 'puna-tiktok'); ?>">
-                <?php echo puna_tiktok_get_icon('close', __('Close', 'puna-tiktok')); ?>
+				<?php echo puna_tiktok_get_icon('close', 'Close'); ?>
             </button>
         </div>
         <div class="share-modal-body">
@@ -120,49 +120,49 @@ $saved_class = $is_saved ? 'saved' : '';
                 <!-- Facebook -->
                 <button class="share-option" data-share="facebook" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('facebook', 'Facebook'); ?>
+						<?php echo puna_tiktok_get_icon('facebook', 'Facebook'); ?>
                     </div>
-                    <span class="share-option-label">Facebook</span>
+					<span class="share-option-label"><?php esc_html_e('Facebook', 'puna-tiktok'); ?></span>
                 </button>
                 
                 <!-- Zalo -->
                 <button class="share-option" data-share="zalo" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('zalo', 'Zalo'); ?>
+						<?php echo puna_tiktok_get_icon('zalo', 'Zalo'); ?>
                     </div>
-                    <span class="share-option-label">Zalo</span>
+					<span class="share-option-label"><?php esc_html_e('Zalo', 'puna-tiktok'); ?></span>
                 </button>
                 
                 <!-- Copy Link -->
                 <button class="share-option" data-share="copy" data-post-id="<?php echo esc_attr($post_id); ?>" data-url="<?php echo esc_url(get_permalink($post_id)); ?>">
                     <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('link', 'Copy link'); ?>
+						<?php echo puna_tiktok_get_icon('link', 'Copy link'); ?>
                     </div>
-                    <span class="share-option-label">Copy link</span>
+					<span class="share-option-label"><?php esc_html_e('Copy link', 'puna-tiktok'); ?></span>
                 </button>
                 
                 <!-- Instagram -->
                 <button class="share-option" data-share="instagram" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('instagram', 'Instagram'); ?>
+						<?php echo puna_tiktok_get_icon('instagram', 'Instagram'); ?>
                     </div>
-                    <span class="share-option-label">Instagram</span>
+					<span class="share-option-label"><?php esc_html_e('Instagram', 'puna-tiktok'); ?></span>
                 </button>
                 
                 <!-- Email -->
                 <button class="share-option" data-share="email" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('email', 'Email'); ?>
+						<?php echo puna_tiktok_get_icon('email', 'Email'); ?>
                     </div>
-                    <span class="share-option-label">Email</span>
+					<span class="share-option-label"><?php esc_html_e('Email', 'puna-tiktok'); ?></span>
                 </button>
                 
                 <!-- Telegram -->
                 <button class="share-option" data-share="telegram" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-                        <?php echo puna_tiktok_get_icon('telegram', 'Telegram'); ?>
+						<?php echo puna_tiktok_get_icon('telegram', 'Telegram'); ?>
                     </div>
-                    <span class="share-option-label">Telegram</span>
+					<span class="share-option-label"><?php esc_html_e('Telegram', 'puna-tiktok'); ?></span>
                 </button>
             </div>
         </div>

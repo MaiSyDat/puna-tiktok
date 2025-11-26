@@ -32,7 +32,7 @@ if (has_post_thumbnail($post_id)) {
 // All videos are Mega videos
 ?>
 
-<a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="<?php echo esc_attr($card_class); ?>" aria-label="Video">
+<a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="<?php echo esc_attr($card_class); ?>" aria-label="<?php esc_attr_e('Video', 'puna-tiktok'); ?>">
     <div class="media-wrapper ratio-9x16">
         <?php if ($featured_image_url) : ?>
             <img src="<?php echo esc_url($featured_image_url); ?>" alt="" class="taxonomy-video" loading="lazy">
