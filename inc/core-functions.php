@@ -255,13 +255,16 @@ if (!function_exists('puna_tiktok_get_user_username')) {
  * Disable WordPress user registration
  */
 if (!function_exists('puna_tiktok_disable_registration')) {
-    add_filter('option_users_can_register', '__return_false');
-    add_action('login_init', function() {
-        if (isset($_GET['action']) && $_GET['action'] === 'register') {
-            wp_redirect(wp_login_url());
-            exit;
-        }
-    });
+    function puna_tiktok_disable_registration() {
+        add_filter('option_users_can_register', '__return_false');
+        add_action('login_init', function() {
+            if (isset($_GET['action']) && $_GET['action'] === 'register') {
+                wp_redirect(wp_login_url());
+                exit;
+            }
+        });
+    }
+    puna_tiktok_disable_registration();
 }
 
 /**
@@ -442,7 +445,7 @@ if (!function_exists('puna_tiktok_empty_state')) {
         
         $wrapper_class = 'taxonomy-empty-state' . (!empty($args['wrapper_class']) ? ' ' . esc_attr($args['wrapper_class']) : '');
         ?>
-        <div class="<?php echo esc_attr($wrapper_class); ?>" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+        <div class="<?php echo esc_attr($wrapper_class); ?>">
             <?php 
             // Map Font Awesome icons to SVG icons
             $icon_map = array(
@@ -459,10 +462,10 @@ if (!function_exists('puna_tiktok_empty_state')) {
             $icon_name = isset($icon_map[$args['icon']]) ? $icon_map[$args['icon']] : 'home';
             echo puna_tiktok_get_icon($icon_name, $args['title']);
             ?>
-            <h3 style="color: #666; margin-bottom: 10px;"><?php echo esc_html($args['title']); ?></h3>
-            <p style="color: #999;"><?php echo esc_html($args['message']); ?></p>
-            <?php if (!empty($args['button_url']) && !empty($args['button_text']) && current_user_can('manage_options')) : ?>
-                <a href="<?php echo esc_url($args['button_url']); ?>" class="btn-primary" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background: #fe2c55; color: #fff; text-decoration: none; border-radius: 4px;">
+            <h3><?php echo esc_html($args['title']); ?></h3>
+            <p><?php echo esc_html($args['message']); ?></p>
+            <?php if (!empty($args['button_url']) && !empty($args['button_text'])) : ?>
+                <a href="<?php echo esc_url($args['button_url']); ?>" class="empty-state-btn">
                     <?php echo esc_html($args['button_text']); ?>
                 </a>
             <?php endif; ?>

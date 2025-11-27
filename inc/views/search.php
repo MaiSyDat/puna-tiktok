@@ -23,6 +23,21 @@ $withcomments = 1;
     <?php get_template_part('template-parts/sidebar'); ?>
     
     <div class="main-content search-results-page">
+        <!-- Search Results Title -->
+        <div class="search-results-title">
+            <div class="video-top-controls">
+                <!-- Sidebar toggle button will be added by JavaScript -->
+            </div>
+            <h1>
+                <?php 
+                printf(
+                    esc_html__('Search results for "%s"', 'puna-tiktok'),
+                    '<span class="search-query">' . esc_html($search_query) . '</span>'
+                );
+                ?>
+            </h1>
+        </div>
+        
         <!-- Search Tabs -->
         <div class="search-tabs">
             <a href="<?php echo esc_url(add_query_arg(array('s' => $search_query, 'tab' => 'top'), home_url('/'))); ?>" 
@@ -141,7 +156,7 @@ $withcomments = 1;
                                         <?php endif; ?>
                                         <div class="search-video-overlay">
                                             <div class="search-video-views">
-                                                <?php echo puna_tiktok_get_icon('play', 'Views'); ?>
+                                                <?php echo puna_tiktok_get_icon('play', __('Views', 'puna-tiktok')); ?>
                                                 <span><?php echo puna_tiktok_format_number($metadata['views']); ?></span>
                                             </div>
                                         </div>

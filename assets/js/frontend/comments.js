@@ -150,7 +150,8 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (!postId || postId === 0 || isNaN(postId)) {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Post';
+            const postText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.post) ? puna_tiktok_ajax.i18n.post : 'Post';
+            submitBtn.textContent = postText;
             return;
         }
         
@@ -190,7 +191,8 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!commentText) return;
         
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Posting...';
+        const postingText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.posting) ? puna_tiktok_ajax.i18n.posting : 'Posting...';
+        submitBtn.textContent = postingText;
         
         const params = {
             post_id: postId,
@@ -317,7 +319,8 @@ document.addEventListener("DOMContentLoaded", function() {
                             showMoreBtn.dataset.loaded = newLoaded;
                             
                             if (newRemaining > 0) {
-                                showMoreBtn.textContent = `View more replies (${newRemaining})`;
+                                const viewMoreText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.view_more_replies) ? puna_tiktok_ajax.i18n.view_more_replies : 'View more replies';
+                                showMoreBtn.textContent = `${viewMoreText} (${newRemaining})`;
                             } else {
                                 const remainingReplies = moreContainer.querySelectorAll('.comment-item');
                                 remainingReplies.forEach(r => repliesSection.insertBefore(r, showMoreBtn));
@@ -371,7 +374,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 
                 // Reset submit button
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Post';
+                const postText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.post) ? puna_tiktok_ajax.i18n.post : 'Post';
+                submitBtn.textContent = postText;
                 if (submitBtn.hasAttribute('data-parent-id')) {
                     submitBtn.removeAttribute('data-parent-id');
                 }
@@ -380,16 +384,20 @@ document.addEventListener("DOMContentLoaded", function() {
                 updateCommentCount(postId);
             } else {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Post';
+                const postText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.post) ? puna_tiktok_ajax.i18n.post : 'Post';
+                submitBtn.textContent = postText;
             }
         })
         .catch(() => {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Post';
+            const postText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.post) ? puna_tiktok_ajax.i18n.post : 'Post';
+            submitBtn.textContent = postText;
         });
     });
 
     function updateCommentCount(postId) {
+        const commentsText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.comments) ? puna_tiktok_ajax.i18n.comments : 'Comments';
+        
         const videoSidebar = document.querySelector(`.action-item[data-action="comment"][data-post-id="${postId}"] .count, .interaction-item[data-action="comment-toggle"][data-post-id="${postId}"] .stat-count`);
         if (videoSidebar) {
             const currentCount = parseInt(videoSidebar.textContent.replace(/[^\d]/g, '')) || 0;
@@ -399,13 +407,13 @@ document.addEventListener("DOMContentLoaded", function() {
         const commentsHeader = document.querySelector(`#comments-overlay-${postId} .comments-header h3`);
         if (commentsHeader) {
             const currentCount = parseInt(commentsHeader.textContent.match(/\d+/)?.[0]) || 0;
-            commentsHeader.textContent = `Comments (${formatNumber(currentCount + 1)})`;
+            commentsHeader.textContent = `${commentsText} (${formatNumber(currentCount + 1)})`;
         }
         
         const commentsTab = document.querySelector(`.comments-tab[data-tab="comments"]`);
         if (commentsTab) {
             const currentCount = parseInt(commentsTab.textContent.match(/\d+/)?.[0]) || 0;
-            commentsTab.textContent = `Comments (${formatNumber(currentCount + 1)})`;
+            commentsTab.textContent = `${commentsText} (${formatNumber(currentCount + 1)})`;
         }
     }
 
@@ -575,13 +583,15 @@ document.addEventListener("DOMContentLoaded", function() {
         
         const totalCountToSubtract = 1 + repliesCount;
         
+        const commentsText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.comments) ? puna_tiktok_ajax.i18n.comments : 'Comments';
+        
         if (sidebar) {
             const header = sidebar.querySelector('.comments-header h3');
             if (header) {
                 const m = header.textContent.match(/\d+/);
                 if (m) {
                     const newCount = Math.max(0, parseInt(m[0], 10) - totalCountToSubtract);
-                    header.textContent = `Comments (${formatNumber(newCount)})`;
+                    header.textContent = `${commentsText} (${formatNumber(newCount)})`;
                 }
             }
         }
@@ -601,7 +611,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const m = commentsTab.textContent.match(/\d+/);
                 if (m) {
                     const newCount = Math.max(0, parseInt(m[0], 10) - totalCountToSubtract);
-                    commentsTab.textContent = `Comments (${formatNumber(newCount)})`;
+                    commentsTab.textContent = `${commentsText} (${formatNumber(newCount)})`;
                 }
             }
         }
@@ -625,7 +635,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         
                         const remaining = hiddenReplies.length - 1;
                         if (remaining > 0) {
-                            showMoreBtn.textContent = `View more replies (${remaining})`;
+                            const viewMoreText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n?.view_more_replies) ? puna_tiktok_ajax.i18n.view_more_replies : 'View more replies';
+                            showMoreBtn.textContent = `${viewMoreText} (${remaining})`;
                             showMoreBtn.dataset.loaded = parseInt(showMoreBtn.dataset.loaded, 10) - 1;
                         } else {
                             showMoreBtn.style.display = 'none';
@@ -756,18 +767,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     updateCommentLikeIcon(likesElement, false);
                 }
                 
-                if (!isLoggedIn()) {
-                    const liked = GuestStorage.getLikedComments();
-                    if (isLikedNow && liked.indexOf(commentId) === -1) {
-                        liked.push(commentId);
-                        GuestStorage.setLikedComments(liked);
-                    } else if (!isLikedNow) {
-                        const index = liked.indexOf(commentId);
-                        if (index > -1) {
-                            liked.splice(index, 1);
-                            GuestStorage.setLikedComments(liked);
-                        }
-                    }
+                // Sync guest state using helper
+                if (typeof GuestStateHelpers !== 'undefined') {
+                    GuestStateHelpers.syncCommentLikeState(commentId, isLikedNow);
                 }
                 
                 // Update count from server
@@ -782,7 +784,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     updateCommentLikeIcon(likesElement, false);
                 }
                 span.textContent = formatNumber(currentLikes);
-                if (!isLoggedIn()) {
+                // Revert guest state using helper
+                if (typeof GuestStateHelpers !== 'undefined') {
+                    GuestStateHelpers.revertCommentLikeState(commentId);
+                } else if (!isLoggedIn()) {
                     GuestStorage.toggleLikeComment(commentId);
                 }
             }
@@ -791,18 +796,21 @@ document.addEventListener("DOMContentLoaded", function() {
             // Remove processing flag
             likesElement.dataset.processing = 'false';
             
-        // Revert optimistic update
-        if (isLiked) {
-            likesElement.classList.add('liked');
-            updateCommentLikeIcon(likesElement, true);
-        } else {
-            likesElement.classList.remove('liked');
-            updateCommentLikeIcon(likesElement, false);
-        }
-        span.textContent = formatNumber(currentLikes);
-        if (!isLoggedIn()) {
-            GuestStorage.toggleLikeComment(commentId);
-        }
+            // Revert optimistic update
+            if (isLiked) {
+                likesElement.classList.add('liked');
+                updateCommentLikeIcon(likesElement, true);
+            } else {
+                likesElement.classList.remove('liked');
+                updateCommentLikeIcon(likesElement, false);
+            }
+            span.textContent = formatNumber(currentLikes);
+            // Revert guest state using helper
+            if (typeof GuestStateHelpers !== 'undefined') {
+                GuestStateHelpers.revertCommentLikeState(commentId);
+            } else if (!isLoggedIn()) {
+                GuestStorage.toggleLikeComment(commentId);
+            }
         });
     });
 

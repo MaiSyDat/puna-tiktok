@@ -59,9 +59,7 @@ body.single .tiktok-app .main-content {
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
-/* Video Options Button Icons */
-.video-options-btn .icon-svg,
-.video-options-btn .icon-img,
+/* Video Info More Button Icons */
 .video-info-more-btn .icon-svg,
 .video-info-more-btn .icon-img {
     width: 18px;
@@ -70,8 +68,6 @@ body.single .tiktok-app .main-content {
     transition: opacity 0.2s ease, filter 0.2s ease;
 }
 
-.video-options-btn:hover .icon-svg,
-.video-options-btn:active .icon-svg,
 .video-info-more-btn:hover .icon-svg,
 .video-info-more-btn:active .icon-svg {
     opacity: 1;
@@ -84,20 +80,7 @@ body.single .tiktok-app .main-content {
     filter: brightness(0) invert(1);
 }
 
-/* Share Modal Icons */
-.share-modal-close .icon-svg,
-.share-modal-close .icon-img {
-    width: 18px;
-    height: 18px;
-    color: inherit;
-    transition: opacity 0.2s ease, filter 0.2s ease;
-}
-
-.share-modal-close:hover .icon-svg,
-.share-modal-close:active .icon-svg {
-    opacity: 1;
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
-}
+/* Share Modal Icons - styles inherited from video-feed.css */
 
 .share-option-icon .icon-svg,
 .share-option-icon .icon-img {
@@ -808,7 +791,7 @@ body.theme-dark .video-caption-content .tag {
 }
 
 .video-watch-comments .comment-input::placeholder {
-    color: var(--puna-primary);
+    color: rgba(17, 24, 35, 0.5);
 }
 
 

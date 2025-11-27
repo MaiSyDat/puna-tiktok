@@ -1,7 +1,7 @@
 <?php
 /**
  * Index Controller
- * Handles homepage display
+ * Handles homepage and archive pages display
  */
 
 if (!defined('ABSPATH')) {
@@ -11,12 +11,18 @@ if (!defined('ABSPATH')) {
 class IndexController extends Puna_TikTok_Theme {
     
     public function __construct() {
-        add_action('puna_tiktok_index', array($this, 'render'));
+        add_action('puna_tiktok_index', array($this, 'render_index'));
+        add_action('puna_tiktok_archive', array($this, 'render_archive'));
     }
     
-    public function render() {
+    public function render_index() {
         $data = $this->get_data();
         $this->views('index', $data);
+    }
+    
+    public function render_archive() {
+        $data = $this->get_data();
+        $this->views('archive', $data);
     }
     
     protected function get_data() {

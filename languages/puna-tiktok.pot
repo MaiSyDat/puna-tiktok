@@ -1,0 +1,775 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Puna TikTok\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-27 11:51+0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Poedit 3.8\n"
+"X-Loco-Version: 2.8.0; wp-6.8.3; php-8.2.12\n"
+"X-Domain: puna-tiktok\n"
+
+#: inc/class-ajax-handlers.php:285 inc/views/search.php:168
+#: template-parts/video/content-single-video.php:145
+#: template-parts/components/comments/comment-item.php:83
+#: template-parts/components/comments/comment-replies.php:100
+#: template-parts/components/comments/comment-replies.php:188
+#: template-parts/components/comments/comment-reply.php:81
+#, php-format
+msgid "%s ago"
+msgstr ""
+
+#: inc/views/404.php:19
+msgid "404 - Page Not Found"
+msgstr ""
+
+#: comments.php:149 template-parts/comments-video-watch.php:132
+msgid "Add a comment..."
+msgstr ""
+
+#: inc/class-video-post-type.php:95
+msgid "Add New"
+msgstr ""
+
+#: inc/class-video-post-type.php:37
+msgid "Add New Category"
+msgstr ""
+
+#: inc/class-video-post-type.php:94
+msgctxt "Add New on Toolbar"
+msgid "Video"
+msgstr ""
+
+#: inc/class-video-post-type.php:63
+msgid "Add New Tag"
+msgstr ""
+
+#: inc/class-video-post-type.php:96
+msgid "Add New Video"
+msgstr ""
+
+#: inc/class-video-post-type.php:66
+msgid "Add or remove tags"
+msgstr ""
+
+#: inc/views/partials/video-feed.php:25
+msgid "Add Video"
+msgstr ""
+
+#: inc/views/partials/video-feed.php:23
+msgid "Add your first video!"
+msgstr ""
+
+#: inc/class-video-post-type.php:93
+msgctxt "Admin Menu text"
+msgid "Videos"
+msgstr ""
+
+#: inc/class-video-post-type.php:32
+msgid "All Categories"
+msgstr ""
+
+#: inc/class-video-post-type.php:60
+msgid "All Tags"
+msgstr ""
+
+#: inc/class-video-post-type.php:100
+msgid "All Videos"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:258
+msgid "Author has no other videos"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:187
+msgid "Author videos"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:54
+#: template-parts/video/content-single-video.php:55
+msgid "Back"
+msgstr ""
+
+#: customize/customize-colors.php:72
+msgid "Background Color"
+msgstr ""
+
+#: customize/customize-colors.php:73
+msgid "Background color for entire page"
+msgstr ""
+
+#: customize/customize-colors.php:114
+msgid "Border / Muted Color"
+msgstr ""
+
+#: customize/customize-colors.php:115
+msgid "Border color and muted elements"
+msgstr ""
+
+#: template-parts/components/comments/reply-input.php:45
+msgid "Cancel"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:205
+msgid "Cannot add comment."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:979
+msgid "Cannot delete video. Please try again."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:215
+msgid "Cannot get comment information."
+msgstr ""
+
+#: customize/customize-sidebar.php:147 inc/class-setup.php:39
+#: inc/views/category.php:17
+msgid "Categories"
+msgstr ""
+
+#: customize/customize-theme.php:38
+msgid "Choose default mode for user interface."
+msgstr ""
+
+#: inc/class-video-post-type.php:67
+msgid "Choose from the most used tags"
+msgstr ""
+
+#: template-parts/search-panel.php:41
+msgid "Clear history"
+msgstr ""
+
+#: comments.php:23 template-parts/search-panel.php:16
+#: template-parts/video/content-single-video.php:271
+#: template-parts/video/content-single-video.php:272
+#: template-parts/video/content.php:114 template-parts/video/content.php:115
+msgid "Close"
+msgstr ""
+
+#: customize/customize-colors.php:25
+msgid "Color"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:160
+#: template-parts/video/content.php:86
+msgid "Comment"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:159
+msgid "Comment cannot be empty."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:339 inc/class-ajax-handlers.php:432
+msgid "Comment does not exist."
+msgstr ""
+
+#: inc/class-video-post-type.php:270
+msgid "Comments"
+msgstr ""
+
+#: comments.php:21 template-parts/video/content-single-video.php:184
+#, php-format
+msgid "Comments (%s)"
+msgstr ""
+
+#: customize/customize-footer.php:30
+msgid "Configure Footer"
+msgstr ""
+
+#: customize/customize-colors.php:26
+msgid "Configure global color system for theme"
+msgstr ""
+
+#: customize/customize-theme.php:22
+msgid "Configure light/dark mode for theme"
+msgstr ""
+
+#: customize/customize-sidebar.php:29
+msgid "Configure Sidebar (Logo, Menu)"
+msgstr ""
+
+#: template-parts/top-header.php:17 template-parts/top-header.php:19
+#: template-parts/top-header.php:21
+msgid "Contact"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:296
+#: template-parts/video/content-single-video.php:298
+#: template-parts/video/content.php:139 template-parts/video/content.php:141
+msgid "Copy link"
+msgstr ""
+
+#: customize/customize-footer.php:43
+msgid "Copyright Text"
+msgstr ""
+
+#: inc/class-video-post-type.php:187
+msgid "Current Video:"
+msgstr ""
+
+#: customize/customize-theme.php:42
+msgid "Dark"
+msgstr ""
+
+#: customize/customize-theme.php:37
+msgid "Default Theme"
+msgstr ""
+
+#: template-parts/components/comments/comment-item.php:95
+#: template-parts/components/comments/comment-replies.php:112
+#: template-parts/components/comments/comment-replies.php:200
+#: template-parts/components/comments/comment-reply.php:93
+msgid "Delete"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:113
+#: template-parts/video/content-single-video.php:114
+msgid "Delete video"
+msgstr ""
+
+#: inc/class-video-post-type.php:35
+msgid "Edit Category"
+msgstr ""
+
+#: inc/class-video-post-type.php:61
+msgid "Edit Tag"
+msgstr ""
+
+#: inc/class-video-post-type.php:98
+msgid "Edit Video"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:312
+#: template-parts/video/content-single-video.php:314
+#: template-parts/video/content.php:155 template-parts/video/content.php:157
+msgid "Email"
+msgstr ""
+
+#: template-parts/sidebar.php:83 template-parts/sidebar.php:84
+#: template-parts/sidebar.php:85
+#: template-parts/video/content-single-video.php:280
+#: template-parts/video/content-single-video.php:282
+#: template-parts/video/content.php:123 template-parts/video/content.php:125
+msgid "Facebook"
+msgstr ""
+
+#: customize/customize-footer.php:29
+msgid "Footer"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:181
+msgid "Guest"
+msgstr ""
+
+#: customize/customize-sidebar.php:141
+msgid "Home"
+msgstr ""
+
+#: template-parts/sidebar.php:87 template-parts/sidebar.php:88
+#: template-parts/sidebar.php:89
+#: template-parts/video/content-single-video.php:304
+#: template-parts/video/content-single-video.php:306
+#: template-parts/video/content.php:147 template-parts/video/content.php:149
+msgid "Instagram"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:419 inc/class-ajax-handlers.php:497
+#: inc/class-ajax-handlers.php:513 inc/class-ajax-handlers.php:575
+#: inc/class-ajax-handlers.php:628 inc/class-ajax-handlers.php:689
+#: inc/class-ajax-handlers.php:712 inc/class-ajax-handlers.php:765
+#: inc/class-ajax-handlers.php:1043 inc/admin/class-admin-ajax.php:35
+msgid "Invalid nonce."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:88 inc/class-ajax-handlers.php:155
+#: inc/class-ajax-handlers.php:317 inc/class-ajax-handlers.php:867
+#: inc/class-ajax-handlers.php:888 inc/class-ajax-handlers.php:961
+#: inc/class-ajax-handlers.php:1072
+msgid "Invalid video."
+msgstr ""
+
+#: inc/views/search.php:34
+#, php-format
+msgid "Search results for \"%s\""
+msgstr ""
+
+#: customize/customize-theme.php:41
+msgid "Light"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:154
+#: template-parts/video/content.php:79
+#: template-parts/components/comments/comment-item.php:110
+#: template-parts/components/comments/comment-replies.php:127
+#: template-parts/components/comments/comment-replies.php:215
+#: template-parts/components/comments/comment-reply.php:108
+msgid "Like"
+msgstr ""
+
+#: inc/class-video-post-type.php:269
+msgid "Likes"
+msgstr ""
+
+#: customize/customize-colors.php:100
+msgid "Link / Accent Color"
+msgstr ""
+
+#: customize/customize-colors.php:101
+msgid "Link color and hover effects"
+msgstr ""
+
+#: template-parts/search-panel.php:46
+msgid "Loading history..."
+msgstr ""
+
+#: template-parts/search-panel.php:54 inc/views/search.php:203
+msgid "Loading..."
+msgstr ""
+
+#: customize/customize-sidebar.php:41 template-parts/sidebar.php:24
+#: template-parts/sidebar.php:34
+msgid "Logo"
+msgstr ""
+
+#: customize/customize-sidebar.php:53
+msgid "Logo Link"
+msgstr ""
+
+#. Author of the theme
+msgid "Mai Sỹ Đạt"
+msgstr ""
+
+#: customize/customize-colors.php:45
+msgid "Main color of the theme"
+msgstr ""
+
+#: inc/class-video-post-type.php:189
+msgid "MEGA Link:"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:334 inc/class-ajax-handlers.php:426
+#: inc/class-ajax-handlers.php:501
+msgid "Missing comment_id."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:1066
+msgid "Missing parent comment information."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:1059
+msgid "Missing video information."
+msgstr ""
+
+#: template-parts/video/content-single-video.php:107
+#: template-parts/video/content-single-video.php:108
+msgid "More"
+msgstr ""
+
+#: inc/class-video-post-type.php:38
+msgid "New Category Name"
+msgstr ""
+
+#: inc/class-video-post-type.php:64
+msgid "New Tag Name"
+msgstr ""
+
+#: inc/class-video-post-type.php:97
+msgid "New Video"
+msgstr ""
+
+#: template-parts/top-header.php:28 template-parts/top-header.php:30
+#: template-parts/top-header.php:32
+msgid "News"
+msgstr ""
+
+#: inc/views/single.php:33 inc/views/single.php:34
+#: inc/views/partials/video-feed.php:36 inc/views/partials/video-feed.php:37
+msgid "Next video"
+msgstr ""
+
+#: comments.php:138 template-parts/comments-video-watch.php:121
+msgid "No comments yet. Be the first to comment!"
+msgstr ""
+
+#: inc/views/single.php:23
+msgid "No content."
+msgstr ""
+
+#: inc/admin/class-admin-ajax.php:55
+msgid "No file uploaded or an error occurred."
+msgstr ""
+
+#: inc/class-video-post-type.php:68
+msgid "No tags found"
+msgstr ""
+
+#: inc/views/search.php:181 inc/views/search.php:190
+msgid "No videos found"
+msgstr ""
+
+#: inc/views/search.php:182 inc/views/search.php:191
+#, php-format
+msgid "No videos found for \"%s\""
+msgstr ""
+
+#: inc/class-video-post-type.php:103
+msgid "No videos found in Trash."
+msgstr ""
+
+#: inc/class-video-post-type.php:102
+msgid "No videos found."
+msgstr ""
+
+#: inc/core-functions.php:433 inc/views/partials/video-feed.php:22
+msgid "No videos yet"
+msgstr ""
+
+#: template-parts/components/comments/comment-item.php:92
+#: template-parts/components/comments/comment-item.php:101
+#: template-parts/components/comments/comment-replies.php:109
+#: template-parts/components/comments/comment-replies.php:118
+#: template-parts/components/comments/comment-replies.php:197
+#: template-parts/components/comments/comment-replies.php:206
+#: template-parts/components/comments/comment-reply.php:90
+#: template-parts/components/comments/comment-reply.php:99
+msgid "Options"
+msgstr ""
+
+#: inc/class-video-post-type.php:174
+msgid "Or drag and drop video here"
+msgstr ""
+
+#: inc/class-video-post-type.php:33
+msgid "Parent Category"
+msgstr ""
+
+#: inc/class-video-post-type.php:34
+msgid "Parent Category:"
+msgstr ""
+
+#: template-parts/video-card.php:46
+msgid "Play"
+msgstr ""
+
+#: template-parts/search-panel.php:52
+msgid "Popular searches"
+msgstr ""
+
+#: inc/class-video-post-type.php:59
+msgid "Popular Tags"
+msgstr ""
+
+#: comments.php:154 template-parts/comments-video-watch.php:137
+#: template-parts/components/comments/reply-input.php:44
+msgid "Post"
+msgstr ""
+
+#: inc/class-video-post-type.php:91
+msgctxt "Post type general name"
+msgid "Videos"
+msgstr ""
+
+#: inc/class-video-post-type.php:92
+msgctxt "Post type singular name"
+msgid "Video"
+msgstr ""
+
+#: inc/views/single.php:30 inc/views/single.php:31
+#: inc/views/partials/video-feed.php:33 inc/views/partials/video-feed.php:34
+msgid "Previous video"
+msgstr ""
+
+#: customize/customize-colors.php:44
+msgid "Primary Color"
+msgstr ""
+
+#. Name of the theme
+msgid "Puna TikTok"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:582
+msgid "Query cannot be empty."
+msgstr ""
+
+#: inc/views/search.php:201
+msgid "Related searches"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:286
+#: template-parts/components/comments/comment-item.php:85
+#: template-parts/components/comments/comment-replies.php:102
+#: template-parts/components/comments/comment-replies.php:190
+#: template-parts/components/comments/comment-reply.php:83
+msgid "Reply"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:118
+#: template-parts/video/content-single-video.php:119
+#: template-parts/components/comments/comment-item.php:104
+#: template-parts/components/comments/comment-replies.php:121
+#: template-parts/components/comments/comment-replies.php:209
+#: template-parts/components/comments/comment-reply.php:102
+msgid "Report"
+msgstr ""
+
+#: customize/customize-colors.php:127
+msgid "Reset Colors"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:166
+#: template-parts/video/content.php:93
+msgid "Save"
+msgstr ""
+
+#: template-parts/search-panel.php:14 template-parts/sidebar.php:43
+#: template-parts/sidebar.php:46 template-parts/sidebar.php:136
+msgid "Search"
+msgstr ""
+
+#: inc/class-video-post-type.php:31
+msgid "Search Categories"
+msgstr ""
+
+#: template-parts/search-panel.php:39
+msgid "Search history"
+msgstr ""
+
+#: inc/class-video-post-type.php:58
+msgid "Search Tags"
+msgstr ""
+
+#: inc/class-video-post-type.php:101
+msgid "Search Videos"
+msgstr ""
+
+#: template-parts/search-panel.php:25
+msgid "Search..."
+msgstr ""
+
+#: customize/customize-colors.php:58
+msgid "Secondary Color"
+msgstr ""
+
+#: customize/customize-colors.php:59
+msgid "Secondary color of the theme"
+msgstr ""
+
+#: inc/class-video-post-type.php:176
+msgid "Select video"
+msgstr ""
+
+#: inc/class-video-post-type.php:173
+msgid "Select video to upload"
+msgstr ""
+
+#: inc/class-video-post-type.php:65
+msgid "Separate tags with commas"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:172
+#: template-parts/video/content.php:100
+msgid "Share"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:270
+#: template-parts/video/content.php:113
+msgid "Share to"
+msgstr ""
+
+#. Description of the theme
+msgid "Short-form video theme inspired by TikTok."
+msgstr ""
+
+#: customize/customize-sidebar.php:28
+msgid "Sidebar"
+msgstr ""
+
+#: customize/customize-theme.php:40
+msgid "System"
+msgstr ""
+
+#: inc/class-setup.php:40 inc/views/tag.php:18
+msgid "Tag"
+msgstr ""
+
+#: customize/customize-sidebar.php:153
+msgid "Tags"
+msgstr ""
+
+#: inc/class-video-post-type.php:29
+msgctxt "taxonomy general name"
+msgid "Video Categories"
+msgstr ""
+
+#: inc/class-video-post-type.php:56
+msgctxt "taxonomy general name"
+msgid "Video Tags"
+msgstr ""
+
+#: inc/class-video-post-type.php:30
+msgctxt "taxonomy singular name"
+msgid "Video Category"
+msgstr ""
+
+#: inc/class-video-post-type.php:57
+msgctxt "taxonomy singular name"
+msgid "Video Tag"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:320
+#: template-parts/video/content-single-video.php:322
+#: template-parts/video/content.php:163 template-parts/video/content.php:165
+msgid "Telegram"
+msgstr ""
+
+#: customize/customize-colors.php:86
+msgid "Text Color"
+msgstr ""
+
+#: customize/customize-colors.php:87
+msgid "Text color for entire page"
+msgstr ""
+
+#: customize/customize-theme.php:21
+msgid "Theme Mode"
+msgstr ""
+
+#: inc/class-setup.php:74
+msgid "TikTok Sidebar Menu"
+msgstr ""
+
+#: customize/customize-colors.php:128
+msgid "To reset all colors to default, delete each color value and click Publish."
+msgstr ""
+
+#: inc/views/search.php:46
+msgid "Top"
+msgstr ""
+
+#: inc/views/category.php:28 inc/views/tag.php:29
+msgid "For You"
+msgstr ""
+
+#: inc/views/category.php:35 inc/views/tag.php:36
+msgid "Trending"
+msgstr ""
+
+#: inc/class-video-post-type.php:36
+msgid "Update Category"
+msgstr ""
+
+#: inc/class-video-post-type.php:62
+msgid "Update Tag"
+msgstr ""
+
+#: inc/class-video-post-type.php:145
+msgid "Upload Video"
+msgstr ""
+
+#: inc/core-functions.php:434
+msgid "Upload your first video to get started!"
+msgstr ""
+
+#: customize/customize-footer.php:46
+msgid "Use [year] to display current year"
+msgstr ""
+
+#: template-parts/video-card.php:35 inc/views/search.php:51
+msgid "Video"
+msgstr ""
+
+#: inc/class-video-post-type.php:39
+msgid "Video Categories"
+msgstr ""
+
+#: inc/class-video-post-type.php:165
+msgid "Video File"
+msgstr ""
+
+#: inc/class-video-post-type.php:69
+msgid "Video Tags"
+msgstr ""
+
+#: inc/class-video-post-type.php:193
+msgid "Video URL:"
+msgstr ""
+
+#: template-parts/components/comments/comment-replies.php:136
+#, php-format
+msgid "View more replies (%s)"
+msgstr ""
+
+#: inc/class-video-post-type.php:99
+msgid "View Video"
+msgstr ""
+
+#: template-parts/top-header.php:38 template-parts/top-header.php:42
+msgid "View Web Site"
+msgstr ""
+
+#: inc/class-video-post-type.php:268 template-parts/video-card.php:50
+#: inc/views/search.php:159 template-parts/video/content-single-video.php:245
+msgid "Views"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:70
+#: template-parts/video/content-single-video.php:71
+#: template-parts/video/content-single-video.php:74
+#: template-parts/video/content.php:37 template-parts/video/content.php:38
+#: template-parts/video/content.php:41
+msgid "Volume"
+msgstr ""
+
+#: inc/views/404.php:22
+msgid "Go to Home"
+msgstr ""
+
+#: template-parts/top-header.php:40
+msgid "Web"
+msgstr ""
+
+#: template-parts/components/comments/reply-input.php:36
+msgid "Write a reply..."
+msgstr ""
+
+#: inc/views/404.php:20
+msgid "Sorry, the content you are looking for does not exist or has been deleted."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:466
+msgid "You do not have permission to delete this comment."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:966
+msgid "You do not have permission to delete this video."
+msgstr ""
+
+#: inc/admin/class-admin-ajax.php:41
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: inc/class-ajax-handlers.php:955
+msgid "You need to login to perform this action."
+msgstr ""
+
+#: template-parts/video/content-single-video.php:88
+#: template-parts/video/content.php:48
+msgid "Your browser does not support video."
+msgstr ""
+
+#: template-parts/sidebar.php:91 template-parts/sidebar.php:92
+#: template-parts/sidebar.php:93
+msgid "YouTube"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:288
+#: template-parts/video/content-single-video.php:290
+#: template-parts/video/content.php:131 template-parts/video/content.php:133
+msgid "Zalo"
+msgstr ""

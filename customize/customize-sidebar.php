@@ -11,8 +11,6 @@ class Puna_TikTok_Customize_Sidebar {
 
     public function __construct() {
         add_action('customize_register', array($this, 'register_settings'));
-        add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
-        add_action('wp_head', array($this, 'output_dynamic_css'));
         add_action('customize_preview_init', array($this, 'customize_preview_js'));
     }
 
@@ -70,22 +68,6 @@ class Puna_TikTok_Customize_Sidebar {
             '1.0.0',
             true
         );
-    }
-
-    /**
-     * Output dynamic CSS for logo dimensions
-     */
-    public function output_dynamic_css() {
-        // Logo dimensions are now handled by static CSS
-        // No dynamic CSS needed
-    }
-
-    /**
-     * Enqueue sidebar scripts
-     */
-    public function enqueue_scripts() {
-        // Sidebar toggle is now handled by assets/js/frontend/sidebar-toggle.js
-        // No inline scripts needed here
     }
 
     /**

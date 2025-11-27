@@ -4,8 +4,8 @@
 
 .fixed-top-container {
     position: fixed;
-    top: 0;
-    right: 0;
+    top: 10px;
+    right: 10px;
     left: 0;
     z-index: 10000;
     background: transparent;
@@ -37,7 +37,7 @@
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 16px;
+    padding: 8px 16px;
     background: #ffffff;
     border-radius: 24px;
     cursor: pointer;
@@ -84,6 +84,26 @@
 .action-bar-text {
     font-size: 12px;
     line-height: 1.4;
+}
+
+
+/* News button: blue default, white on hover (inverse of others) */
+.action-bar-news-btn {
+  background: var(--puna-primary);
+  color: #fff;
+  border: 1px solid var(--puna-primary);
+}
+.action-bar-news-btn:hover{
+  background: #fff;
+  color: var(--puna-primary);
+  border-color: var(--puna-primary);
+}
+.action-bar-news-btn .action-bar-icon .icon-svg {
+  filter: brightness(0) invert(1);
+  transition: filter 0.2s ease, color 0.2s ease;
+}
+.action-bar-news-btn:hover .action-bar-icon .icon-svg {
+    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
 }
 
 .action-bar-button[data-phone]:hover::after {

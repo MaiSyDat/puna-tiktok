@@ -13,9 +13,13 @@ document.addEventListener("DOMContentLoaded", function() {
     
 
     /**
-     * Get current video
+     * Get current video - uses global function from core.js
      */
     function getCurrentVideo() {
+        if (typeof window.getCurrentVideo === 'function') {
+            return window.getCurrentVideo();
+        }
+        // Fallback if core.js hasn't loaded yet
         const videoList = document.querySelectorAll('.tiktok-video');
         return Array.from(videoList).find(video => {
             const rect = video.getBoundingClientRect();
@@ -429,6 +433,5 @@ document.addEventListener("DOMContentLoaded", function() {
     // Export functions for other modules
     window.applyVideoVolumeSettings = applyVideoVolumeSettings;
     window.applyVolumeToAllVideos = applyVolumeToAllVideos;
-    window.getCurrentVideo = getCurrentVideo;
 });
 

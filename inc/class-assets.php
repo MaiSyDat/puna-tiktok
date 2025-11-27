@@ -104,7 +104,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             
             // Enqueue page-specific styles
             
-            if ($page_context['is_home'] || $page_context['is_single_video']) {
+            if ($page_context['is_home'] || $page_context['is_single_video'] || is_404()) {
                 wp_enqueue_style('puna-tiktok-video-feed');
                 wp_enqueue_style('puna-tiktok-video-nav');
                 wp_enqueue_style('puna-tiktok-comments');
@@ -154,9 +154,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Dropdowns - Register
             wp_register_script('puna-tiktok-dropdowns', $js_dir . 'frontend/dropdowns.js', array('puna-tiktok-core'), $version, true);
             
-            // Sidebar toggle - Register
-            wp_register_script('puna-tiktok-sidebar-toggle', $js_dir . 'frontend/sidebar-toggle.js', array('puna-tiktok-core'), $version, true);
-            
             // Top header - Register
             wp_register_script('puna-tiktok-top-header', $js_dir . 'frontend/top-header.js', array('puna-tiktok-core'), $version, true);
             
@@ -184,7 +181,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_enqueue_script('puna-tiktok-mega-video');
             wp_enqueue_script('puna-tiktok-guest-state');
             wp_enqueue_script('puna-tiktok-dropdowns');
-            wp_enqueue_script('puna-tiktok-sidebar-toggle');
             wp_enqueue_script('puna-tiktok-top-header');
             wp_enqueue_script('puna-tiktok-search');
             
@@ -229,6 +225,12 @@ if (!class_exists('Puna_TikTok_Assets')) {
                 'avatar_url' => get_avatar_url($current_user->ID, array('size' => 40)),
                 'menu_icon_url' => $menu_icon_url,
                 'mega' => false,
+                'i18n' => array(
+                    'post' => __('Post', 'puna-tiktok'),
+                    'posting' => __('Posting...', 'puna-tiktok'),
+                    'comments' => __('Comments', 'puna-tiktok'),
+                    'view_more_replies' => __('View more replies', 'puna-tiktok'),
+                ),
             ));
             
             wp_localize_script('puna-tiktok-core', 'puna_tiktok_ajax', $localize_data);

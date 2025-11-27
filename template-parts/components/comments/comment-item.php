@@ -107,7 +107,7 @@ if (!$comment_author_id) {
             </div>
         <?php endif; ?>
         <div class="comment-likes<?php echo $is_liked ? ' liked' : ''; ?>" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-            <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
+            <?php echo puna_tiktok_get_icon('heart-alt', __('Like', 'puna-tiktok')); ?>
             <span><?php echo esc_html($comment_likes); ?></span>
         </div>
     </div>

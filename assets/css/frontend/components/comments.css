@@ -411,7 +411,6 @@
     background: none;
     border: none;
     cursor: pointer;
-    padding: 4px 8px;
     color: rgba(22, 24, 35, 0.75);
     font-size: 16px;
     display: flex;
@@ -419,8 +418,6 @@
     justify-content: center;
     border-radius: 4px;
     transition: all 0.2s;
-    width: 32px;
-    height: 32px;
 }
 
 .comment-options-btn:hover {
@@ -530,6 +527,10 @@
     font-size: 14px;
     outline: none;
     transition: background-color 0.2s;
+}
+
+.comment-input::placeholder {
+    color: rgba(17, 24, 35, 0.5);
 }
 
 .comment-input:focus {

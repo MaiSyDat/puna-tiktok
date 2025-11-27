@@ -124,7 +124,7 @@ $remaining_replies_list = array_slice($replies, 3);
                     </div>
                 <?php endif; ?>
                         <div class="comment-likes<?php echo $reply_is_liked ? ' liked' : ''; ?>" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                            <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
+                            <?php echo puna_tiktok_get_icon('heart-alt', __('Like', 'puna-tiktok')); ?>
                             <span><?php echo esc_html($reply_likes); ?></span>
                         </div>
                     </div>
@@ -212,7 +212,7 @@ $remaining_replies_list = array_slice($replies, 3);
                             </div>
                         <?php endif; ?>
                         <div class="comment-likes<?php echo $reply_is_liked ? ' liked' : ''; ?>" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
-                            <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
+                            <?php echo puna_tiktok_get_icon('heart-alt', __('Like', 'puna-tiktok')); ?>
                             <span><?php echo esc_html($reply_likes); ?></span>
                         </div>
                     </div>

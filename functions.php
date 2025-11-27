@@ -24,7 +24,6 @@ require_once get_template_directory() . '/inc/class-customizer.php';
 
 // Controllers
 require_once get_template_directory() . '/inc/controllers/class-index-controller.php';
-require_once get_template_directory() . '/inc/controllers/class-archive-controller.php';
 require_once get_template_directory() . '/inc/controllers/class-single-controller.php';
 require_once get_template_directory() . '/inc/controllers/class-search-controller.php';
 require_once get_template_directory() . '/inc/controllers/class-category-controller.php';

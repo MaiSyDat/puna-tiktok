@@ -118,35 +118,44 @@ class Puna_TikTok_Setup {
     }
 
     /**
+     * Set query flags for custom pages
+     * 
+     * @param string $puna_page The custom page type
+     */
+    private function set_custom_page_query_flags($puna_page) {
+        global $wp_query;
+        
+        // Fix 404 status
+        $wp_query->is_404 = false;
+        status_header(200);
+        
+        // Set query flags for custom pages
+        $wp_query->is_page = true;
+        $wp_query->is_singular = true;
+        $wp_query->is_home = false;
+        $wp_query->is_front_page = false;
+        
+        // For category/tag pages, set appropriate flags
+        if ($puna_page === 'category') {
+            $wp_query->is_category = true;
+            $wp_query->is_archive = true;
+        } elseif ($puna_page === 'tag') {
+            $wp_query->is_tag = true;
+            $wp_query->is_archive = true;
+        }
+    }
+    
+    /**
      * Handle template redirect - fix 404 status early
      */
     public function handle_template_redirect() {
-        global $wp_query;
-        
         $puna_page = get_query_var('puna_page');
         
         if ($puna_page) {
             $page_templates = $this->get_custom_pages();
             
             if (isset($page_templates[$puna_page])) {
-                // Fix 404 status early
-                $wp_query->is_404 = false;
-                status_header(200);
-                
-                // Set query flags for custom pages
-                $wp_query->is_page = true;
-                $wp_query->is_singular = true;
-                $wp_query->is_home = false;
-                $wp_query->is_front_page = false;
-                
-                // For category/tag pages, set appropriate flags
-                if ($puna_page === 'category') {
-                    $wp_query->is_category = true;
-                    $wp_query->is_archive = true;
-                } elseif ($puna_page === 'tag') {
-                    $wp_query->is_tag = true;
-                    $wp_query->is_archive = true;
-                }
+                $this->set_custom_page_query_flags($puna_page);
             }
         }
     }
@@ -173,23 +182,8 @@ class Puna_TikTok_Setup {
                 $page_titles = $this->get_page_titles();
                 $page_title = isset($page_titles[$puna_page]) ? $page_titles[$puna_page] : ucfirst($puna_page);
                 
-                // Ensure 404 is false (already set in template_redirect, but double-check)
-                $wp_query->is_404 = false;
-                
-                // Set query flags for custom pages
-                $wp_query->is_page = true;
-                $wp_query->is_singular = true;
-                $wp_query->is_home = false;
-                $wp_query->is_front_page = false;
-                
-                // For category/tag pages, set appropriate flags
-                if ($puna_page === 'category') {
-                    $wp_query->is_category = true;
-                    $wp_query->is_archive = true;
-                } elseif ($puna_page === 'tag') {
-                    $wp_query->is_tag = true;
-                    $wp_query->is_archive = true;
-                }
+                // Set query flags (already set in template_redirect, but ensure they're set)
+                $this->set_custom_page_query_flags($puna_page);
                 
                 $fake_post = new stdClass();
                 $fake_post->ID = 0;

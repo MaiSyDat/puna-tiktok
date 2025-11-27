@@ -9,8 +9,20 @@ if (!defined('ABSPATH')) {
 }
 ?>
 
-<main id="primary" class="site-main">
-    <h1><?php esc_html_e('Not Found', 'puna-tiktok'); ?></h1>
-    <p><?php esc_html_e('Sorry, the content you are looking for could not be found.', 'puna-tiktok'); ?></p>
-</main>
+<div class="tiktok-app">
+    <?php get_template_part('template-parts/sidebar'); ?>
+    
+    <div class="main-content">
+        <?php
+        puna_tiktok_empty_state(array(
+            'icon' => 'fa-search',
+            'title' => __('404 - Page Not Found', 'puna-tiktok'),
+            'message' => __('Sorry, the content you are looking for does not exist or has been deleted.', 'puna-tiktok'),
+            'button_url' => home_url('/'),
+            'button_text' => __('Go to Home', 'puna-tiktok'),
+            'wrapper_class' => 'error-404-empty-state'
+        ));
+        ?>
+    </div>
+</div>
 

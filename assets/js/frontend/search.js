@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const closeSearchBtn = document.getElementById('close-search');
     const searchPanel = document.getElementById('search-panel');
     const realSearchInput = document.getElementById('real-search-input');
-    const searchSuggestionsContainer = document.getElementById('search-suggestions-container');
     const searchSuggestionsList = document.getElementById('search-suggestions-list');
     const searchHistorySection = document.getElementById('search-history-section');
     const searchHistoryList = document.getElementById('search-history-list');
@@ -17,8 +16,13 @@ document.addEventListener("DOMContentLoaded", function() {
     let searchDebounceTimer = null;
     let currentSearchQuery = '';
     
+    function isMobile() {
+        return window.innerWidth < 1024;
+    }
+    
     function openSearchPanel() {
         document.body.classList.add('search-panel-active');
+        document.body.classList.remove('search-panel-hover'); // Remove hover class on click
         setTimeout(() => {
             if (realSearchInput) {
                 realSearchInput.focus();
@@ -30,17 +34,105 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function closeSearchPanel() {
         document.body.classList.remove('search-panel-active');
+        document.body.classList.remove('search-panel-hover');
     }
 
     if (searchTrigger) {
-        searchTrigger.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            if (document.body.classList.contains('search-panel-active')) {
-                closeSearchPanel();
+        // Click only works on mobile (< 1024px)
+        // PC only has hover
+
+        let clickHandler = null;
+
+        function setupClickHandler() {
+            // Remove old handler if exists
+            if (clickHandler) {
+                searchTrigger.removeEventListener('click', clickHandler);
+                clickHandler = null;
+            }
+
+            // Only add click handler on mobile
+            if (isMobile()) {
+                clickHandler = function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (document.body.classList.contains('search-panel-active')) {
+                        closeSearchPanel();
+                    } else {
+                        openSearchPanel();
+                    }
+                };
+                searchTrigger.addEventListener('click', clickHandler);
+            }
+        }
+
+        // Initialize click handler
+        setupClickHandler();
+
+        // Hover to show search panel (PC only >= 1024px)
+        let hoverTimeout = null;
+        
+        function handleSearchHover() {
+            // Only add hover event if screen >= 1024px
+            if (!isMobile()) {
+                searchTrigger.addEventListener('mouseenter', function() {
+                    if (hoverTimeout) {
+                        clearTimeout(hoverTimeout);
+                        hoverTimeout = null;
+                    }
+                    document.body.classList.add('search-panel-hover');
+                    // Load data immediately on hover
+                    loadSearchHistory();
+                    loadPopularSearches();
+                });
+
+                searchTrigger.addEventListener('mouseleave', function() {
+                    // Delay to allow mouse movement to search panel
+                    hoverTimeout = setTimeout(function() {
+                        if (searchPanel && !searchPanel.matches(':hover')) {
+                            document.body.classList.remove('search-panel-hover');
+                        }
+                    }, 150);
+                });
+            }
+
+            // Keep search panel visible when hovering over it (PC only)
+            if (searchPanel && !isMobile()) {
+                searchPanel.addEventListener('mouseenter', function() {
+                    if (hoverTimeout) {
+                        clearTimeout(hoverTimeout);
+                        hoverTimeout = null;
+                    }
+                    document.body.classList.add('search-panel-hover');
+                    // Load data if not loaded yet (when hovering directly into panel)
+                    if (!searchHistoryList || searchHistoryList.children.length === 0) {
+                        loadSearchHistory();
+                    }
+                    if (!document.getElementById('search-popular-list') || document.getElementById('search-popular-list').children.length === 0) {
+                        loadPopularSearches();
+                    }
+                });
+
+                searchPanel.addEventListener('mouseleave', function() {
+                    document.body.classList.remove('search-panel-hover');
+                });
+            }
+        }
+
+        handleSearchHover();
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (isMobile()) {
+                // On mobile: remove hover class, setup click handler
+                document.body.classList.remove('search-panel-hover');
+                setupClickHandler();
             } else {
-                openSearchPanel();
+                // On PC: remove active class if exists (only uses hover)
+                if (document.body.classList.contains('search-panel-active')) {
+                    closeSearchPanel();
+                }
+                setupClickHandler(); // Remove click handler on PC
             }
         });
     }
@@ -53,15 +145,37 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
+    // Bottom nav search trigger (mobile only)
+    const bottomSearchTrigger = document.getElementById('bottom-search-trigger');
+    if (bottomSearchTrigger) {
+        bottomSearchTrigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (document.body.classList.contains('search-panel-active')) {
+                closeSearchPanel();
+            } else {
+                openSearchPanel();
+            }
+        });
+    }
+
+    // Close search panel when clicking on main content
     const mainContentEl = document.querySelector('.main-content');
     if (mainContentEl) {
         mainContentEl.addEventListener('click', function(e) {
             if (document.body.classList.contains('search-panel-active')) {
-                if (!e.target.closest('.video-nav-btn') && 
-                    !e.target.closest('.action-item') &&
-                    !e.target.closest('.video-container')) {
-                    closeSearchPanel();
+                // Don't close if clicking inside search panel
+                if (searchPanel && searchPanel.contains(e.target)) {
+                    return;
                 }
+                // Don't close if clicking on video controls
+                if (e.target.closest('.video-nav-btn') || 
+                    e.target.closest('.action-item') ||
+                    e.target.closest('.video-container')) {
+                    return;
+                }
+                closeSearchPanel();
             }
         });
     }
@@ -90,8 +204,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     data.data.history.forEach(function(item) {
                         const li = document.createElement('li');
                         li.className = 'search-history-item';
+                        const icon = document.createElement('img');
+                        icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/history.svg';
+                        icon.className = 'icon-img';
+                        icon.alt = 'History';
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
+                        li.appendChild(icon);
                         li.appendChild(span);
                         li.addEventListener('click', function() {
                             if (realSearchInput) {
@@ -240,13 +359,20 @@ document.addEventListener("DOMContentLoaded", function() {
         
         sendAjaxRequest('puna_tiktok_get_popular_searches', {})
             .then(data => {
+                // Always clear loading state first
+                popularList.innerHTML = '';
+                
                 if (data.success && data.data.popular && data.data.popular.length > 0) {
-                    popularList.innerHTML = '';
                     data.data.popular.forEach(function(item) {
                         const li = document.createElement('li');
                         li.className = 'search-popular-item';
+                        const icon = document.createElement('img');
+                        icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/fire.svg';
+                        icon.className = 'icon-img';
+                        icon.alt = 'Popular';
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
+                        li.appendChild(icon);
                         li.appendChild(span);
                         li.addEventListener('click', function(e) {
                             e.preventDefault();
@@ -258,19 +384,15 @@ document.addEventListener("DOMContentLoaded", function() {
                         popularList.appendChild(li);
                     });
                 } else {
-                    if (popularList) {
-                        popularList.innerHTML = '';
-                    }
+                    // Hide section if no popular searches
                     if (searchPopularSection) {
                         searchPopularSection.style.display = 'none';
                     }
                 }
             })
             .catch(error => {
-                // On error, hide the section
-                if (popularList) {
-                    popularList.innerHTML = '';
-                }
+                // On error, clear loading and hide section
+                popularList.innerHTML = '';
                 if (searchPopularSection) {
                     searchPopularSection.style.display = 'none';
                 }
@@ -290,17 +412,20 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(data => {
                 relatedList.innerHTML = '';
                 
-                // Load related searches first
-                let relatedItems = [];
+                // Load related searches
                 if (data.success && data.data.related && data.data.related.length > 0) {
-                    relatedItems = data.data.related;
-                    relatedItems.forEach(function(item) {
+                    data.data.related.forEach(function(item) {
                         const li = document.createElement('li');
                         const link = document.createElement('a');
                         link.href = window.location.pathname + '?s=' + encodeURIComponent(item.query || '');
                         link.className = 'search-suggestion-link';
+                        const icon = document.createElement('img');
+                        icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/fire.svg';
+                        icon.className = 'icon-img';
+                        icon.alt = 'Related';
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
+                        link.appendChild(icon);
                         link.appendChild(span);
                         li.appendChild(link);
                         relatedList.appendChild(li);
@@ -323,8 +448,13 @@ document.addEventListener("DOMContentLoaded", function() {
                         const link = document.createElement('a');
                         link.href = window.location.pathname + '?s=' + encodeURIComponent(item.query || '');
                         link.className = 'search-suggestion-link';
+                        const icon = document.createElement('img');
+                        icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/fire.svg';
+                        icon.className = 'icon-img';
+                        icon.alt = 'Popular';
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
+                        link.appendChild(icon);
                         link.appendChild(span);
                         li.appendChild(link);
                         container.appendChild(li);

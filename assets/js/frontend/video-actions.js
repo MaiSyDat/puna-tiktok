@@ -33,21 +33,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 
                 actionItem.classList.toggle('liked', isLiked);
                 
-                if (!isLoggedIn()) {
-                    if (isLiked) {
-                        const liked = GuestStorage.getLikedVideos();
-                        if (liked.indexOf(postId) === -1) {
-                            liked.push(postId);
-                            GuestStorage.setLikedVideos(liked);
-                        }
-                    } else {
-                        const liked = GuestStorage.getLikedVideos();
-                        const index = liked.indexOf(postId);
-                        if (index > -1) {
-                            liked.splice(index, 1);
-                            GuestStorage.setLikedVideos(liked);
-                        }
-                    }
+                // Sync guest state using helper
+                if (typeof GuestStateHelpers !== 'undefined') {
+                    GuestStateHelpers.syncGuestState('like', postId, isLiked);
                 }
                 
                 const countElement = actionItem.querySelector('.count') || actionItem.querySelector('.stat-count');
@@ -56,14 +44,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             } else {
                 if (!isLoggedIn()) {
-                    GuestStorage.toggleLikeVideo(postId);
+                    if (typeof GuestStateHelpers !== 'undefined') {
+                        GuestStateHelpers.revertGuestState('like', postId);
+                    } else {
+                        GuestStorage.toggleLikeVideo(postId);
+                    }
                     actionItem.classList.toggle('liked');
                 }
             }
         })
         .catch(error => {
             if (!isLoggedIn()) {
-                GuestStorage.toggleLikeVideo(postId);
+                if (typeof GuestStateHelpers !== 'undefined') {
+                    GuestStateHelpers.revertGuestState('like', postId);
+                } else {
+                    GuestStorage.toggleLikeVideo(postId);
+                }
                 actionItem.classList.toggle('liked');
             }
         });
@@ -107,21 +103,9 @@ document.addEventListener("DOMContentLoaded", function() {
                     actionItem.classList.remove('saved');
                 }
                 
-                if (!isLoggedIn()) {
-                    if (isSaved) {
-                        const saved = GuestStorage.getSavedVideos();
-                        if (saved.indexOf(postId) === -1) {
-                            saved.push(postId);
-                            GuestStorage.setSavedVideos(saved);
-                        }
-                    } else {
-                        const saved = GuestStorage.getSavedVideos();
-                        const index = saved.indexOf(postId);
-                        if (index > -1) {
-                            saved.splice(index, 1);
-                            GuestStorage.setSavedVideos(saved);
-                        }
-                    }
+                // Sync guest state using helper
+                if (typeof GuestStateHelpers !== 'undefined') {
+                    GuestStateHelpers.syncGuestState('save', postId, isSaved);
                 }
                 
                 const countEl = actionItem.querySelector('.count') || actionItem.querySelector('.stat-count');
@@ -130,14 +114,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             } else {
                 if (!isLoggedIn()) {
-                    GuestStorage.toggleSaveVideo(postId);
+                    if (typeof GuestStateHelpers !== 'undefined') {
+                        GuestStateHelpers.revertGuestState('save', postId);
+                    } else {
+                        GuestStorage.toggleSaveVideo(postId);
+                    }
                     actionItem.classList.toggle('saved');
                 }
             }
         })
         .catch(error => {
             if (!isLoggedIn()) {
-                GuestStorage.toggleSaveVideo(postId);
+                if (typeof GuestStateHelpers !== 'undefined') {
+                    GuestStateHelpers.revertGuestState('save', postId);
+                } else {
+                    GuestStorage.toggleSaveVideo(postId);
+                }
                 actionItem.classList.toggle('saved');
             }
         });

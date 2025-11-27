@@ -12,34 +12,15 @@ document.addEventListener("DOMContentLoaded", function() {
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
     /**
-     * Get current video
+     * Get current video - uses global function from core.js
      */
     function getCurrentVideo() {
         if (typeof window.getCurrentVideo === 'function') {
             return window.getCurrentVideo();
         }
+        // Fallback if core.js hasn't loaded yet
         const videoList = document.querySelectorAll('.tiktok-video');
-        if (!videoList.length) return null;
-        
-        // Find video that is most visible in viewport
-        let mostVisible = null;
-        let maxVisible = 0;
-        
-        videoList.forEach(video => {
-            const rect = video.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            const visibleTop = Math.max(0, rect.top);
-            const visibleBottom = Math.min(viewportHeight, rect.bottom);
-            const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-            const visibleRatio = visibleHeight / Math.min(rect.height, viewportHeight);
-            
-            if (visibleRatio > maxVisible) {
-                maxVisible = visibleRatio;
-                mostVisible = video;
-            }
-        });
-        
-        return mostVisible || videoList[0];
+        return videoList.length > 0 ? videoList[0] : null;
     }
 
     /**

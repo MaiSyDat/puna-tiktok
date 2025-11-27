@@ -24,8 +24,8 @@ if (!defined('ABSPATH')) {
 
             
             <!-- News -->
-            <div class="action-bar-item">
-                <a href="https://hupuna.com/tin-tuc-va-su-kien/" class="action-bar-button" aria-label="<?php esc_attr_e('News', 'puna-tiktok'); ?>">
+            <div class="action-bar-item action-bar-news">
+                <a href="https://hupuna.com/tin-tuc-va-su-kien/" class="action-bar-button action-bar-news-btn" aria-label="<?php esc_attr_e('News', 'puna-tiktok'); ?>">
                     <div class="action-bar-icon">
                         <?php echo puna_tiktok_get_icon('news', __('News', 'puna-tiktok')); ?>
                     </div>

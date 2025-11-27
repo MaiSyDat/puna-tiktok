@@ -32,53 +32,17 @@ class Puna_TikTok_Customize_Footer {
             'capability'  => 'manage_options',
         ));
 
-        // Footer Settings
-        $wp_customize->add_setting('sidebar_footer_title_1', array(
-            'default'           => 'Company',
-            'sanitize_callback' => 'sanitize_text_field',
-            'transport'         => 'postMessage',
-        ));
-
-        $wp_customize->add_control('sidebar_footer_title_1', array(
-            'label'    => __('Footer Title 1', 'puna-tiktok'),
-            'section'  => 'puna_footer_section',
-            'type'     => 'text',
-        ));
-
-        $wp_customize->add_setting('sidebar_footer_title_2', array(
-            'default'           => 'Programs',
-            'sanitize_callback' => 'sanitize_text_field',
-            'transport'         => 'postMessage',
-        ));
-
-        $wp_customize->add_control('sidebar_footer_title_2', array(
-            'label'    => __('Footer Title 2', 'puna-tiktok'),
-            'section'  => 'puna_footer_section',
-            'type'     => 'text',
-        ));
-
-        $wp_customize->add_setting('sidebar_footer_title_3', array(
-            'default'           => 'Terms & Services',
-            'sanitize_callback' => 'sanitize_text_field',
-            'transport'         => 'postMessage',
-        ));
-
-        $wp_customize->add_control('sidebar_footer_title_3', array(
-            'label'    => __('Footer Title 3', 'puna-tiktok'),
-            'section'  => 'puna_footer_section',
-            'type'     => 'text',
-        ));
-
+        // Footer Copyright Settings
         $wp_customize->add_setting('sidebar_footer_copyright', array(
-            'default'           => 'Puna TikTok',
+            'default'           => 'Copyright © HUPUNA GROUP',
             'sanitize_callback' => 'sanitize_text_field',
             'transport'         => 'postMessage',
         ));
 
         $wp_customize->add_control('sidebar_footer_copyright', array(
-            'label'    => __('Copyright Text', 'puna-tiktok'),
-            'section'  => 'puna_footer_section',
-            'type'     => 'text',
+            'label'       => __('Copyright Text', 'puna-tiktok'),
+            'section'     => 'puna_footer_section',
+            'type'        => 'text',
             'description' => __('Use [year] to display current year', 'puna-tiktok'),
         ));
     }

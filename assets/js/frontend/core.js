@@ -7,7 +7,6 @@ const GuestStorage = {
     LIKED_VIDEOS: 'puna_tiktok_guest_liked_videos',
     SAVED_VIDEOS: 'puna_tiktok_guest_saved_videos',
     LIKED_COMMENTS: 'puna_tiktok_guest_liked_comments',
-    COMMENTS: 'puna_tiktok_guest_comments',
     GUEST_ID: 'puna_tiktok_guest_id',
     
     getGuestId: function() {
@@ -107,20 +106,6 @@ const GuestStorage = {
         return liked.indexOf(commentId) > -1;
     },
     
-    getAllData: function() {
-        return {
-            liked_videos: this.getLikedVideos(),
-            saved_videos: this.getSavedVideos(),
-            liked_comments: this.getLikedComments()
-        };
-    },
-    
-    clearAll: function() {
-        localStorage.removeItem(this.LIKED_VIDEOS);
-        localStorage.removeItem(this.SAVED_VIDEOS);
-        localStorage.removeItem(this.LIKED_COMMENTS);
-        localStorage.removeItem(this.COMMENTS);
-    }
 };
 
 // Check if user is logged in
@@ -169,4 +154,128 @@ window.addEventListener('unhandledrejection', function(event) {
         event.preventDefault();
     }
 });
+
+// Get current video (most visible in viewport)
+function getCurrentVideo() {
+    const videoList = document.querySelectorAll('.tiktok-video');
+    if (!videoList.length) return null;
+    
+    // Find video that is most visible in viewport
+    let mostVisible = null;
+    let maxVisible = 0;
+    
+    videoList.forEach(video => {
+        const rect = video.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const visibleTop = Math.max(0, rect.top);
+        const visibleBottom = Math.min(viewportHeight, rect.bottom);
+        const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+        const visibleRatio = visibleHeight / Math.min(rect.height, viewportHeight);
+        
+        if (visibleRatio > maxVisible) {
+            maxVisible = visibleRatio;
+            mostVisible = video;
+        }
+    });
+    
+    // Fallback: find video closest to top of viewport
+    if (!mostVisible) {
+        return Array.from(videoList).find(video => {
+            const rect = video.getBoundingClientRect();
+            return rect.top >= 0 && rect.top < window.innerHeight / 2;
+        }) || videoList[0];
+    }
+    
+    return mostVisible;
+}
+
+// Export to window for other modules
+window.getCurrentVideo = getCurrentVideo;
+
+// Guest state helpers
+const GuestStateHelpers = {
+    /**
+     * Update guest liked/saved state in localStorage after server response
+     * @param {string} type - 'like' or 'save'
+     * @param {string} postId - Post ID
+     * @param {boolean} isActive - Whether the state is active
+     */
+    syncGuestState: function(type, postId, isActive) {
+        if (isLoggedIn()) return;
+        
+        if (type === 'like') {
+            const liked = GuestStorage.getLikedVideos();
+            if (isActive && liked.indexOf(postId) === -1) {
+                liked.push(postId);
+                GuestStorage.setLikedVideos(liked);
+            } else if (!isActive) {
+                const index = liked.indexOf(postId);
+                if (index > -1) {
+                    liked.splice(index, 1);
+                    GuestStorage.setLikedVideos(liked);
+                }
+            }
+        } else if (type === 'save') {
+            const saved = GuestStorage.getSavedVideos();
+            if (isActive && saved.indexOf(postId) === -1) {
+                saved.push(postId);
+                GuestStorage.setSavedVideos(saved);
+            } else if (!isActive) {
+                const index = saved.indexOf(postId);
+                if (index > -1) {
+                    saved.splice(index, 1);
+                    GuestStorage.setSavedVideos(saved);
+                }
+            }
+        }
+    },
+    
+    /**
+     * Revert guest state if server request fails
+     * @param {string} type - 'like' or 'save'
+     * @param {string} postId - Post ID
+     */
+    revertGuestState: function(type, postId) {
+        if (isLoggedIn()) return;
+        
+        if (type === 'like') {
+            GuestStorage.toggleLikeVideo(postId);
+        } else if (type === 'save') {
+            GuestStorage.toggleSaveVideo(postId);
+        }
+    },
+    
+    /**
+     * Sync guest comment like state
+     * @param {string} commentId - Comment ID
+     * @param {boolean} isLiked - Whether the comment is liked
+     */
+    syncCommentLikeState: function(commentId, isLiked) {
+        if (isLoggedIn()) return;
+        
+        const liked = GuestStorage.getLikedComments();
+        if (isLiked && liked.indexOf(commentId) === -1) {
+            liked.push(commentId);
+            GuestStorage.setLikedComments(liked);
+        } else if (!isLiked) {
+            const index = liked.indexOf(commentId);
+            if (index > -1) {
+                liked.splice(index, 1);
+                GuestStorage.setLikedComments(liked);
+            }
+        }
+    },
+    
+    /**
+     * Revert guest comment like state
+     * @param {string} commentId - Comment ID
+     */
+    revertCommentLikeState: function(commentId) {
+        if (isLoggedIn()) return;
+        GuestStorage.toggleLikeComment(commentId);
+    }
+};
+
+// Export to window
+window.GuestStateHelpers = GuestStateHelpers;
 

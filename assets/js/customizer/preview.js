@@ -61,30 +61,12 @@
         });
     });
 
-    // Footer Settings
-    wp.customize('sidebar_footer_title_1', function(value) {
-        value.bind(function(newval) {
-            $('.sidebar-footer h3:first').text(newval || 'Company');
-        });
-    });
-
-    wp.customize('sidebar_footer_title_2', function(value) {
-        value.bind(function(newval) {
-            $('.sidebar-footer h3:nth-child(2)').text(newval || 'Programs');
-        });
-    });
-
-    wp.customize('sidebar_footer_title_3', function(value) {
-        value.bind(function(newval) {
-            $('.sidebar-footer h3:nth-child(3)').text(newval || 'Terms & Services');
-        });
-    });
-
+    // Footer Copyright
     wp.customize('sidebar_footer_copyright', function(value) {
         value.bind(function(newval) {
             var year = new Date().getFullYear();
-            var copyright = newval ? newval.replace('[year]', year) : 'Puna TikTok';
-            $('.sidebar-footer p').html('© ' + copyright);
+            var copyright = newval ? newval.replace('[year]', year) : 'Copyright © HUPUNA GROUP';
+            $('.sidebar-footer p').text(copyright);
         });
     });
 

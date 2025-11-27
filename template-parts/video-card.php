@@ -43,11 +43,11 @@ if (has_post_thumbnail($post_id)) {
         <?php endif; ?>
         <div class="video-overlay">	
             <div class="play-icon">
-                <?php echo puna_tiktok_get_icon('play', 'Play'); ?>
+                <?php echo puna_tiktok_get_icon('play', __('Play', 'puna-tiktok')); ?>
             </div>
         </div>
         <div class="video-views-overlay">
-            <?php echo puna_tiktok_get_icon('play', 'Views'); ?>
+            <?php echo puna_tiktok_get_icon('play', __('Views', 'puna-tiktok')); ?>
             <span><?php echo puna_tiktok_format_number($views); ?></span>
         </div>
     </div>
