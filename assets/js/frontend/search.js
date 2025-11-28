@@ -249,6 +249,14 @@ document.addEventListener("DOMContentLoaded", function() {
                         data.data.suggestions.forEach(function(suggestion) {
                             const li = document.createElement('li');
                             li.className = 'search-suggestion-item';
+                            
+                            // Add search icon
+                            const icon = document.createElement('img');
+                            icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/search.svg';
+                            icon.className = 'icon-svg';
+                            icon.alt = 'Search';
+                            li.appendChild(icon);
+                            
                             const span = document.createElement('span');
                             span.textContent = suggestion.text || '';
                             li.appendChild(span);

@@ -334,14 +334,6 @@ body.search-panel-active .sidebar-search-trigger {
     flex-shrink: 0;
 }
 
-.search-suggestion-item .icon-svg {
-    width: 14px;
-    height: 14px;
-    color: var(--puna-primary);
-    filter: brightness(0) saturate(100%) invert(31%) sepia(98%) saturate(2479%) hue-rotate(202deg) brightness(97%) contrast(90%);
-    flex-shrink: 0;
-}
-
 .search-popular-item {
     display: flex;
     align-items: center;
