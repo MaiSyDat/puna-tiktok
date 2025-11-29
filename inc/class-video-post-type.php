@@ -159,52 +159,139 @@ class Puna_TikTok_Video_Post_Type {
         $video_url = get_post_meta($post->ID, '_puna_tiktok_video_url', true);
         $mega_link = get_post_meta($post->ID, '_puna_tiktok_mega_link', true);
         $mega_node_id = get_post_meta($post->ID, '_puna_tiktok_mega_node_id', true);
+        $youtube_id = get_post_meta($post->ID, '_puna_tiktok_youtube_id', true);
+        $video_source = get_post_meta($post->ID, '_puna_tiktok_video_source', true);
+        
+        // Determine active tab
+        $active_tab = 'mega';
+        if ($video_source === 'youtube' || $youtube_id) {
+            $active_tab = 'youtube';
+        }
+        
+        // Get YouTube URL if exists
+        $youtube_url = '';
+        if ($youtube_id) {
+            $youtube_url = 'https://www.youtube.com/watch?v=' . esc_attr($youtube_id);
+        }
         ?>
         <div class="puna-video-upload-admin">
-            <div class="video-upload-section">
-                <h3><?php _e('Video File', 'puna-tiktok'); ?></h3>
-                
-                <div class="video-upload-dropzone" id="videoUploadDropzone">
-                    <div class="dropzone-content">
-                        <div class="upload-icon">
-                            <i class="dashicons dashicons-video-alt3"></i>
-                            <i class="dashicons dashicons-arrow-up-alt"></i>
+            <div class="video-upload-tabs">
+                <ul class="video-upload-tabs-nav">
+                    <li>
+                        <a href="#" class="video-upload-tab-link <?php echo $active_tab === 'mega' ? 'active' : ''; ?>" data-tab="mega">
+                            <?php _e('MEGA VIDEO', 'puna-tiktok'); ?>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="video-upload-tab-link <?php echo $active_tab === 'youtube' ? 'active' : ''; ?>" data-tab="youtube">
+                            <?php _e('EMBED YOUTUBE', 'puna-tiktok'); ?>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Tab 1: MEGA VIDEO -->
+            <div class="video-upload-tab-content <?php echo $active_tab === 'mega' ? 'active' : ''; ?>" id="tab-mega">
+                <div class="video-upload-section">
+                    <h3><?php _e('Video File', 'puna-tiktok'); ?></h3>
+                    
+                    <div class="video-upload-dropzone" id="videoUploadDropzone">
+                        <div class="dropzone-content">
+                            <div class="upload-icon">
+                                <i class="dashicons dashicons-video-alt3"></i>
+                                <i class="dashicons dashicons-arrow-up-alt"></i>
+                            </div>
+                            <h4><?php _e('Select video to upload', 'puna-tiktok'); ?></h4>
+                            <p><?php _e('Or drag and drop video here', 'puna-tiktok'); ?></p>
                         </div>
-                        <h4><?php _e('Select video to upload', 'puna-tiktok'); ?></h4>
-                        <p><?php _e('Or drag and drop video here', 'puna-tiktok'); ?></p>
+                        <button type="button" class="button button-primary" id="selectVideoBtn"><?php _e('Select video', 'puna-tiktok'); ?></button>
+                        <input type="file" id="videoFileInput" accept="video/*" style="display: none;">
                     </div>
-                    <button type="button" class="button button-primary" id="selectVideoBtn"><?php _e('Select video', 'puna-tiktok'); ?></button>
-                    <input type="file" id="videoFileInput" accept="video/*" style="display: none;">
-                </div>
-                
-                <div class="video-preview-container" id="videoPreviewContainer" style="display: none;">
-                    <video id="videoPreview" controls style="width: 100%; max-width: 500px; margin-top: 20px;"></video>
-                    <div class="video-info" id="videoInfo"></div>
-                </div>
-                
-                <?php if ($video_url || $mega_link): ?>
-                <div class="current-video">
-                    <h4><?php _e('Current Video:', 'puna-tiktok'); ?></h4>
-                    <?php if ($mega_link): ?>
-                        <p><strong><?php esc_html_e('MEGA Link:', 'puna-tiktok'); ?></strong> <a href="<?php echo esc_url($mega_link); ?>" target="_blank"><?php echo esc_html($mega_link); ?></a></p>
-                        <input type="hidden" name="mega_link" value="<?php echo esc_attr($mega_link); ?>">
-                        <input type="hidden" name="mega_node_id" value="<?php echo esc_attr($mega_node_id); ?>">
-                    <?php else: ?>
-                        <p><strong><?php esc_html_e('Video URL:', 'puna-tiktok'); ?></strong> <a href="<?php echo esc_url($video_url); ?>" target="_blank"><?php echo esc_html($video_url); ?></a></p>
-                        <input type="hidden" name="video_url" value="<?php echo esc_attr($video_url); ?>">
+                    
+                    <div class="video-preview-container" id="videoPreviewContainer" style="display: none;">
+                        <video id="videoPreview" controls style="width: 100%; max-width: 500px; margin-top: 20px;"></video>
+                        <div class="video-info" id="videoInfo"></div>
+                    </div>
+                    
+                    <?php if (($video_url || $mega_link) && $video_source !== 'youtube'): ?>
+                    <div class="current-video">
+                        <h4><?php _e('Current Video:', 'puna-tiktok'); ?></h4>
+                        <?php if ($mega_link): ?>
+                            <p><strong><?php esc_html_e('MEGA Link:', 'puna-tiktok'); ?></strong> <a href="<?php echo esc_url($mega_link); ?>" target="_blank"><?php echo esc_html($mega_link); ?></a></p>
+                            <input type="hidden" name="mega_link" value="<?php echo esc_attr($mega_link); ?>">
+                            <input type="hidden" name="mega_node_id" value="<?php echo esc_attr($mega_node_id); ?>">
+                        <?php else: ?>
+                            <p><strong><?php esc_html_e('Video URL:', 'puna-tiktok'); ?></strong> <a href="<?php echo esc_url($video_url); ?>" target="_blank"><?php echo esc_html($video_url); ?></a></p>
+                            <input type="hidden" name="video_url" value="<?php echo esc_attr($video_url); ?>">
+                        <?php endif; ?>
+                    </div>
                     <?php endif; ?>
-                </div>
-                <?php endif; ?>
-                
-                <div class="upload-progress" id="uploadProgress" style="display: none;">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
+                    
+                    <div class="upload-progress" id="uploadProgress" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0%</div>
                     </div>
-                    <div class="progress-text" id="progressText">0%</div>
+                </div>
+            </div>
+            
+            <!-- Tab 2: EMBED YOUTUBE -->
+            <div class="video-upload-tab-content <?php echo $active_tab === 'youtube' ? 'active' : ''; ?>" id="tab-youtube">
+                <div class="youtube-input-section">
+                    <label for="youtube_url_input"><?php _e('YouTube Link', 'puna-tiktok'); ?></label>
+                    <input 
+                        type="text" 
+                        id="youtube_url_input" 
+                        name="youtube_url" 
+                        value="<?php echo esc_attr($youtube_url); ?>" 
+                        placeholder="https://www.youtube.com/watch?v=VIDEO_ID hoặc https://www.youtube.com/shorts/VIDEO_ID"
+                        class="regular-text"
+                    />
+                    <p class="description">
+                        <?php _e('Nhập link YouTube (hỗ trợ cả link thường và link Shorts). Video ID sẽ được tự động trích xuất khi lưu bài viết.', 'puna-tiktok'); ?>
+                    </p>
+                    
+                    <?php if ($youtube_id): ?>
+                    <div class="youtube-preview active">
+                        <h4><?php _e('Current YouTube Video:', 'puna-tiktok'); ?></h4>
+                        <p><strong><?php esc_html_e('Video ID:', 'puna-tiktok'); ?></strong> <?php echo esc_html($youtube_id); ?></p>
+                        <p><strong><?php esc_html_e('Preview:', 'puna-tiktok'); ?></strong> <a href="<?php echo esc_url($youtube_url); ?>" target="_blank"><?php echo esc_html($youtube_url); ?></a></p>
+                        <input type="hidden" name="youtube_id" value="<?php echo esc_attr($youtube_id); ?>">
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
         <?php
+    }
+    
+    /**
+     * Extract YouTube Video ID from URL
+     */
+    private function extract_youtube_id($url) {
+        if (empty($url)) {
+            return '';
+        }
+        
+        // Remove whitespace
+        $url = trim($url);
+        
+        // Pattern for regular YouTube links: youtube.com/watch?v=ID or youtu.be/ID
+        // Pattern for YouTube Shorts: youtube.com/shorts/ID
+        $patterns = array(
+            '/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/',
+            '/youtu\.be\/([a-zA-Z0-9_-]+)/',
+            '/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/',
+        );
+        
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $url, $matches)) {
+                return $matches[1];
+            }
+        }
+        
+        return '';
     }
     
     /**
@@ -235,24 +322,59 @@ class Puna_TikTok_Video_Post_Type {
         
         $saving = true;
         
-        if (isset($_POST['mega_link'])) {
-            $mega_link = esc_url_raw($_POST['mega_link']);
-            update_post_meta($post_id, '_puna_tiktok_mega_link', $mega_link);
-            update_post_meta($post_id, '_puna_tiktok_video_url', $mega_link);
+        // Check if YouTube URL is provided
+        $youtube_url = isset($_POST['youtube_url']) ? sanitize_text_field($_POST['youtube_url']) : '';
+        $youtube_id = '';
+        $video_source = '';
+        
+        if (!empty($youtube_url)) {
+            // Extract YouTube ID
+            $youtube_id = $this->extract_youtube_id($youtube_url);
+            
+            if (!empty($youtube_id)) {
+                // Save YouTube ID and set source
+                update_post_meta($post_id, '_puna_tiktok_youtube_id', $youtube_id);
+                update_post_meta($post_id, '_puna_tiktok_video_source', 'youtube');
+                
+                // Clear MEGA data if switching to YouTube
+                delete_post_meta($post_id, '_puna_tiktok_mega_link');
+                delete_post_meta($post_id, '_puna_tiktok_mega_node_id');
+                delete_post_meta($post_id, '_puna_tiktok_video_url');
+                
+                $video_source = 'youtube';
+            }
+        } else {
+            // Check if MEGA link is provided
+            if (isset($_POST['mega_link']) && !empty($_POST['mega_link'])) {
+                $mega_link = esc_url_raw($_POST['mega_link']);
+                update_post_meta($post_id, '_puna_tiktok_mega_link', $mega_link);
+                update_post_meta($post_id, '_puna_tiktok_video_url', $mega_link);
+                update_post_meta($post_id, '_puna_tiktok_video_source', 'mega');
+                
+                // Clear YouTube data if switching to MEGA
+                delete_post_meta($post_id, '_puna_tiktok_youtube_id');
+                
+                $video_source = 'mega';
+            } elseif (isset($_POST['video_url']) && !empty($_POST['video_url'])) {
+                $video_url = esc_url_raw($_POST['video_url']);
+                update_post_meta($post_id, '_puna_tiktok_video_url', $video_url);
+                if (empty(get_post_meta($post_id, '_puna_tiktok_mega_link', true))) {
+                    update_post_meta($post_id, '_puna_tiktok_mega_link', $video_url);
+                }
+                update_post_meta($post_id, '_puna_tiktok_video_source', 'mega');
+                
+                // Clear YouTube data if switching to MEGA
+                delete_post_meta($post_id, '_puna_tiktok_youtube_id');
+                
+                $video_source = 'mega';
+            }
         }
         
-        if (isset($_POST['mega_node_id'])) {
+        // Handle MEGA node ID
+        if (isset($_POST['mega_node_id']) && !empty($_POST['mega_node_id'])) {
             $mega_node_id = sanitize_text_field($_POST['mega_node_id']);
             update_post_meta($post_id, '_puna_tiktok_mega_node_id', $mega_node_id);
             update_post_meta($post_id, '_puna_tiktok_video_node_id', $mega_node_id);
-        }
-        
-        if (isset($_POST['video_url'])) {
-            $video_url = esc_url_raw($_POST['video_url']);
-            update_post_meta($post_id, '_puna_tiktok_video_url', $video_url);
-            if (empty(get_post_meta($post_id, '_puna_tiktok_mega_link', true))) {
-                update_post_meta($post_id, '_puna_tiktok_mega_link', $video_url);
-            }
         }
         
         $saving = false;

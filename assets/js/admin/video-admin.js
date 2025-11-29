@@ -16,9 +16,24 @@
         const uploadProgress = $('#uploadProgress');
         const progressFill = $('#progressFill');
         const progressText = $('#progressText');
+        const youtubeUrlInput = $('#youtube_url_input');
         
         let selectedFile = null;
         let megaUploader = null;
+
+        // Tab switching
+        $('.video-upload-tab-link').on('click', function(e) {
+            e.preventDefault();
+            const targetTab = $(this).data('tab');
+            
+            // Update active tab link
+            $('.video-upload-tab-link').removeClass('active');
+            $(this).addClass('active');
+            
+            // Update active tab content
+            $('.video-upload-tab-content').removeClass('active');
+            $('#tab-' + targetTab).addClass('active');
+        });
 
         // Initialize Mega Uploader if available
         if (typeof window.PunaTikTokMegaUploader !== 'undefined' && puna_tiktok_video_admin?.mega) {
@@ -153,12 +168,101 @@
             return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
         }
 
-        // Handle form submit - ensure video is uploaded
+        // YouTube URL validation and preview
+        function extractYouTubeId(url) {
+            if (!url) return '';
+            
+            url = url.trim();
+            
+            // Patterns for YouTube URLs
+            const patterns = [
+                /youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/,
+                /youtu\.be\/([a-zA-Z0-9_-]+)/,
+                /youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/
+            ];
+            
+            for (let pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) {
+                    return match[1];
+                }
+            }
+            
+            return '';
+        }
+
+        // Show/hide YouTube preview
+        function updateYouTubePreview() {
+            const url = youtubeUrlInput.val();
+            const youtubeId = extractYouTubeId(url);
+            const preview = $('.youtube-preview');
+            
+            if (youtubeId && url) {
+                if (!preview.length) {
+                    // Create preview if it doesn't exist
+                    const previewHtml = `
+                        <div class="youtube-preview active">
+                            <h4>${puna_tiktok_video_admin?.strings?.current_youtube || 'Current YouTube Video:'}</h4>
+                            <p><strong>${puna_tiktok_video_admin?.strings?.video_id || 'Video ID:'}</strong> ${youtubeId}</p>
+                            <p><strong>${puna_tiktok_video_admin?.strings?.preview || 'Preview:'}</strong> <a href="${url}" target="_blank">${url}</a></p>
+                        </div>
+                    `;
+                    youtubeUrlInput.closest('.youtube-input-section').append(previewHtml);
+                } else {
+                    preview.find('p').eq(0).html(`<strong>${puna_tiktok_video_admin?.strings?.video_id || 'Video ID:'}</strong> ${youtubeId}`);
+                    preview.find('p').eq(1).html(`<strong>${puna_tiktok_video_admin?.strings?.preview || 'Preview:'}</strong> <a href="${url}" target="_blank">${url}</a>`);
+                    preview.addClass('active');
+                }
+            } else if (url && !youtubeId) {
+                // Invalid URL
+                if (preview.length) {
+                    preview.removeClass('active');
+                }
+            } else if (!url) {
+                // Empty URL
+                if (preview.length && !preview.hasClass('active')) {
+                    // Only hide if it was dynamically created
+                    const existingPreview = $('.youtube-preview').not('.active');
+                    if (existingPreview.length) {
+                        existingPreview.remove();
+                    }
+                }
+            }
+        }
+
+        // YouTube URL input change handler
+        youtubeUrlInput.on('input', function() {
+            updateYouTubePreview();
+        });
+
+        // Initial YouTube preview update
+        if (youtubeUrlInput.val()) {
+            updateYouTubePreview();
+        }
+
+        // Handle form submit - ensure video is uploaded or YouTube URL is provided
         $('#post').on('submit', function(e) {
-            if (selectedFile && !$('input[name="mega_link"]').val() && !$('input[name="video_url"]').val()) {
-                if (!confirm('Video has not been uploaded. Do you want to continue saving the post? Video will not be displayed until it is uploaded.')) {
-                    e.preventDefault();
-                    return false;
+            const activeTab = $('.video-upload-tab-link.active').data('tab');
+            
+            if (activeTab === 'mega') {
+                // Check MEGA upload
+                if (selectedFile && !$('input[name="mega_link"]').val() && !$('input[name="video_url"]').val()) {
+                    if (!confirm('Video has not been uploaded. Do you want to continue saving the post? Video will not be displayed until it is uploaded.')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+            } else if (activeTab === 'youtube') {
+                // Check YouTube URL
+                const youtubeUrl = youtubeUrlInput.val();
+                if (youtubeUrl) {
+                    const youtubeId = extractYouTubeId(youtubeUrl);
+                    if (!youtubeId) {
+                        if (!confirm('YouTube URL không hợp lệ. Bạn có muốn tiếp tục lưu bài viết không?')) {
+                            e.preventDefault();
+                            return false;
+                        }
+                    }
                 }
             }
         });
