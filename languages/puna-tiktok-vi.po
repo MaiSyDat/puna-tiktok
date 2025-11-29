@@ -3,22 +3,17 @@ msgstr ""
 "Project-Id-Version: Puna TikTok 1.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-29 17:04+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: \n"
-"Language: \n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"PO-Revision-Date: 2025-11-29 10:10+0000\n"
+"Last-Translator: \n"
+"Language-Team: Tiếng Việt\n"
+"Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: WordPress Theme Translation\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Loco https://localise.biz/\n"
 "X-Domain: puna-tiktok\n"
-"X-Poedit-Basepath: ..\n"
-"X-Poedit-KeywordsList: __;_e;_x;_ex;_nx;esc_attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x;esc_html_x;_n;_n_noop;_nx;_nx_noop\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-SearchPathExcluded-0: node_modules\n"
-"X-Poedit-SearchPathExcluded-1: vendor\n"
-"X-Poedit-SearchPathExcluded-2: .git"
+"X-Loco-Version: 2.8.0; wp-6.8.3; php-8.2.12"
 
 #: inc/class-ajax-handlers.php:282 inc/views/search.php:179
 #: template-parts/video/content-single-video.php:160
@@ -28,291 +23,290 @@ msgstr ""
 #: template-parts/components/comments/comment-reply.php:81
 #, php-format
 msgid "%s ago"
-msgstr ""
+msgstr "%s trước"
 
 #: inc/views/404.php:19
 msgid "404 - Page Not Found"
-msgstr ""
+msgstr "404 - Không tìm thấy trang"
 
 #: comments.php:149 template-parts/comments-video-watch.php:132
 msgid "Add a comment..."
-msgstr ""
+msgstr "Thêm bình luận..."
 
 #: inc/class-video-post-type.php:95
 msgid "Add New"
-msgstr ""
+msgstr "Thêm mới"
 
 #: inc/class-video-post-type.php:37
 msgid "Add New Category"
-msgstr ""
+msgstr "Thêm danh mục mới"
 
 #: inc/class-video-post-type.php:94
 msgctxt "Add New on Toolbar"
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: inc/class-video-post-type.php:63
 msgid "Add New Tag"
-msgstr ""
+msgstr "Thêm thẻ mới"
 
 #: inc/class-video-post-type.php:96
 msgid "Add New Video"
-msgstr ""
+msgstr "Thêm video mới"
 
 #: inc/class-video-post-type.php:66
 msgid "Add or remove tags"
-msgstr ""
+msgstr "Thêm hoặc xóa thẻ"
 
 #: inc/views/partials/video-feed.php:25
 msgid "Add Video"
-msgstr ""
+msgstr "Thêm video"
 
 #: inc/views/partials/video-feed.php:23
 msgid "Add your first video!"
-msgstr ""
+msgstr "Thêm video đầu tiên của bạn!"
 
 #: inc/class-video-post-type.php:93
 msgctxt "Admin Menu text"
 msgid "Videos"
-msgstr ""
+msgstr "Video"
 
 #: inc/class-video-post-type.php:32
 msgid "All Categories"
-msgstr ""
+msgstr "Tất cả danh mục"
 
 #: inc/class-video-post-type.php:60
 msgid "All Tags"
-msgstr ""
+msgstr "Tất cả thẻ"
 
 #: inc/class-video-post-type.php:100
 msgid "All Videos"
-msgstr ""
+msgstr "Tất cả video"
 
 #: inc/core-functions.php:667
 msgid "An error occurred. Please try again."
-msgstr ""
+msgstr "Đã xảy ra lỗi. Vui lòng thử lại."
 
 #: inc/core-functions.php:683
 msgid "Are you sure you want to clear all search history?"
-msgstr ""
+msgstr "Bạn có chắc chắn muốn xóa toàn bộ lịch sử tìm kiếm?"
 
 #: inc/core-functions.php:684
 msgid ""
 "Are you sure you want to delete this video? This action cannot be undone."
-msgstr ""
+msgstr "Bạn có chắc chắn muốn xóa video này? Hành động này không thể hoàn tác."
 
 #: inc/core-functions.php:682
 msgid "Are you sure?"
-msgstr ""
+msgstr "Bạn có chắc chắn không?"
 
 #: template-parts/video/content-single-video.php:288
 msgid "Author has no other videos"
-msgstr ""
+msgstr "Tác giả chưa có video nào khác"
 
 #: template-parts/video/content-single-video.php:202
 msgid "Author videos"
-msgstr ""
+msgstr "Video của tác giả"
 
 #: template-parts/video/content-single-video.php:54
 #: template-parts/video/content-single-video.php:55
 msgid "Back"
-msgstr ""
+msgstr "Quay lại"
 
 #: customize/customize-colors.php:72
 msgid "Background Color"
-msgstr ""
+msgstr "Màu nền"
 
 #: customize/customize-colors.php:73
 msgid "Background color for entire page"
-msgstr ""
+msgstr "Màu nền cho toàn bộ trang"
 
 #: customize/customize-colors.php:114
 msgid "Border / Muted Color"
-msgstr ""
+msgstr "Màu viền / Màu mờ"
 
 #: customize/customize-colors.php:115
 msgid "Border color and muted elements"
-msgstr ""
+msgstr "Màu viền và các phần tử mờ"
 
 #: template-parts/components/comments/reply-input.php:45
 msgid "Cancel"
-msgstr ""
+msgstr "Hủy"
 
 #: inc/class-ajax-handlers.php:205
 msgid "Cannot add comment."
-msgstr ""
+msgstr "Không thể thêm bình luận."
 
 #: inc/class-ajax-handlers.php:1078
 msgid "Cannot delete video. Please try again."
-msgstr ""
+msgstr "Không thể xóa video. Vui lòng thử lại."
 
 #: inc/class-ajax-handlers.php:215
 msgid "Cannot get comment information."
-msgstr ""
+msgstr "Không thể lấy thông tin bình luận."
 
 #: customize/customize-sidebar.php:147 inc/class-setup.php:39
 #: inc/views/category.php:17
 msgid "Categories"
-msgstr ""
+msgstr "Danh mục"
 
 #: customize/customize-theme.php:38
 msgid "Choose default mode for user interface."
-msgstr ""
+msgstr "Chọn chế độ mặc định cho giao diện người dùng."
 
 #: inc/class-video-post-type.php:67
 msgid "Choose from the most used tags"
-msgstr ""
+msgstr "Chọn từ các thẻ được sử dụng nhiều nhất"
 
 #: template-parts/search-panel.php:41
 msgid "Clear history"
-msgstr ""
+msgstr "Xóa lịch sử"
 
 #: comments.php:23 inc/class-assets.php:246 template-parts/search-panel.php:16
 #: template-parts/video/content-single-video.php:301
 #: template-parts/video/content-single-video.php:302
 #: template-parts/video/content.php:128 template-parts/video/content.php:129
 msgid "Close"
-msgstr ""
+msgstr "Đóng"
 
 #: customize/customize-colors.php:25
 msgid "Color"
-msgstr ""
+msgstr "Màu sắc"
 
 #: template-parts/video/content-single-video.php:175
 #: template-parts/video/content.php:100
 msgid "Comment"
-msgstr ""
+msgstr "Bình luận"
 
 #: inc/core-functions.php:660
 msgid "Comment added"
-msgstr ""
+msgstr "Đã thêm bình luận"
 
 #: inc/class-ajax-handlers.php:159
 msgid "Comment cannot be empty."
-msgstr ""
+msgstr "Bình luận không được để trống."
 
 #: inc/core-functions.php:661
 msgid "Comment deleted"
-msgstr ""
+msgstr "Đã xóa bình luận"
 
 #: inc/class-ajax-handlers.php:336 inc/class-ajax-handlers.php:429
 msgid "Comment does not exist."
-msgstr ""
+msgstr "Bình luận không tồn tại."
 
 #: inc/core-functions.php:662
 msgid "Comment liked"
-msgstr ""
+msgstr "Đã thích bình luận"
 
 #: inc/core-functions.php:671
 msgid "Comment not found."
-msgstr ""
+msgstr "Không tìm thấy bình luận."
 
 #: inc/core-functions.php:664
 msgid "Comment reported"
-msgstr ""
+msgstr "Đã báo cáo bình luận"
 
 #: inc/core-functions.php:663
 msgid "Comment unliked"
-msgstr ""
+msgstr "Đã bỏ thích bình luận"
 
 #: inc/class-assets.php:244 inc/class-video-post-type.php:392
 msgid "Comments"
-msgstr ""
+msgstr "Bình luận"
 
 #: comments.php:21 template-parts/video/content-single-video.php:199
 #, php-format
 msgid "Comments (%s)"
-msgstr ""
+msgstr "Bình luận (%s)"
 
 #: customize/customize-footer.php:30
 msgid "Configure Footer"
-msgstr ""
+msgstr "Cấu hình chân trang"
 
 #: customize/customize-colors.php:26
 msgid "Configure global color system for theme"
-msgstr ""
+msgstr "Cấu hình hệ thống màu sắc toàn cục cho giao diện"
 
 #: customize/customize-theme.php:22
 msgid "Configure light/dark mode for theme"
-msgstr ""
+msgstr "Cấu hình chế độ sáng/tối cho giao diện"
 
 #: customize/customize-sidebar.php:29
 msgid "Configure Sidebar (Logo, Menu)"
-msgstr ""
+msgstr "Cấu hình thanh bên (Logo, Menu)"
 
 #: template-parts/top-header.php:17 template-parts/top-header.php:19
 #: template-parts/top-header.php:21
 msgid "Contact"
-msgstr ""
+msgstr "Liên hệ"
 
 #: template-parts/video/content-single-video.php:326
 #: template-parts/video/content-single-video.php:328
 #: template-parts/video/content.php:153 template-parts/video/content.php:155
 msgid "Copy link"
-msgstr ""
+msgstr "Sao chép liên kết"
 
 #: customize/customize-footer.php:43
 msgid "Copyright Text"
-msgstr ""
+msgstr "Văn bản bản quyền"
 
 #: inc/class-video-post-type.php:218
 msgid "Current Video:"
-msgstr ""
+msgstr "Video hiện tại:"
 
 #: inc/class-video-post-type.php:257 inc/admin/class-admin-assets.php:141
 msgid "Current YouTube Video:"
-msgstr ""
+msgstr "Video YouTube hiện tại:"
 
 #: customize/customize-theme.php:42
 msgid "Dark"
-msgstr ""
+msgstr "Tối"
 
 #: customize/customize-theme.php:37
 msgid "Default Theme"
-msgstr ""
+msgstr "Giao diện mặc định"
 
 #: template-parts/components/comments/comment-item.php:95
 #: template-parts/components/comments/comment-replies.php:112
-#: template-parts/components/comments/comment-replies.php:112
 #: template-parts/components/comments/comment-replies.php:200
-#: template-parts/components/comments/comment-replies.php:200
-#: template-parts/components/comments/comment-reply.php:93
 #: template-parts/components/comments/comment-reply.php:93
 msgid "Delete"
-msgstr ""
+msgstr "Xóa"
 
 #: template-parts/video/content-single-video.php:128
 #: template-parts/video/content-single-video.php:129
 msgid "Delete video"
-msgstr ""
+msgstr "Xóa video"
 
 #: inc/class-video-post-type.php:35
 msgid "Edit Category"
-msgstr ""
+msgstr "Chỉnh sửa danh mục"
 
 #: inc/class-video-post-type.php:61
 msgid "Edit Tag"
-msgstr ""
+msgstr "Chỉnh sửa thẻ"
 
 #: inc/class-video-post-type.php:98
 msgid "Edit Video"
-msgstr ""
+msgstr "Chỉnh sửa video"
 
 #: template-parts/video/content-single-video.php:342
 #: template-parts/video/content-single-video.php:344
 #: template-parts/video/content.php:169 template-parts/video/content.php:171
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #: inc/class-video-post-type.php:187
 msgid "EMBED YOUTUBE"
-msgstr ""
+msgstr "NHÚNG YOUTUBE"
 
 #: inc/class-video-post-type.php:252
 msgid ""
 "Enter YouTube link (supports both regular links and Shorts links). Video ID "
 "will be automatically extracted when saving the post."
 msgstr ""
+"Nhập liên kết YouTube (hỗ trợ cả liên kết thường và Shorts). ID video sẽ "
+"được tự động trích xuất khi lưu bài viết."
 
 #: template-parts/sidebar.php:83 template-parts/sidebar.php:84
 #: template-parts/sidebar.php:85
@@ -320,35 +314,35 @@ msgstr ""
 #: template-parts/video/content-single-video.php:312
 #: template-parts/video/content.php:137 template-parts/video/content.php:139
 msgid "Facebook"
-msgstr ""
+msgstr "Facebook"
 
 #: inc/admin/class-admin-assets.php:146
 msgid "File Information:"
-msgstr ""
+msgstr "Thông tin tệp:"
 
 #: customize/customize-footer.php:29
 msgid "Footer"
-msgstr ""
+msgstr "Chân trang"
 
 #: inc/views/category.php:28 inc/views/tag.php:29
 msgid "For You"
-msgstr ""
+msgstr "Dành cho bạn"
 
 #: inc/views/404.php:22
 msgid "Go to Home"
-msgstr ""
+msgstr "Về trang chủ"
 
 #: inc/class-ajax-handlers.php:181 inc/class-assets.php:248
 msgid "Guest"
-msgstr ""
+msgstr "Khách"
 
 #: inc/class-assets.php:249
 msgid "History"
-msgstr ""
+msgstr "Lịch sử"
 
 #: customize/customize-sidebar.php:141
 msgid "Home"
-msgstr ""
+msgstr "Trang chủ"
 
 #: template-parts/sidebar.php:87 template-parts/sidebar.php:88
 #: template-parts/sidebar.php:89
@@ -356,7 +350,7 @@ msgstr ""
 #: template-parts/video/content-single-video.php:336
 #: template-parts/video/content.php:161 template-parts/video/content.php:163
 msgid "Instagram"
-msgstr ""
+msgstr "Instagram"
 
 #: inc/class-ajax-handlers.php:416 inc/class-ajax-handlers.php:494
 #: inc/class-ajax-handlers.php:510 inc/class-ajax-handlers.php:572
@@ -364,22 +358,22 @@ msgstr ""
 #: inc/class-ajax-handlers.php:709 inc/class-ajax-handlers.php:762
 #: inc/class-ajax-handlers.php:1142 inc/admin/class-admin-ajax.php:35
 msgid "Invalid nonce."
-msgstr ""
+msgstr "Nonce không hợp lệ."
 
 #: inc/class-ajax-handlers.php:88 inc/class-ajax-handlers.php:155
 #: inc/class-ajax-handlers.php:314 inc/class-ajax-handlers.php:966
 #: inc/class-ajax-handlers.php:987 inc/class-ajax-handlers.php:1060
 #: inc/class-ajax-handlers.php:1171
 msgid "Invalid video."
-msgstr ""
+msgstr "Video không hợp lệ."
 
 #: inc/admin/class-admin-assets.php:145
 msgid "Invalid YouTube URL. Do you want to continue saving the post?"
-msgstr ""
+msgstr "URL YouTube không hợp lệ. Bạn có muốn tiếp tục lưu bài viết không?"
 
 #: customize/customize-theme.php:41
 msgid "Light"
-msgstr ""
+msgstr "Sáng"
 
 #: template-parts/video/content-single-video.php:169
 #: template-parts/video/content.php:93
@@ -388,241 +382,234 @@ msgstr ""
 #: template-parts/components/comments/comment-replies.php:215
 #: template-parts/components/comments/comment-reply.php:108
 msgid "Like"
-msgstr ""
+msgstr "Thích"
 
 #: inc/class-video-post-type.php:391
 msgid "Likes"
-msgstr ""
+msgstr "Lượt thích"
 
 #: customize/customize-colors.php:100
 msgid "Link / Accent Color"
-msgstr ""
+msgstr "Màu liên kết / Màu nhấn"
 
 #: customize/customize-colors.php:101
 msgid "Link color and hover effects"
-msgstr ""
+msgstr "Màu liên kết và hiệu ứng di chuột"
 
 #: template-parts/search-panel.php:46
 msgid "Loading history..."
-msgstr ""
+msgstr "Đang tải lịch sử..."
 
 #: inc/core-functions.php:678 template-parts/search-panel.php:54
 #: inc/views/search.php:214
 msgid "Loading..."
-msgstr ""
+msgstr "Đang tải..."
 
 #: customize/customize-sidebar.php:41 template-parts/sidebar.php:24
 #: template-parts/sidebar.php:34 template-parts/sidebar.php:145
 msgid "Logo"
-msgstr ""
+msgstr "Logo"
 
 #: customize/customize-sidebar.php:53
 msgid "Logo Link"
-msgstr ""
+msgstr "Liên kết Logo"
 
 #. Author of the theme
 msgid "Mai Sỹ Đạt"
-msgstr ""
+msgstr "Mai Sỹ Đạt"
 
 #: customize/customize-colors.php:45
 msgid "Main color of the theme"
-msgstr ""
+msgstr "Màu chính của giao diện"
 
 #: inc/class-video-post-type.php:220
 msgid "MEGA Link:"
-msgstr ""
+msgstr "Liên kết MEGA:"
 
 #: inc/class-video-post-type.php:182
 msgid "MEGA VIDEO"
-msgstr ""
+msgstr "VIDEO MEGA"
 
 #: inc/class-ajax-handlers.php:331 inc/class-ajax-handlers.php:423
 #: inc/class-ajax-handlers.php:498
 msgid "Missing comment_id."
-msgstr ""
+msgstr "Thiếu comment_id."
 
 #: inc/class-ajax-handlers.php:1165
 msgid "Missing parent comment information."
-msgstr ""
+msgstr "Thiếu thông tin bình luận cha."
 
 #: inc/class-ajax-handlers.php:1158
 msgid "Missing video information."
-msgstr ""
+msgstr "Thiếu thông tin video."
 
 #: template-parts/video/content-single-video.php:122
 #: template-parts/video/content-single-video.php:123
 msgid "More"
-msgstr ""
+msgstr "Thêm"
 
 #: inc/admin/class-admin-assets.php:147
 msgid "Name:"
-msgstr ""
+msgstr "Tên:"
 
 #: inc/class-video-post-type.php:38
 msgid "New Category Name"
-msgstr ""
+msgstr "Tên danh mục mới"
 
 #: inc/class-video-post-type.php:64
 msgid "New Tag Name"
-msgstr ""
+msgstr "Tên thẻ mới"
 
 #: inc/class-video-post-type.php:97
 msgid "New Video"
-msgstr ""
+msgstr "Video mới"
 
 #: template-parts/top-header.php:28 template-parts/top-header.php:30
 #: template-parts/top-header.php:32
 msgid "News"
-msgstr ""
+msgstr "Tin tức"
 
 #: inc/views/single.php:33 inc/views/single.php:34
 #: inc/views/partials/video-feed.php:36 inc/views/partials/video-feed.php:37
 msgid "Next video"
-msgstr ""
+msgstr "Video tiếp theo"
 
 #: comments.php:138 template-parts/comments-video-watch.php:121
 msgid "No comments yet. Be the first to comment!"
-msgstr ""
+msgstr "Chưa có bình luận nào. Hãy là người đầu tiên bình luận!"
 
 #: inc/views/single.php:23
 msgid "No content."
-msgstr ""
+msgstr "Không có nội dung."
 
 #: inc/admin/class-admin-ajax.php:55
 msgid "No file uploaded or an error occurred."
-msgstr ""
+msgstr "Không có tệp nào được tải lên hoặc đã xảy ra lỗi."
 
 #: inc/class-video-post-type.php:68
 msgid "No tags found"
-msgstr ""
+msgstr "Không tìm thấy thẻ nào"
 
 #: inc/views/search.php:192 inc/views/search.php:201
 msgid "No videos found"
-msgstr ""
+msgstr "Không tìm thấy video nào"
 
 #: inc/views/search.php:193 inc/views/search.php:202
 #, php-format
 msgid "No videos found for \"%s\""
-msgstr ""
+msgstr "Không tìm thấy video nào cho \"%s\""
 
 #: inc/class-video-post-type.php:103
 msgid "No videos found in Trash."
-msgstr ""
+msgstr "Không tìm thấy video nào trong thùng rác."
 
 #: inc/class-video-post-type.php:102
 msgid "No videos found."
-msgstr ""
+msgstr "Không tìm thấy video nào."
 
 #: inc/core-functions.php:476 inc/views/partials/video-feed.php:22
 msgid "No videos yet"
-msgstr ""
+msgstr "Chưa có video nào"
 
 #: inc/admin/class-admin-assets.php:150
 msgid "Note: Video will be uploaded when you save the post."
-msgstr ""
+msgstr "Lưu ý: Video sẽ được tải lên khi bạn lưu bài viết."
 
 #: template-parts/components/comments/comment-item.php:92
 #: template-parts/components/comments/comment-item.php:101
-#: template-parts/components/comments/comment-item.php:101
-#: template-parts/components/comments/comment-replies.php:109
 #: template-parts/components/comments/comment-replies.php:109
 #: template-parts/components/comments/comment-replies.php:118
-#: template-parts/components/comments/comment-replies.php:118
-#: template-parts/components/comments/comment-replies.php:197
 #: template-parts/components/comments/comment-replies.php:197
 #: template-parts/components/comments/comment-replies.php:206
-#: template-parts/components/comments/comment-replies.php:206
 #: template-parts/components/comments/comment-reply.php:90
-#: template-parts/components/comments/comment-reply.php:90
-#: template-parts/components/comments/comment-reply.php:99
 #: template-parts/components/comments/comment-reply.php:99
 msgid "Options"
-msgstr ""
+msgstr "Tùy chọn"
 
 #: inc/class-video-post-type.php:205
 msgid "Or drag and drop video here"
-msgstr ""
+msgstr "Hoặc kéo và thả video vào đây"
 
 #: inc/class-video-post-type.php:33
 msgid "Parent Category"
-msgstr ""
+msgstr "Danh mục cha"
 
 #: inc/class-video-post-type.php:34
 msgid "Parent Category:"
-msgstr ""
+msgstr "Danh mục cha:"
 
 #: template-parts/video-card.php:47
 msgid "Play"
-msgstr ""
+msgstr "Phát"
 
 #: inc/core-functions.php:668
 msgid "Please log in to perform this action."
-msgstr ""
+msgstr "Vui lòng đăng nhập để thực hiện hành động này."
 
 #: inc/class-assets.php:250
 msgid "Popular"
-msgstr ""
+msgstr "Phổ biến"
 
 #: template-parts/search-panel.php:52
 msgid "Popular searches"
-msgstr ""
+msgstr "Tìm kiếm phổ biến"
 
 #: inc/class-video-post-type.php:59
 msgid "Popular Tags"
-msgstr ""
+msgstr "Thẻ phổ biến"
 
 #: comments.php:154 inc/class-assets.php:242
 #: template-parts/comments-video-watch.php:137
 #: template-parts/components/comments/reply-input.php:44
 msgid "Post"
-msgstr ""
+msgstr "Đăng"
 
 #: inc/class-video-post-type.php:91
 msgctxt "Post type general name"
 msgid "Videos"
-msgstr ""
+msgstr "Video"
 
 #: inc/class-video-post-type.php:92
 msgctxt "Post type singular name"
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: inc/class-assets.php:243
 msgid "Posting..."
-msgstr ""
+msgstr "Đang đăng..."
 
 #: inc/class-video-post-type.php:259 inc/admin/class-admin-assets.php:143
 msgid "Preview:"
-msgstr ""
+msgstr "Xem trước:"
 
 #: inc/views/single.php:30 inc/views/single.php:31
 #: inc/views/partials/video-feed.php:33 inc/views/partials/video-feed.php:34
 msgid "Previous video"
-msgstr ""
+msgstr "Video trước"
 
 #: customize/customize-colors.php:44
 msgid "Primary Color"
-msgstr ""
+msgstr "Màu chính"
 
 #: inc/core-functions.php:679
 msgid "Processing..."
-msgstr ""
+msgstr "Đang xử lý..."
 
 #. Name of the theme
 msgid "Puna TikTok"
-msgstr ""
+msgstr "Puna TikTok"
 
 #: inc/class-ajax-handlers.php:579
 msgid "Query cannot be empty."
-msgstr ""
+msgstr "Truy vấn không được để trống."
 
 #: inc/class-assets.php:251
 msgid "Related"
-msgstr ""
+msgstr "Liên quan"
 
 #: inc/views/search.php:212
 msgid "Related searches"
-msgstr ""
+msgstr "Tìm kiếm liên quan"
 
 #: inc/class-ajax-handlers.php:283
 #: template-parts/components/comments/comment-item.php:85
@@ -630,303 +617,302 @@ msgstr ""
 #: template-parts/components/comments/comment-replies.php:190
 #: template-parts/components/comments/comment-reply.php:83
 msgid "Reply"
-msgstr ""
+msgstr "Trả lời"
 
 #: template-parts/video/content-single-video.php:133
 #: template-parts/video/content-single-video.php:134
 #: template-parts/components/comments/comment-item.php:104
-#: template-parts/components/comments/comment-item.php:104
-#: template-parts/components/comments/comment-replies.php:121
 #: template-parts/components/comments/comment-replies.php:121
 #: template-parts/components/comments/comment-replies.php:209
-#: template-parts/components/comments/comment-replies.php:209
-#: template-parts/components/comments/comment-reply.php:102
 #: template-parts/components/comments/comment-reply.php:102
 msgid "Report"
-msgstr ""
+msgstr "Báo cáo"
 
 #: customize/customize-colors.php:127
 msgid "Reset Colors"
-msgstr ""
+msgstr "Đặt lại màu sắc"
 
 #: template-parts/video/content-single-video.php:181
 #: template-parts/video/content.php:107
 msgid "Save"
-msgstr ""
+msgstr "Lưu"
 
 #: inc/core-functions.php:675
 msgid "Saved successfully!"
-msgstr ""
+msgstr "Đã lưu thành công!"
 
 #: inc/class-assets.php:247 template-parts/search-panel.php:14
 #: template-parts/sidebar.php:43 template-parts/sidebar.php:46
 #: template-parts/sidebar.php:178
 msgid "Search"
-msgstr ""
+msgstr "Tìm kiếm"
 
 #: inc/class-video-post-type.php:31
 msgid "Search Categories"
-msgstr ""
+msgstr "Tìm kiếm danh mục"
 
 #: template-parts/search-panel.php:39
 msgid "Search history"
-msgstr ""
+msgstr "Lịch sử tìm kiếm"
 
 #: inc/core-functions.php:687
 msgid "Search history cleared"
-msgstr ""
+msgstr "Đã xóa lịch sử tìm kiếm"
 
 #: inc/views/search.php:34
 #, php-format
 msgid "Search results for \"%s\""
-msgstr ""
+msgstr "Kết quả tìm kiếm cho \"%s\""
 
 #: inc/class-video-post-type.php:58
 msgid "Search Tags"
-msgstr ""
+msgstr "Tìm kiếm thẻ"
 
 #: inc/class-video-post-type.php:101
 msgid "Search Videos"
-msgstr ""
+msgstr "Tìm kiếm video"
 
 #: template-parts/search-panel.php:25
 msgid "Search..."
-msgstr ""
+msgstr "Tìm kiếm..."
 
 #: customize/customize-colors.php:58
 msgid "Secondary Color"
-msgstr ""
+msgstr "Màu phụ"
 
 #: customize/customize-colors.php:59
 msgid "Secondary color of the theme"
-msgstr ""
+msgstr "Màu phụ của giao diện"
 
 #: inc/class-video-post-type.php:207
 msgid "Select video"
-msgstr ""
+msgstr "Chọn video"
 
 #: inc/class-video-post-type.php:204
 msgid "Select video to upload"
-msgstr ""
+msgstr "Chọn video để tải lên"
 
 #: inc/class-video-post-type.php:65
 msgid "Separate tags with commas"
-msgstr ""
+msgstr "Phân tách các thẻ bằng dấu phẩy"
 
 #: template-parts/video/content-single-video.php:187
 #: template-parts/video/content.php:114
 msgid "Share"
-msgstr ""
+msgstr "Chia sẻ"
 
 #: template-parts/video/content-single-video.php:300
 #: template-parts/video/content.php:127
 msgid "Share to"
-msgstr ""
+msgstr "Chia sẻ lên"
 
 #. Description of the theme
 msgid "Short-form video theme inspired by TikTok."
-msgstr ""
+msgstr "Giao diện video dạng ngắn lấy cảm hứng từ TikTok."
 
 #: customize/customize-sidebar.php:28
 msgid "Sidebar"
-msgstr ""
+msgstr "Thanh bên"
 
 #: inc/admin/class-admin-assets.php:148
 msgid "Size:"
-msgstr ""
+msgstr "Kích thước:"
 
 #: inc/views/404.php:20
 msgid ""
 "Sorry, the content you are looking for does not exist or has been deleted."
-msgstr ""
+msgstr "Rất tiếc, nội dung bạn đang tìm kiếm không tồn tại hoặc đã bị xóa."
 
 #: inc/core-functions.php:674
 msgid "Success!"
-msgstr ""
+msgstr "Thành công!"
 
 #: customize/customize-theme.php:40
 msgid "System"
-msgstr ""
+msgstr "Hệ thống"
 
 #: inc/class-setup.php:40 inc/views/tag.php:18
 msgid "Tag"
-msgstr ""
+msgstr "Thẻ"
 
 #: customize/customize-sidebar.php:153
 msgid "Tags"
-msgstr ""
+msgstr "Thẻ"
 
 #: inc/class-video-post-type.php:29
 msgctxt "taxonomy general name"
 msgid "Video Categories"
-msgstr ""
+msgstr "Danh mục video"
 
 #: inc/class-video-post-type.php:56
 msgctxt "taxonomy general name"
 msgid "Video Tags"
-msgstr ""
+msgstr "Thẻ video"
 
 #: inc/class-video-post-type.php:30
 msgctxt "taxonomy singular name"
 msgid "Video Category"
-msgstr ""
+msgstr "Danh mục video"
 
 #: inc/class-video-post-type.php:57
 msgctxt "taxonomy singular name"
 msgid "Video Tag"
-msgstr ""
+msgstr "Thẻ video"
 
 #: template-parts/video/content-single-video.php:350
 #: template-parts/video/content-single-video.php:352
 #: template-parts/video/content.php:177 template-parts/video/content.php:179
 msgid "Telegram"
-msgstr ""
+msgstr "Telegram"
 
 #: customize/customize-colors.php:86
 msgid "Text Color"
-msgstr ""
+msgstr "Màu văn bản"
 
 #: customize/customize-colors.php:87
 msgid "Text color for entire page"
-msgstr ""
+msgstr "Màu văn bản cho toàn bộ trang"
 
 #: inc/core-functions.php:656
 msgid "Thank you for reporting. We will review this video."
-msgstr ""
+msgstr "Cảm ơn bạn đã báo cáo. Chúng tôi sẽ xem xét video này."
 
 #: customize/customize-theme.php:21
 msgid "Theme Mode"
-msgstr ""
+msgstr "Chế độ giao diện"
 
 #: inc/class-setup.php:74
 msgid "TikTok Sidebar Menu"
-msgstr ""
+msgstr "Menu thanh bên TikTok"
 
 #: customize/customize-colors.php:128
 msgid ""
 "To reset all colors to default, delete each color value and click Publish."
 msgstr ""
+"Để đặt lại tất cả màu về mặc định, hãy xóa từng giá trị màu và nhấp vào Đăng."
 
 #: inc/views/search.php:46
 msgid "Top"
-msgstr ""
+msgstr "Hàng đầu"
 
 #: inc/views/category.php:35 inc/views/tag.php:36
 msgid "Trending"
-msgstr ""
+msgstr "Xu hướng"
 
 #: inc/admin/class-admin-assets.php:149
 msgid "Type:"
-msgstr ""
+msgstr "Loại:"
 
 #: inc/class-video-post-type.php:36
 msgid "Update Category"
-msgstr ""
+msgstr "Cập nhật danh mục"
 
 #: inc/class-video-post-type.php:62
 msgid "Update Tag"
-msgstr ""
+msgstr "Cập nhật thẻ"
 
 #: inc/class-video-post-type.php:145
 msgid "Upload Video"
-msgstr ""
+msgstr "Tải lên video"
 
 #: inc/core-functions.php:477
 msgid "Upload your first video to get started!"
-msgstr ""
+msgstr "Tải lên video đầu tiên của bạn để bắt đầu!"
 
 #: inc/admin/class-admin-assets.php:151
 msgid "Uploaded to MEGA successfully!"
-msgstr ""
+msgstr "Đã tải lên MEGA thành công!"
 
 #: customize/customize-footer.php:46
 msgid "Use [year] to display current year"
-msgstr ""
+msgstr "Sử dụng [year] để hiển thị năm hiện tại"
 
 #: template-parts/video-card.php:31 inc/views/search.php:51
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: inc/class-video-post-type.php:39
 msgid "Video Categories"
-msgstr ""
+msgstr "Danh mục video"
 
 #: inc/core-functions.php:657
 msgid "Video deleted"
-msgstr ""
+msgstr "Đã xóa video"
 
 #: inc/class-video-post-type.php:196
 msgid "Video File"
-msgstr ""
+msgstr "Tệp video"
 
 #: inc/admin/class-admin-assets.php:144
 msgid ""
 "Video has not been uploaded. Do you want to continue saving the post? Video "
 "will not be displayed until it is uploaded."
 msgstr ""
+"Video chưa được tải lên. Bạn có muốn tiếp tục lưu bài viết không? Video sẽ "
+"không hiển thị cho đến khi được tải lên."
 
 #: inc/class-video-post-type.php:258 inc/admin/class-admin-assets.php:142
 msgid "Video ID:"
-msgstr ""
+msgstr "ID Video:"
 
 #: inc/core-functions.php:651
 msgid "Video liked"
-msgstr ""
+msgstr "Đã thích video"
 
 #: inc/core-functions.php:670
 msgid "Video not found."
-msgstr ""
+msgstr "Không tìm thấy video."
 
 #: inc/core-functions.php:653
 msgid "Video saved"
-msgstr ""
+msgstr "Đã lưu video"
 
 #: inc/core-functions.php:655
 msgid "Video shared"
-msgstr ""
+msgstr "Đã chia sẻ video"
 
 #: inc/class-video-post-type.php:69
 msgid "Video Tags"
-msgstr ""
+msgstr "Thẻ video"
 
 #: inc/core-functions.php:652
 msgid "Video unliked"
-msgstr ""
+msgstr "Đã bỏ thích video"
 
 #: inc/core-functions.php:654
 msgid "Video unsaved"
-msgstr ""
+msgstr "Đã bỏ lưu video"
 
 #: inc/class-video-post-type.php:224
 msgid "Video URL:"
-msgstr ""
+msgstr "URL Video:"
 
 #: inc/class-theme-base.php:36
 #, php-format
 msgid "View file not found: %s"
-msgstr ""
+msgstr "Không tìm thấy tệp view: %s"
 
 #: inc/class-assets.php:245
 msgid "View more replies"
-msgstr ""
+msgstr "Xem thêm trả lời"
 
 #: template-parts/components/comments/comment-replies.php:136
 #, php-format
 msgid "View more replies (%s)"
-msgstr ""
+msgstr "Xem thêm trả lời (%s)"
 
 #: inc/class-video-post-type.php:99
 msgid "View Video"
-msgstr ""
+msgstr "Xem video"
 
 #: template-parts/top-header.php:38 template-parts/top-header.php:42
 msgid "View Web Site"
-msgstr ""
+msgstr "Xem trang web"
 
 #: inc/class-video-post-type.php:390 template-parts/video-card.php:51
 #: inc/views/search.php:170 template-parts/video/content-single-video.php:275
 msgid "Views"
-msgstr ""
+msgstr "Lượt xem"
 
 #: inc/class-assets.php:252 template-parts/video/content-single-video.php:70
 #: template-parts/video/content-single-video.php:71
@@ -934,48 +920,48 @@ msgstr ""
 #: template-parts/video/content.php:37 template-parts/video/content.php:38
 #: template-parts/video/content.php:41
 msgid "Volume"
-msgstr ""
+msgstr "Âm lượng"
 
 #: template-parts/top-header.php:40
 msgid "Web"
-msgstr ""
+msgstr "Web"
 
 #: template-parts/components/comments/reply-input.php:36
 msgid "Write a reply..."
-msgstr ""
+msgstr "Viết câu trả lời..."
 
 #: inc/class-ajax-handlers.php:463
 msgid "You do not have permission to delete this comment."
-msgstr ""
+msgstr "Bạn không có quyền xóa bình luận này."
 
 #: inc/class-ajax-handlers.php:1065
 msgid "You do not have permission to delete this video."
-msgstr ""
+msgstr "Bạn không có quyền xóa video này."
 
 #: inc/core-functions.php:669 inc/admin/class-admin-ajax.php:41
 msgid "You do not have permission to perform this action."
-msgstr ""
+msgstr "Bạn không có quyền thực hiện hành động này."
 
 #: inc/class-ajax-handlers.php:1054
 msgid "You need to login to perform this action."
-msgstr ""
+msgstr "Bạn cần đăng nhập để thực hiện hành động này."
 
 #: template-parts/video/content-single-video.php:102
 #: template-parts/video/content.php:61
 msgid "Your browser does not support video."
-msgstr ""
+msgstr "Trình duyệt của bạn không hỗ trợ video."
 
 #: template-parts/sidebar.php:91 template-parts/sidebar.php:92
 #: template-parts/sidebar.php:93
 msgid "YouTube"
-msgstr ""
+msgstr "YouTube"
 
 #: inc/class-video-post-type.php:242
 msgid "YouTube Link"
-msgstr ""
+msgstr "Liên kết YouTube"
 
 #: template-parts/video/content-single-video.php:318
 #: template-parts/video/content-single-video.php:320
 #: template-parts/video/content.php:145 template-parts/video/content.php:147
 msgid "Zalo"
-msgstr ""
+msgstr "Zalo"
