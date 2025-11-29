@@ -312,8 +312,8 @@ document.addEventListener("DOMContentLoaded", function() {
         const postId = deleteBtn.dataset.postId;
         if (!postId) return;
         
-        const confirmMessage = typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.toast_messages && puna_tiktok_ajax.toast_messages.warning_confirm 
-            ? puna_tiktok_ajax.toast_messages.warning_confirm 
+        const confirmMessage = typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.toast_messages && puna_tiktok_ajax.toast_messages.warning_delete_video 
+            ? puna_tiktok_ajax.toast_messages.warning_delete_video 
             : 'Are you sure you want to delete this video? This action cannot be undone.';
         if (!confirm(confirmMessage)) {
             return;

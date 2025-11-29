@@ -43,27 +43,12 @@ if (!defined('ABSPATH')) {
                 
                 if (!is_wp_error($all_categories) && !empty($all_categories)) {
                     foreach ($all_categories as $category) {
-                        // Check if category has videos
-                        $video_count_query = new WP_Query(array(
-                            'post_type' => 'video',
-                            'post_status' => 'publish',
-                            'posts_per_page' => 1,
-                            'tax_query' => array(
-                                array(
-                                    'taxonomy' => 'video_category',
-                                    'field' => 'term_id',
-                                    'terms' => $category->term_id,
-                                ),
-                            ),
-                            'fields' => 'ids',
-                        ));
-                        
-                        if ($video_count_query->found_posts > 0) {
+                        // Use term count instead of querying - much more efficient
+                        if ($category->count > 0) {
                             $category_url = home_url('/category/' . $category->term_id . '/');
                             $is_category_active = ($current_category_id == $category->term_id);
                             echo '<a href="' . esc_url($category_url) . '" class="tab' . ($is_category_active ? ' active' : '') . '">' . esc_html($category->name) . '</a>';
                         }
-                        wp_reset_postdata();
                     }
                 }
                 ?>

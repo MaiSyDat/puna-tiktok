@@ -3,20 +3,21 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Puna TikTok\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-27 11:51+0700\n"
+"POT-Creation-Date: 2025-11-29 09:53+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.8.0; wp-6.8.3; php-8.2.12\n"
-"X-Domain: puna-tiktok\n"
+"X-Domain: puna-tiktok"
 
-#: inc/class-ajax-handlers.php:285 inc/views/search.php:168
-#: template-parts/video/content-single-video.php:145
+#: inc/class-ajax-handlers.php:282 inc/views/search.php:179
+#: template-parts/video/content-single-video.php:160
 #: template-parts/components/comments/comment-item.php:83
 #: template-parts/components/comments/comment-replies.php:100
 #: template-parts/components/comments/comment-replies.php:188
@@ -83,11 +84,28 @@ msgstr ""
 msgid "All Videos"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:258
+#: inc/core-functions.php:667
+msgid "An error occurred. Please try again."
+msgstr ""
+
+#: inc/core-functions.php:683
+msgid "Are you sure you want to clear all search history?"
+msgstr ""
+
+#: inc/core-functions.php:684
+msgid ""
+"Are you sure you want to delete this video? This action cannot be undone."
+msgstr ""
+
+#: inc/core-functions.php:682
+msgid "Are you sure?"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:288
 msgid "Author has no other videos"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:187
+#: template-parts/video/content-single-video.php:202
 msgid "Author videos"
 msgstr ""
 
@@ -120,7 +138,7 @@ msgstr ""
 msgid "Cannot add comment."
 msgstr ""
 
-#: inc/class-ajax-handlers.php:979
+#: inc/class-ajax-handlers.php:1078
 msgid "Cannot delete video. Please try again."
 msgstr ""
 
@@ -145,10 +163,10 @@ msgstr ""
 msgid "Clear history"
 msgstr ""
 
-#: comments.php:23 template-parts/search-panel.php:16
-#: template-parts/video/content-single-video.php:271
-#: template-parts/video/content-single-video.php:272
-#: template-parts/video/content.php:114 template-parts/video/content.php:115
+#: comments.php:23 inc/class-assets.php:246 template-parts/search-panel.php:16
+#: template-parts/video/content-single-video.php:301
+#: template-parts/video/content-single-video.php:302
+#: template-parts/video/content.php:128 template-parts/video/content.php:129
 msgid "Close"
 msgstr ""
 
@@ -156,24 +174,48 @@ msgstr ""
 msgid "Color"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:160
-#: template-parts/video/content.php:86
+#: template-parts/video/content-single-video.php:175
+#: template-parts/video/content.php:100
 msgid "Comment"
+msgstr ""
+
+#: inc/core-functions.php:660
+msgid "Comment added"
 msgstr ""
 
 #: inc/class-ajax-handlers.php:159
 msgid "Comment cannot be empty."
 msgstr ""
 
-#: inc/class-ajax-handlers.php:339 inc/class-ajax-handlers.php:432
+#: inc/core-functions.php:661
+msgid "Comment deleted"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:336 inc/class-ajax-handlers.php:429
 msgid "Comment does not exist."
 msgstr ""
 
-#: inc/class-video-post-type.php:270
+#: inc/core-functions.php:662
+msgid "Comment liked"
+msgstr ""
+
+#: inc/core-functions.php:671
+msgid "Comment not found."
+msgstr ""
+
+#: inc/core-functions.php:664
+msgid "Comment reported"
+msgstr ""
+
+#: inc/core-functions.php:663
+msgid "Comment unliked"
+msgstr ""
+
+#: inc/class-assets.php:244 inc/class-video-post-type.php:392
 msgid "Comments"
 msgstr ""
 
-#: comments.php:21 template-parts/video/content-single-video.php:184
+#: comments.php:21 template-parts/video/content-single-video.php:199
 #, php-format
 msgid "Comments (%s)"
 msgstr ""
@@ -199,9 +241,9 @@ msgstr ""
 msgid "Contact"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:296
-#: template-parts/video/content-single-video.php:298
-#: template-parts/video/content.php:139 template-parts/video/content.php:141
+#: template-parts/video/content-single-video.php:326
+#: template-parts/video/content-single-video.php:328
+#: template-parts/video/content.php:153 template-parts/video/content.php:155
 msgid "Copy link"
 msgstr ""
 
@@ -209,8 +251,12 @@ msgstr ""
 msgid "Copyright Text"
 msgstr ""
 
-#: inc/class-video-post-type.php:187
+#: inc/class-video-post-type.php:218
 msgid "Current Video:"
+msgstr ""
+
+#: inc/class-video-post-type.php:257 inc/admin/class-admin-assets.php:141
+msgid "Current YouTube Video:"
 msgstr ""
 
 #: customize/customize-theme.php:42
@@ -223,13 +269,16 @@ msgstr ""
 
 #: template-parts/components/comments/comment-item.php:95
 #: template-parts/components/comments/comment-replies.php:112
+#: template-parts/components/comments/comment-replies.php:112
 #: template-parts/components/comments/comment-replies.php:200
+#: template-parts/components/comments/comment-replies.php:200
+#: template-parts/components/comments/comment-reply.php:93
 #: template-parts/components/comments/comment-reply.php:93
 msgid "Delete"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:113
-#: template-parts/video/content-single-video.php:114
+#: template-parts/video/content-single-video.php:128
+#: template-parts/video/content-single-video.php:129
 msgid "Delete video"
 msgstr ""
 
@@ -245,26 +294,52 @@ msgstr ""
 msgid "Edit Video"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:312
-#: template-parts/video/content-single-video.php:314
-#: template-parts/video/content.php:155 template-parts/video/content.php:157
+#: template-parts/video/content-single-video.php:342
+#: template-parts/video/content-single-video.php:344
+#: template-parts/video/content.php:169 template-parts/video/content.php:171
 msgid "Email"
+msgstr ""
+
+#: inc/class-video-post-type.php:187
+msgid "EMBED YOUTUBE"
+msgstr ""
+
+#: inc/class-video-post-type.php:252
+msgid ""
+"Enter YouTube link (supports both regular links and Shorts links). Video ID "
+"will be automatically extracted when saving the post."
 msgstr ""
 
 #: template-parts/sidebar.php:83 template-parts/sidebar.php:84
 #: template-parts/sidebar.php:85
-#: template-parts/video/content-single-video.php:280
-#: template-parts/video/content-single-video.php:282
-#: template-parts/video/content.php:123 template-parts/video/content.php:125
+#: template-parts/video/content-single-video.php:310
+#: template-parts/video/content-single-video.php:312
+#: template-parts/video/content.php:137 template-parts/video/content.php:139
 msgid "Facebook"
+msgstr ""
+
+#: inc/admin/class-admin-assets.php:146
+msgid "File Information:"
 msgstr ""
 
 #: customize/customize-footer.php:29
 msgid "Footer"
 msgstr ""
 
-#: inc/class-ajax-handlers.php:181
+#: inc/views/category.php:28 inc/views/tag.php:29
+msgid "For You"
+msgstr ""
+
+#: inc/views/404.php:22
+msgid "Go to Home"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:181 inc/class-assets.php:248
 msgid "Guest"
+msgstr ""
+
+#: inc/class-assets.php:249
+msgid "History"
 msgstr ""
 
 #: customize/customize-sidebar.php:141
@@ -273,38 +348,37 @@ msgstr ""
 
 #: template-parts/sidebar.php:87 template-parts/sidebar.php:88
 #: template-parts/sidebar.php:89
-#: template-parts/video/content-single-video.php:304
-#: template-parts/video/content-single-video.php:306
-#: template-parts/video/content.php:147 template-parts/video/content.php:149
+#: template-parts/video/content-single-video.php:334
+#: template-parts/video/content-single-video.php:336
+#: template-parts/video/content.php:161 template-parts/video/content.php:163
 msgid "Instagram"
 msgstr ""
 
-#: inc/class-ajax-handlers.php:419 inc/class-ajax-handlers.php:497
-#: inc/class-ajax-handlers.php:513 inc/class-ajax-handlers.php:575
-#: inc/class-ajax-handlers.php:628 inc/class-ajax-handlers.php:689
-#: inc/class-ajax-handlers.php:712 inc/class-ajax-handlers.php:765
-#: inc/class-ajax-handlers.php:1043 inc/admin/class-admin-ajax.php:35
+#: inc/class-ajax-handlers.php:416 inc/class-ajax-handlers.php:494
+#: inc/class-ajax-handlers.php:510 inc/class-ajax-handlers.php:572
+#: inc/class-ajax-handlers.php:625 inc/class-ajax-handlers.php:686
+#: inc/class-ajax-handlers.php:709 inc/class-ajax-handlers.php:762
+#: inc/class-ajax-handlers.php:1142 inc/admin/class-admin-ajax.php:35
 msgid "Invalid nonce."
 msgstr ""
 
 #: inc/class-ajax-handlers.php:88 inc/class-ajax-handlers.php:155
-#: inc/class-ajax-handlers.php:317 inc/class-ajax-handlers.php:867
-#: inc/class-ajax-handlers.php:888 inc/class-ajax-handlers.php:961
-#: inc/class-ajax-handlers.php:1072
+#: inc/class-ajax-handlers.php:314 inc/class-ajax-handlers.php:966
+#: inc/class-ajax-handlers.php:987 inc/class-ajax-handlers.php:1060
+#: inc/class-ajax-handlers.php:1171
 msgid "Invalid video."
 msgstr ""
 
-#: inc/views/search.php:34
-#, php-format
-msgid "Search results for \"%s\""
+#: inc/admin/class-admin-assets.php:145
+msgid "Invalid YouTube URL. Do you want to continue saving the post?"
 msgstr ""
 
 #: customize/customize-theme.php:41
 msgid "Light"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:154
-#: template-parts/video/content.php:79
+#: template-parts/video/content-single-video.php:169
+#: template-parts/video/content.php:93
 #: template-parts/components/comments/comment-item.php:110
 #: template-parts/components/comments/comment-replies.php:127
 #: template-parts/components/comments/comment-replies.php:215
@@ -312,7 +386,7 @@ msgstr ""
 msgid "Like"
 msgstr ""
 
-#: inc/class-video-post-type.php:269
+#: inc/class-video-post-type.php:391
 msgid "Likes"
 msgstr ""
 
@@ -328,12 +402,13 @@ msgstr ""
 msgid "Loading history..."
 msgstr ""
 
-#: template-parts/search-panel.php:54 inc/views/search.php:203
+#: inc/core-functions.php:678 template-parts/search-panel.php:54
+#: inc/views/search.php:214
 msgid "Loading..."
 msgstr ""
 
 #: customize/customize-sidebar.php:41 template-parts/sidebar.php:24
-#: template-parts/sidebar.php:34
+#: template-parts/sidebar.php:34 template-parts/sidebar.php:145
 msgid "Logo"
 msgstr ""
 
@@ -349,26 +424,34 @@ msgstr ""
 msgid "Main color of the theme"
 msgstr ""
 
-#: inc/class-video-post-type.php:189
+#: inc/class-video-post-type.php:220
 msgid "MEGA Link:"
 msgstr ""
 
-#: inc/class-ajax-handlers.php:334 inc/class-ajax-handlers.php:426
-#: inc/class-ajax-handlers.php:501
+#: inc/class-video-post-type.php:182
+msgid "MEGA VIDEO"
+msgstr ""
+
+#: inc/class-ajax-handlers.php:331 inc/class-ajax-handlers.php:423
+#: inc/class-ajax-handlers.php:498
 msgid "Missing comment_id."
 msgstr ""
 
-#: inc/class-ajax-handlers.php:1066
+#: inc/class-ajax-handlers.php:1165
 msgid "Missing parent comment information."
 msgstr ""
 
-#: inc/class-ajax-handlers.php:1059
+#: inc/class-ajax-handlers.php:1158
 msgid "Missing video information."
 msgstr ""
 
-#: template-parts/video/content-single-video.php:107
-#: template-parts/video/content-single-video.php:108
+#: template-parts/video/content-single-video.php:122
+#: template-parts/video/content-single-video.php:123
 msgid "More"
+msgstr ""
+
+#: inc/admin/class-admin-assets.php:147
+msgid "Name:"
 msgstr ""
 
 #: inc/class-video-post-type.php:38
@@ -409,11 +492,11 @@ msgstr ""
 msgid "No tags found"
 msgstr ""
 
-#: inc/views/search.php:181 inc/views/search.php:190
+#: inc/views/search.php:192 inc/views/search.php:201
 msgid "No videos found"
 msgstr ""
 
-#: inc/views/search.php:182 inc/views/search.php:191
+#: inc/views/search.php:193 inc/views/search.php:202
 #, php-format
 msgid "No videos found for \"%s\""
 msgstr ""
@@ -426,22 +509,33 @@ msgstr ""
 msgid "No videos found."
 msgstr ""
 
-#: inc/core-functions.php:433 inc/views/partials/video-feed.php:22
+#: inc/core-functions.php:476 inc/views/partials/video-feed.php:22
 msgid "No videos yet"
+msgstr ""
+
+#: inc/admin/class-admin-assets.php:150
+msgid "Note: Video will be uploaded when you save the post."
 msgstr ""
 
 #: template-parts/components/comments/comment-item.php:92
 #: template-parts/components/comments/comment-item.php:101
+#: template-parts/components/comments/comment-item.php:101
+#: template-parts/components/comments/comment-replies.php:109
 #: template-parts/components/comments/comment-replies.php:109
 #: template-parts/components/comments/comment-replies.php:118
+#: template-parts/components/comments/comment-replies.php:118
+#: template-parts/components/comments/comment-replies.php:197
 #: template-parts/components/comments/comment-replies.php:197
 #: template-parts/components/comments/comment-replies.php:206
+#: template-parts/components/comments/comment-replies.php:206
 #: template-parts/components/comments/comment-reply.php:90
+#: template-parts/components/comments/comment-reply.php:90
+#: template-parts/components/comments/comment-reply.php:99
 #: template-parts/components/comments/comment-reply.php:99
 msgid "Options"
 msgstr ""
 
-#: inc/class-video-post-type.php:174
+#: inc/class-video-post-type.php:205
 msgid "Or drag and drop video here"
 msgstr ""
 
@@ -453,8 +547,16 @@ msgstr ""
 msgid "Parent Category:"
 msgstr ""
 
-#: template-parts/video-card.php:46
+#: template-parts/video-card.php:47
 msgid "Play"
+msgstr ""
+
+#: inc/core-functions.php:668
+msgid "Please log in to perform this action."
+msgstr ""
+
+#: inc/class-assets.php:250
+msgid "Popular"
 msgstr ""
 
 #: template-parts/search-panel.php:52
@@ -465,7 +567,8 @@ msgstr ""
 msgid "Popular Tags"
 msgstr ""
 
-#: comments.php:154 template-parts/comments-video-watch.php:137
+#: comments.php:154 inc/class-assets.php:242
+#: template-parts/comments-video-watch.php:137
 #: template-parts/components/comments/reply-input.php:44
 msgid "Post"
 msgstr ""
@@ -480,6 +583,14 @@ msgctxt "Post type singular name"
 msgid "Video"
 msgstr ""
 
+#: inc/class-assets.php:243
+msgid "Posting..."
+msgstr ""
+
+#: inc/class-video-post-type.php:259 inc/admin/class-admin-assets.php:143
+msgid "Preview:"
+msgstr ""
+
 #: inc/views/single.php:30 inc/views/single.php:31
 #: inc/views/partials/video-feed.php:33 inc/views/partials/video-feed.php:34
 msgid "Previous video"
@@ -489,19 +600,27 @@ msgstr ""
 msgid "Primary Color"
 msgstr ""
 
+#: inc/core-functions.php:679
+msgid "Processing..."
+msgstr ""
+
 #. Name of the theme
 msgid "Puna TikTok"
 msgstr ""
 
-#: inc/class-ajax-handlers.php:582
+#: inc/class-ajax-handlers.php:579
 msgid "Query cannot be empty."
 msgstr ""
 
-#: inc/views/search.php:201
+#: inc/class-assets.php:251
+msgid "Related"
+msgstr ""
+
+#: inc/views/search.php:212
 msgid "Related searches"
 msgstr ""
 
-#: inc/class-ajax-handlers.php:286
+#: inc/class-ajax-handlers.php:283
 #: template-parts/components/comments/comment-item.php:85
 #: template-parts/components/comments/comment-replies.php:102
 #: template-parts/components/comments/comment-replies.php:190
@@ -509,11 +628,15 @@ msgstr ""
 msgid "Reply"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:118
-#: template-parts/video/content-single-video.php:119
+#: template-parts/video/content-single-video.php:133
+#: template-parts/video/content-single-video.php:134
+#: template-parts/components/comments/comment-item.php:104
 #: template-parts/components/comments/comment-item.php:104
 #: template-parts/components/comments/comment-replies.php:121
+#: template-parts/components/comments/comment-replies.php:121
 #: template-parts/components/comments/comment-replies.php:209
+#: template-parts/components/comments/comment-replies.php:209
+#: template-parts/components/comments/comment-reply.php:102
 #: template-parts/components/comments/comment-reply.php:102
 msgid "Report"
 msgstr ""
@@ -522,13 +645,18 @@ msgstr ""
 msgid "Reset Colors"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:166
-#: template-parts/video/content.php:93
+#: template-parts/video/content-single-video.php:181
+#: template-parts/video/content.php:107
 msgid "Save"
 msgstr ""
 
-#: template-parts/search-panel.php:14 template-parts/sidebar.php:43
-#: template-parts/sidebar.php:46 template-parts/sidebar.php:136
+#: inc/core-functions.php:675
+msgid "Saved successfully!"
+msgstr ""
+
+#: inc/class-assets.php:247 template-parts/search-panel.php:14
+#: template-parts/sidebar.php:43 template-parts/sidebar.php:46
+#: template-parts/sidebar.php:178
 msgid "Search"
 msgstr ""
 
@@ -538,6 +666,15 @@ msgstr ""
 
 #: template-parts/search-panel.php:39
 msgid "Search history"
+msgstr ""
+
+#: inc/core-functions.php:687
+msgid "Search history cleared"
+msgstr ""
+
+#: inc/views/search.php:34
+#, php-format
+msgid "Search results for \"%s\""
 msgstr ""
 
 #: inc/class-video-post-type.php:58
@@ -560,11 +697,11 @@ msgstr ""
 msgid "Secondary color of the theme"
 msgstr ""
 
-#: inc/class-video-post-type.php:176
+#: inc/class-video-post-type.php:207
 msgid "Select video"
 msgstr ""
 
-#: inc/class-video-post-type.php:173
+#: inc/class-video-post-type.php:204
 msgid "Select video to upload"
 msgstr ""
 
@@ -572,13 +709,13 @@ msgstr ""
 msgid "Separate tags with commas"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:172
-#: template-parts/video/content.php:100
+#: template-parts/video/content-single-video.php:187
+#: template-parts/video/content.php:114
 msgid "Share"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:270
-#: template-parts/video/content.php:113
+#: template-parts/video/content-single-video.php:300
+#: template-parts/video/content.php:127
 msgid "Share to"
 msgstr ""
 
@@ -588,6 +725,19 @@ msgstr ""
 
 #: customize/customize-sidebar.php:28
 msgid "Sidebar"
+msgstr ""
+
+#: inc/admin/class-admin-assets.php:148
+msgid "Size:"
+msgstr ""
+
+#: inc/views/404.php:20
+msgid ""
+"Sorry, the content you are looking for does not exist or has been deleted."
+msgstr ""
+
+#: inc/core-functions.php:674
+msgid "Success!"
 msgstr ""
 
 #: customize/customize-theme.php:40
@@ -622,9 +772,9 @@ msgctxt "taxonomy singular name"
 msgid "Video Tag"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:320
-#: template-parts/video/content-single-video.php:322
-#: template-parts/video/content.php:163 template-parts/video/content.php:165
+#: template-parts/video/content-single-video.php:350
+#: template-parts/video/content-single-video.php:352
+#: template-parts/video/content.php:177 template-parts/video/content.php:179
 msgid "Telegram"
 msgstr ""
 
@@ -636,6 +786,10 @@ msgstr ""
 msgid "Text color for entire page"
 msgstr ""
 
+#: inc/core-functions.php:656
+msgid "Thank you for reporting. We will review this video."
+msgstr ""
+
 #: customize/customize-theme.php:21
 msgid "Theme Mode"
 msgstr ""
@@ -645,19 +799,20 @@ msgid "TikTok Sidebar Menu"
 msgstr ""
 
 #: customize/customize-colors.php:128
-msgid "To reset all colors to default, delete each color value and click Publish."
+msgid ""
+"To reset all colors to default, delete each color value and click Publish."
 msgstr ""
 
 #: inc/views/search.php:46
 msgid "Top"
 msgstr ""
 
-#: inc/views/category.php:28 inc/views/tag.php:29
-msgid "For You"
-msgstr ""
-
 #: inc/views/category.php:35 inc/views/tag.php:36
 msgid "Trending"
+msgstr ""
+
+#: inc/admin/class-admin-assets.php:149
+msgid "Type:"
 msgstr ""
 
 #: inc/class-video-post-type.php:36
@@ -672,15 +827,19 @@ msgstr ""
 msgid "Upload Video"
 msgstr ""
 
-#: inc/core-functions.php:434
+#: inc/core-functions.php:477
 msgid "Upload your first video to get started!"
+msgstr ""
+
+#: inc/admin/class-admin-assets.php:151
+msgid "Uploaded to MEGA successfully!"
 msgstr ""
 
 #: customize/customize-footer.php:46
 msgid "Use [year] to display current year"
 msgstr ""
 
-#: template-parts/video-card.php:35 inc/views/search.php:51
+#: template-parts/video-card.php:31 inc/views/search.php:51
 msgid "Video"
 msgstr ""
 
@@ -688,16 +847,63 @@ msgstr ""
 msgid "Video Categories"
 msgstr ""
 
-#: inc/class-video-post-type.php:165
+#: inc/core-functions.php:657
+msgid "Video deleted"
+msgstr ""
+
+#: inc/class-video-post-type.php:196
 msgid "Video File"
+msgstr ""
+
+#: inc/admin/class-admin-assets.php:144
+msgid ""
+"Video has not been uploaded. Do you want to continue saving the post? Video "
+"will not be displayed until it is uploaded."
+msgstr ""
+
+#: inc/class-video-post-type.php:258 inc/admin/class-admin-assets.php:142
+msgid "Video ID:"
+msgstr ""
+
+#: inc/core-functions.php:651
+msgid "Video liked"
+msgstr ""
+
+#: inc/core-functions.php:670
+msgid "Video not found."
+msgstr ""
+
+#: inc/core-functions.php:653
+msgid "Video saved"
+msgstr ""
+
+#: inc/core-functions.php:655
+msgid "Video shared"
 msgstr ""
 
 #: inc/class-video-post-type.php:69
 msgid "Video Tags"
 msgstr ""
 
-#: inc/class-video-post-type.php:193
+#: inc/core-functions.php:652
+msgid "Video unliked"
+msgstr ""
+
+#: inc/core-functions.php:654
+msgid "Video unsaved"
+msgstr ""
+
+#: inc/class-video-post-type.php:224
 msgid "Video URL:"
+msgstr ""
+
+#: inc/class-theme-base.php:36
+#, php-format
+msgid "View file not found: %s"
+msgstr ""
+
+#: inc/class-assets.php:245
+msgid "View more replies"
 msgstr ""
 
 #: template-parts/components/comments/comment-replies.php:136
@@ -713,21 +919,17 @@ msgstr ""
 msgid "View Web Site"
 msgstr ""
 
-#: inc/class-video-post-type.php:268 template-parts/video-card.php:50
-#: inc/views/search.php:159 template-parts/video/content-single-video.php:245
+#: inc/class-video-post-type.php:390 template-parts/video-card.php:51
+#: inc/views/search.php:170 template-parts/video/content-single-video.php:275
 msgid "Views"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:70
+#: inc/class-assets.php:252 template-parts/video/content-single-video.php:70
 #: template-parts/video/content-single-video.php:71
 #: template-parts/video/content-single-video.php:74
 #: template-parts/video/content.php:37 template-parts/video/content.php:38
 #: template-parts/video/content.php:41
 msgid "Volume"
-msgstr ""
-
-#: inc/views/404.php:22
-msgid "Go to Home"
 msgstr ""
 
 #: template-parts/top-header.php:40
@@ -738,28 +940,24 @@ msgstr ""
 msgid "Write a reply..."
 msgstr ""
 
-#: inc/views/404.php:20
-msgid "Sorry, the content you are looking for does not exist or has been deleted."
-msgstr ""
-
-#: inc/class-ajax-handlers.php:466
+#: inc/class-ajax-handlers.php:463
 msgid "You do not have permission to delete this comment."
 msgstr ""
 
-#: inc/class-ajax-handlers.php:966
+#: inc/class-ajax-handlers.php:1065
 msgid "You do not have permission to delete this video."
 msgstr ""
 
-#: inc/admin/class-admin-ajax.php:41
+#: inc/core-functions.php:669 inc/admin/class-admin-ajax.php:41
 msgid "You do not have permission to perform this action."
 msgstr ""
 
-#: inc/class-ajax-handlers.php:955
+#: inc/class-ajax-handlers.php:1054
 msgid "You need to login to perform this action."
 msgstr ""
 
-#: template-parts/video/content-single-video.php:88
-#: template-parts/video/content.php:48
+#: template-parts/video/content-single-video.php:102
+#: template-parts/video/content.php:61
 msgid "Your browser does not support video."
 msgstr ""
 
@@ -768,8 +966,12 @@ msgstr ""
 msgid "YouTube"
 msgstr ""
 
-#: template-parts/video/content-single-video.php:288
-#: template-parts/video/content-single-video.php:290
-#: template-parts/video/content.php:131 template-parts/video/content.php:133
+#: inc/class-video-post-type.php:242
+msgid "YouTube Link"
+msgstr ""
+
+#: template-parts/video/content-single-video.php:318
+#: template-parts/video/content-single-video.php:320
+#: template-parts/video/content.php:145 template-parts/video/content.php:147
 msgid "Zalo"
 msgstr ""

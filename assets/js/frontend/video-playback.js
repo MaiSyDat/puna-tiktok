@@ -28,36 +28,52 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     
     window.onYouTubeIframeAPIReady = function() {
+        // Early return if already initialized
         if (youtubeAPIReady) {
             return;
         }
         
         youtubeAPIReady = true;
         
+        // Process pending players
         const pendingCopy = [...youtubePendingPlayers];
         youtubePendingPlayers.length = 0;
         pendingCopy.forEach(config => {
-            if (config.iframe && config.iframe.dataset.playerInitialized !== 'true') {
+            if (config.iframe && config.iframe.dataset.playerInitialized !== 'true' && !youtubePlayersMap.has(config.iframe)) {
                 initYouTubePlayer(config.iframe, config.videoId);
             }
         });
         
+        // Initialize visible YouTube videos
         document.querySelectorAll('.youtube-player.tiktok-video').forEach(iframe => {
             const videoId = iframe.dataset.youtubeId;
-            if (videoId && !youtubePlayersMap.has(iframe) && iframe.dataset.playerInitialized !== 'true') {
-                const rect = iframe.getBoundingClientRect();
-                const isInViewport = rect.top >= 0 && 
-                                   rect.top < window.innerHeight && 
-                                   rect.bottom > 0;
-                
-                if (isInViewport) {
-                    initYouTubePlayer(iframe, videoId);
-                }
+            // Early return checks
+            if (!videoId || youtubePlayersMap.has(iframe) || iframe.dataset.playerInitialized === 'true') {
+                return;
+            }
+            
+            const rect = iframe.getBoundingClientRect();
+            const isInViewport = rect.top >= 0 && 
+                               rect.top < window.innerHeight && 
+                               rect.bottom > 0;
+            
+            if (isInViewport) {
+                initYouTubePlayer(iframe, videoId);
             }
         });
     };
 
     function initYouTubePlayer(iframe, videoId) {
+        // Early return: Check if already initialized or pending
+        if (iframe.dataset.playerInitialized === 'true') {
+            return youtubePlayersMap.get(iframe) || null;
+        }
+        
+        if (youtubePlayersMap.has(iframe)) {
+            return youtubePlayersMap.get(iframe);
+        }
+        
+        // Early return: API not ready, add to pending
         if (!youtubeAPIReady) {
             const alreadyPending = youtubePendingPlayers.some(p => p.iframe === iframe);
             if (!alreadyPending) {
@@ -66,14 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return null;
         }
         
-        if (youtubePlayersMap.has(iframe)) {
-            return youtubePlayersMap.get(iframe);
-        }
-        
-        if (iframe.dataset.playerInitialized === 'true') {
-            return youtubePlayersMap.get(iframe) || null;
-        }
-        
+        // Mark as initialized before creating player to prevent duplicate initialization
         iframe.dataset.playerInitialized = 'true';
         
         try {
@@ -453,82 +462,88 @@ document.addEventListener("DOMContentLoaded", function() {
         threshold: 0.3
     });
     
+    // Throttle IntersectionObserver callback to improve performance
+    let observerCallbackScheduled = false;
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const videoElement = entry.target;
-            const wrapper = new VideoPlayerWrapper(videoElement);
-            
-            if (entry.isIntersecting) {
-                const currentTime = wrapper.getCurrentTime();
-                if (currentTime > 0) {
-                    wrapper.seekTo(0);
+        // Throttle callback execution
+        if (observerCallbackScheduled) return;
+        observerCallbackScheduled = true;
+        
+        requestAnimationFrame(() => {
+            entries.forEach(entry => {
+                const videoElement = entry.target;
+                
+                // Early return if element is not a video
+                if (!videoElement || (videoElement.tagName !== 'VIDEO' && !videoElement.classList.contains('youtube-player'))) {
+                    return;
                 }
                 
-                if (wrapper.isYouTube) {
-                    if (videoElement.classList.contains('tiktok-video')) {
-                        applyVideoVolumeSettings(videoElement);
+                const wrapper = new VideoPlayerWrapper(videoElement);
+                
+                if (entry.isIntersecting) {
+                    const currentTime = wrapper.getCurrentTime();
+                    if (currentTime > 0) {
                         wrapper.seekTo(0);
-                        
-                        const videoId = videoElement.dataset.youtubeId;
-                        if (videoId) {
-                            if (!youtubePlayersMap.has(videoElement)) {
+                    }
+                    
+                    if (wrapper.isYouTube) {
+                        if (videoElement.classList.contains('tiktok-video')) {
+                            applyVideoVolumeSettings(videoElement);
+                            wrapper.seekTo(0);
+                            
+                            const videoId = videoElement.dataset.youtubeId;
+                            if (videoId && !youtubePlayersMap.has(videoElement) && videoElement.dataset.playerInitialized !== 'true') {
                                 initYouTubePlayer(videoElement, videoId);
                             }
                             
-                            const tryPlay = (retryCount = 0) => {
-                                if (retryCount >= 10) return;
-                                
-                                const player = youtubePlayersMap.get(videoElement);
-                                if (player?.playVideo) {
-                                    try {
-                                        player.playVideo();
-                                        return;
-                                    } catch (e) {}
-                                }
-                                
-                                setTimeout(() => tryPlay(retryCount + 1), 100);
-                            };
-                            
-                            if (youtubeAPIReady) {
-                                tryPlay();
-                            } else {
-                                let apiCheckCount = 0;
-                                const checkAPI = setInterval(() => {
-                                    if (youtubeAPIReady || ++apiCheckCount >= 50) {
-                                        clearInterval(checkAPI);
-                                        if (youtubeAPIReady) tryPlay();
+                            // Only try to play if player is already initialized
+                            const player = youtubePlayersMap.get(videoElement);
+                            if (player && youtubeAPIReady) {
+                                const tryPlay = (retryCount = 0) => {
+                                    if (retryCount >= 10) return;
+                                    
+                                    if (player?.playVideo) {
+                                        try {
+                                            player.playVideo();
+                                            return;
+                                        } catch (e) {}
                                     }
-                                }, 100);
+                                    
+                                    setTimeout(() => tryPlay(retryCount + 1), 100);
+                                };
+                                tryPlay();
                             }
                         }
+                    } else {
+                        if (typeof ensureMegaVideoSource !== 'undefined') {
+                            ensureMegaVideoSource(videoElement).then(() => {
+                                if (videoElement.classList.contains('tiktok-video')) {
+                                    applyVideoVolumeSettings(videoElement);
+                                    videoElement.currentTime = 0;
+                                    wrapper.play();
+                                }
+                            }).catch(() => {});
+                        }
+                    }
+                    
+                    const postId = videoElement.dataset.postId || videoElement.closest('[data-post-id]')?.dataset.postId;
+                    if (videoElement.classList.contains('tiktok-video') && postId && !viewedVideos.has(postId)) {
+                        setTimeout(() => {
+                            if (entry.isIntersecting) {
+                                viewedVideos.add(postId);
+                                if (typeof incrementVideoView !== 'undefined') {
+                                    incrementVideoView(postId);
+                                }
+                            }
+                        }, 1000);
                     }
                 } else {
-                    if (typeof ensureMegaVideoSource !== 'undefined') {
-                        ensureMegaVideoSource(videoElement).then(() => {
-                            if (videoElement.classList.contains('tiktok-video')) {
-                                applyVideoVolumeSettings(videoElement);
-                                videoElement.currentTime = 0;
-                                wrapper.play();
-                            }
-                        }).catch(() => {});
-                    }
+                    wrapper.pause();
+                    wrapper.seekTo(0);
                 }
-                
-                const postId = videoElement.dataset.postId || videoElement.closest('[data-post-id]')?.dataset.postId;
-                if (videoElement.classList.contains('tiktok-video') && postId && !viewedVideos.has(postId)) {
-                    setTimeout(() => {
-                        if (entry.isIntersecting) {
-                            viewedVideos.add(postId);
-                            if (typeof incrementVideoView !== 'undefined') {
-                                incrementVideoView(postId);
-                            }
-                        }
-                    }, 1000);
-                }
-            } else {
-                wrapper.pause();
-                wrapper.seekTo(0);
-            }
+            });
+            
+            observerCallbackScheduled = false;
         });
     }, observerOptions);
 
@@ -544,15 +559,18 @@ document.addEventListener("DOMContentLoaded", function() {
             
             document.querySelectorAll('.youtube-player.tiktok-video').forEach(iframe => {
                 const videoId = iframe.dataset.youtubeId;
-                if (videoId && !youtubePlayersMap.has(iframe)) {
-                    const rect = iframe.getBoundingClientRect();
-                    const isInViewport = rect.top >= 0 && 
-                                       rect.top < window.innerHeight && 
-                                       rect.bottom > 0;
-                    
-                    if (isInViewport) {
-                        initYouTubePlayer(iframe, videoId);
-                    }
+                // Early return checks to prevent duplicate initialization
+                if (!videoId || youtubePlayersMap.has(iframe) || iframe.dataset.playerInitialized === 'true') {
+                    return;
+                }
+                
+                const rect = iframe.getBoundingClientRect();
+                const isInViewport = rect.top >= 0 && 
+                                   rect.top < window.innerHeight && 
+                                   rect.bottom > 0;
+                
+                if (isInViewport) {
+                    initYouTubePlayer(iframe, videoId);
                 }
             });
         };
@@ -560,6 +578,42 @@ document.addEventListener("DOMContentLoaded", function() {
         setTimeout(initVisibleYouTubeVideos, 500);
     }
 
+    // Use event delegation for click handlers to avoid duplicate listeners
+    document.addEventListener('click', function(e) {
+        const video = e.target.closest('.tiktok-video, .taxonomy-video, .creator-video-preview, .search-video-preview');
+        if (!video || video.tagName === 'IMG' || video.tagName === 'IFRAME') {
+            return;
+        }
+        
+        const wrapper = new VideoPlayerWrapper(video);
+        
+        if (wrapper.isYouTube) {
+            try {
+                const player = youtubePlayersMap.get(video);
+                if (player && player.getPlayerState) {
+                    const state = player.getPlayerState();
+                    if (state === YT.PlayerState.PLAYING) {
+                        wrapper.pause();
+                    } else {
+                        wrapper.play();
+                    }
+                }
+            } catch (error) {}
+        } else if (video.tagName === 'VIDEO') {
+            if (video.paused) {
+                if (!video.dataset.megaLoaded && typeof ensureMegaVideoSource !== 'undefined') {
+                    ensureMegaVideoSource(video).then(() => {
+                        wrapper.play();
+                    });
+                } else {
+                    wrapper.play();
+                }
+            } else {
+                wrapper.pause();
+            }
+        }
+    });
+    
     videos.forEach(video => {
         if (video.tagName === 'IMG') {
             return;
@@ -588,10 +642,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             };
             
+            // Use once option to prevent duplicate listeners
             video.addEventListener('loadedmetadata', () => {
                 video.classList.add('loaded');
                 setAspectRatio();
-            });
+            }, { once: true });
             
             if (video.readyState >= 1) {
                 video.classList.add('loaded');
@@ -629,38 +684,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (video.classList.contains('taxonomy-video') && !video.closest('.video-row')) {
             video.dataset.needsPreview = '1';
         }
-        
-        video.addEventListener('click', function(e) {
-            if (this.tagName === 'IFRAME') return;
-            
-            const wrapper = new VideoPlayerWrapper(this);
-            
-            if (wrapper.isYouTube) {
-                try {
-                    const player = youtubePlayersMap.get(this);
-                    if (player && player.getPlayerState) {
-                        const state = player.getPlayerState();
-                        if (state === YT.PlayerState.PLAYING) {
-                            wrapper.pause();
-                        } else {
-                            wrapper.play();
-                        }
-                    }
-                } catch (error) {}
-            } else if (this.tagName === 'VIDEO') {
-                if (this.paused) {
-                    if (!this.dataset.megaLoaded && typeof ensureMegaVideoSource !== 'undefined') {
-                        ensureMegaVideoSource(this).then(() => {
-                            wrapper.play();
-                        });
-                    } else {
-                        wrapper.play();
-                    }
-                } else {
-                    wrapper.pause();
-                }
-            }
-        });
         
         const videoRow = video.closest('.video-row');
         if (videoRow) {

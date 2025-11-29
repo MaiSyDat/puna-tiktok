@@ -215,9 +215,6 @@ class Puna_TikTok_AJAX_Handlers {
         wp_send_json_error(array('message' => __('Cannot get comment information.', 'puna-tiktok')));
     }
     
-    // Refresh comment object to ensure all data is up to date
-    $comment = get_comment($comment_id);
-    
     // Get liked comments for current user - same logic as in comments.php
     $liked_comments = array();
     $current_user_id = get_current_user_id();

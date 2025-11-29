@@ -137,6 +137,19 @@ if (!class_exists('Admin_Assets')) {
                     'password' => Puna_TikTok_Mega_Config::get_password(),
                     'folder' => Puna_TikTok_Mega_Config::get_upload_folder(),
                 ),
+                'strings' => array(
+                    'current_youtube' => __('Current YouTube Video:', 'puna-tiktok'),
+                    'video_id' => __('Video ID:', 'puna-tiktok'),
+                    'preview' => __('Preview:', 'puna-tiktok'),
+                    'video_not_uploaded' => __('Video has not been uploaded. Do you want to continue saving the post? Video will not be displayed until it is uploaded.', 'puna-tiktok'),
+                    'youtube_url_invalid' => __('Invalid YouTube URL. Do you want to continue saving the post?', 'puna-tiktok'),
+                    'file_information' => __('File Information:', 'puna-tiktok'),
+                    'name' => __('Name:', 'puna-tiktok'),
+                    'size' => __('Size:', 'puna-tiktok'),
+                    'type' => __('Type:', 'puna-tiktok'),
+                    'note_upload_on_save' => __('Note: Video will be uploaded when you save the post.', 'puna-tiktok'),
+                    'uploaded_successfully' => __('Uploaded to MEGA successfully!', 'puna-tiktok'),
+                ),
             ), $hook, $post_type);
             
             wp_localize_script('puna-tiktok-video-admin', 'puna_tiktok_video_admin', $localize_data);

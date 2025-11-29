@@ -33,7 +33,7 @@ class Puna_TikTok_Theme {
             if (file_exists($fallback_file)) {
                 include $fallback_file;
             } else {
-                wp_die('View file not found: ' . $view_name);
+                wp_die(sprintf(__('View file not found: %s', 'puna-tiktok'), $view_name));
             }
         }
     }

@@ -47,27 +47,12 @@ if (!defined('ABSPATH')) {
                 
                 if (!is_wp_error($all_tags) && !empty($all_tags)) {
                     foreach ($all_tags as $tag_item) {
-                        // Check if tag has videos
-                        $video_count_query = new WP_Query(array(
-                            'post_type' => 'video',
-                            'post_status' => 'publish',
-                            'posts_per_page' => 1,
-                            'tax_query' => array(
-                                array(
-                                    'taxonomy' => 'video_tag',
-                                    'field' => 'term_id',
-                                    'terms' => $tag_item->term_id,
-                                ),
-                            ),
-                            'fields' => 'ids',
-                        ));
-                        
-                        if ($video_count_query->found_posts > 0) {
+                        // Use term count instead of querying - much more efficient
+                        if ($tag_item->count > 0) {
                             $tag_url = home_url('/tag/' . $tag_item->term_id . '/');
                             $is_tag_active = ($current_tag_id == $tag_item->term_id);
                             echo '<a href="' . esc_url($tag_url) . '" class="tab' . ($is_tag_active ? ' active' : '') . '">#' . esc_html($tag_item->name) . '</a>';
                         }
-                        wp_reset_postdata();
                     }
                 }
                 ?>

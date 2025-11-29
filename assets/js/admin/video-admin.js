@@ -93,13 +93,18 @@
             
             // Show file info
             const fileSize = formatFileSize(file.size);
-            const fileDuration = 'N/A'; // Can be extracted if needed
+            
+            const strings = puna_tiktok_video_admin?.strings || {};
+            const fileInfoLabel = strings.file_information || 'File Information:';
+            const nameLabel = strings.name || 'Name:';
+            const sizeLabel = strings.size || 'Size:';
+            const typeLabel = strings.type || 'Type:';
             
             videoInfo.html(`
-                <strong>File Information:</strong>
-                <div>Name: ${file.name}</div>
-                <div>Size: ${fileSize}</div>
-                <div>Type: ${file.type}</div>
+                <strong>${fileInfoLabel}</strong>
+                <div>${nameLabel} ${file.name}</div>
+                <div>${sizeLabel} ${fileSize}</div>
+                <div>${typeLabel} ${file.type}</div>
             `);
             
             // Auto upload to MEGA if available
@@ -107,7 +112,8 @@
                 uploadToMega(file);
             } else {
                 // Show message that upload will happen on save
-                videoInfo.append('<div style="margin-top: 10px; color: #d63638;"><strong>Note:</strong> Video will be uploaded when you save the post.</div>');
+                const noteMessage = strings.note_upload_on_save || 'Note: Video will be uploaded when you save the post.';
+                videoInfo.append(`<div style="margin-top: 10px; color: #d63638;"><strong>${noteMessage}</strong></div>`);
             }
         }
 
@@ -145,9 +151,11 @@
                         }).appendTo('.puna-video-upload-admin');
                     }
                     
+                    const strings = puna_tiktok_video_admin?.strings || {};
+                    const successMessage = strings.uploaded_successfully || 'Uploaded to MEGA successfully!';
                     videoInfo.append(`
                         <div style="margin-top: 10px; color: #00a32a;">
-                            <strong>✓ Uploaded to MEGA successfully!</strong><br>
+                            <strong>✓ ${successMessage}</strong><br>
                             <a href="${megaResult.link}" target="_blank">${megaResult.link}</a>
                         </div>
                     `);
@@ -247,7 +255,10 @@
             if (activeTab === 'mega') {
                 // Check MEGA upload
                 if (selectedFile && !$('input[name="mega_link"]').val() && !$('input[name="video_url"]').val()) {
-                    if (!confirm('Video has not been uploaded. Do you want to continue saving the post? Video will not be displayed until it is uploaded.')) {
+                    const confirmMessage = puna_tiktok_video_admin?.strings?.video_not_uploaded 
+                        ? puna_tiktok_video_admin.strings.video_not_uploaded 
+                        : 'Video has not been uploaded. Do you want to continue saving the post? Video will not be displayed until it is uploaded.';
+                    if (!confirm(confirmMessage)) {
                         e.preventDefault();
                         return false;
                     }
@@ -258,7 +269,10 @@
                 if (youtubeUrl) {
                     const youtubeId = extractYouTubeId(youtubeUrl);
                     if (!youtubeId) {
-                        if (!confirm('YouTube URL không hợp lệ. Bạn có muốn tiếp tục lưu bài viết không?')) {
+                        const confirmMessage = puna_tiktok_video_admin?.strings?.youtube_url_invalid 
+                            ? puna_tiktok_video_admin.strings.youtube_url_invalid 
+                            : 'Invalid YouTube URL. Do you want to continue saving the post?';
+                        if (!confirm(confirmMessage)) {
                             e.preventDefault();
                             return false;
                         }

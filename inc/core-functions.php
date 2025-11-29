@@ -121,6 +121,7 @@ if (!function_exists('puna_tiktok_get_saved_videos')) {
 
 /**
  * Get video metadata
+ * Optimized: Batch load all meta keys in one query
  */
 if (!function_exists('puna_tiktok_get_video_metadata')) {
     function puna_tiktok_get_video_metadata($post_id = null) {
@@ -128,21 +129,40 @@ if (!function_exists('puna_tiktok_get_video_metadata')) {
             $post_id = get_the_ID();
         }
         
-        // Get video source
-        $video_source = get_post_meta($post_id, '_puna_tiktok_video_source', true);
-        if (empty($video_source)) {
-            $video_source = 'mega'; // Default to mega for backward compatibility
+        if (!$post_id) {
+            return apply_filters('puna_tiktok_get_video_metadata', array(), $post_id);
         }
+        
+        // Batch load all meta keys in one query for better performance
+        $meta_keys = array(
+            '_puna_tiktok_video_source',
+            '_puna_tiktok_youtube_id',
+            '_puna_tiktok_video_views',
+            '_puna_tiktok_video_likes',
+            '_puna_tiktok_video_shares',
+            '_puna_tiktok_video_saves',
+            '_puna_tiktok_mega_link',
+            '_puna_tiktok_video_url'
+        );
+        
+        $meta_values = array();
+        foreach ($meta_keys as $key) {
+            $meta_values[$key] = get_post_meta($post_id, $key, true);
+        }
+        
+        $video_source = !empty($meta_values['_puna_tiktok_video_source']) 
+            ? $meta_values['_puna_tiktok_video_source'] 
+            : 'mega';
         
         $metadata = array(
             'post_id' => $post_id,
             'video_url' => puna_tiktok_get_video_url($post_id),
             'source' => $video_source,
-            'youtube_id' => get_post_meta($post_id, '_puna_tiktok_youtube_id', true),
-            'views' => (int) get_post_meta($post_id, '_puna_tiktok_video_views', true) ?: 0,
-            'likes' => (int) get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0,
-            'shares' => (int) get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0,
-            'saves' => (int) get_post_meta($post_id, '_puna_tiktok_video_saves', true) ?: 0,
+            'youtube_id' => $meta_values['_puna_tiktok_youtube_id'] ?: '',
+            'views' => (int) ($meta_values['_puna_tiktok_video_views'] ?: 0),
+            'likes' => (int) ($meta_values['_puna_tiktok_video_likes'] ?: 0),
+            'shares' => (int) ($meta_values['_puna_tiktok_video_shares'] ?: 0),
+            'saves' => (int) ($meta_values['_puna_tiktok_video_saves'] ?: 0),
             'comments' => (int) get_comments_number($post_id) ?: 0
         );
         
@@ -308,10 +328,6 @@ if (!function_exists('puna_tiktok_get_avatar_html')) {
         $name = '';
         if (is_string($user_id_or_name)) {
             $name = $user_id_or_name;
-        } elseif (is_numeric($user_id_or_name) && $user_id_or_name == 0) {
-            $name = 'Guest';
-        } else {
-            $name = 'Guest';
         }
         
         if (empty($name)) {
@@ -386,34 +402,37 @@ if (!function_exists('puna_tiktok_get_avatar_color')) {
 
 /**
  * Get video URL
+ * Optimized: Early return pattern to reduce nesting
  */
 if (!function_exists('puna_tiktok_get_video_url')) {
     function puna_tiktok_get_video_url($post_id = null) {
         if (!$post_id) {
             $post_id = get_the_ID();
         }
-
-        // Check video source
-        $video_source = get_post_meta($post_id, '_puna_tiktok_video_source', true);
         
-        // If source is YouTube, return YouTube embed URL
-        if ($video_source === 'youtube') {
-            $youtube_id = get_post_meta($post_id, '_puna_tiktok_youtube_id', true);
-            if (!empty($youtube_id)) {
-                $url = 'https://www.youtube.com/embed/' . esc_attr($youtube_id);
-                return apply_filters('puna_tiktok_get_video_url_youtube', $url, $post_id, $youtube_id);
-            }
+        if (!$post_id) {
+            return apply_filters('puna_tiktok_get_video_url', '', $post_id);
         }
 
-        // For Mega.nz or unspecified source, prioritize Mega link
+        // Batch load meta keys for better performance
+        $video_source = get_post_meta($post_id, '_puna_tiktok_video_source', true);
+        $youtube_id = get_post_meta($post_id, '_puna_tiktok_youtube_id', true);
         $mega_link = get_post_meta($post_id, '_puna_tiktok_mega_link', true);
+        $video_url_meta = get_post_meta($post_id, '_puna_tiktok_video_url', true);
+        
+        // Early return: YouTube source
+        if ($video_source === 'youtube' && !empty($youtube_id)) {
+            $url = 'https://www.youtube.com/embed/' . esc_attr($youtube_id);
+            return apply_filters('puna_tiktok_get_video_url_youtube', $url, $post_id, $youtube_id);
+        }
+
+        // Early return: Mega link
         if (!empty($mega_link)) {
             $url = esc_url($mega_link);
             return apply_filters('puna_tiktok_get_video_url_mega', $url, $post_id);
         }
 
-        // Fallback to video_url (which should also be Mega link)
-        $video_url_meta = get_post_meta($post_id, '_puna_tiktok_video_url', true);
+        // Early return: Video URL meta
         if (!empty($video_url_meta)) {
             $url = esc_url($video_url_meta);
             return apply_filters('puna_tiktok_get_video_url_meta', $url, $post_id);
@@ -421,16 +440,12 @@ if (!function_exists('puna_tiktok_get_video_url')) {
 
         // Backward compatibility: check old meta key
         $old_mega_node_id = get_post_meta($post_id, '_puna_tiktok_video_node_id', true);
-        if (!empty($old_mega_node_id)) {
-            $old_mega_link = get_post_meta($post_id, '_puna_tiktok_video_url', true);
-            if (!empty($old_mega_link) && strpos($old_mega_link, 'mega.nz') !== false) {
-                $url = esc_url($old_mega_link);
-                return apply_filters('puna_tiktok_get_video_url_legacy', $url, $post_id);
-            }
+        if (!empty($old_mega_node_id) && !empty($video_url_meta) && strpos($video_url_meta, 'mega.nz') !== false) {
+            $url = esc_url($video_url_meta);
+            return apply_filters('puna_tiktok_get_video_url_legacy', $url, $post_id);
         }
 
-        $url = '';
-        return apply_filters('puna_tiktok_get_video_url', $url, $post_id);
+        return apply_filters('puna_tiktok_get_video_url', '', $post_id);
     }
 }
 
@@ -665,6 +680,7 @@ if (!function_exists('puna_tiktok_get_toast_messages')) {
             // Warning
             'warning_confirm' => __('Are you sure?', 'puna-tiktok'),
             'warning_clear_history' => __('Are you sure you want to clear all search history?', 'puna-tiktok'),
+            'warning_delete_video' => __('Are you sure you want to delete this video? This action cannot be undone.', 'puna-tiktok'),
             
             // History
             'history_cleared' => __('Search history cleared', 'puna-tiktok'),
