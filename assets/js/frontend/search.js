@@ -207,7 +207,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         const icon = document.createElement('img');
                         icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/history.svg';
                         icon.className = 'icon-img';
-                        icon.alt = 'History';
+                        const historyText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.history) 
+                            ? puna_tiktok_ajax.i18n.history 
+                            : 'History';
+                        icon.alt = historyText;
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
                         li.appendChild(icon);
@@ -254,7 +257,10 @@ document.addEventListener("DOMContentLoaded", function() {
                             const icon = document.createElement('img');
                             icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/search.svg';
                             icon.className = 'icon-svg';
-                            icon.alt = 'Search';
+                            const searchText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.search) 
+                                ? puna_tiktok_ajax.i18n.search 
+                                : 'Search';
+                            icon.alt = searchText;
                             li.appendChild(icon);
                             
                             const span = document.createElement('span');
@@ -306,16 +312,21 @@ document.addEventListener("DOMContentLoaded", function() {
             e.preventDefault();
             e.stopPropagation();
             
-            if (confirm('Are you sure you want to clear all search history?')) {
-                sendAjaxRequest('puna_tiktok_clear_search_history', {})
-                    .then(data => {
-                        if (data.success) {
-                            if (searchHistoryList) searchHistoryList.innerHTML = '';
-                            if (clearHistoryBtn) clearHistoryBtn.style.display = 'none';
+            sendAjaxRequest('puna_tiktok_clear_search_history', {})
+                .then(data => {
+                    if (data.success) {
+                        if (searchHistoryList) searchHistoryList.innerHTML = '';
+                        if (clearHistoryBtn) clearHistoryBtn.style.display = 'none';
+                        
+                        // Show toast notification
+                        if (typeof Toast !== 'undefined') {
+                            Toast.success('history_cleared');
                         }
-                    })
-                    .catch(error => {});
-            }
+                    }
+                })
+                .catch(error => {
+                    // Error handling silently
+                });
         });
     }
     
@@ -377,7 +388,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         const icon = document.createElement('img');
                         icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/fire.svg';
                         icon.className = 'icon-img';
-                        icon.alt = 'Popular';
+                        const popularText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.popular) 
+                            ? puna_tiktok_ajax.i18n.popular 
+                            : 'Popular';
+                        icon.alt = popularText;
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
                         li.appendChild(icon);
@@ -430,7 +444,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         const icon = document.createElement('img');
                         icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/fire.svg';
                         icon.className = 'icon-img';
-                        icon.alt = 'Related';
+                        const relatedText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.related) 
+                            ? puna_tiktok_ajax.i18n.related 
+                            : 'Related';
+                        icon.alt = relatedText;
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
                         link.appendChild(icon);
@@ -459,7 +476,10 @@ document.addEventListener("DOMContentLoaded", function() {
                         const icon = document.createElement('img');
                         icon.src = (typeof puna_tiktok_ajax !== 'undefined' ? puna_tiktok_ajax.theme_uri : '') + '/assets/images/icons/fire.svg';
                         icon.className = 'icon-img';
-                        icon.alt = 'Popular';
+                        const popularText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.popular) 
+                            ? puna_tiktok_ajax.i18n.popular 
+                            : 'Popular';
+                        icon.alt = popularText;
                         const span = document.createElement('span');
                         span.textContent = item.query || '';
                         link.appendChild(icon);

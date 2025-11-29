@@ -228,6 +228,10 @@ if (!defined('ABSPATH')) {
                                 'key'     => '_puna_tiktok_video_file_id',
                                 'compare' => 'EXISTS',
                             ),
+                            array(
+                                'key'     => '_puna_tiktok_youtube_id',
+                                'compare' => 'EXISTS',
+                            ),
                         ),
                     ));
                 }

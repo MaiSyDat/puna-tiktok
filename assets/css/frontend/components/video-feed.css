@@ -37,6 +37,14 @@
     aspect-ratio: 9 / 16; /* Default for vertical video */
 }
 
+/* Override for YouTube videos - set height to 98vh */
+.video-container:has(.youtube-player) {
+    aspect-ratio: auto !important;
+    max-height: 98vh !important;
+    height: 98vh !important;
+    width: auto !important;
+}
+
 /* Vertical video (portrait) */
 .video-container:has(.tiktok-video[data-aspect-ratio="portrait"]) {
     aspect-ratio: 9 / 16;
@@ -56,6 +64,17 @@
     aspect-ratio: 1 / 1;
     max-width: 100vw;
     max-height: 98vh;
+}
+
+/* YouTube video - set max height to 98vh */
+.video-container:has(.youtube-player) {
+    max-height: 98vh !important;
+}
+
+/* Direct style for YouTube player iframe */
+.video-container .youtube-player {
+    max-height: 98vh !important;
+    height: 98vh !important;
 }
 
 /* Video loading placeholder */
@@ -105,6 +124,14 @@
 .video-container:has(.tiktok-video.loaded)::after {
     opacity: 0;
     pointer-events: none;
+}
+
+/* Never show loader for YouTube videos */
+.video-container:has(.youtube-player)::before,
+.video-container:has(.youtube-player)::after {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
 /* Video Top Controls */
@@ -266,6 +293,53 @@
     border-radius: 12px;
 }
 
+/* YouTube Player (iframe) - same style as .tiktok-video */
+.youtube-player {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border: none;
+    display: block;
+    border-radius: 12px;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hide YouTube controls overlay with CSS - target iframe content */
+.video-container:has(.youtube-player) iframe {
+    pointer-events: auto;
+}
+
+/* YouTube player in video container - set specific height */
+.video-container .youtube-player,
+.youtube-video-98vh {
+    max-height: 98vh !important;
+    height: 98vh !important;
+    width: auto !important;
+    aspect-ratio: 9 / 16 !important;
+    pointer-events: auto;
+    position: relative;
+    z-index: 1;
+}
+
+/* Container with YouTube video */
+.video-container:has(.youtube-video-98vh) {
+    max-height: 98vh !important;
+    height: 98vh !important;
+}
+
+/* Ensure video overlay and sidebar are above YouTube iframe */
+.video-container .video-overlay {
+    z-index: 150;
+    pointer-events: none;
+}
+
+.video-container .video-overlay * {
+    pointer-events: auto;
+}
+
 
 /* Video Sidebar - Desktop: positioned next to video */
 .video-sidebar {
@@ -274,6 +348,9 @@
     gap: 15px;
     align-items: center;
     flex-shrink: 0;
+    position: relative;
+    z-index: 200;
+    pointer-events: auto;
 }
 
 /* Overlay content */
@@ -327,6 +404,9 @@
     align-items: center;
     cursor: pointer;
     user-select: none;
+    position: relative;
+    z-index: 201;
+    pointer-events: auto;
 }
 
 .action-icon-wrapper {

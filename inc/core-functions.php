@@ -128,9 +128,17 @@ if (!function_exists('puna_tiktok_get_video_metadata')) {
             $post_id = get_the_ID();
         }
         
+        // Get video source
+        $video_source = get_post_meta($post_id, '_puna_tiktok_video_source', true);
+        if (empty($video_source)) {
+            $video_source = 'mega'; // Default to mega for backward compatibility
+        }
+        
         $metadata = array(
             'post_id' => $post_id,
             'video_url' => puna_tiktok_get_video_url($post_id),
+            'source' => $video_source,
+            'youtube_id' => get_post_meta($post_id, '_puna_tiktok_youtube_id', true),
             'views' => (int) get_post_meta($post_id, '_puna_tiktok_video_views', true) ?: 0,
             'likes' => (int) get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0,
             'shares' => (int) get_post_meta($post_id, '_puna_tiktok_video_shares', true) ?: 0,
@@ -161,6 +169,10 @@ if (!function_exists('puna_tiktok_get_video_query')) {
                 ),
                 array(
                     'key' => '_puna_tiktok_video_url',
+                    'compare' => 'EXISTS'
+                ),
+                array(
+                    'key' => '_puna_tiktok_youtube_id',
                     'compare' => 'EXISTS'
                 )
             )
@@ -381,7 +393,19 @@ if (!function_exists('puna_tiktok_get_video_url')) {
             $post_id = get_the_ID();
         }
 
-        // All videos are Mega videos - prioritize Mega link
+        // Check video source
+        $video_source = get_post_meta($post_id, '_puna_tiktok_video_source', true);
+        
+        // If source is YouTube, return YouTube embed URL
+        if ($video_source === 'youtube') {
+            $youtube_id = get_post_meta($post_id, '_puna_tiktok_youtube_id', true);
+            if (!empty($youtube_id)) {
+                $url = 'https://www.youtube.com/embed/' . esc_attr($youtube_id);
+                return apply_filters('puna_tiktok_get_video_url_youtube', $url, $post_id, $youtube_id);
+            }
+        }
+
+        // For Mega.nz or unspecified source, prioritize Mega link
         $mega_link = get_post_meta($post_id, '_puna_tiktok_mega_link', true);
         if (!empty($mega_link)) {
             $url = esc_url($mega_link);
@@ -591,6 +615,73 @@ if (!function_exists('puna_tiktok_get_logo_url')) {
         }
         
         return apply_filters('puna_tiktok_logo_url', $logo_url);
+    }
+}
+
+/**
+ * Get toast messages
+ * All messages use text domain for translation
+ */
+if (!function_exists('puna_tiktok_get_toast_messages')) {
+    function puna_tiktok_get_toast_messages() {
+        static $cached_messages = null;
+        
+        if ($cached_messages !== null) {
+            return apply_filters('puna_tiktok_toast_messages', $cached_messages);
+        }
+        
+        $messages = array(
+            // Video actions
+            'video_liked' => __('Video liked', 'puna-tiktok'),
+            'video_unliked' => __('Video unliked', 'puna-tiktok'),
+            'video_saved' => __('Video saved', 'puna-tiktok'),
+            'video_unsaved' => __('Video unsaved', 'puna-tiktok'),
+            'video_shared' => __('Video shared', 'puna-tiktok'),
+            'video_reported' => __('Thank you for reporting. We will review this video.', 'puna-tiktok'),
+            'video_deleted' => __('Video deleted', 'puna-tiktok'),
+            
+            // Comments
+            'comment_added' => __('Comment added', 'puna-tiktok'),
+            'comment_deleted' => __('Comment deleted', 'puna-tiktok'),
+            'comment_liked' => __('Comment liked', 'puna-tiktok'),
+            'comment_unliked' => __('Comment unliked', 'puna-tiktok'),
+            'comment_reported' => __('Comment reported', 'puna-tiktok'),
+            
+            // Errors
+            'error_generic' => __('An error occurred. Please try again.', 'puna-tiktok'),
+            'error_not_logged_in' => __('Please log in to perform this action.', 'puna-tiktok'),
+            'error_permission' => __('You do not have permission to perform this action.', 'puna-tiktok'),
+            'error_video_not_found' => __('Video not found.', 'puna-tiktok'),
+            'error_comment_not_found' => __('Comment not found.', 'puna-tiktok'),
+            
+            // Success
+            'success_generic' => __('Success!', 'puna-tiktok'),
+            'success_saved' => __('Saved successfully!', 'puna-tiktok'),
+            
+            // Info
+            'info_loading' => __('Loading...', 'puna-tiktok'),
+            'info_processing' => __('Processing...', 'puna-tiktok'),
+            
+            // Warning
+            'warning_confirm' => __('Are you sure?', 'puna-tiktok'),
+            'warning_clear_history' => __('Are you sure you want to clear all search history?', 'puna-tiktok'),
+            
+            // History
+            'history_cleared' => __('Search history cleared', 'puna-tiktok'),
+        );
+        
+        $cached_messages = $messages;
+        return apply_filters('puna_tiktok_toast_messages', $messages);
+    }
+}
+
+/**
+ * Get toast message by key
+ */
+if (!function_exists('puna_tiktok_get_toast_message')) {
+    function puna_tiktok_get_toast_message($key, $default = '') {
+        $messages = puna_tiktok_get_toast_messages();
+        return isset($messages[$key]) ? $messages[$key] : $default;
     }
 }
 

@@ -73,6 +73,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_register_style('puna-tiktok-video-watch', $css_dir . 'video-watch.css', array('puna-tiktok-layout'), $version);
             wp_register_style('puna-tiktok-taxonomy', $css_dir . 'taxonomy.css', array('puna-tiktok-layout'), $version);
             wp_register_style('puna-tiktok-top-header', $css_dir . 'top-header.css', array('puna-tiktok-layout'), $version);
+            wp_register_style('puna-tiktok-toast', $css_dir . 'toast.css', array(), $version);
             
             // Responsive CSS dependencies
             $responsive_deps = array('puna-tiktok-layout', 'puna-tiktok-sidebar');
@@ -118,6 +119,9 @@ if (!class_exists('Puna_TikTok_Assets')) {
                 wp_enqueue_style('puna-tiktok-taxonomy');
             }
             
+            // Enqueue toast (always needed, before responsive)
+            wp_enqueue_style('puna-tiktok-toast');
+            
             // Enqueue responsive (always needed)
             wp_enqueue_style('puna-tiktok-responsive');
             
@@ -154,6 +158,9 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Dropdowns - Register
             wp_register_script('puna-tiktok-dropdowns', $js_dir . 'frontend/dropdowns.js', array('puna-tiktok-core'), $version, true);
             
+            // Toast - Register (needed for notifications, load before core to ensure messages are available)
+            wp_register_script('puna-tiktok-toast', $js_dir . 'frontend/toast.js', array(), $version, true);
+            
             // Top header - Register
             wp_register_script('puna-tiktok-top-header', $js_dir . 'frontend/top-header.js', array('puna-tiktok-core'), $version, true);
             
@@ -164,7 +171,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_register_script('puna-tiktok-video-navigation', $js_dir . 'frontend/video-navigation.js', array('puna-tiktok-core'), $version, true);
             
             // Video actions - Register
-            wp_register_script('puna-tiktok-video-actions', $js_dir . 'frontend/video-actions.js', array('puna-tiktok-core', 'puna-tiktok-mega-video'), $version, true);
+            wp_register_script('puna-tiktok-video-actions', $js_dir . 'frontend/video-actions.js', array('puna-tiktok-core', 'puna-tiktok-mega-video', 'puna-tiktok-toast'), $version, true);
             
             // Comments - Register
             wp_register_script('puna-tiktok-comments', $js_dir . 'frontend/comments.js', array('puna-tiktok-core', 'puna-tiktok-mega-video'), $version, true);
@@ -177,7 +184,8 @@ if (!class_exists('Puna_TikTok_Assets')) {
             
             // Enqueue base scripts (always needed)
             wp_enqueue_script('puna-tiktok-mega-sdk');
-            wp_enqueue_script('puna-tiktok-core');
+            wp_enqueue_script('puna-tiktok-toast'); // Load toast before core so it's available
+            wp_enqueue_script('puna-tiktok-core'); // Core loads after toast and localizes messages
             wp_enqueue_script('puna-tiktok-mega-video');
             wp_enqueue_script('puna-tiktok-guest-state');
             wp_enqueue_script('puna-tiktok-dropdowns');
@@ -211,11 +219,15 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Get menu icon URL
             $menu_icon_url = puna_tiktok_get_icon_url('menu');
             
+            // Get toast messages
+            $toast_messages = puna_tiktok_get_toast_messages();
+            
             // Allow filtering of localized script data
             $localize_data = apply_filters('puna_tiktok_localize_script_data', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce'    => wp_create_nonce('puna_tiktok_nonce'),
                 'like_nonce' => wp_create_nonce('puna_tiktok_like_nonce'),
+                'comment_nonce' => wp_create_nonce('puna_tiktok_comment_nonce'),
                 'theme_uri' => PUNA_TIKTOK_THEME_URI,
                 'is_logged_in' => is_user_logged_in(),
                 'current_user' => array(
@@ -225,11 +237,19 @@ if (!class_exists('Puna_TikTok_Assets')) {
                 'avatar_url' => get_avatar_url($current_user->ID, array('size' => 40)),
                 'menu_icon_url' => $menu_icon_url,
                 'mega' => false,
+                'toast_messages' => $toast_messages,
                 'i18n' => array(
                     'post' => __('Post', 'puna-tiktok'),
                     'posting' => __('Posting...', 'puna-tiktok'),
                     'comments' => __('Comments', 'puna-tiktok'),
                     'view_more_replies' => __('View more replies', 'puna-tiktok'),
+                    'close' => __('Close', 'puna-tiktok'),
+                    'search' => __('Search', 'puna-tiktok'),
+                    'guest' => __('Guest', 'puna-tiktok'),
+                    'history' => __('History', 'puna-tiktok'),
+                    'popular' => __('Popular', 'puna-tiktok'),
+                    'related' => __('Related', 'puna-tiktok'),
+                    'volume' => __('Volume', 'puna-tiktok'),
                 ),
             ));
             

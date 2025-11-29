@@ -6,6 +6,8 @@ if (!defined('ABSPATH')) {
 $post_id = get_the_ID();
 $metadata = puna_tiktok_get_video_metadata($post_id);
 $video_url = $metadata['video_url'];
+$video_source = $metadata['source'];
+$youtube_id = $metadata['youtube_id'];
 
 // Skip if no video URL
 if (empty($video_url) || $video_url === 'https://v16-webapp.tiktok.com/video-sample.mp4') {
@@ -17,8 +19,6 @@ $comments = $metadata['comments'];
 $shares = $metadata['shares'];
 $saves = $metadata['saves'];
 $views = $metadata['views'];
-
-// All videos are Mega videos
 
 $is_liked = puna_tiktok_is_liked($post_id);
 $liked_class = $is_liked ? 'liked' : '';
@@ -43,10 +43,24 @@ $saved_class = $is_saved ? 'saved' : '';
 			</div>
 		</div>
 		
-			<video class="tiktok-video" preload="metadata" playsinline loop muted data-post-id="<?php echo esc_attr($post_id); ?>" data-mega-link="<?php echo esc_url($video_url); ?>">
-				<!-- Mega.nz video will be loaded via JavaScript -->
-				<?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
-			</video>
+			<?php if ($video_source === 'youtube' && !empty($youtube_id)) : ?>
+				<!-- YouTube Video -->
+				<iframe class="tiktok-video youtube-player youtube-video-98vh" 
+						src="<?php echo esc_url($video_url . '?enablejsapi=1&controls=0&rel=0&playsinline=1&loop=1&playlist=' . $youtube_id . '&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&cc_load_policy=0'); ?>" 
+						frameborder="0" 
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+						allowfullscreen
+						data-source="youtube"
+						data-youtube-id="<?php echo esc_attr($youtube_id); ?>"
+						data-post-id="<?php echo esc_attr($post_id); ?>">
+				</iframe>
+			<?php else : ?>
+				<!-- Mega.nz Video -->
+				<video class="tiktok-video" preload="metadata" playsinline loop muted data-post-id="<?php echo esc_attr($post_id); ?>" data-mega-link="<?php echo esc_url($video_url); ?>" data-source="mega">
+					<!-- Mega.nz video will be loaded via JavaScript -->
+					<?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
+				</video>
+			<?php endif; ?>
 
 			<div class="video-overlay">
 				<div class="video-details">

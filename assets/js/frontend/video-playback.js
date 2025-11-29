@@ -1,7 +1,3 @@
-/**
- * Video playback functionality
- */
-
 document.addEventListener("DOMContentLoaded", function() {
     const videos = document.querySelectorAll('.tiktok-video, .taxonomy-video, .creator-video-preview, .search-video-preview');
     const mainContent = document.querySelector('.main-content');
@@ -11,15 +7,316 @@ document.addEventListener("DOMContentLoaded", function() {
     const viewedVideos = new Set();
     let userGestureHandled = false;
     
+    let youtubeAPIReady = false;
+    let youtubePlayersMap = new Map();
+    const youtubePendingPlayers = [];
 
-    /**
-     * Get current video - uses global function from core.js
-     */
+    function loadYouTubeAPI() {
+        if (window.YT && window.YT.Player) {
+            youtubeAPIReady = true;
+            return;
+        }
+        
+        if (document.querySelector('script[src*="youtube.com/iframe_api"]')) {
+            return;
+        }
+        
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+    
+    window.onYouTubeIframeAPIReady = function() {
+        if (youtubeAPIReady) {
+            return;
+        }
+        
+        youtubeAPIReady = true;
+        
+        const pendingCopy = [...youtubePendingPlayers];
+        youtubePendingPlayers.length = 0;
+        pendingCopy.forEach(config => {
+            if (config.iframe && config.iframe.dataset.playerInitialized !== 'true') {
+                initYouTubePlayer(config.iframe, config.videoId);
+            }
+        });
+        
+        document.querySelectorAll('.youtube-player.tiktok-video').forEach(iframe => {
+            const videoId = iframe.dataset.youtubeId;
+            if (videoId && !youtubePlayersMap.has(iframe) && iframe.dataset.playerInitialized !== 'true') {
+                const rect = iframe.getBoundingClientRect();
+                const isInViewport = rect.top >= 0 && 
+                                   rect.top < window.innerHeight && 
+                                   rect.bottom > 0;
+                
+                if (isInViewport) {
+                    initYouTubePlayer(iframe, videoId);
+                }
+            }
+        });
+    };
+
+    function initYouTubePlayer(iframe, videoId) {
+        if (!youtubeAPIReady) {
+            const alreadyPending = youtubePendingPlayers.some(p => p.iframe === iframe);
+            if (!alreadyPending) {
+                youtubePendingPlayers.push({ iframe, videoId });
+            }
+            return null;
+        }
+        
+        if (youtubePlayersMap.has(iframe)) {
+            return youtubePlayersMap.get(iframe);
+        }
+        
+        if (iframe.dataset.playerInitialized === 'true') {
+            return youtubePlayersMap.get(iframe) || null;
+        }
+        
+        iframe.dataset.playerInitialized = 'true';
+        
+        try {
+            const player = new YT.Player(iframe, {
+                videoId: videoId,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    rel: 0,
+                    playsinline: 1,
+                    loop: 1,
+                    playlist: videoId,
+                    enablejsapi: 1,
+                    mute: globalMuted ? 1 : 0,
+                    modestbranding: 1,
+                    iv_load_policy: 3,
+                    fs: 0,
+                    disablekb: 1,
+                    cc_load_policy: 0,
+                    showinfo: 0
+                },
+                events: {
+                    onReady: function(event) {
+                        if (iframe.dataset.playerReady === 'true') {
+                            return;
+                        }
+                        iframe.dataset.playerReady = 'true';
+                        
+                        try {
+                            if (globalMuted) {
+                                event.target.mute();
+                            } else {
+                                event.target.unMute();
+                                event.target.setVolume(Math.round(globalVolume * 100));
+                            }
+                            
+                            const rect = iframe.getBoundingClientRect();
+                            const isInViewport = rect.top >= 0 && 
+                                               rect.top < window.innerHeight && 
+                                               rect.bottom > 0;
+                            
+                            if (isInViewport && iframe.classList.contains('tiktok-video')) {
+                                setTimeout(() => {
+                                    try {
+                                        if (event.target && typeof event.target.playVideo === 'function') {
+                                            event.target.playVideo();
+                                        }
+                                    } catch (e) {}
+                                }, 200);
+                            }
+                        } catch (e) {}
+                    },
+                    onStateChange: function(event) {
+                        if (!event || !event.data || !event.target) {
+                            return;
+                        }
+                        
+                        try {
+                            if (event.data === YT.PlayerState.ENDED) {
+                                if (!iframe.dataset.seeking) {
+                                    iframe.dataset.seeking = 'true';
+                                    setTimeout(() => {
+                                        try {
+                                            if (event.target && typeof event.target.seekTo === 'function') {
+                                                event.target.seekTo(0);
+                                                if (typeof event.target.playVideo === 'function') {
+                                                    event.target.playVideo();
+                                                }
+                                            }
+                                        } catch (e) {}
+                                        iframe.dataset.seeking = 'false';
+                                    }, 100);
+                                }
+                            }
+                        } catch (e) {}
+                    }
+                }
+            });
+            
+            youtubePlayersMap.set(iframe, player);
+            return player;
+        } catch (error) {
+            return null;
+        }
+    }
+
+    class VideoPlayerWrapper {
+        constructor(element) {
+            this.element = element;
+            this.isYouTube = this.element.classList.contains('youtube-player');
+            this.youtubePlayer = null;
+            
+            if (this.isYouTube) {
+                this.youtubePlayer = youtubePlayersMap.get(this.element);
+                
+                if (!this.youtubePlayer) {
+                    const videoId = this.element.dataset.youtubeId;
+                    if (videoId) {
+                        this.youtubePlayer = initYouTubePlayer(this.element, videoId);
+                    }
+                }
+            }
+        }
+        
+        isYouTubeReady() {
+            if (!this.isYouTube || !this.youtubePlayer) {
+                return false;
+            }
+            
+            return typeof this.youtubePlayer.playVideo === 'function' &&
+                   typeof this.youtubePlayer.pauseVideo === 'function';
+        }
+        
+        play() {
+            if (this.isYouTube) {
+                if (!this.youtubePlayer || !this.isYouTubeReady()) {
+                    this.youtubePlayer = youtubePlayersMap.get(this.element);
+                }
+                
+                if (this.isYouTubeReady()) {
+                    try {
+                        this.youtubePlayer.playVideo();
+                    } catch (e) {}
+                }
+            } else if (this.element.tagName === 'VIDEO') {
+                const playPromise = this.element.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(e => {});
+                }
+            }
+        }
+        
+        pause() {
+            if (this.isYouTube) {
+                if (!this.youtubePlayer || !this.isYouTubeReady()) {
+                    this.youtubePlayer = youtubePlayersMap.get(this.element);
+                }
+                
+                if (this.isYouTubeReady()) {
+                    try {
+                        this.youtubePlayer.pauseVideo();
+                    } catch (e) {}
+                }
+            } else if (this.element.tagName === 'VIDEO') {
+                this.element.pause();
+            }
+        }
+        
+        mute() {
+            if (this.isYouTube) {
+                if (!this.youtubePlayer || !this.isYouTubeReady()) {
+                    this.youtubePlayer = youtubePlayersMap.get(this.element);
+                }
+                
+                if (this.isYouTubeReady()) {
+                    try {
+                        this.youtubePlayer.mute();
+                    } catch (e) {}
+                }
+            } else if (this.element.tagName === 'VIDEO') {
+                this.element.muted = true;
+                this.element.setAttribute('muted', '');
+            }
+        }
+        
+        unmute() {
+            if (this.isYouTube) {
+                if (!this.youtubePlayer || !this.isYouTubeReady()) {
+                    this.youtubePlayer = youtubePlayersMap.get(this.element);
+                }
+                
+                if (this.isYouTubeReady()) {
+                    try {
+                        this.youtubePlayer.unMute();
+                        this.youtubePlayer.setVolume(Math.round(globalVolume * 100));
+                    } catch (e) {}
+                }
+            } else if (this.element.tagName === 'VIDEO') {
+                this.element.muted = false;
+                this.element.removeAttribute('muted');
+                if (typeof this.element.volume === 'number') {
+                    this.element.volume = globalVolume;
+                }
+            }
+        }
+        
+        setVolume(volume) {
+            if (this.isYouTube) {
+                if (!this.youtubePlayer || !this.isYouTubeReady()) {
+                    this.youtubePlayer = youtubePlayersMap.get(this.element);
+                }
+                
+                if (this.isYouTubeReady()) {
+                    try {
+                        this.youtubePlayer.setVolume(Math.round(volume * 100));
+                    } catch (e) {}
+                }
+            } else if (this.element.tagName === 'VIDEO') {
+                this.element.volume = volume;
+            }
+        }
+        
+        seekTo(time) {
+            if (this.isYouTube) {
+                if (!this.youtubePlayer || !this.isYouTubeReady()) {
+                    this.youtubePlayer = youtubePlayersMap.get(this.element);
+                }
+                
+                if (this.isYouTubeReady()) {
+                    try {
+                        this.youtubePlayer.seekTo(time, true);
+                    } catch (e) {}
+                }
+            } else if (this.element.tagName === 'VIDEO') {
+                this.element.currentTime = time;
+            }
+        }
+        
+        getCurrentTime() {
+            if (this.isYouTube) {
+                if (!this.youtubePlayer || !this.isYouTubeReady()) {
+                    this.youtubePlayer = youtubePlayersMap.get(this.element);
+                }
+                
+                if (this.isYouTubeReady()) {
+                    try {
+                        return this.youtubePlayer.getCurrentTime() || 0;
+                    } catch (e) {
+                        return 0;
+                    }
+                }
+                return 0;
+            } else if (this.element.tagName === 'VIDEO') {
+                return this.element.currentTime || 0;
+            }
+            return 0;
+        }
+    }
+
     function getCurrentVideo() {
         if (typeof window.getCurrentVideo === 'function') {
             return window.getCurrentVideo();
         }
-        // Fallback if core.js hasn't loaded yet
         const videoList = document.querySelectorAll('.tiktok-video');
         return Array.from(videoList).find(video => {
             const rect = video.getBoundingClientRect();
@@ -27,46 +324,36 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    /**
-     * Apply video volume
-     */
-    function applyVideoVolumeSettings(video) {
-        video.playsInline = true;
-        video.setAttribute('playsinline', '');
+    function applyVideoVolumeSettings(videoElement) {
+        const wrapper = new VideoPlayerWrapper(videoElement);
+        
+        if (!wrapper.isYouTube) {
+            videoElement.playsInline = true;
+            videoElement.setAttribute('playsinline', '');
+        }
         
         if (globalMuted) {
-            video.muted = true;
-            video.setAttribute('muted', '');
+            wrapper.mute();
         } else {
-            video.muted = false;
-            video.removeAttribute('muted');
-            if (typeof video.volume === 'number') {
-                video.volume = globalVolume;
-            }
+            wrapper.unmute();
+            wrapper.setVolume(globalVolume);
         }
     }
 
-    /**
-     * Apply volume state to all videos
-     */
     function applyVolumeToAllVideos() {
         const videoList = document.querySelectorAll('.tiktok-video');
-        videoList.forEach(video => {
-            video.muted = globalMuted;
+        videoList.forEach(videoElement => {
+            const wrapper = new VideoPlayerWrapper(videoElement);
+            
             if (globalMuted) {
-                video.setAttribute('muted', '');
+                wrapper.mute();
             } else {
-                video.removeAttribute('muted');
-            }
-            if (!globalMuted && typeof video.volume === 'number') {
-                video.volume = globalVolume;
+                wrapper.unmute();
+                wrapper.setVolume(globalVolume);
             }
         });
     }
 
-    /**
-     * Update volume controls UI
-     */
     function updateGlobalVolumeUI() {
         const wrappers = document.querySelectorAll('.volume-control-wrapper');
         wrappers.forEach(wrapper => {
@@ -75,22 +362,16 @@ document.addEventListener("DOMContentLoaded", function() {
             const slider = wrapper.querySelector('.volume-slider');
             
             if (btn) {
-                // Get icon based on volume state
-                let iconName = 'volum';
-                if (globalMuted) {
-                    iconName = 'volum-mute';
-                } else if (Math.round(globalVolume * 100) < 50) {
-                    iconName = 'volum'; // Use same icon for low volume
-                } else {
-                    iconName = 'volum'; // Use same icon for high volume
-                }
+                const iconName = globalMuted ? 'volum-mute' : 'volum';
+                const themeUri = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.theme_uri) 
+                    ? puna_tiktok_ajax.theme_uri 
+                    : '/wp-content/themes/puna-tiktok';
+                const iconUrl = `${themeUri}/assets/images/icons/${iconName}.svg`;
                 
-                // Get theme URI for icon path
-                const themeUri = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.theme_uri) ? puna_tiktok_ajax.theme_uri : '/wp-content/themes/puna-tiktok';
-                const iconUrl = themeUri + '/assets/images/icons/' + iconName + '.svg';
-                
-                // Update button content with icon
-                btn.innerHTML = '<img src="' + iconUrl + '" alt="Volume" class="icon-svg">';
+                const volumeText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.volume) 
+                    ? puna_tiktok_ajax.i18n.volume 
+                    : 'Volume';
+                btn.innerHTML = `<img src="${iconUrl}" alt="${volumeText}" class="icon-svg">`;
             }
             if (slider) {
                 const targetVal = globalMuted ? 0 : Math.round(globalVolume * 100);
@@ -102,7 +383,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     document.addEventListener('click', function(e) {
-        // Check if clicked on volume toggle button or icon inside it
         const volumeToggleBtn = e.target.closest('.volume-toggle-btn');
         if (volumeToggleBtn) {
             e.preventDefault();
@@ -110,7 +390,6 @@ document.addEventListener("DOMContentLoaded", function() {
             
             const wrapper = volumeToggleBtn.closest('.volume-control-wrapper');
             if (wrapper) {
-                // Toggle active class for touch devices
                 wrapper.classList.toggle('volume-active');
             }
             
@@ -123,7 +402,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
     
-    // Close volume slider when clicking outside on touch devices
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.volume-control-wrapper')) {
             document.querySelectorAll('.volume-control-wrapper').forEach(function(wrapper) {
@@ -137,13 +415,11 @@ document.addEventListener("DOMContentLoaded", function() {
             const slider = e.target;
             const value = Math.max(0, Math.min(100, parseInt(slider.value, 10) || 0));
             globalVolume = value / 100;
-            // Don't auto-mute when volume = 0, only mute when user clicks mute button
             applyVolumeToAllVideos();
             updateGlobalVolumeUI();
         }
     });
 
-    // Video autoplay & intersection observer
     const observerOptions = {
         root: mainContent,
         rootMargin: '0px',
@@ -179,112 +455,165 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
+            const videoElement = entry.target;
+            const wrapper = new VideoPlayerWrapper(videoElement);
+            
             if (entry.isIntersecting) {
-                // Reset video to the beginning when returning to viewport
-                if (entry.target.currentTime > 0) {
-                    entry.target.currentTime = 0;
+                const currentTime = wrapper.getCurrentTime();
+                if (currentTime > 0) {
+                    wrapper.seekTo(0);
                 }
                 
-                // All videos are Mega videos
-                if (typeof ensureMegaVideoSource !== 'undefined') {
-                    ensureMegaVideoSource(entry.target).then(() => {
-                        if (entry.target.classList.contains('tiktok-video')) {
-                            applyVideoVolumeSettings(entry.target);
-                            // Make sure the video starts from the beginning
-                            entry.target.currentTime = 0;
-                            const playPromise = entry.target.play();
-                            if (playPromise !== undefined) {
-                                playPromise.catch(e => {
-                                    if (e.name !== 'AbortError') {
+                if (wrapper.isYouTube) {
+                    if (videoElement.classList.contains('tiktok-video')) {
+                        applyVideoVolumeSettings(videoElement);
+                        wrapper.seekTo(0);
+                        
+                        const videoId = videoElement.dataset.youtubeId;
+                        if (videoId) {
+                            if (!youtubePlayersMap.has(videoElement)) {
+                                initYouTubePlayer(videoElement, videoId);
+                            }
+                            
+                            const tryPlay = (retryCount = 0) => {
+                                if (retryCount >= 10) return;
+                                
+                                const player = youtubePlayersMap.get(videoElement);
+                                if (player?.playVideo) {
+                                    try {
+                                        player.playVideo();
+                                        return;
+                                    } catch (e) {}
+                                }
+                                
+                                setTimeout(() => tryPlay(retryCount + 1), 100);
+                            };
+                            
+                            if (youtubeAPIReady) {
+                                tryPlay();
+                            } else {
+                                let apiCheckCount = 0;
+                                const checkAPI = setInterval(() => {
+                                    if (youtubeAPIReady || ++apiCheckCount >= 50) {
+                                        clearInterval(checkAPI);
+                                        if (youtubeAPIReady) tryPlay();
                                     }
-                                });
+                                }, 100);
                             }
                         }
-                    }).catch(err => {
-                    });
+                    }
+                } else {
+                    if (typeof ensureMegaVideoSource !== 'undefined') {
+                        ensureMegaVideoSource(videoElement).then(() => {
+                            if (videoElement.classList.contains('tiktok-video')) {
+                                applyVideoVolumeSettings(videoElement);
+                                videoElement.currentTime = 0;
+                                wrapper.play();
+                            }
+                        }).catch(() => {});
+                    }
                 }
                 
-                if (entry.target.classList.contains('tiktok-video') && entry.target.dataset.postId && !viewedVideos.has(entry.target.dataset.postId)) {
+                const postId = videoElement.dataset.postId || videoElement.closest('[data-post-id]')?.dataset.postId;
+                if (videoElement.classList.contains('tiktok-video') && postId && !viewedVideos.has(postId)) {
                     setTimeout(() => {
                         if (entry.isIntersecting) {
-                            viewedVideos.add(entry.target.dataset.postId);
+                            viewedVideos.add(postId);
                             if (typeof incrementVideoView !== 'undefined') {
-                                incrementVideoView(entry.target.dataset.postId);
+                                incrementVideoView(postId);
                             }
                         }
                     }, 1000);
                 }
             } else {
-                // When the video leaves the viewport: pause and reset to the beginning
-                entry.target.pause();
-                entry.target.currentTime = 0;
+                wrapper.pause();
+                wrapper.seekTo(0);
             }
         });
     }, observerOptions);
 
+    const hasYouTubeVideos = document.querySelector('.youtube-player');
+    if (hasYouTubeVideos) {
+        loadYouTubeAPI();
+        
+        const initVisibleYouTubeVideos = () => {
+            if (!youtubeAPIReady) {
+                setTimeout(initVisibleYouTubeVideos, 100);
+                return;
+            }
+            
+            document.querySelectorAll('.youtube-player.tiktok-video').forEach(iframe => {
+                const videoId = iframe.dataset.youtubeId;
+                if (videoId && !youtubePlayersMap.has(iframe)) {
+                    const rect = iframe.getBoundingClientRect();
+                    const isInViewport = rect.top >= 0 && 
+                                       rect.top < window.innerHeight && 
+                                       rect.bottom > 0;
+                    
+                    if (isInViewport) {
+                        initYouTubePlayer(iframe, videoId);
+                    }
+                }
+            });
+        };
+        
+        setTimeout(initVisibleYouTubeVideos, 500);
+    }
+
     videos.forEach(video => {
-        // Skip if it's an img tag (not a video element)
-        if (video.tagName !== 'VIDEO') {
+        if (video.tagName === 'IMG') {
             return;
         }
         
-        video.muted = true;
-        video.setAttribute('muted', '');
-        video.playsInline = true;
-        video.setAttribute('playsinline', '');
+        const isYouTube = video.classList.contains('youtube-player');
         
-        video.addEventListener('loadedmetadata', () => {
-            video.classList.add('loaded');
+        if (!isYouTube && video.tagName === 'VIDEO') {
+            video.muted = true;
+            video.setAttribute('muted', '');
+            video.playsInline = true;
+            video.setAttribute('playsinline', '');
             
-            const videoWidth = video.videoWidth;
-            const videoHeight = video.videoHeight;
-            if (videoWidth && videoHeight) {
-                const aspectRatio = videoWidth / videoHeight;
-                if (aspectRatio > 1.2) {
-                    video.dataset.aspectRatio = 'landscape';
-                } else if (aspectRatio < 0.8) {
-                    video.dataset.aspectRatio = 'portrait';
-                } else {
-                    video.dataset.aspectRatio = 'square';
-                }
-            }
-        });
-        
-        if (video.readyState >= 1) {
-            video.classList.add('loaded');
-            const videoWidth = video.videoWidth;
-            const videoHeight = video.videoHeight;
-            if (videoWidth && videoHeight) {
-                const aspectRatio = videoWidth / videoHeight;
-                if (aspectRatio > 1.2) {
-                    video.dataset.aspectRatio = 'landscape';
-                } else if (aspectRatio < 0.8) {
-                    video.dataset.aspectRatio = 'portrait';
-                } else {
-                    video.dataset.aspectRatio = 'square';
-                }
-            }
-        }
-        
-        // All videos are Mega videos - always load via Mega
-        if (typeof ensureMegaVideoSource !== 'undefined' && video.dataset.megaLink) {
-            // For taxonomy-video and search-video-preview, load preview (first frame)
-            if (video.classList.contains('taxonomy-video') || video.classList.contains('search-video-preview')) {
-                ensureMegaVideoSource(video).then(() => {
-                    // Set to first frame for thumbnail preview
-                    if (video.readyState >= 2) {
-                        video.currentTime = 0.1;
-                        video.pause();
+            const setAspectRatio = () => {
+                const videoWidth = video.videoWidth;
+                const videoHeight = video.videoHeight;
+                if (videoWidth && videoHeight) {
+                    const aspectRatio = videoWidth / videoHeight;
+                    if (aspectRatio > 1.2) {
+                        video.dataset.aspectRatio = 'landscape';
+                    } else if (aspectRatio < 0.8) {
+                        video.dataset.aspectRatio = 'portrait';
                     } else {
-                        video.addEventListener('loadedmetadata', () => {
+                        video.dataset.aspectRatio = 'square';
+                    }
+                }
+            };
+            
+            video.addEventListener('loadedmetadata', () => {
+                video.classList.add('loaded');
+                setAspectRatio();
+            });
+            
+            if (video.readyState >= 1) {
+                video.classList.add('loaded');
+                setAspectRatio();
+            }
+            
+            if (typeof ensureMegaVideoSource !== 'undefined' && video.dataset.megaLink) {
+                if (video.classList.contains('taxonomy-video') || video.classList.contains('search-video-preview')) {
+                    ensureMegaVideoSource(video).then(() => {
+                        if (video.readyState >= 2) {
                             video.currentTime = 0.1;
                             video.pause();
-                        }, { once: true });
-                    }
-                }).catch(() => {});
-            } else {
-                // For main feed videos, just load source
-                ensureMegaVideoSource(video);
+                        } else {
+                            video.addEventListener('loadedmetadata', () => {
+                                video.currentTime = 0.1;
+                                video.pause();
+                            }, { once: true });
+                        }
+                    }).catch(() => {});
+                } else {
+                    ensureMegaVideoSource(video);
+                }
             }
         }
         
@@ -297,36 +626,39 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
         
-        // Mark taxonomy-video for lazy preview loading
         if (video.classList.contains('taxonomy-video') && !video.closest('.video-row')) {
             video.dataset.needsPreview = '1';
         }
         
-        video.addEventListener('click', function() {
-            if (this.paused) {
-                // Continue playing from current position, don't reset
-                // All videos are Mega videos
-                if (!this.dataset.megaLoaded && typeof ensureMegaVideoSource !== 'undefined') {
-                    ensureMegaVideoSource(this).then(() => {
-                        const playPromise = this.play();
-                        if (playPromise !== undefined) {
-                            playPromise.catch(e => {
-                                if (e.name !== 'AbortError') {
-                                }
-                            });
+        video.addEventListener('click', function(e) {
+            if (this.tagName === 'IFRAME') return;
+            
+            const wrapper = new VideoPlayerWrapper(this);
+            
+            if (wrapper.isYouTube) {
+                try {
+                    const player = youtubePlayersMap.get(this);
+                    if (player && player.getPlayerState) {
+                        const state = player.getPlayerState();
+                        if (state === YT.PlayerState.PLAYING) {
+                            wrapper.pause();
+                        } else {
+                            wrapper.play();
                         }
-                    });
-                } else {
-                    const playPromise = this.play();
-                    if (playPromise !== undefined) {
-                        playPromise.catch(e => {
-                            if (e.name !== 'AbortError') {
-                            }
-                        });
                     }
+                } catch (error) {}
+            } else if (this.tagName === 'VIDEO') {
+                if (this.paused) {
+                    if (!this.dataset.megaLoaded && typeof ensureMegaVideoSource !== 'undefined') {
+                        ensureMegaVideoSource(this).then(() => {
+                            wrapper.play();
+                        });
+                    } else {
+                        wrapper.play();
+                    }
+                } else {
+                    wrapper.pause();
                 }
-            } else {
-                this.pause();
             }
         });
         
@@ -339,26 +671,24 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    /**
-     * Play visible video once
-     */
     function playVisibleVideoOnce() {
         if (userGestureHandled) return;
         userGestureHandled = true;
         
         const current = getCurrentVideo();
         if (current) {
-            // Reset to the beginning when playing for the first time
-            current.currentTime = 0;
+            const wrapper = new VideoPlayerWrapper(current);
             
-            // All videos are Mega videos
-            if (typeof ensureMegaVideoSource !== 'undefined' && current.dataset.megaLink) {
+            wrapper.seekTo(0);
+            
+            if (!wrapper.isYouTube && typeof ensureMegaVideoSource !== 'undefined' && current.dataset.megaLink) {
                 ensureMegaVideoSource(current).then(() => {
-                    current.currentTime = 0;
+                    wrapper.seekTo(0);
                 });
             }
+            
             applyVideoVolumeSettings(current);
-            current.play().catch(() => {});
+            wrapper.play();
         }
     }
     
@@ -366,15 +696,13 @@ document.addEventListener("DOMContentLoaded", function() {
         document.addEventListener(evt, playVisibleVideoOnce, { once: true, passive: true });
     });
 
-    // Initialize volume state
     applyVolumeToAllVideos();
     updateGlobalVolumeUI();
 
-    // Lazy load previews for taxonomy-video and search-video-preview cards (only video elements, not img)
     const taxonomyVideoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target;
-            // Skip if it's an img tag (not a video element)
+            
             if (video.tagName !== 'VIDEO') {
                 return;
             }
@@ -403,16 +731,14 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }, { rootMargin: '100px' });
     
-    // Observe all taxonomy-videos and search-video-preview that need preview (only video elements)
     document.querySelectorAll('.taxonomy-video[data-needs-preview="1"], .search-video-preview').forEach(video => {
-        // Skip if it's an img tag (not a video element)
         if (video.tagName !== 'VIDEO') {
             return;
         }
         
         if (video.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
             taxonomyVideoObserver.observe(video);
-            // Also load immediately if in viewport
+            
             const rect = video.getBoundingClientRect();
             if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
                 ensureMegaVideoSource(video).then(() => {
@@ -430,8 +756,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    // Export functions for other modules
     window.applyVideoVolumeSettings = applyVideoVolumeSettings;
     window.applyVolumeToAllVideos = applyVolumeToAllVideos;
+    window.VideoPlayerWrapper = VideoPlayerWrapper;
 });
-

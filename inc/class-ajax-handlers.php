@@ -772,84 +772,186 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_success(array('related' => array()));
         }
         
-        $option_key = 'puna_tiktok_search_history';
-        $all_history = get_option($option_key, array());
-        
-        if (!is_array($all_history)) {
-            wp_send_json_success(array('related' => array()));
-        }
-        
         $related_searches = array();
-        $week_ago = current_time('timestamp') - (7 * DAY_IN_SECONDS);
         $current_query_lower = mb_strtolower($current_query);
         $current_words = array_filter(explode(' ', $current_query_lower));
         
-        foreach ($all_history as $identifier => $history) {
-            if (is_array($history)) {
-                foreach ($history as $item) {
-                    if ($item['timestamp'] >= $week_ago && !empty($item['query'])) {
-                        $query = trim($item['query']);
-                        $query_lower = mb_strtolower($query);
-                        
-                        if ($query_lower === $current_query_lower) {
-                            continue;
+        // Get posts that match the search query
+        $search_args = array(
+            'post_type' => 'video',
+            'post_status' => 'publish',
+            'posts_per_page' => 50, // Get more posts to extract keywords
+            's' => $current_query,
+            'orderby' => 'relevance',
+            'order' => 'DESC',
+            'meta_query' => array(
+                'relation' => 'OR',
+                array(
+                    'key'     => '_puna_tiktok_video_url',
+                    'value'   => '',
+                    'compare' => '!=',
+                ),
+                array(
+                    'key'     => '_puna_tiktok_video_file_id',
+                    'compare' => 'EXISTS',
+                ),
+                array(
+                    'key'     => '_puna_tiktok_mega_link',
+                    'compare' => 'EXISTS',
+                ),
+                array(
+                    'key'     => '_puna_tiktok_youtube_id',
+                    'compare' => 'EXISTS',
+                ),
+            ),
+        );
+        
+        $posts = get_posts($search_args);
+        
+        // Extract keywords from descriptions
+        $all_keywords = array();
+        
+        foreach ($posts as $post) {
+            $description = puna_tiktok_get_video_description($post->ID);
+            
+            if (!empty($description)) {
+                // Convert to lowercase and remove special characters
+                $description_lower = mb_strtolower($description);
+                $description_lower = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $description_lower);
+                
+                // Split into words
+                $words = array_filter(explode(' ', $description_lower));
+                
+                // Extract meaningful phrases (2-4 words)
+                foreach ($words as $index => $word) {
+                    // Skip very short words
+                    if (mb_strlen($word) < 2) {
+                        continue;
+                    }
+                    
+                    // Skip if word is already in current query
+                    if (in_array($word, $current_words)) {
+                        continue;
+                    }
+                    
+                    // Add single word
+                    if (mb_strlen($word) >= 2) {
+                        if (!isset($all_keywords[$word])) {
+                            $all_keywords[$word] = 0;
                         }
-                        
-                        $similarity = 0;
-                        $query_words = array_filter(explode(' ', $query_lower));
-                        
-                        foreach ($current_words as $word) {
-                            if (strlen($word) >= 2) {
-                                foreach ($query_words as $qword) {
-                                    if (strpos($qword, $word) !== false || strpos($word, $qword) !== false) {
-                                        $similarity += 2;
-                                    }
-                                }
-                                if (strpos($query_lower, $word) !== false) {
-                                    $similarity += 1;
-                                }
+                        $all_keywords[$word]++;
+                    }
+                    
+                    // Create 2-word phrases
+                    if ($index < count($words) - 1) {
+                        $next_word = $words[$index + 1];
+                        if (mb_strlen($next_word) >= 2) {
+                            $phrase = $word . ' ' . $next_word;
+                            if (!isset($all_keywords[$phrase])) {
+                                $all_keywords[$phrase] = 0;
                             }
+                            $all_keywords[$phrase]++;
                         }
-                        
-                        if (strpos($query_lower, $current_query_lower) !== false) {
-                            $similarity += 5;
-                        }
-                        if (strpos($current_query_lower, $query_lower) !== false) {
-                            $similarity += 3;
-                        }
-                        
-                        if ($similarity > 0) {
-                            if (!isset($related_searches[$query])) {
-                                $related_searches[$query] = array(
-                                    'query' => $query,
-                                    'score' => $similarity,
-                                    'count' => 0
-                                );
+                    }
+                    
+                    // Create 3-word phrases
+                    if ($index < count($words) - 2) {
+                        $next_word = $words[$index + 1];
+                        $next_word2 = $words[$index + 2];
+                        if (mb_strlen($next_word) >= 2 && mb_strlen($next_word2) >= 2) {
+                            $phrase = $word . ' ' . $next_word . ' ' . $next_word2;
+                            if (!isset($all_keywords[$phrase])) {
+                                $all_keywords[$phrase] = 0;
                             }
-                            $related_searches[$query]['count']++;
-                            $related_searches[$query]['score'] += $related_searches[$query]['count'];
+                            $all_keywords[$phrase]++;
                         }
                     }
                 }
             }
         }
         
-        usort($related_searches, function($a, $b) {
-            if ($a['score'] !== $b['score']) {
-                return $b['score'] - $a['score'];
-            }
-            return $b['count'] - $a['count'];
-        });
+        // Sort by frequency and create suggestions
+        arsort($all_keywords);
         
         $related = array();
         $count = 0;
-        foreach ($related_searches as $item) {
+        $max_length = 30; // Max length for suggestion
+        
+        foreach ($all_keywords as $keyword => $frequency) {
             if ($count >= 10) break;
-            $related[] = array(
-                'query' => $item['query'],
-                'count' => $item['count']
-            );
-            $count++;
+            
+            // Skip if too short or too long
+            if (mb_strlen($keyword) < 2 || mb_strlen($keyword) > $max_length) {
+                continue;
+            }
+            
+            // Skip if keyword is exactly the same as current query
+            if (mb_strtolower($keyword) === $current_query_lower) {
+                continue;
+            }
+            
+            // Skip if keyword is contained in current query
+            if (strpos($current_query_lower, mb_strtolower($keyword)) !== false) {
+                continue;
+            }
+            
+            // Only include if frequency is at least 2 (appears in at least 2 posts)
+            if ($frequency >= 2) {
+                $related[] = array(
+                    'query' => trim($keyword),
+                    'count' => $frequency
+                );
+                $count++;
+            }
+        }
+        
+        // If we don't have enough suggestions, fall back to search history
+        if (count($related) < 5) {
+            $option_key = 'puna_tiktok_search_history';
+            $all_history = get_option($option_key, array());
+            
+            if (is_array($all_history)) {
+                $week_ago = current_time('timestamp') - (7 * DAY_IN_SECONDS);
+                $history_suggestions = array();
+                
+                foreach ($all_history as $identifier => $history) {
+                    if (is_array($history)) {
+                        foreach ($history as $item) {
+                            if ($item['timestamp'] >= $week_ago && !empty($item['query'])) {
+                                $query = trim($item['query']);
+                                $query_lower = mb_strtolower($query);
+                                
+                                if ($query_lower === $current_query_lower) {
+                                    continue;
+                                }
+                                
+                                // Check if query contains any of the current words
+                                $has_common_word = false;
+                                foreach ($current_words as $word) {
+                                    if (strlen($word) >= 2 && strpos($query_lower, $word) !== false) {
+                                        $has_common_word = true;
+                                        break;
+                                    }
+                                }
+                                
+                                if ($has_common_word && !isset($history_suggestions[$query])) {
+                                    $history_suggestions[$query] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Add history suggestions
+                foreach ($history_suggestions as $query => $freq) {
+                    if ($count >= 10) break;
+                    $related[] = array(
+                        'query' => $query,
+                        'count' => $freq
+                    );
+                    $count++;
+                }
+            }
         }
         
         wp_send_json_success(array('related' => $related));

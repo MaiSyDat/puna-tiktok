@@ -245,11 +245,11 @@ class Puna_TikTok_Video_Post_Type {
                         id="youtube_url_input" 
                         name="youtube_url" 
                         value="<?php echo esc_attr($youtube_url); ?>" 
-                        placeholder="https://www.youtube.com/watch?v=VIDEO_ID hoặc https://www.youtube.com/shorts/VIDEO_ID"
+                        placeholder="https://www.youtube.com/watch?v=VIDEO_ID or https://www.youtube.com/shorts/VIDEO_ID"
                         class="regular-text"
                     />
                     <p class="description">
-                        <?php _e('Nhập link YouTube (hỗ trợ cả link thường và link Shorts). Video ID sẽ được tự động trích xuất khi lưu bài viết.', 'puna-tiktok'); ?>
+                        <?php _e('Enter YouTube link (supports both regular links and Shorts links). Video ID will be automatically extracted when saving the post.', 'puna-tiktok'); ?>
                     </p>
                     
                     <?php if ($youtube_id): ?>

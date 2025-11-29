@@ -72,6 +72,10 @@ $withcomments = 1;
                             'key'     => '_puna_tiktok_video_file_id',
                             'compare' => 'EXISTS',
                         ),
+                        array(
+                            'key'     => '_puna_tiktok_youtube_id',
+                            'compare' => 'EXISTS',
+                        ),
                     ),
                 );
                 
@@ -137,6 +141,8 @@ $withcomments = 1;
                                 
                                 $metadata = puna_tiktok_get_video_metadata($post_id);
                                 $video_url = $metadata['video_url'];
+                                $video_source = $metadata['source'];
+                                $youtube_id = $metadata['youtube_id'];
                                 $likes = $metadata['likes'];
                                 
                                 // Check for featured image
@@ -148,8 +154,13 @@ $withcomments = 1;
                                 <a href="<?php echo esc_url(get_permalink($post_id)); ?>" class="search-video-item">
                                     <div class="search-video-thumbnail">
                                         <?php if ($featured_image_url) : ?>
+                                            <!-- Featured Image -->
                                             <img src="<?php echo esc_url($featured_image_url); ?>" alt="" class="search-video-preview" loading="lazy">
+                                        <?php elseif ($video_source === 'youtube' && !empty($youtube_id)) : ?>
+                                            <!-- YouTube Thumbnail -->
+                                            <img src="https://img.youtube.com/vi/<?php echo esc_attr($youtube_id); ?>/hqdefault.jpg" alt="" class="search-video-preview" loading="lazy">
                                         <?php elseif ($video_url) : ?>
+                                            <!-- Mega.nz Video Preview -->
                                             <video class="search-video-preview" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">
                                                 <!-- Mega.nz video will be loaded via JavaScript -->
                                             </video>

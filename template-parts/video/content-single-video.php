@@ -22,12 +22,12 @@ if (get_post_type($post_id) !== 'video') {
 
 $metadata = puna_tiktok_get_video_metadata($post_id);
 $video_url = $metadata['video_url'];
+$video_source = $metadata['source'];
+$youtube_id = $metadata['youtube_id'];
 $likes = $metadata['likes'];
 $comments_count = $metadata['comments'];
 $shares = $metadata['shares'];
 $saves = $metadata['saves'];
-
-// All videos are Mega videos
 
 $is_liked = puna_tiktok_is_liked($post_id);
 $liked_class = $is_liked ? 'liked' : '';
@@ -77,16 +77,31 @@ $withcomments = 1;
                 </div>
                 
                 <!-- Video Element -->
-                <video class="tiktok-video" 
-                       preload="metadata" 
-                       playsinline 
-                       loop 
-                       muted
-                       data-post-id="<?php echo esc_attr($post_id); ?>"
-                       data-mega-link="<?php echo esc_url($video_url); ?>">
-                    <!-- Mega.nz video will be loaded via JavaScript -->
-                    <?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
-                </video>
+                <?php if ($video_source === 'youtube' && !empty($youtube_id)) : ?>
+                    <!-- YouTube Video -->
+                    <iframe class="tiktok-video youtube-player" 
+                            src="<?php echo esc_url($video_url . '?enablejsapi=1&controls=0&rel=0&playsinline=1&loop=1&playlist=' . $youtube_id . '&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1&cc_load_policy=0'); ?>" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen
+                            data-source="youtube"
+                            data-youtube-id="<?php echo esc_attr($youtube_id); ?>"
+                            data-post-id="<?php echo esc_attr($post_id); ?>">
+                    </iframe>
+                <?php else : ?>
+                    <!-- Mega.nz Video -->
+                    <video class="tiktok-video" 
+                           preload="metadata" 
+                           playsinline 
+                           loop 
+                           muted
+                           data-post-id="<?php echo esc_attr($post_id); ?>"
+                           data-mega-link="<?php echo esc_url($video_url); ?>"
+                           data-source="mega">
+                        <!-- Mega.nz video will be loaded via JavaScript -->
+                        <?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
+                    </video>
+                <?php endif; ?>
             </div>
         </div>
         
@@ -199,7 +214,7 @@ $withcomments = 1;
                     $author_videos = get_posts(array(
                         'post_type'      => 'video',
                         'author'         => $author_id,
-                        'posts_per_page' => 10,
+                        'posts_per_page' => -1, // Get all videos, not just 10
                         'post_status'    => 'publish',
                         'post__not_in'   => array($post_id),
                         'meta_query'     => array(
@@ -213,6 +228,14 @@ $withcomments = 1;
                                 'key'     => '_puna_tiktok_video_file_id',
                                 'compare' => 'EXISTS',
                             ),
+                            array(
+                                'key'     => '_puna_tiktok_mega_link',
+                                'compare' => 'EXISTS',
+                            ),
+                            array(
+                                'key'     => '_puna_tiktok_youtube_id',
+                                'compare' => 'EXISTS',
+                            ),
                         ),
                     ));
                     
@@ -224,6 +247,8 @@ $withcomments = 1;
                                 $other_metadata = puna_tiktok_get_video_metadata($video_post->ID);
                                 $other_video_url = $other_metadata['video_url'];
                                 $other_views = $other_metadata['views'];
+                                $other_video_source = $other_metadata['source'];
+                                $other_youtube_id = $other_metadata['youtube_id'];
                                 
                                 // Check for featured image
                                 $featured_image_url = '';
@@ -234,8 +259,13 @@ $withcomments = 1;
                                 <a href="<?php echo esc_url(get_permalink($video_post->ID)); ?>" class="creator-video-item">
                                     <div class="creator-video-thumbnail">
                                         <?php if ($featured_image_url) : ?>
+                                            <!-- Featured Image -->
                                             <img src="<?php echo esc_url($featured_image_url); ?>" alt="" class="creator-video-preview" loading="lazy">
+                                        <?php elseif ($other_video_source === 'youtube' && !empty($other_youtube_id)) : ?>
+                                            <!-- YouTube Thumbnail -->
+                                            <img src="https://img.youtube.com/vi/<?php echo esc_attr($other_youtube_id); ?>/hqdefault.jpg" alt="" class="creator-video-preview" loading="lazy">
                                         <?php else : ?>
+                                            <!-- Mega.nz Video Preview -->
                                             <video class="creator-video-preview" muted playsinline data-mega-link="<?php echo esc_url($other_video_url); ?>">
                                                 <!-- Mega.nz video will be loaded via JavaScript -->
                                             </video>

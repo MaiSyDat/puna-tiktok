@@ -19,7 +19,6 @@
     background: var(--puna-bg);
     backdrop-filter: blur(10px);
     background: rgba(var(--puna-bg-rgb), 0.98);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     margin-bottom: 16px;
     position: relative;

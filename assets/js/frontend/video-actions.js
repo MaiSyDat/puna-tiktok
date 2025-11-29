@@ -3,6 +3,18 @@
  */
 
 document.addEventListener("DOMContentLoaded", function() {
+    // Helper function to revert guest state
+    function revertGuestLikeState(postId, actionItem) {
+        if (!isLoggedIn()) {
+            if (typeof GuestStateHelpers !== 'undefined') {
+                GuestStateHelpers.revertGuestState('like', postId);
+            } else {
+                GuestStorage.toggleLikeVideo(postId);
+            }
+            actionItem.classList.toggle('liked');
+        }
+    }
+    
     // Like/Unlike video
     document.addEventListener('click', function(e) {
         const actionItem = e.target.closest('.action-item[data-action="like"], .interaction-item[data-action="like"]');
@@ -17,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
         actionItem.classList.add('liking');
         setTimeout(() => actionItem.classList.remove('liking'), 300);
         
+        const wasLiked = actionItem.classList.contains('liked');
         if (!isLoggedIn()) {
             const isLiked = GuestStorage.toggleLikeVideo(postId);
             actionItem.classList.toggle('liked', isLiked);
@@ -24,7 +37,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         sendAjaxRequest('puna_tiktok_toggle_like', { 
             post_id: postId,
-            action_type: actionItem.classList.contains('liked') ? 'like' : 'unlike'
+            action_type: wasLiked ? 'unlike' : 'like'
         })
         .then(data => {
             if (data.success) {
@@ -33,38 +46,41 @@ document.addEventListener("DOMContentLoaded", function() {
                 
                 actionItem.classList.toggle('liked', isLiked);
                 
-                // Sync guest state using helper
+                // Show toast notification
+                if (typeof Toast !== 'undefined') {
+                    Toast.success(isLiked ? 'video_liked' : 'video_unliked');
+                }
+                
+                // Sync guest state
                 if (typeof GuestStateHelpers !== 'undefined') {
                     GuestStateHelpers.syncGuestState('like', postId, isLiked);
                 }
                 
-                const countElement = actionItem.querySelector('.count') || actionItem.querySelector('.stat-count');
+                const countElement = actionItem.querySelector('.count, .stat-count');
                 if (countElement) {
                     countElement.textContent = formatNumber(likes);
                 }
             } else {
-                if (!isLoggedIn()) {
-                    if (typeof GuestStateHelpers !== 'undefined') {
-                        GuestStateHelpers.revertGuestState('like', postId);
-                    } else {
-                        GuestStorage.toggleLikeVideo(postId);
-                    }
-                    actionItem.classList.toggle('liked');
-                }
+                revertGuestLikeState(postId, actionItem);
             }
         })
-        .catch(error => {
-            if (!isLoggedIn()) {
-                if (typeof GuestStateHelpers !== 'undefined') {
-                    GuestStateHelpers.revertGuestState('like', postId);
-                } else {
-                    GuestStorage.toggleLikeVideo(postId);
-                }
-                actionItem.classList.toggle('liked');
-            }
+        .catch(() => {
+            revertGuestLikeState(postId, actionItem);
         });
     });
 
+    // Helper function to revert guest save state
+    function revertGuestSaveState(postId, actionItem) {
+        if (!isLoggedIn()) {
+            if (typeof GuestStateHelpers !== 'undefined') {
+                GuestStateHelpers.revertGuestState('save', postId);
+            } else {
+                GuestStorage.toggleSaveVideo(postId);
+            }
+            actionItem.classList.toggle('saved');
+        }
+    }
+    
     // Save/Unsave video
     document.addEventListener('click', function(e) {
         const actionItem = e.target.closest('.action-item[data-action="save"], .interaction-item[data-action="save"]');
@@ -79,59 +95,43 @@ document.addEventListener("DOMContentLoaded", function() {
         actionItem.classList.add('saving');
         setTimeout(() => actionItem.classList.remove('saving'), 300);
         
+        const wasSaved = actionItem.classList.contains('saved');
         if (!isLoggedIn()) {
             const isSaved = GuestStorage.toggleSaveVideo(postId);
-            if (isSaved) {
-                actionItem.classList.add('saved');
-            } else {
-                actionItem.classList.remove('saved');
-            }
+            actionItem.classList.toggle('saved', isSaved);
         }
         
         sendAjaxRequest('puna_tiktok_toggle_save', { 
             post_id: postId,
-            action_type: actionItem.classList.contains('saved') ? 'save' : 'unsave'
+            action_type: wasSaved ? 'unsave' : 'save'
         })
         .then(data => {
             if (data.success) {
                 const isSaved = data.data.is_saved;
                 const saves = data.data.saves;
                 
-                if (isSaved) {
-                    actionItem.classList.add('saved');
-                } else {
-                    actionItem.classList.remove('saved');
+                actionItem.classList.toggle('saved', isSaved);
+                
+                // Show toast notification
+                if (typeof Toast !== 'undefined') {
+                    Toast.success(isSaved ? 'video_saved' : 'video_unsaved');
                 }
                 
-                // Sync guest state using helper
+                // Sync guest state
                 if (typeof GuestStateHelpers !== 'undefined') {
                     GuestStateHelpers.syncGuestState('save', postId, isSaved);
                 }
                 
-                const countEl = actionItem.querySelector('.count') || actionItem.querySelector('.stat-count');
+                const countEl = actionItem.querySelector('.count, .stat-count');
                 if (countEl && saves !== undefined) {
                     countEl.textContent = formatNumber(saves);
                 }
             } else {
-                if (!isLoggedIn()) {
-                    if (typeof GuestStateHelpers !== 'undefined') {
-                        GuestStateHelpers.revertGuestState('save', postId);
-                    } else {
-                        GuestStorage.toggleSaveVideo(postId);
-                    }
-                    actionItem.classList.toggle('saved');
-                }
+                revertGuestSaveState(postId, actionItem);
             }
         })
-        .catch(error => {
-            if (!isLoggedIn()) {
-                if (typeof GuestStateHelpers !== 'undefined') {
-                    GuestStateHelpers.revertGuestState('save', postId);
-                } else {
-                    GuestStorage.toggleSaveVideo(postId);
-                }
-                actionItem.classList.toggle('saved');
-            }
+        .catch(() => {
+            revertGuestSaveState(postId, actionItem);
         });
     });
 
@@ -214,7 +214,8 @@ document.addEventListener("DOMContentLoaded", function() {
             case 'copy':
                 copyToClipboard(url);
                 updateShareCount(postId);
-                break;
+                // Toast for copy is shown in copyToClipboard function
+                return;
             case 'instagram':
                 if (navigator.userAgent.match(/Instagram/i)) {
                     window.open(`https://www.instagram.com/`, '_blank');
@@ -231,6 +232,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 break;
         }
         
+        // Show toast notification for share
+        if (typeof Toast !== 'undefined') {
+            Toast.success('video_shared');
+        }
+        
         if (type !== 'copy') {
             updateShareCount(postId);
         }
@@ -245,7 +251,25 @@ document.addEventListener("DOMContentLoaded", function() {
     
     function copyToClipboard(text) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text);
+            navigator.clipboard.writeText(text).then(() => {
+                // Show toast notification
+                if (typeof Toast !== 'undefined') {
+                    Toast.success('video_shared');
+                }
+            }).catch(() => {
+                // Fallback to execCommand
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.opacity = '0';
+                document.body.appendChild(textArea);
+                textArea.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                if (success && typeof Toast !== 'undefined') {
+                    Toast.success('video_shared');
+                }
+            });
         } else {
             const textArea = document.createElement('textarea');
             textArea.value = text;
@@ -253,8 +277,11 @@ document.addEventListener("DOMContentLoaded", function() {
             textArea.style.opacity = '0';
             document.body.appendChild(textArea);
             textArea.select();
-            document.execCommand('copy');
+            const success = document.execCommand('copy');
             document.body.removeChild(textArea);
+            if (success && typeof Toast !== 'undefined') {
+                Toast.success('video_shared');
+            }
         }
     }
     
@@ -285,7 +312,10 @@ document.addEventListener("DOMContentLoaded", function() {
         const postId = deleteBtn.dataset.postId;
         if (!postId) return;
         
-        if (!confirm('Are you sure you want to delete this video? This action cannot be undone.')) {
+        const confirmMessage = typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.toast_messages && puna_tiktok_ajax.toast_messages.warning_confirm 
+            ? puna_tiktok_ajax.toast_messages.warning_confirm 
+            : 'Are you sure you want to delete this video? This action cannot be undone.';
+        if (!confirm(confirmMessage)) {
             return;
         }
         
@@ -299,6 +329,10 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(data => {
             if (data.success) {
+                // Show toast notification
+                if (typeof Toast !== 'undefined') {
+                    Toast.success('video_deleted');
+                }
                 const redirectUrl = data.data?.redirect_url || (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.home_url) || window.location.origin;
                 setTimeout(() => {
                     window.location.href = redirectUrl;
@@ -308,6 +342,42 @@ document.addEventListener("DOMContentLoaded", function() {
         .catch(error => {
             // Error handling silently
         });
+    });
+
+    // Report video - Show fake notification
+    document.addEventListener('click', function(e) {
+        const reportItem = e.target.closest('.options-item');
+        if (!reportItem) return;
+        
+        // Check if it's the report item (not delete item)
+        const reportText = reportItem.querySelector('span');
+        if (!reportText) {
+            return;
+        }
+        
+        // Check if it's report by checking if it's not delete item
+        if (reportItem.classList.contains('delete-video-item')) {
+            return;
+        }
+        
+        // Check if it's not the delete item
+        if (reportItem.classList.contains('delete-video-item')) {
+            return;
+        }
+        
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Close dropdown
+        const dropdown = reportItem.closest('.video-info-more-dropdown');
+        if (dropdown) {
+            dropdown.classList.remove('show');
+        }
+        
+        // Show fake notification using Toast
+        if (typeof Toast !== 'undefined') {
+            Toast.success('video_reported');
+        }
     });
 
     // Video view count

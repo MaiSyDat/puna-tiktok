@@ -139,6 +139,13 @@ function sendAjaxRequest(action, params = {}) {
     }).then(response => response.json());
 }
 
+// Initialize toast messages if available
+if (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.toast_messages) {
+    if (typeof Toast !== 'undefined' && Toast.setMessages) {
+        Toast.setMessages(puna_tiktok_ajax.toast_messages);
+    }
+}
+
 // Global error handler to catch errors from external scripts
 window.addEventListener('error', function(event) {
     // Catch insertBefore null errors

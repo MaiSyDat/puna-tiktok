@@ -214,9 +214,11 @@
     height: 40px;
     border-radius: 50%;
     flex-shrink: 0;
-    object-fit: contain !important;
+    object-fit: contain;
     background: var(--puna-bg);
     padding: 3px;
+    border-radius: 50%;
+    border: 2px solid var(--puna-primary);
 }
 
 .comment-content {
@@ -243,12 +245,9 @@
     color: inherit;
 }
 
-.comment-avatar-wrapper {
-    flex-shrink: 0;
-}
-
 /* Comment Avatar Wrapper */
 .comment-avatar-wrapper {
+    flex-shrink: 0;
     display: inline-block;
 }
 

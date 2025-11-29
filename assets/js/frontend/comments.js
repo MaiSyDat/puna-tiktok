@@ -204,12 +204,20 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (!isLoggedIn()) {
             params.guest_id = GuestStorage.getGuestId();
-            params.guest_name = 'Guest';
+            const guestName = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.guest) 
+                ? puna_tiktok_ajax.i18n.guest 
+                : 'Guest';
+            params.guest_name = guestName;
         }
         
         sendAjaxRequest('puna_tiktok_add_comment', params)
         .then(data => {
             if (data.success) {
+                // Show toast notification
+                if (typeof Toast !== 'undefined') {
+                    Toast.success('comment_added');
+                }
+                
                 const html = data.data?.html || '';
                 const isReply = data.data?.is_reply || false;
                 
@@ -220,16 +228,10 @@ document.addEventListener("DOMContentLoaded", function() {
                     return;
                 }
                 
-                let commentsList = null;
-                const overlay = document.getElementById('comments-overlay-' + postId);
-                if (overlay) {
-                    commentsList = overlay.querySelector('.comments-list');
-                } else {
-                    const watchComments = document.querySelector('.video-watch-comments');
-                    if (watchComments) {
-                        commentsList = watchComments.querySelector('.comments-list');
-                    }
-                }
+                // Find comments list container
+                const overlay = document.getElementById(`comments-overlay-${postId}`);
+                const commentsList = overlay?.querySelector('.comments-list') 
+                    || document.querySelector('.video-watch-comments .comments-list');
                 
                 if (!commentsList) {
                     setTimeout(() => {
@@ -666,6 +668,9 @@ document.addEventListener("DOMContentLoaded", function() {
         sendAjaxRequest('puna_tiktok_delete_comment', params)
         .then(res => {
             // Comment deleted successfully
+            if (res.success && typeof Toast !== 'undefined') {
+                Toast.success('comment_deleted');
+            }
         })
         .catch(() => {
             // Error handling silently
@@ -758,6 +763,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 const isLikedNow = data.data.is_liked;
                 const likes = data.data.likes;
                 
+                // Show toast notification
+                if (typeof Toast !== 'undefined') {
+                    Toast.success(isLikedNow ? 'comment_liked' : 'comment_unliked');
+                }
+                
                 // Update class based on server response
                 if (isLikedNow) {
                     likesElement.classList.add('liked');
@@ -826,6 +836,9 @@ document.addEventListener("DOMContentLoaded", function() {
         sendAjaxRequest('puna_tiktok_report_comment', { comment_id: commentId })
         .then(res => {
             // Comment reported successfully
+            if (res.success && typeof Toast !== 'undefined') {
+                Toast.success('comment_reported');
+            }
         })
         .catch(() => {
             // Error handling silently
