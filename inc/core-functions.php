@@ -426,6 +426,12 @@ if (!function_exists('puna_tiktok_get_video_url')) {
             return apply_filters('puna_tiktok_get_video_url_youtube', $url, $post_id, $youtube_id);
         }
 
+        // Early return: Local source
+        if ($video_source === 'local' && !empty($video_url_meta)) {
+            $url = esc_url($video_url_meta);
+            return apply_filters('puna_tiktok_get_video_url_local', $url, $post_id);
+        }
+
         // Early return: Mega link
         if (!empty($mega_link)) {
             $url = esc_url($mega_link);

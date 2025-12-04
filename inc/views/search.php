@@ -159,6 +159,15 @@ $withcomments = 1;
                                         <?php elseif ($video_source === 'youtube' && !empty($youtube_id)) : ?>
                                             <!-- YouTube Thumbnail -->
                                             <img src="https://img.youtube.com/vi/<?php echo esc_attr($youtube_id); ?>/hqdefault.jpg" alt="" class="search-video-preview" loading="lazy">
+                                        <?php elseif ($video_source === 'local' && !empty($video_url)) : ?>
+                                            <!-- Local Video with thumbnail or video preview -->
+                                            <?php if ($featured_image_url) : ?>
+                                                <img src="<?php echo esc_url($featured_image_url); ?>" alt="" class="search-video-preview" loading="lazy">
+                                            <?php else : ?>
+                                                <video class="search-video-preview" muted playsinline loading="lazy" src="<?php echo esc_url($video_url); ?>" poster="">
+                                                    <!-- Local video preview -->
+                                                </video>
+                                            <?php endif; ?>
                                         <?php elseif ($video_url) : ?>
                                             <!-- Mega.nz Video Preview -->
                                             <video class="search-video-preview" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">

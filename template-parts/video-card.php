@@ -36,6 +36,15 @@ if (has_post_thumbnail($post_id)) {
         <?php elseif ($video_source === 'youtube' && !empty($youtube_id)) : ?>
             <!-- YouTube Thumbnail -->
             <img src="https://img.youtube.com/vi/<?php echo esc_attr($youtube_id); ?>/hqdefault.jpg" alt="" class="taxonomy-video" loading="lazy">
+        <?php elseif ($video_source === 'local' && !empty($video_url)) : ?>
+            <!-- Local Video with thumbnail or video preview -->
+            <?php if ($featured_image_url) : ?>
+                <img src="<?php echo esc_url($featured_image_url); ?>" alt="" class="taxonomy-video" loading="lazy">
+            <?php else : ?>
+                <video class="taxonomy-video" muted playsinline loading="lazy" src="<?php echo esc_url($video_url); ?>" poster="">
+                    <!-- Local video preview -->
+                </video>
+            <?php endif; ?>
         <?php else : ?>
             <!-- Mega.nz Video Preview -->
             <video class="taxonomy-video" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">

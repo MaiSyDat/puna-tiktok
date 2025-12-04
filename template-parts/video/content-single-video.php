@@ -88,6 +88,18 @@ $withcomments = 1;
                             data-youtube-id="<?php echo esc_attr($youtube_id); ?>"
                             data-post-id="<?php echo esc_attr($post_id); ?>">
                     </iframe>
+                <?php elseif ($video_source === 'local' && !empty($video_url)) : ?>
+                    <!-- Local Video -->
+                    <video class="tiktok-video" 
+                           preload="metadata" 
+                           playsinline 
+                           loop 
+                           muted
+                           data-post-id="<?php echo esc_attr($post_id); ?>"
+                           data-source="local"
+                           src="<?php echo esc_url($video_url); ?>">
+                        <?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
+                    </video>
                 <?php else : ?>
                     <!-- Mega.nz Video -->
                     <video class="tiktok-video" 
