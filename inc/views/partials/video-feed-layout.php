@@ -13,7 +13,12 @@ if (!defined('ABSPATH')) {
     <?php get_template_part('template-parts/sidebar'); ?>
     
     <div class="main-content">
-        <?php include get_template_directory() . '/inc/views/partials/video-feed.php'; ?>
+        <?php
+        $video_feed_file = locate_template('inc/views/partials/video-feed.php');
+        if ($video_feed_file) {
+            load_template($video_feed_file, false);
+        }
+        ?>
     </div>
 </div>
 

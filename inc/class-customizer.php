@@ -20,7 +20,7 @@ class Puna_TikTok_Customizer {
      * Constructor
      */
     public function __construct() {
-        $this->customize_dir = get_template_directory() . '/customize/';
+        $this->customize_dir = PUNA_TIKTOK_THEME_DIR . '/customize/';
         
         // Auto-load all customize components
         $this->load_customize_components();

@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-class SearchController extends Puna_TikTok_Theme {
+class Puna_TikTok_Search_Controller extends Puna_TikTok_Theme {
     
     public function __construct() {
         add_action('puna_tiktok_search', array($this, 'render'));
@@ -37,5 +37,5 @@ class SearchController extends Puna_TikTok_Theme {
     }
 }
 
-new SearchController();
+new Puna_TikTok_Search_Controller();
 

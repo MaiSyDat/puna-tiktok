@@ -9,5 +9,8 @@ if (!defined('ABSPATH')) {
 }
 
 // Use common video feed layout
-include get_template_directory() . '/inc/views/partials/video-feed-layout.php';
+$layout_file = locate_template('inc/views/partials/video-feed-layout.php');
+if ($layout_file) {
+    load_template($layout_file, false);
+}
 

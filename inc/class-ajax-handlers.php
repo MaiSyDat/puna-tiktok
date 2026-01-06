@@ -394,12 +394,12 @@ class Puna_TikTok_AJAX_Handlers {
         check_ajax_referer('puna_tiktok_comment_nonce', 'nonce');
         
         $comment_id = intval($_POST['comment_id'] ?? 0);
-    if (!$comment_id) {
-        wp_send_json_error(array('message' => __('Missing comment_id.', 'puna-tiktok')));
-    }
-    $reports = (int) get_comment_meta($comment_id, '_comment_reports', true);
-    update_comment_meta($comment_id, '_comment_reports', $reports + 1);
-    wp_send_json_success(array());
+        if (!$comment_id) {
+            wp_send_json_error(array('message' => __('Missing comment_id.', 'puna-tiktok')));
+        }
+        $reports = (int) get_comment_meta($comment_id, '_comment_reports', true);
+        update_comment_meta($comment_id, '_comment_reports', $reports + 1);
+        wp_send_json_success(array());
     }
 
     /**

@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-class IndexController extends Puna_TikTok_Theme {
+class Puna_TikTok_Index_Controller extends Puna_TikTok_Theme {
     
     public function __construct() {
         add_action('puna_tiktok_index', array($this, 'render_index'));
@@ -30,5 +30,5 @@ class IndexController extends Puna_TikTok_Theme {
     }
 }
 
-new IndexController();
+new Puna_TikTok_Index_Controller();
 

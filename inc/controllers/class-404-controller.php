@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-class Error404Controller extends Puna_TikTok_Theme {
+class Puna_TikTok_404_Controller extends Puna_TikTok_Theme {
     
     public function __construct() {
         add_action('puna_tiktok_404', array($this, 'render'));
@@ -19,5 +19,5 @@ class Error404Controller extends Puna_TikTok_Theme {
     }
 }
 
-new Error404Controller();
+new Puna_TikTok_404_Controller();
 

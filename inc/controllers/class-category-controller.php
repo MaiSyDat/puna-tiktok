@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-class CategoryController extends Puna_TikTok_Theme {
+class Puna_TikTok_Category_Controller extends Puna_TikTok_Theme {
     
     public function __construct() {
         add_action('puna_tiktok_category', array($this, 'render'));
@@ -28,5 +28,5 @@ class CategoryController extends Puna_TikTok_Theme {
     }
 }
 
-new CategoryController();
+new Puna_TikTok_Category_Controller();
 

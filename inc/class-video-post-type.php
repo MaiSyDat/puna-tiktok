@@ -228,20 +228,20 @@ class Puna_TikTok_Video_Post_Type {
             <div class="video-upload-tabs">
                 <ul class="video-upload-tabs-nav">
                     <li>
-                        <a href="#" class="video-upload-tab-link <?php echo $active_tab === 'upload' ? 'active' : ''; ?>" data-tab="upload">
-                            <?php _e('UPLOAD VIDEO', 'puna-tiktok'); ?>
+                        <a href="#" class="video-upload-tab-link <?php echo esc_attr($active_tab === 'upload' ? 'active' : ''); ?>" data-tab="upload">
+                            <?php esc_html_e('UPLOAD VIDEO', 'puna-tiktok'); ?>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="video-upload-tab-link <?php echo $active_tab === 'youtube' ? 'active' : ''; ?>" data-tab="youtube">
-                            <?php _e('EMBED YOUTUBE', 'puna-tiktok'); ?>
+                        <a href="#" class="video-upload-tab-link <?php echo esc_attr($active_tab === 'youtube' ? 'active' : ''); ?>" data-tab="youtube">
+                            <?php esc_html_e('EMBED YOUTUBE', 'puna-tiktok'); ?>
                         </a>
                     </li>
                 </ul>
             </div>
             
             <!-- Tab 1: UPLOAD VIDEO (Local File) -->
-            <div class="video-upload-tab-content <?php echo $active_tab === 'upload' ? 'active' : ''; ?>" id="tab-upload">
+            <div class="video-upload-tab-content <?php echo esc_attr($active_tab === 'upload' ? 'active' : ''); ?>" id="tab-upload">
                 <div class="video-upload-section">
                     <h3><?php _e('Video File', 'puna-tiktok'); ?></h3>
                     
@@ -282,7 +282,7 @@ class Puna_TikTok_Video_Post_Type {
             </div>
             
             <!-- Tab 2: EMBED YOUTUBE -->
-            <div class="video-upload-tab-content <?php echo $active_tab === 'youtube' ? 'active' : ''; ?>" id="tab-youtube">
+            <div class="video-upload-tab-content <?php echo esc_attr($active_tab === 'youtube' ? 'active' : ''); ?>" id="tab-youtube">
                 <div class="youtube-input-section">
                     <label for="youtube_url_input"><?php _e('YouTube Link', 'puna-tiktok'); ?></label>
                     <input 
@@ -338,14 +338,19 @@ class Puna_TikTok_Video_Post_Type {
         // Add filter to sanitize filename
         add_filter('wp_handle_upload_prefilter', array($this, 'sanitize_video_filename_prefilter'));
         
-        // Validate video file type
-        $file_type = wp_check_filetype($uploaded_file['name'], wp_get_mime_types());
+        // Validate video file type using wp_check_filetype_and_ext for better security
+        $file_check = wp_check_filetype_and_ext($uploaded_file['tmp_name'], $uploaded_file['name'], wp_get_mime_types());
+        $file_type = array(
+            'ext' => $file_check['ext'],
+            'type' => $file_check['type']
+        );
+        
         $video_extensions = array('mp4', 'webm', 'ogg', 'ogv', 'mov', 'avi', 'wmv', 'flv', 'mkv', 'm4v', '3gp', '3g2');
         $is_video = false;
         
         if (!empty($file_type['ext']) && in_array(strtolower($file_type['ext']), $video_extensions)) {
             $is_video = true;
-        } elseif (!empty($uploaded_file['type']) && strpos($uploaded_file['type'], 'video/') === 0) {
+        } elseif (!empty($file_type['type']) && strpos($file_type['type'], 'video/') === 0) {
             $is_video = true;
         } elseif (!empty($file_type['type']) && strpos($file_type['type'], 'video/') === 0) {
             $is_video = true;
