@@ -26,14 +26,14 @@ if (!defined('ABSPATH')) {
                 $foryou_url = add_query_arg('tab_type', 'foryou', home_url('/tag'));
                 $is_foryou_active = ($current_tab === 'foryou' && !$current_tag_id);
                 ?>
-                <a href="<?php echo esc_url($foryou_url); ?>" class="tab<?php echo $is_foryou_active ? ' active' : ''; ?>"><?php esc_html_e('For You', 'puna-tiktok'); ?></a>
+                <a href="<?php echo esc_url($foryou_url); ?>" class="tab<?php echo esc_attr($is_foryou_active ? ' active' : ''); ?>"><?php esc_html_e('For You', 'puna-tiktok'); ?></a>
                 
                 <?php
                 // Trending tab
                 $trending_url = add_query_arg('tab_type', 'trending', home_url('/tag'));
                 $is_trending_active = ($current_tab === 'trending' && !$current_tag_id) || (!$current_tab && !$current_tag_id);
                 ?>
-                <a href="<?php echo esc_url($trending_url); ?>" class="tab<?php echo $is_trending_active ? ' active' : ''; ?>"><?php esc_html_e('Trending', 'puna-tiktok'); ?></a>
+                <a href="<?php echo esc_url($trending_url); ?>" class="tab<?php echo esc_attr($is_trending_active ? ' active' : ''); ?>"><?php esc_html_e('Trending', 'puna-tiktok'); ?></a>
                 
                 <?php
                 // Get list of tags that have videos, sorted by popularity
@@ -51,7 +51,7 @@ if (!defined('ABSPATH')) {
                         if ($tag_item->count > 0) {
                             $tag_url = home_url('/tag/' . $tag_item->term_id . '/');
                             $is_tag_active = ($current_tag_id == $tag_item->term_id);
-                            echo '<a href="' . esc_url($tag_url) . '" class="tab' . ($is_tag_active ? ' active' : '') . '">#' . esc_html($tag_item->name) . '</a>';
+                            echo '<a href="' . esc_url($tag_url) . '" class="tab' . esc_attr($is_tag_active ? ' active' : '') . '">#' . esc_html($tag_item->name) . '</a>';
                         }
                     }
                 }

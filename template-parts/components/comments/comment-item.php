@@ -70,7 +70,7 @@ if (!$comment_author_id) {
 
 <div class="comment-item" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
     <div class="comment-avatar-wrapper">
-        <?php echo puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', $guest_id); ?>
+        <?php echo wp_kses_post(puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', $guest_id)); ?>
     </div>
     <div class="comment-content">
         <div class="comment-header">
@@ -89,25 +89,25 @@ if (!$comment_author_id) {
     <div class="comment-right-actions">
         <?php if ($can_delete_comment) : ?>
             <div class="comment-actions">
-                <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok')); ?></button>
+                <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo wp_kses_post(puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok'))); ?></button>
                 <div class="comment-options-dropdown">
                     <button class="comment-action-delete" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                        <?php echo puna_tiktok_get_icon('delete', __('Delete', 'puna-tiktok')); ?> <?php esc_html_e('Delete', 'puna-tiktok'); ?>
+                        <?php echo wp_kses_post(puna_tiktok_get_icon('delete', __('Delete', 'puna-tiktok'))); ?> <?php esc_html_e('Delete', 'puna-tiktok'); ?>
                     </button>
                 </div>
             </div>
         <?php elseif (is_user_logged_in() && !$can_delete_comment) : ?>
             <div class="comment-actions">
-                <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok')); ?></button>
+                <button class="comment-options-btn" title="<?php esc_attr_e('Options', 'puna-tiktok'); ?>"><?php echo wp_kses_post(puna_tiktok_get_icon('dot', __('Options', 'puna-tiktok'))); ?></button>
                 <div class="comment-options-dropdown">
                     <button class="comment-action-report" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                        <?php echo puna_tiktok_get_icon('report', __('Report', 'puna-tiktok')); ?> <?php esc_html_e('Report', 'puna-tiktok'); ?>
+                        <?php echo wp_kses_post(puna_tiktok_get_icon('report', __('Report', 'puna-tiktok'))); ?> <?php esc_html_e('Report', 'puna-tiktok'); ?>
                     </button>
                 </div>
             </div>
         <?php endif; ?>
-        <div class="comment-likes<?php echo $is_liked ? ' liked' : ''; ?>" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-            <?php echo puna_tiktok_get_icon('heart-alt', __('Like', 'puna-tiktok')); ?>
+        <div class="comment-likes<?php echo esc_attr($is_liked ? ' liked' : ''); ?>" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+            <?php echo wp_kses_post(puna_tiktok_get_icon('heart-alt', __('Like', 'puna-tiktok'))); ?>
             <span><?php echo esc_html($comment_likes); ?></span>
         </div>
     </div>

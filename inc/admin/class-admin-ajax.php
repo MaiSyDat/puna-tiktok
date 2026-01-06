@@ -9,11 +9,11 @@ if (!defined('ABSPATH')) {
 }
 
 /**
- * Class Admin_AJAX
+ * Class Puna_TikTok_Admin_AJAX
  */
-if (!class_exists('Admin_AJAX')) {
+if (!class_exists('Puna_TikTok_Admin_AJAX')) {
 
-    class Admin_AJAX {
+    class Puna_TikTok_Admin_AJAX {
 
         /**
          * Constructor.
@@ -75,6 +75,6 @@ if (!class_exists('Admin_AJAX')) {
     }
 
     // Init class
-    new Admin_AJAX();
+    new Puna_TikTok_Admin_AJAX();
 }
 

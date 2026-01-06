@@ -22,18 +22,18 @@ class Puna_TikTok_Theme {
         extract($data);
         
         // Get view file path
-        $view_file = get_template_directory() . '/inc/views/' . $view_name . '.php';
+        $view_file = PUNA_TIKTOK_THEME_DIR . '/inc/views/' . $view_name . '.php';
         
         // Check if view file exists
         if (file_exists($view_file)) {
             include $view_file;
         } else {
             // Fallback: try template-parts directory
-            $fallback_file = get_template_directory() . '/template-parts/' . $view_name . '.php';
+            $fallback_file = PUNA_TIKTOK_THEME_DIR . '/template-parts/' . $view_name . '.php';
             if (file_exists($fallback_file)) {
                 include $fallback_file;
             } else {
-                wp_die(sprintf(__('View file not found: %s', 'puna-tiktok'), $view_name));
+                wp_die(sprintf(esc_html__('View file not found: %s', 'puna-tiktok'), esc_html($view_name)));
             }
         }
     }

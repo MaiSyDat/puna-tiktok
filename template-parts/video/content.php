@@ -35,7 +35,7 @@ $saved_class = $is_saved ? 'saved' : '';
 			<!-- Volume Control -->
 			<div class="volume-control-wrapper">
 				<button class="volume-toggle-btn" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
-					<?php echo puna_tiktok_get_icon('volum', __('Volume', 'puna-tiktok')); ?>
+					<?php echo wp_kses_post(puna_tiktok_get_icon('volum', __('Volume', 'puna-tiktok'))); ?>
 				</button>
 				<div class="volume-slider-container">
 					<input type="range" class="volume-slider" min="0" max="100" value="100" title="<?php esc_attr_e('Volume', 'puna-tiktok'); ?>">
@@ -90,35 +90,35 @@ $saved_class = $is_saved ? 'saved' : '';
 
 		<aside class="video-sidebar" aria-hidden="false">
 			<div class="author-avatar-wrapper">
-				<?php echo puna_tiktok_get_avatar_html(get_the_author_meta('ID'), 50, 'author-avatar'); ?>
+				<?php echo wp_kses_post(puna_tiktok_get_avatar_html(get_the_author_meta('ID'), 50, 'author-avatar')); ?>
 			</div>
 
 			<div class="action-item <?php echo esc_attr($liked_class); ?>" data-action="like" data-post-id="<?php echo esc_attr($post_id); ?>">
 				<div class="action-icon-wrapper">
-					<?php echo puna_tiktok_get_icon('heart', __('Like', 'puna-tiktok')); ?>
+					<?php echo wp_kses_post(puna_tiktok_get_icon('heart', __('Like', 'puna-tiktok'))); ?>
 				</div>
-				<span class="count"><?php echo puna_tiktok_format_number($likes); ?></span>
+				<span class="count"><?php echo esc_html(puna_tiktok_format_number($likes)); ?></span>
 			</div>
 
 			<div class="action-item" data-action="comment" data-post-id="<?php echo esc_attr($post_id); ?>">
 				<div class="action-icon-wrapper">
-					<?php echo puna_tiktok_get_icon('comment', __('Comment', 'puna-tiktok')); ?>
+					<?php echo wp_kses_post(puna_tiktok_get_icon('comment', __('Comment', 'puna-tiktok'))); ?>
 				</div>
-				<span class="count"><?php echo puna_tiktok_format_number($comments); ?></span>
+				<span class="count"><?php echo esc_html(puna_tiktok_format_number($comments)); ?></span>
 			</div>
 
 			<div class="action-item <?php echo esc_attr($saved_class); ?>" data-action="save" data-post-id="<?php echo esc_attr($post_id); ?>">
 				<div class="action-icon-wrapper">
-					<?php echo puna_tiktok_get_icon('save', __('Save', 'puna-tiktok')); ?>
+					<?php echo wp_kses_post(puna_tiktok_get_icon('save', __('Save', 'puna-tiktok'))); ?>
 				</div>
-				<span class="count"><?php echo puna_tiktok_format_number($saves); ?></span>
+				<span class="count"><?php echo esc_html(puna_tiktok_format_number($saves)); ?></span>
 			</div>
 
 			<div class="action-item" data-action="share" data-post-id="<?php echo esc_attr($post_id); ?>" data-share-url="<?php echo esc_url(get_permalink($post_id)); ?>" data-share-title="<?php echo esc_attr(puna_tiktok_get_video_description()); ?>">
 				<div class="action-icon-wrapper">
-					<?php echo puna_tiktok_get_icon('share', __('Share', 'puna-tiktok')); ?>
+					<?php echo wp_kses_post(puna_tiktok_get_icon('share', __('Share', 'puna-tiktok'))); ?>
 				</div>
-				<span class="count"><?php echo puna_tiktok_format_number($shares); ?></span>
+				<span class="count"><?php echo esc_html(puna_tiktok_format_number($shares)); ?></span>
 			</div>
 		</aside>
 	</div>
@@ -131,7 +131,7 @@ $saved_class = $is_saved ? 'saved' : '';
 		<div class="share-modal-header">
 			<h2 class="share-modal-title"><?php esc_html_e('Share to', 'puna-tiktok'); ?></h2>
             <button type="button" class="share-modal-close" aria-label="<?php esc_attr_e('Close', 'puna-tiktok'); ?>">
-				<?php echo puna_tiktok_get_icon('close', __('Close', 'puna-tiktok')); ?>
+				<?php echo wp_kses_post(puna_tiktok_get_icon('close', __('Close', 'puna-tiktok'))); ?>
             </button>
         </div>
         <div class="share-modal-body">
@@ -139,7 +139,7 @@ $saved_class = $is_saved ? 'saved' : '';
                 <!-- Facebook -->
                 <button class="share-option" data-share="facebook" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-						<?php echo puna_tiktok_get_icon('facebook', __('Facebook', 'puna-tiktok')); ?>
+						<?php echo wp_kses_post(puna_tiktok_get_icon('facebook', __('Facebook', 'puna-tiktok'))); ?>
                     </div>
 					<span class="share-option-label"><?php esc_html_e('Facebook', 'puna-tiktok'); ?></span>
                 </button>
@@ -147,7 +147,7 @@ $saved_class = $is_saved ? 'saved' : '';
                 <!-- Zalo -->
                 <button class="share-option" data-share="zalo" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-						<?php echo puna_tiktok_get_icon('zalo', __('Zalo', 'puna-tiktok')); ?>
+						<?php echo wp_kses_post(puna_tiktok_get_icon('zalo', __('Zalo', 'puna-tiktok'))); ?>
                     </div>
 					<span class="share-option-label"><?php esc_html_e('Zalo', 'puna-tiktok'); ?></span>
                 </button>
@@ -155,7 +155,7 @@ $saved_class = $is_saved ? 'saved' : '';
                 <!-- Copy Link -->
                 <button class="share-option" data-share="copy" data-post-id="<?php echo esc_attr($post_id); ?>" data-url="<?php echo esc_url(get_permalink($post_id)); ?>">
                     <div class="share-option-icon">
-						<?php echo puna_tiktok_get_icon('link', __('Copy link', 'puna-tiktok')); ?>
+						<?php echo wp_kses_post(puna_tiktok_get_icon('link', __('Copy link', 'puna-tiktok'))); ?>
                     </div>
 					<span class="share-option-label"><?php esc_html_e('Copy link', 'puna-tiktok'); ?></span>
                 </button>
@@ -163,7 +163,7 @@ $saved_class = $is_saved ? 'saved' : '';
                 <!-- Instagram -->
                 <button class="share-option" data-share="instagram" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-						<?php echo puna_tiktok_get_icon('instagram', __('Instagram', 'puna-tiktok')); ?>
+						<?php echo wp_kses_post(puna_tiktok_get_icon('instagram', __('Instagram', 'puna-tiktok'))); ?>
                     </div>
 					<span class="share-option-label"><?php esc_html_e('Instagram', 'puna-tiktok'); ?></span>
                 </button>
@@ -171,7 +171,7 @@ $saved_class = $is_saved ? 'saved' : '';
                 <!-- Email -->
                 <button class="share-option" data-share="email" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-						<?php echo puna_tiktok_get_icon('email', __('Email', 'puna-tiktok')); ?>
+						<?php echo wp_kses_post(puna_tiktok_get_icon('email', __('Email', 'puna-tiktok'))); ?>
                     </div>
 					<span class="share-option-label"><?php esc_html_e('Email', 'puna-tiktok'); ?></span>
                 </button>
@@ -179,7 +179,7 @@ $saved_class = $is_saved ? 'saved' : '';
                 <!-- Telegram -->
                 <button class="share-option" data-share="telegram" data-post-id="<?php echo esc_attr($post_id); ?>">
                     <div class="share-option-icon">
-						<?php echo puna_tiktok_get_icon('telegram', __('Telegram', 'puna-tiktok')); ?>
+						<?php echo wp_kses_post(puna_tiktok_get_icon('telegram', __('Telegram', 'puna-tiktok'))); ?>
                     </div>
 					<span class="share-option-label"><?php esc_html_e('Telegram', 'puna-tiktok'); ?></span>
                 </button>

@@ -221,6 +221,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
                 'home_url' => home_url('/'),
                 'like_nonce' => wp_create_nonce('puna_tiktok_like_nonce'),
                 'comment_nonce' => wp_create_nonce('puna_tiktok_comment_nonce'),
+                'search_nonce' => wp_create_nonce('puna_tiktok_search_nonce'),
                 'theme_uri' => PUNA_TIKTOK_THEME_URI,
                 'is_logged_in' => is_user_logged_in(),
                 'current_user' => array(

@@ -111,7 +111,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Guest-only mode: All comments are from guests
      */
     public function add_comment() {
-        check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
+        check_ajax_referer('puna_tiktok_comment_nonce', 'nonce');
         
         $post_id = intval($_POST['post_id']);
         $comment_text = sanitize_text_field($_POST['comment_text']);
@@ -208,7 +208,7 @@ class Puna_TikTok_AJAX_Handlers {
             ?>
             <div class="comment-item<?php echo esc_attr($is_reply_class); ?>" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
                 <div class="comment-avatar-wrapper">
-                    <?php echo puna_tiktok_get_avatar_html($comment->comment_author, 40, 'comment-avatar', $guest_id); ?>
+                    <?php echo wp_kses_post(puna_tiktok_get_avatar_html($comment->comment_author, 40, 'comment-avatar', $guest_id)); ?>
                 </div>
                 <div class="comment-content">
                     <div class="comment-header">
@@ -224,7 +224,7 @@ class Puna_TikTok_AJAX_Handlers {
                 </div>
                 <div class="comment-right-actions">
                     <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                        <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
+                        <?php echo wp_kses_post(puna_tiktok_get_icon('heart-alt', 'Like')); ?>
                         <span><?php echo esc_html($comment_likes); ?></span>
                     </div>
                 </div>
@@ -316,13 +316,8 @@ class Puna_TikTok_AJAX_Handlers {
      * Delete comment
      */
     public function delete_comment() {
-        // Check nonce for logged in users only
-        if (is_user_logged_in()) {
-            if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-                wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-                return;
-            }
-        }
+        // Check nonce
+        check_ajax_referer('puna_tiktok_comment_nonce', 'nonce');
         
         $comment_id = intval($_POST['comment_id'] ?? 0);
         if (!$comment_id) {
@@ -396,10 +391,9 @@ class Puna_TikTok_AJAX_Handlers {
      * Report comment
      */
     public function report_comment() {
-    if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-        wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-    }
-    $comment_id = intval($_POST['comment_id'] ?? 0);
+        check_ajax_referer('puna_tiktok_comment_nonce', 'nonce');
+        
+        $comment_id = intval($_POST['comment_id'] ?? 0);
     if (!$comment_id) {
         wp_send_json_error(array('message' => __('Missing comment_id.', 'puna-tiktok')));
     }
@@ -412,10 +406,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Get search suggestions
      */
     public function get_search_suggestions() {
-        if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-            return;
-        }
+        check_ajax_referer('puna_tiktok_search_nonce', 'nonce');
         
         $query = isset($_POST['query']) ? sanitize_text_field($_POST['query']) : '';
         
@@ -475,10 +466,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Guest-only mode: Frontend JS must handle persistence via LocalStorage
      */
     public function save_search_history() {
-        if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-            return;
-        }
+        check_ajax_referer('puna_tiktok_search_nonce', 'nonce');
         
         $query = isset($_POST['query']) ? sanitize_text_field($_POST['query']) : '';
         
@@ -495,10 +483,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Guest-only mode: Frontend JS must handle persistence via LocalStorage
      */
     public function get_search_history() {
-        if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-            return;
-        }
+        check_ajax_referer('puna_tiktok_search_nonce', 'nonce');
         
         // Do not read from database - tell frontend to use LocalStorage
         wp_send_json_success(array('history' => array(), 'message' => 'Use LocalStorage'));
@@ -539,10 +524,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Clear search history
      */
     public function clear_search_history() {
-        if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-            return;
-        }
+        check_ajax_referer('puna_tiktok_search_nonce', 'nonce');
         
         $user_id = is_user_logged_in() ? get_current_user_id() : 0;
         $identifier = $user_id > 0 ? 'user_' . $user_id : 'ip_' . $_SERVER['REMOTE_ADDR'];
@@ -562,10 +544,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Get popular searches
      */
     public function get_popular_searches() {
-        if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-            return;
-        }
+        check_ajax_referer('puna_tiktok_search_nonce', 'nonce');
         
         $option_key = 'puna_tiktok_search_history';
         $all_history = get_option($option_key, array());
@@ -615,10 +594,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Get related searches
      */
     public function get_related_searches() {
-        if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-            return;
-        }
+        check_ajax_referer('puna_tiktok_search_nonce', 'nonce');
         
         $current_query = isset($_POST['query']) ? sanitize_text_field($_POST['query']) : '';
         
@@ -865,6 +841,8 @@ class Puna_TikTok_AJAX_Handlers {
      * Get popular hashtags
      */
     public function get_popular_hashtags() {
+        check_ajax_referer('puna_tiktok_search_nonce', 'nonce');
+        
         $limit = isset($_POST['limit']) ? intval($_POST['limit']) : 20;
         
         $tags = get_terms(array(
@@ -912,10 +890,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Get reply input HTML
      */
     public function get_reply_input() {
-        if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
-            wp_send_json_error(array('message' => __('Invalid nonce.', 'puna-tiktok')));
-            return;
-        }
+        check_ajax_referer('puna_tiktok_comment_nonce', 'nonce');
         
         $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
         $parent_id = isset($_POST['parent_id']) ? intval($_POST['parent_id']) : 0;

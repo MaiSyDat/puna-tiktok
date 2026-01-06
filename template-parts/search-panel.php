@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
     <div class="search-panel-header">
         <h3><?php esc_html_e('Search', 'puna-tiktok'); ?></h3>
         <button id="close-search" class="close-search-btn">
-            <?php echo puna_tiktok_get_icon('close', __('Close', 'puna-tiktok')); ?>
+            <?php echo wp_kses_post(puna_tiktok_get_icon('close', __('Close', 'puna-tiktok'))); ?>
         </button>
     </div>
     <div class="search-panel-input-wrapper">
@@ -38,7 +38,7 @@ if (!defined('ABSPATH')) {
             <div class="search-history-header">
                 <h4><?php esc_html_e('Search history', 'puna-tiktok'); ?></h4>
                 <button class="clear-history-btn" id="clear-history-btn">
-                    <?php echo puna_tiktok_get_icon('delete', __('Clear history', 'puna-tiktok')); ?> <?php esc_html_e('Clear history', 'puna-tiktok'); ?>
+                    <?php echo wp_kses_post(puna_tiktok_get_icon('delete', __('Clear history', 'puna-tiktok'))); ?> <?php esc_html_e('Clear history', 'puna-tiktok'); ?>
                 </button>
             </div>
             <ul class="search-history-list" id="search-history-list">

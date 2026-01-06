@@ -43,14 +43,14 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
     $search_display_text = $current_search_query ? esc_html($current_search_query) : __('Search', 'puna-tiktok');
     ?>
     <div class="sidebar-search-trigger" id="search-trigger">
-        <?php echo puna_tiktok_get_icon('search', __('Search', 'puna-tiktok')); ?>
-        <span class="search-text"><?php echo $search_display_text; ?></span>
+        <?php echo wp_kses_post(puna_tiktok_get_icon('search', __('Search', 'puna-tiktok'))); ?>
+        <span class="search-text"><?php echo esc_html($search_display_text); ?></span>
     </div>
 
     <ul class="sidebar-menu">
         <?php foreach ($menu_items as $item) : ?>
             <li>
-                <a href="<?php echo esc_url($item['url']); ?>" class="nav-link <?php echo $item['active'] ? 'active' : ''; ?>">
+                <a href="<?php echo esc_url($item['url']); ?>" class="nav-link <?php echo esc_attr($item['active'] ? 'active' : ''); ?>">
                     <?php
                     // Extract icon name from Font Awesome class or use directly
                     $icon_name = $item['icon'];
@@ -70,7 +70,7 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
                             }
                         }
                     }
-                    echo puna_tiktok_get_icon($icon_name, $item['title']);
+                    echo wp_kses_post(puna_tiktok_get_icon($icon_name, $item['title']));
                     ?>
                     <span class="menu-text"><?php echo esc_html($item['title']); ?></span>
                 </a>
@@ -81,15 +81,15 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
     <!-- Social Media Links -->
     <div class="sidebar-social">
         <a href="https://www.facebook.com/xuonghopcartonhupuna" target="_blank" rel="noopener noreferrer" class="social-link facebook" title="<?php esc_attr_e('Facebook', 'puna-tiktok'); ?>">
-            <?php echo puna_tiktok_get_icon('facebook', __('Facebook', 'puna-tiktok')); ?>
+            <?php echo wp_kses_post(puna_tiktok_get_icon('facebook', __('Facebook', 'puna-tiktok'))); ?>
             <span class="social-tooltip"><?php esc_html_e('Facebook', 'puna-tiktok'); ?></span>
         </a>
         <a href="https://www.instagram.com/hupunagroup/" target="_blank" rel="noopener noreferrer" class="social-link instagram" title="<?php esc_attr_e('Instagram', 'puna-tiktok'); ?>">
-            <?php echo puna_tiktok_get_icon('instagram', __('Instagram', 'puna-tiktok')); ?>
+            <?php echo wp_kses_post(puna_tiktok_get_icon('instagram', __('Instagram', 'puna-tiktok'))); ?>
             <span class="social-tooltip"><?php esc_html_e('Instagram', 'puna-tiktok'); ?></span>
         </a>
         <a href="https://www.youtube.com/@congtycophanhupunagroup" target="_blank" rel="noopener noreferrer" class="social-link youtube" title="<?php esc_attr_e('YouTube', 'puna-tiktok'); ?>">
-            <?php echo puna_tiktok_get_icon('play', __('YouTube', 'puna-tiktok')); ?>
+            <?php echo wp_kses_post(puna_tiktok_get_icon('play', __('YouTube', 'puna-tiktok'))); ?>
             <span class="social-tooltip"><?php esc_html_e('YouTube', 'puna-tiktok'); ?></span>
         </a>
     </div>
@@ -126,8 +126,8 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
             }
         }
     ?>
-        <a href="<?php echo esc_url($item['url']); ?>" class="bottom-nav-item <?php echo $item['active'] ? 'active' : ''; ?>">
-            <?php echo puna_tiktok_get_icon($icon_name, $item['title']); ?>
+        <a href="<?php echo esc_url($item['url']); ?>" class="bottom-nav-item <?php echo esc_attr($item['active'] ? 'active' : ''); ?>">
+            <?php echo wp_kses_post(puna_tiktok_get_icon($icon_name, $item['title'])); ?>
         </a>
     <?php endforeach; ?>
 
@@ -168,13 +168,13 @@ $footer_copyright = str_replace('[year]', date('Y'), $footer_copyright);
             }
         }
     ?>
-        <a href="<?php echo esc_url($item['url']); ?>" class="bottom-nav-item <?php echo $item['active'] ? 'active' : ''; ?>">
-            <?php echo puna_tiktok_get_icon($icon_name, $item['title']); ?>
+        <a href="<?php echo esc_url($item['url']); ?>" class="bottom-nav-item <?php echo esc_attr($item['active'] ? 'active' : ''); ?>">
+            <?php echo wp_kses_post(puna_tiktok_get_icon($icon_name, $item['title'])); ?>
         </a>
     <?php endif; ?>
 
     <!-- Search Button -->
     <div class="bottom-nav-item bottom-nav-search" id="bottom-search-trigger">
-        <?php echo puna_tiktok_get_icon('search', __('Search', 'puna-tiktok')); ?>
+        <?php echo wp_kses_post(puna_tiktok_get_icon('search', __('Search', 'puna-tiktok'))); ?>
     </div>
 </nav>

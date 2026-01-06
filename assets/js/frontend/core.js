@@ -126,6 +126,18 @@ function formatNumber(num) {
 
 // Send AJAX request
 function sendAjaxRequest(action, params = {}) {
+    // Determine which nonce to use based on action type
+    let nonce = puna_tiktok_ajax.like_nonce; // Default nonce
+    
+    // Comment-related actions use comment_nonce
+    if (action.includes('comment') || action.includes('reply')) {
+        nonce = puna_tiktok_ajax.comment_nonce || puna_tiktok_ajax.like_nonce;
+    }
+    // Search-related actions use search_nonce
+    else if (action.includes('search') || action.includes('hashtag')) {
+        nonce = puna_tiktok_ajax.search_nonce || puna_tiktok_ajax.like_nonce;
+    }
+    
     return fetch(puna_tiktok_ajax.ajax_url, {
         method: 'POST',
         headers: {
@@ -133,7 +145,7 @@ function sendAjaxRequest(action, params = {}) {
         },
         body: new URLSearchParams({
             action: action,
-            nonce: puna_tiktok_ajax.like_nonce,
+            nonce: nonce,
             ...params
         })
     }).then(response => response.json());

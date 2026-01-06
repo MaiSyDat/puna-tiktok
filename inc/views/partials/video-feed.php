@@ -31,10 +31,10 @@ wp_reset_postdata();
 
 <div class="video-nav">
     <button class="video-nav-btn nav-prev" aria-label="<?php esc_attr_e('Previous video', 'puna-tiktok'); ?>">
-        <?php echo puna_tiktok_get_icon('arrow-up', __('Previous video', 'puna-tiktok')); ?>
+        <?php echo wp_kses_post(puna_tiktok_get_icon('arrow-up', __('Previous video', 'puna-tiktok'))); ?>
     </button>
     <button class="video-nav-btn nav-next" aria-label="<?php esc_attr_e('Next video', 'puna-tiktok'); ?>">
-        <?php echo puna_tiktok_get_icon('arrow', __('Next video', 'puna-tiktok')); ?>
+        <?php echo wp_kses_post(puna_tiktok_get_icon('arrow', __('Next video', 'puna-tiktok'))); ?>
     </button>
 </div>
 

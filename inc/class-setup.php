@@ -8,17 +8,6 @@ if (! defined('ABSPATH')) {
     exit;
 }
 
-// Define theme constants
-if (! defined('PUNA_TIKTOK_VERSION')) {
-    define('PUNA_TIKTOK_VERSION', '1.0.0');
-}
-if (! defined('PUNA_TIKTOK_THEME_DIR')) {
-    define('PUNA_TIKTOK_THEME_DIR', get_template_directory());
-}
-if (! defined('PUNA_TIKTOK_THEME_URI')) {
-    define('PUNA_TIKTOK_THEME_URI', get_template_directory_uri());
-}
-
 class Puna_TikTok_Setup {
     
     /**
@@ -58,7 +47,7 @@ class Puna_TikTok_Setup {
     public function setup()
     {
         // Load theme textdomain for translations
-        load_theme_textdomain('puna-tiktok', get_template_directory() . '/languages');
+        load_theme_textdomain('puna-tiktok', PUNA_TIKTOK_THEME_DIR . '/languages');
         
         add_theme_support('post-thumbnails');
         add_theme_support('title-tag');
@@ -210,8 +199,8 @@ class Puna_TikTok_Setup {
                 $fake_post->post_mime_type = '';
                 $fake_post->comment_count = 0;
                 $fake_post->filter = 'raw';
-                $fake_post->term_id = 0; // Fix lỗi WordPress update
-                $fake_post->name = $page_title; // Fix lỗi WordPress update
+                $fake_post->term_id = 0;
+                $fake_post->name = $page_title;
                 
                 $wp_query->queried_object = $fake_post;
                 $wp_query->queried_object_id = 0;
