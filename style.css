@@ -1,7 +1,29 @@
 /*
 Theme Name: Puna TikTok
-Text Domain: puna-tiktok
+Theme URI: https://video.hupuna.com/
 Author: Mai Sỹ Đạt
-Description: Short-form video theme inspired by TikTok.
+Author URI: https://hupuna.com/
+Description: A modern, guest-friendly short-form video sharing theme inspired by TikTok. Features include infinite scroll video feed, YouTube embed support, local video uploads, guest commenting system, and mobile-responsive design. Perfect for creating video sharing platforms without requiring user registration.
 Version: 1.0.0
+Requires at least: 5.8
+Tested up to: 6.4
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: puna-tiktok
+Domain Path: /languages
+Tags: video, media, entertainment, social, mobile-friendly, responsive, two-columns, custom-menu, featured-images, threaded-comments, translation-ready
+
+Puna TikTok WordPress Theme, Copyright 2024 Mai Sỹ Đạt
+Puna TikTok is distributed under the terms of the GNU GPL
+
+This theme is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+This theme is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
 */

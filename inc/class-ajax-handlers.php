@@ -64,9 +64,6 @@ class Puna_TikTok_AJAX_Handlers {
         add_action('wp_ajax_puna_tiktok_toggle_save', array($this, 'toggle_save'));
         add_action('wp_ajax_nopriv_puna_tiktok_toggle_save', array($this, 'toggle_save'));
         
-        // Delete video
-        add_action('wp_ajax_puna_tiktok_delete_video', array($this, 'delete_video'));
-        
         // Popular hashtags
         add_action('wp_ajax_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
         add_action('wp_ajax_nopriv_puna_tiktok_get_popular_hashtags', array($this, 'get_popular_hashtags'));
@@ -78,50 +75,18 @@ class Puna_TikTok_AJAX_Handlers {
 
     /**
      * Toggle like video
+     * Guest-only mode: Frontend JS handles "My Likes" persistence via LocalStorage
      */
     public function toggle_like() {
-    check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
-    
-    $post_id = intval($_POST['post_id']);
-    
-    if (!$post_id || get_post_type($post_id) !== 'video') {
-        wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
-    }
-    
-    $current_likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
-    $is_logged_in = is_user_logged_in();
-    $user_id = $is_logged_in ? get_current_user_id() : 0;
-    
-    if ($is_logged_in) {
-    $liked_posts = get_user_meta($user_id, '_puna_tiktok_liked_videos', true);
-    if (!is_array($liked_posts)) {
-        $liked_posts = array();
-    }
-    
-    $is_liked = in_array($post_id, $liked_posts);
-    
-    if ($is_liked) {
-        $liked_posts = array_values(array_diff($liked_posts, array($post_id)));
-        update_user_meta($user_id, '_puna_tiktok_liked_videos', $liked_posts);
-        $new_likes = max(0, $current_likes - 1);
-        update_post_meta($post_id, '_puna_tiktok_video_likes', $new_likes);
+        check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
         
-        wp_send_json_success(array(
-            'is_liked' => false,
-            'likes' => $new_likes
-        ));
-    } else {
-        $liked_posts[] = $post_id;
-        update_user_meta($user_id, '_puna_tiktok_liked_videos', $liked_posts);
-        $new_likes = $current_likes + 1;
-        update_post_meta($post_id, '_puna_tiktok_video_likes', $new_likes);
+        $post_id = intval($_POST['post_id']);
         
-        wp_send_json_success(array(
-            'is_liked' => true,
-            'likes' => $new_likes
-        ));
+        if (!$post_id || get_post_type($post_id) !== 'video') {
+            wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
         }
-    } else {
+        
+        $current_likes = get_post_meta($post_id, '_puna_tiktok_video_likes', true) ?: 0;
         $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'like';
         
         if ($action === 'unlike') {
@@ -140,33 +105,26 @@ class Puna_TikTok_AJAX_Handlers {
             ));
         }
     }
-}
 
     /**
      * Add comment
+     * Guest-only mode: All comments are from guests
      */
     public function add_comment() {
-    check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
-    
-    $post_id = intval($_POST['post_id']);
-    $comment_text = sanitize_text_field($_POST['comment_text']);
-    
-    if (!$post_id || get_post_type($post_id) !== 'video') {
-        wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
-    }
-    
-    if (empty($comment_text)) {
-        wp_send_json_error(array('message' => __('Comment cannot be empty.', 'puna-tiktok')));
-    }
-    
-    $is_logged_in = is_user_logged_in();
-    $user_id = $is_logged_in ? get_current_user_id() : 0;
-    
-    if ($is_logged_in) {
-    $user = get_userdata($user_id);
-        $comment_author = $user->display_name;
-        $comment_email = $user->user_email;
-    } else {
+        check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
+        
+        $post_id = intval($_POST['post_id']);
+        $comment_text = sanitize_text_field($_POST['comment_text']);
+        
+        if (!$post_id || get_post_type($post_id) !== 'video') {
+            wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
+        }
+        
+        if (empty($comment_text)) {
+            wp_send_json_error(array('message' => __('Comment cannot be empty.', 'puna-tiktok')));
+        }
+        
+        // Always treat as guest
         $guest_id = isset($_POST['guest_id']) ? sanitize_text_field($_POST['guest_id']) : '';
         if (empty($guest_id)) {
             $guest_id = 'guest_' . md5($_SERVER['REMOTE_ADDR'] . time() . wp_generate_password(8, false));
@@ -184,123 +142,104 @@ class Puna_TikTok_AJAX_Handlers {
         if (empty($comment_email)) {
             $comment_email = $guest_id . '@guest.local';
         }
-    }
-    
-    $parent_id = isset($_POST['parent_id']) ? intval($_POST['parent_id']) : 0;
-    
-    $comment_data = array(
-        'comment_post_ID' => $post_id,
-        'comment_author' => $comment_author,
-        'comment_author_email' => $comment_email,
-        'comment_content' => $comment_text,
-        'comment_status' => 'approve',
-        'comment_author_IP' => $_SERVER['REMOTE_ADDR'],
-        'user_id' => $user_id,
-        'comment_parent' => $parent_id,
-    );
-    
-    $comment_id = wp_insert_comment($comment_data);
-    
-    if (!$comment_id) {
-        wp_send_json_error(array('message' => __('Cannot add comment.', 'puna-tiktok')));
-    }
-    
-    if (!$is_logged_in && !empty($guest_id)) {
-        update_comment_meta($comment_id, '_puna_tiktok_guest_id', $guest_id);
-    }
-    
-    // Get the comment object
-    $comment = get_comment($comment_id);
-    if (!$comment) {
-        wp_send_json_error(array('message' => __('Cannot get comment information.', 'puna-tiktok')));
-    }
-    
-    // Get liked comments for current user - same logic as in comments.php
-    $liked_comments = array();
-    $current_user_id = get_current_user_id();
-    if ($current_user_id) {
-        $liked_comments = get_user_meta($current_user_id, '_puna_tiktok_liked_comments', true);
-        if (!is_array($liked_comments)) {
-            $liked_comments = array();
+        
+        $parent_id = isset($_POST['parent_id']) ? intval($_POST['parent_id']) : 0;
+        
+        $comment_data = array(
+            'comment_post_ID' => $post_id,
+            'comment_author' => $comment_author,
+            'comment_author_email' => $comment_email,
+            'comment_content' => $comment_text,
+            'comment_status' => 'approve',
+            'comment_author_IP' => $_SERVER['REMOTE_ADDR'],
+            'user_id' => 0,
+            'comment_parent' => $parent_id,
+        );
+        
+        $comment_id = wp_insert_comment($comment_data);
+        
+        if (!$comment_id) {
+            wp_send_json_error(array('message' => __('Cannot add comment.', 'puna-tiktok')));
         }
-    }
-    
-    // Render HTML using template part - same as in comments.php
-    ob_start();
-    
-    if ($parent_id > 0) {
-        // This is a reply
-        get_template_part('template-parts/components/comments/comment-reply', null, array(
-            'reply' => $comment,
-            'post_id' => $post_id,
-            'liked_comments' => $liked_comments,
-        ));
-    } else {
-        // This is a top-level comment
-        get_template_part('template-parts/components/comments/comment-item', null, array(
-            'comment' => $comment,
-            'post_id' => $post_id,
-            'liked_comments' => $liked_comments,
-        ));
-    }
-    
-    $html = ob_get_clean();
-    
-    // Normalize HTML to match page load output
-    // Only remove excessive whitespace, preserve structure
-    // Remove whitespace between tags (but keep text content spacing)
-    $html = preg_replace('/>\s*\n\s*</', '><', $html);
-    // Normalize multiple spaces to single space (but not in text content)
-    $html = preg_replace('/\s{2,}/', ' ', $html);
-    $html = trim($html);
-    
-    // Ensure HTML is not empty
-    if (empty($html) || trim($html) === '') {
-        // Fallback: create basic HTML structure
-        $comment_author_id = $comment->user_id ? $comment->user_id : 0;
-        $comment_author_name = $comment_author_id > 0 ? puna_tiktok_get_user_display_name($comment_author_id) : $comment->comment_author;
-        $comment_date = human_time_diff(strtotime($comment->comment_date), current_time('timestamp'));
-        $comment_likes = get_comment_meta($comment->comment_ID, '_comment_likes', true) ?: 0;
         
-        $is_reply_class = $parent_id > 0 ? ' comment-reply' : '';
-        $guest_id = '';
+        update_comment_meta($comment_id, '_puna_tiktok_guest_id', $guest_id);
         
+        // Get the comment object
+        $comment = get_comment($comment_id);
+        if (!$comment) {
+            wp_send_json_error(array('message' => __('Cannot get comment information.', 'puna-tiktok')));
+        }
+        
+        // Get liked comments (empty for guests)
+        $liked_comments = array();
+        
+        // Render HTML using template part
         ob_start();
-        ?>
-        <div class="comment-item<?php echo esc_attr($is_reply_class); ?>" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-            <div class="comment-avatar-wrapper">
-                <?php echo puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', $guest_id); ?>
-            </div>
-            <div class="comment-content">
-                <div class="comment-header">
-                    <span class="comment-author-wrapper">
-                        <strong class="comment-author"><?php echo esc_html($comment_author_name); ?></strong>
-                    </span>
-                </div>
-                <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>
-                <div class="comment-footer">
-                    <span class="comment-date"><?php printf(esc_html__('%s ago', 'puna-tiktok'), esc_html($comment_date)); ?></span>
-                    <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>"><?php esc_html_e('Reply', 'puna-tiktok'); ?></a>
-                </div>
-            </div>
-            <div class="comment-right-actions">
-                <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
-                    <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
-                    <span><?php echo esc_html($comment_likes); ?></span>
-                </div>
-            </div>
-        </div>
-        <?php
+        
+        if ($parent_id > 0) {
+            // This is a reply
+            get_template_part('template-parts/components/comments/comment-reply', null, array(
+                'reply' => $comment,
+                'post_id' => $post_id,
+                'liked_comments' => $liked_comments,
+            ));
+        } else {
+            // This is a top-level comment
+            get_template_part('template-parts/components/comments/comment-item', null, array(
+                'comment' => $comment,
+                'post_id' => $post_id,
+                'liked_comments' => $liked_comments,
+            ));
+        }
+        
         $html = ob_get_clean();
+        $html = trim($html);
+        
+        // Ensure HTML is not empty
+        if (empty($html)) {
+            // Fallback: create basic HTML structure
+            $comment_author_name = $comment->comment_author;
+            $comment_date = human_time_diff(strtotime($comment->comment_date), current_time('timestamp'));
+            $comment_likes = get_comment_meta($comment->comment_ID, '_comment_likes', true) ?: 0;
+            
+            $is_reply_class = $parent_id > 0 ? ' comment-reply' : '';
+            
+            ob_start();
+            ?>
+            <div class="comment-item<?php echo esc_attr($is_reply_class); ?>" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                <div class="comment-avatar-wrapper">
+                    <?php echo puna_tiktok_get_avatar_html($comment->comment_author, 40, 'comment-avatar', $guest_id); ?>
+                </div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author-wrapper">
+                            <strong class="comment-author"><?php echo esc_html($comment_author_name); ?></strong>
+                        </span>
+                    </div>
+                    <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>
+                    <div class="comment-footer">
+                        <span class="comment-date"><?php printf(esc_html__('%s ago', 'puna-tiktok'), esc_html($comment_date)); ?></span>
+                        <a href="#" class="reply-link" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>"><?php esc_html_e('Reply', 'puna-tiktok'); ?></a>
+                    </div>
+                </div>
+                <div class="comment-right-actions">
+                    <div class="comment-likes" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
+                        <?php echo puna_tiktok_get_icon('heart-alt', 'Like'); ?>
+                        <span><?php echo esc_html($comment_likes); ?></span>
+                    </div>
+                </div>
+            </div>
+            <?php
+            $html = ob_get_clean();
+        }
+        
+        wp_send_json_success(array(
+            'comment_id' => $comment_id,
+            'guest_id' => $guest_id,
+            'html' => $html,
+            'is_reply' => $parent_id > 0
+        ));
     }
-    
-    wp_send_json_success(array(
-        'comment_id' => $comment_id,
-        'guest_id' => isset($guest_id) ? $guest_id : '',
-        'html' => $html,
-        'is_reply' => $parent_id > 0
-    ));
-}
 
     /**
      * Increment video view
@@ -322,6 +261,7 @@ class Puna_TikTok_AJAX_Handlers {
 
     /**
      * Toggle comment like
+     * Guest-only mode: Frontend JS handles "My Comment Likes" persistence via LocalStorage
      */
     public function toggle_comment_like() {
         check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
@@ -337,56 +277,22 @@ class Puna_TikTok_AJAX_Handlers {
         }
         
         $current_likes = get_comment_meta($comment_id, '_comment_likes', true) ?: 0;
-        $is_logged_in = is_user_logged_in();
-        $user_id = $is_logged_in ? get_current_user_id() : 0;
+        $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'like';
         
-        if ($is_logged_in) {
-        $liked_comments = get_user_meta($user_id, '_puna_tiktok_liked_comments', true);
-        if (!is_array($liked_comments)) {
-            $liked_comments = array();
-        }
-        
-        $is_liked = in_array($comment_id, $liked_comments);
-        
-        if ($is_liked) {
-            $liked_comments = array_values(array_diff($liked_comments, array($comment_id)));
-            update_user_meta($user_id, '_puna_tiktok_liked_comments', $liked_comments);
+        if ($action === 'unlike') {
             $new_likes = max(0, $current_likes - 1);
             update_comment_meta($comment_id, '_comment_likes', $new_likes);
-            
             wp_send_json_success(array(
                 'is_liked' => false,
                 'likes' => $new_likes
             ));
         } else {
-            $liked_comments[] = $comment_id;
-            update_user_meta($user_id, '_puna_tiktok_liked_comments', $liked_comments);
             $new_likes = $current_likes + 1;
             update_comment_meta($comment_id, '_comment_likes', $new_likes);
-            
             wp_send_json_success(array(
                 'is_liked' => true,
                 'likes' => $new_likes
             ));
-            }
-        } else {
-            $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'like';
-            
-            if ($action === 'unlike') {
-                $new_likes = max(0, $current_likes - 1);
-                update_comment_meta($comment_id, '_comment_likes', $new_likes);
-                wp_send_json_success(array(
-                    'is_liked' => false,
-                    'likes' => $new_likes
-                ));
-            } else {
-                $new_likes = $current_likes + 1;
-                update_comment_meta($comment_id, '_comment_likes', $new_likes);
-                wp_send_json_success(array(
-                    'is_liked' => true,
-                    'likes' => $new_likes
-                ));
-            }
         }
     }
 
@@ -566,6 +472,7 @@ class Puna_TikTok_AJAX_Handlers {
 
     /**
      * Save search history
+     * Guest-only mode: Frontend JS must handle persistence via LocalStorage
      */
     public function save_search_history() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
@@ -579,46 +486,13 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => __('Query cannot be empty.', 'puna-tiktok')));
         }
         
-        $user_id = is_user_logged_in() ? get_current_user_id() : 0;
-        $identifier = $user_id > 0 ? 'user_' . $user_id : 'ip_' . $_SERVER['REMOTE_ADDR'];
-        
-        $option_key = 'puna_tiktok_search_history';
-        $all_history = get_option($option_key, array());
-        
-        if (!is_array($all_history)) {
-            $all_history = array();
-        }
-        
-        if (!isset($all_history[$identifier])) {
-            $all_history[$identifier] = array();
-        }
-        
-        $all_history[$identifier] = array_filter($all_history[$identifier], function($item) use ($query) {
-            return $item['query'] !== $query;
-        });
-        
-        array_unshift($all_history[$identifier], array(
-            'query' => $query,
-            'timestamp' => current_time('timestamp')
-        ));
-        
-        $all_history[$identifier] = array_slice($all_history[$identifier], 0, 50);
-        
-        $week_ago = current_time('timestamp') - (7 * DAY_IN_SECONDS);
-        foreach ($all_history[$identifier] as $key => $item) {
-            if ($item['timestamp'] < $week_ago) {
-                unset($all_history[$identifier][$key]);
-            }
-        }
-        $all_history[$identifier] = array_values($all_history[$identifier]);
-        
-        update_option($option_key, $all_history);
-        
-        wp_send_json_success(array());
+        // Do not save to database - tell frontend to use LocalStorage
+        wp_send_json_success(array('message' => 'Use LocalStorage'));
     }
 
     /**
      * Get search history
+     * Guest-only mode: Frontend JS must handle persistence via LocalStorage
      */
     public function get_search_history() {
         if (isset($_POST['nonce']) && !wp_verify_nonce($_POST['nonce'], 'puna_tiktok_like_nonce')) {
@@ -626,25 +500,8 @@ class Puna_TikTok_AJAX_Handlers {
             return;
         }
         
-        $user_id = is_user_logged_in() ? get_current_user_id() : 0;
-        $identifier = $user_id > 0 ? 'user_' . $user_id : 'ip_' . $_SERVER['REMOTE_ADDR'];
-        
-        $option_key = 'puna_tiktok_search_history';
-        $all_history = get_option($option_key, array());
-        
-        if (!is_array($all_history) || !isset($all_history[$identifier])) {
-            wp_send_json_success(array('history' => array()));
-        }
-        
-        $week_ago = current_time('timestamp') - (7 * DAY_IN_SECONDS);
-        $history = array_filter($all_history[$identifier], function($item) use ($week_ago) {
-            return $item['timestamp'] >= $week_ago;
-        });
-        
-        $history = array_values($history);
-        $history = array_slice($history, 0, 10);
-        
-        wp_send_json_success(array('history' => $history));
+        // Do not read from database - tell frontend to use LocalStorage
+        wp_send_json_success(array('history' => array(), 'message' => 'Use LocalStorage'));
     }
 
     /**
@@ -790,10 +647,6 @@ class Puna_TikTok_AJAX_Handlers {
                 ),
                 array(
                     'key'     => '_puna_tiktok_video_file_id',
-                    'compare' => 'EXISTS',
-                ),
-                array(
-                    'key'     => '_puna_tiktok_mega_link',
                     'compare' => 'EXISTS',
                 ),
                 array(
@@ -977,6 +830,7 @@ class Puna_TikTok_AJAX_Handlers {
     
     /**
      * Toggle save video
+     * Guest-only mode: Frontend JS handles "My Saves" persistence via LocalStorage
      */
     public function toggle_save() {
         check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
@@ -988,42 +842,6 @@ class Puna_TikTok_AJAX_Handlers {
         }
         
         $current_saves = get_post_meta($post_id, '_puna_tiktok_video_saves', true) ?: 0;
-        $is_logged_in = is_user_logged_in();
-        $user_id = $is_logged_in ? get_current_user_id() : 0;
-        
-        if ($is_logged_in) {
-        $saved_posts = get_user_meta($user_id, '_puna_tiktok_saved_videos', true);
-        if (!is_array($saved_posts)) {
-            $saved_posts = array();
-        }
-        
-        $is_saved = in_array($post_id, $saved_posts);
-        
-        if ($is_saved) {
-            $saved_posts = array_diff($saved_posts, array($post_id));
-            $saved_posts = array_values($saved_posts);
-            update_user_meta($user_id, '_puna_tiktok_saved_videos', $saved_posts);
-            
-            $new_saves = max(0, $current_saves - 1);
-            update_post_meta($post_id, '_puna_tiktok_video_saves', $new_saves);
-            
-            wp_send_json_success(array(
-                'is_saved' => false,
-                'saves' => $new_saves
-            ));
-        } else {
-            $saved_posts[] = $post_id;
-            update_user_meta($user_id, '_puna_tiktok_saved_videos', $saved_posts);
-            
-            $new_saves = $current_saves + 1;
-            update_post_meta($post_id, '_puna_tiktok_video_saves', $new_saves);
-            
-            wp_send_json_success(array(
-                'is_saved' => true,
-                'saves' => $new_saves
-            ));
-        }
-    } else {
         $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'save';
         
         if ($action === 'unsave') {
@@ -1041,50 +859,6 @@ class Puna_TikTok_AJAX_Handlers {
                 'saves' => $new_saves
             ));
         }
-        }
-    }
-
-    /**
-     * Delete video
-     */
-    public function delete_video() {
-        check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
-        
-        if (!is_user_logged_in()) {
-            wp_send_json_error(array('message' => __('You need to login to perform this action.', 'puna-tiktok')));
-        }
-        
-        $post_id = intval($_POST['post_id']);
-        
-        if (!$post_id || get_post_type($post_id) !== 'video') {
-            wp_send_json_error(array('message' => __('Invalid video.', 'puna-tiktok')));
-        }
-        
-        $post = get_post($post_id);
-        if (!$post || $post->post_author != get_current_user_id()) {
-            wp_send_json_error(array('message' => __('You do not have permission to delete this video.', 'puna-tiktok')));
-        }
-        
-        $video_file_id = get_post_meta($post_id, '_puna_tiktok_video_file_id', true);
-        $cover_image_id = get_post_meta($post_id, '_puna_tiktok_video_cover_id', true);
-
-        if ($video_file_id && is_numeric($video_file_id)) {
-            wp_delete_attachment($video_file_id, true);
-        }
-
-        $deleted = wp_delete_post($post_id, true);
-        
-        if (!$deleted) {
-            wp_send_json_error(array('message' => __('Cannot delete video. Please try again.', 'puna-tiktok')));
-        }
-        
-        if ($cover_image_id && is_numeric($cover_image_id)) {
-            wp_delete_attachment($cover_image_id, true);
-        }
-        
-        wp_send_json_success(array(
-            'redirect_url' => home_url('/')
-        ));
     }
 
     /**

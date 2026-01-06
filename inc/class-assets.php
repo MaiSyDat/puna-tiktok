@@ -139,17 +139,11 @@ if (!class_exists('Puna_TikTok_Assets')) {
             // Get page context
             $page_context = $this->get_page_context();
             
-            // Mega SDK - Register (needed for video playback from Mega.nz)
-            wp_register_script('puna-tiktok-mega-sdk', PUNA_TIKTOK_THEME_URI . '/assets/js/libs/mega.browser.js', array(), $version, true);
-            
             // Core JS - Register
             wp_register_script('puna-tiktok-core', $js_dir . 'frontend/core.js', array(), $version, true);
             
-            // Mega Video - Register
-            wp_register_script('puna-tiktok-mega-video', $js_dir . 'frontend/mega-video.js', array('puna-tiktok-mega-sdk', 'puna-tiktok-core'), $version, true);
-            
             // Base JS dependencies
-            $base_deps = array('puna-tiktok-mega-sdk', 'puna-tiktok-core', 'puna-tiktok-mega-video');
+            $base_deps = array('puna-tiktok-core');
             $base_deps = apply_filters('puna_tiktok_base_js_deps', $base_deps);
             
             // Guest state - Register
@@ -171,22 +165,20 @@ if (!class_exists('Puna_TikTok_Assets')) {
             wp_register_script('puna-tiktok-video-navigation', $js_dir . 'frontend/video-navigation.js', array('puna-tiktok-core'), $version, true);
             
             // Video actions - Register
-            wp_register_script('puna-tiktok-video-actions', $js_dir . 'frontend/video-actions.js', array('puna-tiktok-core', 'puna-tiktok-mega-video', 'puna-tiktok-toast'), $version, true);
+            wp_register_script('puna-tiktok-video-actions', $js_dir . 'frontend/video-actions.js', array('puna-tiktok-core', 'puna-tiktok-toast'), $version, true);
             
             // Comments - Register
-            wp_register_script('puna-tiktok-comments', $js_dir . 'frontend/comments.js', array('puna-tiktok-core', 'puna-tiktok-mega-video'), $version, true);
+            wp_register_script('puna-tiktok-comments', $js_dir . 'frontend/comments.js', array('puna-tiktok-core'), $version, true);
             
             // Search - Register
             wp_register_script('puna-tiktok-search', $js_dir . 'frontend/search.js', array('puna-tiktok-core'), $version, true);
             
             // Video watch - Register
-            wp_register_script('puna-tiktok-video-watch', $js_dir . 'frontend/video-watch.js', array('puna-tiktok-core', 'puna-tiktok-mega-video'), $version, true);
+            wp_register_script('puna-tiktok-video-watch', $js_dir . 'frontend/video-watch.js', array('puna-tiktok-core'), $version, true);
             
             // Enqueue base scripts (always needed)
-            wp_enqueue_script('puna-tiktok-mega-sdk');
             wp_enqueue_script('puna-tiktok-toast'); // Load toast before core so it's available
             wp_enqueue_script('puna-tiktok-core'); // Core loads after toast and localizes messages
-            wp_enqueue_script('puna-tiktok-mega-video');
             wp_enqueue_script('puna-tiktok-guest-state');
             wp_enqueue_script('puna-tiktok-dropdowns');
             wp_enqueue_script('puna-tiktok-top-header');
@@ -237,7 +229,6 @@ if (!class_exists('Puna_TikTok_Assets')) {
                 ),
                 'avatar_url' => get_avatar_url($current_user->ID, array('size' => 40)),
                 'menu_icon_url' => $menu_icon_url,
-                'mega' => false,
                 'toast_messages' => $toast_messages,
                 'i18n' => array(
                     'post' => __('Post', 'puna-tiktok'),

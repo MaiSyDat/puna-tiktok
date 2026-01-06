@@ -90,21 +90,9 @@ if (!class_exists('Admin_Assets')) {
             
             // Allow filtering of admin scripts
             $admin_scripts = apply_filters('puna_tiktok_admin_scripts', array(
-                'puna-tiktok-mega-sdk-admin' => array(
-                    'src' => get_template_directory_uri() . '/assets/js/libs/mega.browser.js',
-                    'deps' => array(),
-                    'version' => $version,
-                    'in_footer' => true,
-                ),
-                'puna-tiktok-mega-uploader-admin' => array(
-                    'src' => get_template_directory_uri() . '/assets/js/admin/mega-uploader.js',
-                    'deps' => array('puna-tiktok-mega-sdk-admin'),
-                    'version' => $version,
-                    'in_footer' => true,
-                ),
                 'puna-tiktok-video-admin' => array(
                     'src' => get_template_directory_uri() . '/assets/js/admin/video-admin.js',
-                    'deps' => array('jquery', 'puna-tiktok-mega-uploader-admin'),
+                    'deps' => array('jquery'),
                     'version' => $version,
                     'in_footer' => true,
                 ),
@@ -132,11 +120,6 @@ if (!class_exists('Admin_Assets')) {
             $localize_data = apply_filters('puna_tiktok_admin_localize_script_data', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce' => wp_create_nonce('puna_tiktok_video_upload'),
-                'mega' => array(
-                    'email' => Puna_TikTok_Mega_Config::get_email(),
-                    'password' => Puna_TikTok_Mega_Config::get_password(),
-                    'folder' => Puna_TikTok_Mega_Config::get_upload_folder(),
-                ),
                 'strings' => array(
                     'current_youtube' => __('Current YouTube Video:', 'puna-tiktok'),
                     'video_id' => __('Video ID:', 'puna-tiktok'),
@@ -148,7 +131,6 @@ if (!class_exists('Admin_Assets')) {
                     'size' => __('Size:', 'puna-tiktok'),
                     'type' => __('Type:', 'puna-tiktok'),
                     'note_upload_on_save' => __('Note: Video will be uploaded when you save the post.', 'puna-tiktok'),
-                    'uploaded_successfully' => __('Uploaded to MEGA successfully!', 'puna-tiktok'),
                 ),
             ), $hook, $post_type);
             
