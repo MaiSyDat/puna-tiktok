@@ -210,6 +210,8 @@ class Puna_TikTok_Setup {
                 $fake_post->post_mime_type = '';
                 $fake_post->comment_count = 0;
                 $fake_post->filter = 'raw';
+                $fake_post->term_id = 0; // Fix lỗi WordPress update
+                $fake_post->name = $page_title; // Fix lỗi WordPress update
                 
                 $wp_query->queried_object = $fake_post;
                 $wp_query->queried_object_id = 0;

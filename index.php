@@ -23,9 +23,9 @@ if ($puna_page === 'category') {
     do_action('puna_tiktok_single');
 } elseif (is_search()) {
     do_action('puna_tiktok_search');
-} elseif (is_category()) {
+} elseif (is_category() || is_tax('video_category')) {
     do_action('puna_tiktok_category');
-} elseif (is_tag()) {
+} elseif (is_tag() || is_tax('video_tag')) {
     do_action('puna_tiktok_tag');
 } elseif (is_archive()) {
     do_action('puna_tiktok_archive');
