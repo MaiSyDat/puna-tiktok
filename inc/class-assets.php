@@ -37,8 +37,8 @@ if (!class_exists('Puna_TikTok_Assets')) {
             $is_single_video = is_singular('video');
             $is_search_page = is_search();
             $is_home = is_home() || is_front_page();
-            $is_category_page = $puna_page === 'category';
-            $is_tag_page = $puna_page === 'tag';
+            $is_category_page = $puna_page === 'category' || is_category() || is_tax('video_category');
+            $is_tag_page = $puna_page === 'tag' || is_tag() || is_tax('video_tag');
             $is_taxonomy_page = $is_category_page || $is_tag_page;
             
             return apply_filters('puna_tiktok_page_context', array(
@@ -226,6 +226,7 @@ if (!class_exists('Puna_TikTok_Assets')) {
             $localize_data = apply_filters('puna_tiktok_localize_script_data', array(
                 'ajax_url' => admin_url('admin-ajax.php'),
                 'nonce'    => wp_create_nonce('puna_tiktok_nonce'),
+                'home_url' => home_url('/'),
                 'like_nonce' => wp_create_nonce('puna_tiktok_like_nonce'),
                 'comment_nonce' => wp_create_nonce('puna_tiktok_comment_nonce'),
                 'theme_uri' => PUNA_TIKTOK_THEME_URI,

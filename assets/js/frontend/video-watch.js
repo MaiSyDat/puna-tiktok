@@ -32,9 +32,14 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if (backBtn) {
         backBtn.addEventListener('click', function() {
-            if (document.referrer && document.referrer !== window.location.href) {
+            // If referrer exists AND is not current page AND is NOT from WP Admin
+            if (document.referrer && 
+                document.referrer !== window.location.href && 
+                !document.referrer.includes('/wp-admin/') && 
+                !document.referrer.includes('wp-login.php')) {
                 window.history.back();
             } else {
+                // Fallback to Home URL if coming from Admin or direct link
                 window.location.href = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.home_url) ? puna_tiktok_ajax.home_url : '/';
             }
         });

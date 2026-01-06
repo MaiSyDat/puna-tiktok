@@ -11,9 +11,9 @@ if (!defined('ABSPATH')) {
 
 get_header();
 
-if (is_category()) {
+if (is_category() || is_tax('video_category')) {
     do_action('puna_tiktok_category');
-} elseif (is_tag()) {
+} elseif (is_tag() || is_tax('video_tag')) {
     do_action('puna_tiktok_tag');
 } else {
     do_action('puna_tiktok_archive');
