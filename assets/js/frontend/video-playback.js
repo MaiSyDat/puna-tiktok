@@ -515,14 +515,10 @@ document.addEventListener("DOMContentLoaded", function() {
                             }
                         }
                     } else {
-                        if (typeof ensureMegaVideoSource !== 'undefined') {
-                            ensureMegaVideoSource(videoElement).then(() => {
-                                if (videoElement.classList.contains('tiktok-video')) {
-                                    applyVideoVolumeSettings(videoElement);
-                                    videoElement.currentTime = 0;
-                                    wrapper.play();
-                                }
-                            }).catch(() => {});
+                        if (videoElement.classList.contains('tiktok-video')) {
+                            applyVideoVolumeSettings(videoElement);
+                            videoElement.currentTime = 0;
+                            wrapper.play();
                         }
                     }
                     
@@ -601,13 +597,7 @@ document.addEventListener("DOMContentLoaded", function() {
             } catch (error) {}
         } else if (video.tagName === 'VIDEO') {
             if (video.paused) {
-                if (!video.dataset.megaLoaded && typeof ensureMegaVideoSource !== 'undefined') {
-                    ensureMegaVideoSource(video).then(() => {
-                        wrapper.play();
-                    });
-                } else {
-                    wrapper.play();
-                }
+                wrapper.play();
             } else {
                 wrapper.pause();
             }
@@ -652,24 +642,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 video.classList.add('loaded');
                 setAspectRatio();
             }
-            
-            if (typeof ensureMegaVideoSource !== 'undefined' && video.dataset.megaLink) {
-                if (video.classList.contains('taxonomy-video') || video.classList.contains('search-video-preview')) {
-                    ensureMegaVideoSource(video).then(() => {
-                        if (video.readyState >= 2) {
-                            video.currentTime = 0.1;
-                            video.pause();
-                        } else {
-                            video.addEventListener('loadedmetadata', () => {
-                                video.currentTime = 0.1;
-                                video.pause();
-                            }, { once: true });
-                        }
-                    }).catch(() => {});
-                } else {
-                    ensureMegaVideoSource(video);
-                }
-            }
         }
         
         if (video.classList.contains('tiktok-video')) {
@@ -704,12 +676,6 @@ document.addEventListener("DOMContentLoaded", function() {
             
             wrapper.seekTo(0);
             
-            if (!wrapper.isYouTube && typeof ensureMegaVideoSource !== 'undefined' && current.dataset.megaLink) {
-                ensureMegaVideoSource(current).then(() => {
-                    wrapper.seekTo(0);
-                });
-            }
-            
             applyVideoVolumeSettings(current);
             wrapper.play();
         }
@@ -730,52 +696,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
             
-            const isSearchVideo = video.classList.contains('search-video-preview');
-            const needsPreview = video.dataset.needsPreview === '1' || isSearchVideo;
-            
-            if (entry.isIntersecting && needsPreview && video.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
-                ensureMegaVideoSource(video).then(() => {
-                    if (video.readyState >= 2) {
-                        video.currentTime = 0.1;
-                        video.pause();
-                    } else {
-                        video.addEventListener('loadedmetadata', () => {
-                            video.currentTime = 0.1;
-                            video.pause();
-                        }, { once: true });
-                    }
-                }).catch(() => {});
-                
-                if (video.dataset.needsPreview === '1') {
-                    video.removeAttribute('data-needs-preview');
-                    taxonomyVideoObserver.unobserve(video);
-                }
-            }
         });
     }, { rootMargin: '100px' });
     
     document.querySelectorAll('.taxonomy-video[data-needs-preview="1"], .search-video-preview').forEach(video => {
         if (video.tagName !== 'VIDEO') {
             return;
-        }
-        
-        if (video.dataset.megaLink && typeof ensureMegaVideoSource !== 'undefined') {
-            taxonomyVideoObserver.observe(video);
-            
-            const rect = video.getBoundingClientRect();
-            if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
-                ensureMegaVideoSource(video).then(() => {
-                    if (video.readyState >= 2) {
-                        video.currentTime = 0.1;
-                        video.pause();
-                    } else {
-                        video.addEventListener('loadedmetadata', () => {
-                            video.currentTime = 0.1;
-                            video.pause();
-                        }, { once: true });
-                    }
-                }).catch(() => {});
-            }
         }
     });
 

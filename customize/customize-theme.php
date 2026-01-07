@@ -67,7 +67,7 @@ class Puna_TikTok_Customize_Theme_Mode {
             'puna-tiktok-theme-mode-preview',
             get_template_directory_uri() . '/assets/js/customizer/theme-mode-preview.js',
             array('customize-preview', 'jquery'),
-            '1.0.0',
+            PUNA_TIKTOK_VERSION,
             true
         );
     }

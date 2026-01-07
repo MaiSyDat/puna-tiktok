@@ -17,10 +17,16 @@ git clone https://github.com/MaiSyDat/puna-tiktok.git
 3. Sau khi kích hoạt, theme tự tạo các trang: Explore, Followed, Friends, Messages, Profile.
 
 ## Tính năng chính
-- Đăng video bằng upload tệp (MP4/WebM/OGG/MOV/AVI)
+- **Đăng video đa nguồn:**
+  - Upload video lên server (MP4/WebM/OGG/MOV/AVI)
+  - Nhúng video từ YouTube (hỗ trợ cả links và Shorts)
 - Trang Khám phá (Explore) dạng lưới
 - Trang feed video có nút chuyển lên/xuống và cuộn mượt
 - Sidebar điều hướng và highlight trang hiện tại
+- Hệ thống like, comment, share, save video
+- Tìm kiếm video với lịch sử tìm kiếm
+- Responsive design - tối ưu cho mobile
+- Light/Dark mode tự động
 
 ## Phát triển
 - CSS/JS frontend:

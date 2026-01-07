@@ -65,7 +65,7 @@ class Puna_TikTok_Customize_Sidebar {
             'puna-tiktok-sidebar-customizer-preview',
             get_template_directory_uri() . '/assets/js/customizer/preview.js',
             array('customize-preview', 'jquery'),
-            '1.0.0',
+            PUNA_TIKTOK_VERSION,
             true
         );
     }

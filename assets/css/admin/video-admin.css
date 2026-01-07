@@ -265,19 +265,6 @@
     object-fit: cover;
 }
 
-.video-thumbnail-admin .mega-badge {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: #2271b1;
-    color: #fff;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
 /* Editor is now enabled for video post type */
 .column-comments {
     width: unset !important;

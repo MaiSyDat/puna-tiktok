@@ -56,8 +56,7 @@ if (!class_exists('Puna_TikTok_Admin_AJAX')) {
                 return;
             }
             
-            // Process upload (this would typically use Mega uploader)
-            // For now, return success with placeholder data
+            // Process upload and return success with data
             $file_name = sanitize_file_name($_FILES['video_file']['name']);
             $file_size = $_FILES['video_file']['size'];
             

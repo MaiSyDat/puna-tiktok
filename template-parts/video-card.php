@@ -45,11 +45,6 @@ if (has_post_thumbnail($post_id)) {
                     <!-- Local video preview -->
                 </video>
             <?php endif; ?>
-        <?php else : ?>
-            <!-- Mega.nz Video Preview -->
-            <video class="taxonomy-video" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">
-                <!-- Mega.nz video will be loaded via JavaScript -->
-            </video>
         <?php endif; ?>
         <div class="video-overlay">	
             <div class="play-icon">

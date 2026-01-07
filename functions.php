@@ -10,7 +10,7 @@ if (! defined('ABSPATH')) {
 
 // Define theme constants
 if (! defined('PUNA_TIKTOK_VERSION')) {
-    define('PUNA_TIKTOK_VERSION', '1.0.0');
+    define('PUNA_TIKTOK_VERSION', '1.1.0');
 }
 if (! defined('PUNA_TIKTOK_THEME_DIR')) {
     define('PUNA_TIKTOK_THEME_DIR', get_template_directory());

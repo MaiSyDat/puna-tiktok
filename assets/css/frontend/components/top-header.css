@@ -141,9 +141,11 @@
 
 /* Hide on video watch page and search page */
 body.single .fixed-top-container,
+body.single-video .fixed-top-container,
 body.search .fixed-top-container,
-.video-watch-page ~ .fixed-top-container {
-    display: none;
+.video-watch-page ~ .fixed-top-container,
+.video-watch-page + .fixed-top-container {
+    display: none !important;
 }
 
 

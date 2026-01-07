@@ -25,7 +25,6 @@
         const videoInfoLocal = $('#videoInfoLocal');
         
         let selectedFile = null;
-        let megaUploader = null;
 
         // Tab switching
         $('.video-upload-tab-link').on('click', function(e) {
@@ -40,15 +39,6 @@
             $('.video-upload-tab-content').removeClass('active');
             $('#tab-' + targetTab).addClass('active');
         });
-
-        // Initialize Mega Uploader if available
-        if (typeof window.PunaTikTokMegaUploader !== 'undefined' && puna_tiktok_video_admin?.mega) {
-            try {
-                megaUploader = new window.PunaTikTokMegaUploader(puna_tiktok_video_admin.mega);
-            } catch (e) {
-                // Failed to initialize Mega uploader
-            }
-        }
 
         // Select video button
         selectBtn.on('click', function(e) {
@@ -112,66 +102,6 @@
                 <div>${sizeLabel} ${fileSize}</div>
                 <div>${typeLabel} ${file.type}</div>
             `);
-            
-            // Auto upload to MEGA if available
-            if (megaUploader && puna_tiktok_video_admin?.mega) {
-                uploadToMega(file);
-            } else {
-                // Show message that upload will happen on save
-                const noteMessage = strings.note_upload_on_save || 'Note: Video will be uploaded when you save the post.';
-                videoInfo.append(`<div style="margin-top: 10px; color: #d63638;"><strong>${noteMessage}</strong></div>`);
-            }
-        }
-
-        async function uploadToMega(file) {
-            if (!megaUploader) return;
-            
-            uploadProgress.show();
-            progressFill.css('width', '0%');
-            progressText.text('0%');
-            
-            try {
-                const megaResult = await megaUploader.uploadFile(file, (uploaded, total) => {
-                    const percent = Math.round((uploaded / total) * 100);
-                    progressFill.css('width', percent + '%');
-                    progressText.text(percent + '%');
-                });
-                
-                // Store MEGA link in hidden fields
-                if (megaResult?.link) {
-                    $('input[name="mega_link"]').remove();
-                    $('input[name="mega_node_id"]').remove();
-                    $('input[name="video_url"]').remove();
-                    
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'mega_link',
-                        value: megaResult.link
-                    }).appendTo('.puna-video-upload-admin');
-                    
-                    if (megaResult.nodeId) {
-                        $('<input>').attr({
-                            type: 'hidden',
-                            name: 'mega_node_id',
-                            value: megaResult.nodeId
-                        }).appendTo('.puna-video-upload-admin');
-                    }
-                    
-                    const strings = puna_tiktok_video_admin?.strings || {};
-                    const successMessage = strings.uploaded_successfully || 'Uploaded to MEGA successfully!';
-                    videoInfo.append(`
-                        <div style="margin-top: 10px; color: #00a32a;">
-                            <strong>✓ ${successMessage}</strong><br>
-                            <a href="${megaResult.link}" target="_blank">${megaResult.link}</a>
-                        </div>
-                    `);
-                }
-                
-                uploadProgress.hide();
-            } catch (error) {
-                uploadProgress.hide();
-                // Error handling silently
-            }
         }
 
         function formatFileSize(bytes) {
@@ -345,17 +275,6 @@
                     const confirmMessage = puna_tiktok_video_admin?.strings?.video_not_uploaded 
                         ? puna_tiktok_video_admin.strings.video_not_uploaded 
                         : 'No video file selected. Do you want to continue saving the post? Video will not be displayed until a file is uploaded.';
-                    if (!confirm(confirmMessage)) {
-                        e.preventDefault();
-                        return false;
-                    }
-                }
-            } else if (activeTab === 'mega') {
-                // Check MEGA upload
-                if (selectedFile && !$('input[name="mega_link"]').val() && !$('input[name="video_url"]').val()) {
-                    const confirmMessage = puna_tiktok_video_admin?.strings?.video_not_uploaded 
-                        ? puna_tiktok_video_admin.strings.video_not_uploaded 
-                        : 'Video has not been uploaded. Do you want to continue saving the post? Video will not be displayed until it is uploaded.';
                     if (!confirm(confirmMessage)) {
                         e.preventDefault();
                         return false;

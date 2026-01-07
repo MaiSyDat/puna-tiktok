@@ -168,11 +168,6 @@ $withcomments = 1;
                                                     <!-- Local video preview -->
                                                 </video>
                                             <?php endif; ?>
-                                        <?php elseif ($video_url) : ?>
-                                            <!-- Mega.nz Video Preview -->
-                                            <video class="search-video-preview" muted playsinline loading="lazy" data-mega-link="<?php echo esc_url($video_url); ?>">
-                                                <!-- Mega.nz video will be loaded via JavaScript -->
-                                            </video>
                                         <?php endif; ?>
                                         <div class="search-video-overlay">
                                             <div class="search-video-views">

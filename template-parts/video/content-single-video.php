@@ -100,19 +100,6 @@ $withcomments = 1;
                            src="<?php echo esc_url($video_url); ?>">
                         <?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
                     </video>
-                <?php else : ?>
-                    <!-- Mega.nz Video -->
-                    <video class="tiktok-video" 
-                           preload="metadata" 
-                           playsinline 
-                           loop 
-                           muted
-                           data-post-id="<?php echo esc_attr($post_id); ?>"
-                           data-mega-link="<?php echo esc_url($video_url); ?>"
-                           data-source="mega">
-                        <!-- Mega.nz video will be loaded via JavaScript -->
-                        <?php esc_html_e('Your browser does not support video.', 'puna-tiktok'); ?>
-                    </video>
                 <?php endif; ?>
             </div>
         </div>
@@ -241,10 +228,6 @@ $withcomments = 1;
                                 'compare' => 'EXISTS',
                             ),
                             array(
-                                'key'     => '_puna_tiktok_mega_link',
-                                'compare' => 'EXISTS',
-                            ),
-                            array(
                                 'key'     => '_puna_tiktok_youtube_id',
                                 'compare' => 'EXISTS',
                             ),
@@ -276,10 +259,9 @@ $withcomments = 1;
                                         <?php elseif ($other_video_source === 'youtube' && !empty($other_youtube_id)) : ?>
                                             <!-- YouTube Thumbnail -->
                                             <img src="https://img.youtube.com/vi/<?php echo esc_attr($other_youtube_id); ?>/hqdefault.jpg" alt="" class="creator-video-preview" loading="lazy">
-                                        <?php else : ?>
-                                            <!-- Mega.nz Video Preview -->
-                                            <video class="creator-video-preview" muted playsinline data-mega-link="<?php echo esc_url($other_video_url); ?>">
-                                                <!-- Mega.nz video will be loaded via JavaScript -->
+                                        <?php elseif ($other_video_source === 'local' && !empty($other_video_url)) : ?>
+                                            <!-- Local Video Preview -->
+                                            <video class="creator-video-preview" muted playsinline src="<?php echo esc_url($other_video_url); ?>">
                                             </video>
                                         <?php endif; ?>
                                         <div class="creator-video-overlay">

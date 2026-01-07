@@ -599,7 +599,7 @@ class Puna_TikTok_Video_Post_Type {
     
     /**
      * Save video metadata on post save
-     * Handles local upload, YouTube, and MEGA sources with priority order
+     * Handles local upload and YouTube sources with priority order
      * 
      * @param int $post_id Post ID
      */

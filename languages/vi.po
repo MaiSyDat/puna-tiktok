@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Puna TikTok 1.0.0\n"
+"Project-Id-Version: Puna TikTok 1.1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-29 17:04+0000\n"
 "PO-Revision-Date: 2025-11-29 10:10+0000\n"
@@ -422,14 +422,6 @@ msgstr "Mai Sỹ Đạt"
 msgid "Main color of the theme"
 msgstr "Màu chính của giao diện"
 
-#: inc/class-video-post-type.php:220
-msgid "MEGA Link:"
-msgstr "Liên kết MEGA:"
-
-#: inc/class-video-post-type.php:182
-msgid "MEGA VIDEO"
-msgstr "VIDEO MEGA"
-
 #: inc/class-ajax-handlers.php:331 inc/class-ajax-handlers.php:423
 #: inc/class-ajax-handlers.php:498
 msgid "Missing comment_id."
@@ -819,9 +811,6 @@ msgstr "Tải lên video"
 msgid "Upload your first video to get started!"
 msgstr "Tải lên video đầu tiên của bạn để bắt đầu!"
 
-#: inc/admin/class-admin-assets.php:151
-msgid "Uploaded to MEGA successfully!"
-msgstr "Đã tải lên MEGA thành công!"
 
 #: customize/customize-footer.php:46
 msgid "Use [year] to display current year"

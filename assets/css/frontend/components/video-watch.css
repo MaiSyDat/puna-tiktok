@@ -24,12 +24,12 @@ body.single .tiktok-app .main-content {
     flex-direction: column;
 }
 
-/* Back Button - Reduce z-index to not cover controls */
+/* Back Button - High z-index to ensure it's clickable above all elements */
 .video-watch-back-btn {
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 9999;
+    z-index: 10001 !important;
     width: 44px;
     height: 44px;
     border-radius: 50%;
@@ -42,11 +42,20 @@ body.single .tiktok-app .main-content {
     justify-content: center;
     transition: all 0.3s ease;
     background: transparent;
+    pointer-events: auto !important;
 }
 
 .video-watch-back-btn:hover {
     transform: scale(1.1);
     background: transparent;
+}
+
+/* Hide fixed-top-container when video watch page exists */
+.video-watch-page ~ * .fixed-top-container,
+body:has(.video-watch-page) .fixed-top-container {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 /* Video Watch Icons */
@@ -175,6 +184,7 @@ body.single .tiktok-app .main-content {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
+    z-index: 1;
 }
 
 .video-player-wrapper {
@@ -184,6 +194,7 @@ body.single .tiktok-app .main-content {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1;
 }
 
 .video-player-wrapper::after {
@@ -239,6 +250,8 @@ body.single .tiktok-app .main-content {
     max-height: 100vh;
     border: none;
     display: block;
+    position: relative;
+    z-index: 1;
 }
 
 /* Video Player Controls - Fix z-index to prevent overlap */
