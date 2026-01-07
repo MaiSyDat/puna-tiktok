@@ -70,12 +70,22 @@ if (!$comment_author_id) {
 
 <div class="comment-item" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
     <div class="comment-avatar-wrapper">
-        <?php echo wp_kses_post(puna_tiktok_get_avatar_html($comment_author_id > 0 ? $comment_author_id : $comment->comment_author, 40, 'comment-avatar', $guest_id)); ?>
+        <?php 
+        // User/Admin comments: use Hupuna logo
+        // Guest comments: use initials with colored background
+        if ($comment_author_id > 0) {
+            // User/Admin comment - use Hupuna logo
+            echo wp_kses_post(puna_tiktok_get_avatar_html(1, 40, 'comment-avatar'));
+        } else {
+            // Guest comment - use initials with colored background (original behavior)
+            echo wp_kses_post(puna_tiktok_get_avatar_html($comment->comment_author, 40, 'comment-avatar', $guest_id));
+        }
+        ?>
     </div>
     <div class="comment-content">
         <div class="comment-header">
             <span class="comment-author-wrapper">
-                <strong class="comment-author"><?php echo esc_html($comment_author_id > 0 ? puna_tiktok_get_user_display_name($comment_author_id) : $comment->comment_author); ?></strong>
+                <strong class="comment-author"><?php echo esc_html($comment_author_id > 0 ? __('Hupuna', 'puna-tiktok') : $comment->comment_author); ?></strong>
             </span>
         </div>
         <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>

@@ -87,12 +87,22 @@ $remaining_replies_list = array_slice($replies, 3);
     ?>
         <div class="comment-item comment-reply" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
             <div class="comment-avatar-wrapper">
-                <?php echo puna_tiktok_get_avatar_html($reply_author_id > 0 ? $reply_author_id : $reply->comment_author, 40, 'comment-avatar', $reply_guest_id); ?>
+                <?php 
+                // User/Admin comments: use Hupuna logo
+                // Guest comments: use initials with colored background
+                if ($reply_author_id > 0) {
+                    // User/Admin comment - use Hupuna logo
+                    echo puna_tiktok_get_avatar_html(1, 40, 'comment-avatar');
+                } else {
+                    // Guest comment - use initials with colored background (original behavior)
+                    echo puna_tiktok_get_avatar_html($reply->comment_author, 40, 'comment-avatar', $reply_guest_id);
+                }
+                ?>
             </div>
             <div class="comment-content">
                 <div class="comment-header">
                     <span class="comment-author-wrapper">
-                        <strong class="comment-author"><?php echo esc_html($reply_author_id > 0 ? puna_tiktok_get_user_display_name($reply_author_id) : $reply->comment_author); ?></strong>
+                        <strong class="comment-author"><?php echo esc_html($reply_author_id > 0 ? __('Hupuna', 'puna-tiktok') : $reply->comment_author); ?></strong>
                     </span>
                 </div>
                 <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>
@@ -175,12 +185,22 @@ $remaining_replies_list = array_slice($replies, 3);
             ?>
                 <div class="comment-item comment-reply" data-comment-id="<?php echo esc_attr($reply->comment_ID); ?>">
                     <div class="comment-avatar-wrapper">
-                        <?php echo puna_tiktok_get_avatar_html($more_reply_author_id > 0 ? $more_reply_author_id : $reply->comment_author, 40, 'comment-avatar', $more_reply_guest_id); ?>
+                        <?php 
+                        // User/Admin comments: use Hupuna logo
+                        // Guest comments: use initials with colored background
+                        if ($more_reply_author_id > 0) {
+                            // User/Admin comment - use Hupuna logo
+                            echo puna_tiktok_get_avatar_html(1, 40, 'comment-avatar');
+                        } else {
+                            // Guest comment - use initials with colored background (original behavior)
+                            echo puna_tiktok_get_avatar_html($reply->comment_author, 40, 'comment-avatar', $more_reply_guest_id);
+                        }
+                        ?>
                     </div>
                     <div class="comment-content">
                         <div class="comment-header">
                             <span class="comment-author-wrapper">
-                                <strong class="comment-author"><?php echo esc_html($more_reply_author_id > 0 ? puna_tiktok_get_user_display_name($more_reply_author_id) : $reply->comment_author); ?></strong>
+                                <strong class="comment-author"><?php echo esc_html($more_reply_author_id > 0 ? __('Hupuna', 'puna-tiktok') : $reply->comment_author); ?></strong>
                             </span>
                         </div>
                         <p class="comment-text"><?php echo wp_kses_post($reply->comment_content); ?></p>

@@ -243,6 +243,8 @@ if (!class_exists('Puna_TikTok_Assets')) {
                     'popular' => __('Popular', 'puna-tiktok'),
                     'related' => __('Related', 'puna-tiktok'),
                     'volume' => __('Volume', 'puna-tiktok'),
+                    'read_more' => __('Read more', 'puna-tiktok'),
+                    'read_less' => __('Read less', 'puna-tiktok'),
                 ),
             ));
             

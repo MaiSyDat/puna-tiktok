@@ -519,6 +519,11 @@ body:has(.video-watch-page) .fixed-top-container {
     margin-bottom: 16px;
 }
 
+.video-info-caption .video-caption-wrapper {
+    position: relative;
+    margin-bottom: 8px;
+}
+
 .video-caption-content {
     font-size: 16px;
     line-height: 1.5;
@@ -530,6 +535,33 @@ body:has(.video-watch-page) .fixed-top-container {
 .video-caption-content .caption-text {
     color: var(--puna-text);
     margin-right: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: -webkit-line-clamp 0.3s ease;
+}
+
+.video-info-caption .video-caption-content .caption-text.expanded {
+    -webkit-line-clamp: unset;
+    display: block;
+}
+
+.video-info-caption .video-caption-toggle {
+    background: none;
+    border: none;
+    color: var(--puna-text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-top: 4px;
+    transition: opacity 0.2s ease;
+}
+
+.video-info-caption .video-caption-toggle:hover {
+    opacity: 0.7;
 }
 
 .video-caption-content .tag {

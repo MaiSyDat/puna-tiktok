@@ -108,7 +108,7 @@ class Puna_TikTok_AJAX_Handlers {
 
     /**
      * Add comment
-     * Guest-only mode: All comments are from guests
+     * If user is logged in, save as user comment. Otherwise, save as guest comment.
      */
     public function add_comment() {
         check_ajax_referer('puna_tiktok_comment_nonce', 'nonce');
@@ -124,37 +124,58 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => __('Comment cannot be empty.', 'puna-tiktok')));
         }
         
-        // Always treat as guest
-        $guest_id = isset($_POST['guest_id']) ? sanitize_text_field($_POST['guest_id']) : '';
-        if (empty($guest_id)) {
-            $guest_id = 'guest_' . md5($_SERVER['REMOTE_ADDR'] . time() . wp_generate_password(8, false));
-        }
-        
-        if (!isset($_COOKIE['puna_tiktok_guest_id'])) {
-            setcookie('puna_tiktok_guest_id', $guest_id, time() + (365 * 24 * 60 * 60), '/');
-        } else {
-            $guest_id = $_COOKIE['puna_tiktok_guest_id'];
-        }
-        
-        $guest_name = isset($_POST['guest_name']) ? sanitize_text_field($_POST['guest_name']) : __('Guest', 'puna-tiktok');
-        $comment_author = $guest_name . ' #' . substr($guest_id, 6, 8);
-        $comment_email = isset($_POST['guest_email']) ? sanitize_email($_POST['guest_email']) : '';
-        if (empty($comment_email)) {
-            $comment_email = $guest_id . '@guest.local';
-        }
-        
         $parent_id = isset($_POST['parent_id']) ? intval($_POST['parent_id']) : 0;
         
-        $comment_data = array(
-            'comment_post_ID' => $post_id,
-            'comment_author' => $comment_author,
-            'comment_author_email' => $comment_email,
-            'comment_content' => $comment_text,
-            'comment_status' => 'approve',
-            'comment_author_IP' => $_SERVER['REMOTE_ADDR'],
-            'user_id' => 0,
-            'comment_parent' => $parent_id,
-        );
+        // Check if user is logged in
+        $current_user_id = get_current_user_id();
+        
+        if ($current_user_id > 0) {
+            // User is logged in - save as user comment
+            $user = get_userdata($current_user_id);
+            $comment_author = $user ? $user->display_name : __('Hupuna', 'puna-tiktok');
+            $comment_email = $user ? $user->user_email : '';
+            
+            $comment_data = array(
+                'comment_post_ID' => $post_id,
+                'comment_author' => $comment_author,
+                'comment_author_email' => $comment_email,
+                'comment_content' => $comment_text,
+                'comment_status' => 'approve',
+                'comment_author_IP' => $_SERVER['REMOTE_ADDR'],
+                'user_id' => $current_user_id,
+                'comment_parent' => $parent_id,
+            );
+        } else {
+            // Guest comment
+            $guest_id = isset($_POST['guest_id']) ? sanitize_text_field($_POST['guest_id']) : '';
+            if (empty($guest_id)) {
+                $guest_id = 'guest_' . md5($_SERVER['REMOTE_ADDR'] . time() . wp_generate_password(8, false));
+            }
+            
+            if (!isset($_COOKIE['puna_tiktok_guest_id'])) {
+                setcookie('puna_tiktok_guest_id', $guest_id, time() + (365 * 24 * 60 * 60), '/');
+            } else {
+                $guest_id = $_COOKIE['puna_tiktok_guest_id'];
+            }
+            
+            $guest_name = isset($_POST['guest_name']) ? sanitize_text_field($_POST['guest_name']) : __('Guest', 'puna-tiktok');
+            $comment_author = $guest_name . ' #' . substr($guest_id, 6, 8);
+            $comment_email = isset($_POST['guest_email']) ? sanitize_email($_POST['guest_email']) : '';
+            if (empty($comment_email)) {
+                $comment_email = $guest_id . '@guest.local';
+            }
+            
+            $comment_data = array(
+                'comment_post_ID' => $post_id,
+                'comment_author' => $comment_author,
+                'comment_author_email' => $comment_email,
+                'comment_content' => $comment_text,
+                'comment_status' => 'approve',
+                'comment_author_IP' => $_SERVER['REMOTE_ADDR'],
+                'user_id' => 0,
+                'comment_parent' => $parent_id,
+            );
+        }
         
         $comment_id = wp_insert_comment($comment_data);
         
@@ -162,7 +183,10 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => __('Cannot add comment.', 'puna-tiktok')));
         }
         
-        update_comment_meta($comment_id, '_puna_tiktok_guest_id', $guest_id);
+        // Only save guest_id for guest comments
+        if ($current_user_id == 0) {
+            update_comment_meta($comment_id, '_puna_tiktok_guest_id', $guest_id);
+        }
         
         // Get the comment object
         $comment = get_comment($comment_id);
@@ -198,22 +222,34 @@ class Puna_TikTok_AJAX_Handlers {
         // Ensure HTML is not empty
         if (empty($html)) {
             // Fallback: create basic HTML structure
-            $comment_author_name = $comment->comment_author;
             $comment_date = human_time_diff(strtotime($comment->comment_date), current_time('timestamp'));
             $comment_likes = get_comment_meta($comment->comment_ID, '_comment_likes', true) ?: 0;
             
             $is_reply_class = $parent_id > 0 ? ' comment-reply' : '';
             
+            // Check if user comment or guest comment
+            $comment_author_id = $comment->user_id ? $comment->user_id : 0;
+            
             ob_start();
             ?>
             <div class="comment-item<?php echo esc_attr($is_reply_class); ?>" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>">
                 <div class="comment-avatar-wrapper">
-                    <?php echo wp_kses_post(puna_tiktok_get_avatar_html($comment->comment_author, 40, 'comment-avatar', $guest_id)); ?>
+                    <?php 
+                    // User/Admin comments: use Hupuna logo
+                    // Guest comments: use initials with colored background
+                    if ($comment_author_id > 0) {
+                        // User/Admin comment - use Hupuna logo
+                        echo wp_kses_post(puna_tiktok_get_avatar_html(1, 40, 'comment-avatar'));
+                    } else {
+                        // Guest comment - use initials with colored background (original behavior)
+                        echo wp_kses_post(puna_tiktok_get_avatar_html($comment->comment_author, 40, 'comment-avatar', $guest_id));
+                    }
+                    ?>
                 </div>
                 <div class="comment-content">
                     <div class="comment-header">
                         <span class="comment-author-wrapper">
-                            <strong class="comment-author"><?php echo esc_html($comment_author_name); ?></strong>
+                            <strong class="comment-author"><?php echo esc_html($comment_author_id > 0 ? __('Hupuna', 'puna-tiktok') : $comment->comment_author); ?></strong>
                         </span>
                     </div>
                     <p class="comment-text"><?php echo wp_kses_post($comment->comment_content); ?></p>

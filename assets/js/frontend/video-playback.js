@@ -705,6 +705,129 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    // Video caption read more/less functionality
+    function initVideoCaptionToggle() {
+        const captionWrappers = document.querySelectorAll('.video-caption-wrapper');
+        
+        captionWrappers.forEach(wrapper => {
+            // Handle both structures: video feed (.video-caption) and video watch (.caption-text)
+            let caption = wrapper.querySelector('.video-caption');
+            if (!caption) {
+                caption = wrapper.querySelector('.caption-text');
+            }
+            const toggleBtn = wrapper.querySelector('.video-caption-toggle');
+            const toggleText = toggleBtn?.querySelector('.toggle-text');
+            
+            if (!caption || !toggleBtn || !toggleText) {
+                return;
+            }
+            
+            // Get translatable strings
+            const readMoreText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.read_more) 
+                ? puna_tiktok_ajax.i18n.read_more 
+                : 'Read more';
+            const readLessText = (typeof puna_tiktok_ajax !== 'undefined' && puna_tiktok_ajax.i18n && puna_tiktok_ajax.i18n.read_less) 
+                ? puna_tiktok_ajax.i18n.read_less 
+                : 'Read less';
+            
+            // Check if caption needs truncation
+            const checkCaptionHeight = () => {
+                // Ensure caption is in collapsed state for measurement
+                const wasExpanded = caption.classList.contains('expanded');
+                if (wasExpanded) {
+                    caption.classList.remove('expanded');
+                }
+                
+                // Force reflow to get accurate measurements
+                void caption.offsetHeight;
+                
+                // Temporarily remove line clamp to measure full height
+                const originalLineClamp = caption.style.webkitLineClamp;
+                caption.style.webkitLineClamp = 'unset';
+                caption.style.display = 'block';
+                
+                // Force reflow again
+                void caption.offsetHeight;
+                
+                const fullHeight = caption.scrollHeight;
+                
+                // Restore line clamp
+                caption.style.webkitLineClamp = originalLineClamp || '3';
+                caption.style.display = '';
+                
+                // Calculate expected height for 3 lines
+                const lineHeight = parseFloat(getComputedStyle(caption).lineHeight) || 24; // Default to 16px * 1.5
+                const maxHeight = lineHeight * 3;
+                
+                // Restore expanded state if it was expanded
+                if (wasExpanded) {
+                    caption.classList.add('expanded');
+                }
+                
+                // Show toggle if content exceeds 3 lines
+                if (fullHeight > maxHeight) {
+                    toggleBtn.style.display = 'block';
+                    if (!wasExpanded) {
+                        caption.classList.remove('expanded');
+                        toggleText.textContent = readMoreText;
+                        toggleBtn.setAttribute('aria-label', readMoreText);
+                    }
+                } else {
+                    toggleBtn.style.display = 'none';
+                }
+            };
+            
+            // Toggle functionality
+            toggleBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (caption.classList.contains('expanded')) {
+                    // Collapse
+                    caption.classList.remove('expanded');
+                    toggleText.textContent = readMoreText;
+                    toggleBtn.setAttribute('aria-label', readMoreText);
+                } else {
+                    // Expand
+                    caption.classList.add('expanded');
+                    toggleText.textContent = readLessText;
+                    toggleBtn.setAttribute('aria-label', readLessText);
+                }
+            });
+            
+            // Check on load and resize
+            setTimeout(checkCaptionHeight, 100); // Small delay to ensure styles are applied
+            window.addEventListener('resize', checkCaptionHeight);
+        });
+    }
+    
+    // Initialize caption toggle
+    initVideoCaptionToggle();
+    
+    // Re-initialize when new content is loaded (for dynamic content)
+    const captionObserver = new MutationObserver(function(mutations) {
+        let shouldReinit = false;
+        mutations.forEach(function(mutation) {
+            if (mutation.addedNodes.length > 0) {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1 && (node.classList?.contains('video-caption-wrapper') || node.querySelector?.('.video-caption-wrapper'))) {
+                        shouldReinit = true;
+                    }
+                });
+            }
+        });
+        if (shouldReinit) {
+            initVideoCaptionToggle();
+        }
+    });
+    
+    if (mainContent) {
+        captionObserver.observe(mainContent, {
+            childList: true,
+            subtree: true
+        });
+    }
+
     window.applyVideoVolumeSettings = applyVideoVolumeSettings;
     window.applyVolumeToAllVideos = applyVolumeToAllVideos;
     window.VideoPlayerWrapper = VideoPlayerWrapper;

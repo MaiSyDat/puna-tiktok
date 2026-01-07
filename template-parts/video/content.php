@@ -63,11 +63,18 @@ $saved_class = $is_saved ? 'saved' : '';
 
 			<div class="video-overlay">
 				<div class="video-details">
-					<h4><?php echo esc_html(puna_tiktok_get_user_display_name()); ?></h4>
+					<h4><?php esc_html_e('Hupuna', 'puna-tiktok'); ?></h4>
 					<?php
 					$caption = puna_tiktok_get_video_description();
+					if (!empty($caption)) :
 					?>
-					<p class="video-caption"><?php echo esc_html($caption); ?></p>
+					<div class="video-caption-wrapper">
+						<p class="video-caption" data-full-text="<?php echo esc_attr($caption); ?>"><?php echo esc_html($caption); ?></p>
+						<button class="video-caption-toggle" aria-label="<?php esc_attr_e('Read more', 'puna-tiktok'); ?>" style="display: none;">
+							<span class="toggle-text"><?php esc_html_e('Read more', 'puna-tiktok'); ?></span>
+						</button>
+					</div>
+					<?php endif; ?>
 
 					<?php
 					$tags = get_the_terms(get_the_ID(), 'video_tag');

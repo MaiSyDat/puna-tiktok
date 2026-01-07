@@ -969,3 +969,19 @@ msgstr ""
 #: template-parts/video/content.php:145 template-parts/video/content.php:147
 msgid "Zalo"
 msgstr ""
+
+#: template-parts/video/content.php:66
+#: template-parts/video/content-single-video.php:116
+msgid "Hupuna"
+msgstr ""
+
+#: template-parts/video/content.php:74
+#: template-parts/video/content.php:73
+#: template-parts/video/content-single-video.php:149
+#: template-parts/video/content-single-video.php:148
+msgid "Read more"
+msgstr ""
+
+#: inc/class-assets.php:247
+msgid "Read less"
+msgstr ""

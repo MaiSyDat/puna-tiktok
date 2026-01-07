@@ -113,7 +113,7 @@ $withcomments = 1;
                     <div class="author-info-wrapper">
                         <?php echo puna_tiktok_get_avatar_html($author_id, 50, 'author-avatar-large'); ?>
                         <div class="author-info">
-                            <h3 class="author-name"><?php echo esc_html($author_name); ?></h3>
+                            <h3 class="author-name"><?php esc_html_e('Hupuna', 'puna-tiktok'); ?></h3>
                             <span class="author-username">@<?php echo esc_html($author_username); ?></span>
                         </div>
                     </div>
@@ -139,20 +139,32 @@ $withcomments = 1;
                 
                 <!-- Video Caption -->
                 <div class="video-info-caption">
-                    <div class="video-caption-content">
-                        <?php 
-                        if (!empty(trim($caption))) {
-                            echo '<span class="caption-text">' . esc_html(trim($caption)) . '</span>';
-                        }
-                        ?>
-                        
-                        <!-- Hashtags inline -->
-                        <?php if ($tags) : ?>
-                            <?php foreach ($tags as $tag) : ?>
-                                <a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id . '/')); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
+                    <?php if (!empty(trim($caption))) : ?>
+                    <div class="video-caption-wrapper">
+                        <div class="video-caption-content">
+                            <span class="caption-text" data-full-text="<?php echo esc_attr(trim($caption)); ?>"><?php echo esc_html(trim($caption)); ?></span>
+                            
+                            <!-- Hashtags inline -->
+                            <?php if ($tags) : ?>
+                                <?php foreach ($tags as $tag) : ?>
+                                    <a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id . '/')); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                        <button class="video-caption-toggle" aria-label="<?php esc_attr_e('Read more', 'puna-tiktok'); ?>" style="display: none;">
+                            <span class="toggle-text"><?php esc_html_e('Read more', 'puna-tiktok'); ?></span>
+                        </button>
                     </div>
+                    <?php else : ?>
+                        <div class="video-caption-content">
+                            <!-- Hashtags inline -->
+                            <?php if ($tags) : ?>
+                                <?php foreach ($tags as $tag) : ?>
+                                    <a href="<?php echo esc_url(home_url('/tag/' . $tag->term_id . '/')); ?>" class="tag">#<?php echo esc_html($tag->name); ?></a>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                     
                     <!-- Post Date -->
                     <div class="video-post-date">
