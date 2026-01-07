@@ -33,7 +33,7 @@ if (!isset($post_id)) {
 $reply_author_id = $reply->user_id ? $reply->user_id : 0;
 $is_reply_current_user = get_current_user_id() && $reply_author_id == get_current_user_id();
 $reply_date = human_time_diff(strtotime($reply->comment_date), current_time('timestamp'));
-$reply_likes = get_comment_meta($reply->comment_ID, '_comment_likes', true) ?: 0;
+$reply_likes = intval(get_comment_meta($reply->comment_ID, '_comment_likes', true));
 $reply_is_liked = get_current_user_id() && in_array($reply->comment_ID, $liked_comments);
 
 // Check if current user can delete this reply

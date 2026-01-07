@@ -8,8 +8,18 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-global $withcomments;
+global $withcomments, $puna_video_query;
 $withcomments = 1;
+
+// Use global variable if local variable not set
+if (!isset($video_query) && isset($puna_video_query)) {
+    $video_query = $puna_video_query;
+}
+
+// If still no query, create one
+if (!isset($video_query)) {
+    $video_query = puna_tiktok_get_video_query();
+}
 
 if (isset($video_query) && $video_query->have_posts()) :
     while ($video_query->have_posts()) : $video_query->the_post();

@@ -264,7 +264,7 @@ class Puna_TikTok_AJAX_Handlers {
      * Guest-only mode: Frontend JS handles "My Comment Likes" persistence via LocalStorage
      */
     public function toggle_comment_like() {
-        check_ajax_referer('puna_tiktok_like_nonce', 'nonce');
+        check_ajax_referer('puna_tiktok_comment_nonce', 'nonce');
         
         $comment_id = intval($_POST['comment_id'] ?? 0);
         if (!$comment_id) {
@@ -276,7 +276,7 @@ class Puna_TikTok_AJAX_Handlers {
             wp_send_json_error(array('message' => __('Comment does not exist.', 'puna-tiktok')));
         }
         
-        $current_likes = get_comment_meta($comment_id, '_comment_likes', true) ?: 0;
+        $current_likes = intval(get_comment_meta($comment_id, '_comment_likes', true));
         $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'like';
         
         if ($action === 'unlike') {
@@ -284,14 +284,14 @@ class Puna_TikTok_AJAX_Handlers {
             update_comment_meta($comment_id, '_comment_likes', $new_likes);
             wp_send_json_success(array(
                 'is_liked' => false,
-                'likes' => $new_likes
+                'likes' => intval($new_likes)
             ));
         } else {
             $new_likes = $current_likes + 1;
             update_comment_meta($comment_id, '_comment_likes', $new_likes);
             wp_send_json_success(array(
                 'is_liked' => true,
-                'likes' => $new_likes
+                'likes' => intval($new_likes)
             ));
         }
     }

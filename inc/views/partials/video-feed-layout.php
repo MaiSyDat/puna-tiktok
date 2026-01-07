@@ -7,6 +7,12 @@
 if (!defined('ABSPATH')) {
     exit;
 }
+
+// Set global variable for video feed to access
+if (isset($video_query)) {
+    global $puna_video_query;
+    $puna_video_query = $video_query;
+}
 ?>
 
 <div class="tiktok-app">

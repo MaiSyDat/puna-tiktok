@@ -33,7 +33,7 @@ if (!isset($post_id)) {
 $comment_author_id = $comment->user_id ? $comment->user_id : 0;
 $is_current_user = get_current_user_id() && $comment_author_id == get_current_user_id();
 $comment_date = human_time_diff(strtotime($comment->comment_date), current_time('timestamp'));
-$comment_likes = get_comment_meta($comment->comment_ID, '_comment_likes', true) ?: 0;
+$comment_likes = intval(get_comment_meta($comment->comment_ID, '_comment_likes', true));
 $is_liked = get_current_user_id() && in_array($comment->comment_ID, $liked_comments);
 
 // Check if current user can delete this comment

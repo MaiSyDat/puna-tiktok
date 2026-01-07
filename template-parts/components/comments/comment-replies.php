@@ -50,7 +50,7 @@ $remaining_replies_list = array_slice($replies, 3);
 <div class="comment-replies" data-parent-id="<?php echo esc_attr($parent_id); ?>">
     <?php foreach ($replies_to_show as $reply) : 
         $reply_date = human_time_diff(strtotime($reply->comment_date), current_time('timestamp'));
-        $reply_likes = get_comment_meta($reply->comment_ID, '_comment_likes', true) ?: 0;
+        $reply_likes = intval(get_comment_meta($reply->comment_ID, '_comment_likes', true));
         $reply_is_liked = get_current_user_id() && in_array($reply->comment_ID, $liked_comments);
         
         $reply_author_id = $reply->user_id ? $reply->user_id : 0;
@@ -138,7 +138,7 @@ $remaining_replies_list = array_slice($replies, 3);
         <div class="more-replies-container" data-parent-id="<?php echo esc_attr($parent_id); ?>" style="display: none;">
             <?php foreach ($remaining_replies_list as $reply) : 
                 $reply_date = human_time_diff(strtotime($reply->comment_date), current_time('timestamp'));
-                $reply_likes = get_comment_meta($reply->comment_ID, '_comment_likes', true) ?: 0;
+                $reply_likes = intval(get_comment_meta($reply->comment_ID, '_comment_likes', true));
                 $reply_is_liked = get_current_user_id() && in_array($reply->comment_ID, $liked_comments);
                 
                 $more_reply_author_id = $reply->user_id ? $reply->user_id : 0;

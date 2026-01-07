@@ -179,18 +179,7 @@ if (!function_exists('puna_tiktok_get_video_query')) {
             'post_status' => 'publish',
             'posts_per_page' => -1,
             'orderby' => 'date',
-            'order' => 'DESC',
-            'meta_query' => array(
-                'relation' => 'OR',
-                array(
-                    'key' => '_puna_tiktok_video_url',
-                    'compare' => 'EXISTS'
-                ),
-                array(
-                    'key' => '_puna_tiktok_youtube_id',
-                    'compare' => 'EXISTS'
-                )
-            )
+            'order' => 'DESC'
         );
         
         $query_args = wp_parse_args($args, $defaults);
